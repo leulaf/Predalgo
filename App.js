@@ -1,20 +1,46 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// import * as React from 'react';
+// import {ThemeProvider} from './context-store/context';
+// import {ShowSearchProvider} from './context-store/context';
+// import DrawerScreen from './src/screens/DrawerScreen';
+// import 'react-native-gesture-handler';
 
-export default function App() {
+// function App() {
+//   return (
+//     <ShowSearchProvider>
+//       <ThemeProvider>
+//         <DrawerScreen />
+//       </ThemeProvider>
+//     </ShowSearchProvider>
+//   );
+// }
+
+// export default App;
+
+import * as React from 'react';
+import {ThemeProvider} from './context-store/context';
+import {ShowSearchProvider} from './context-store/context';
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import 'react-native-gesture-handler';
+import LogInScreen from './src/screens/LogInScreen';
+import DrawerScreen from './src/screens/DrawerScreen';
+
+const Stack = createStackNavigator();
+
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ShowSearchProvider>
+      <ThemeProvider>
+        {/* <DrawerScreen /> */}
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="LogIn">
+            <Stack.Screen name="LogIn" component={LogInScreen} />
+            <Stack.Screen name="Drawer" component={DrawerScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ThemeProvider>
+    </ShowSearchProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
