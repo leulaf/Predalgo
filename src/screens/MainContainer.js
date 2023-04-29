@@ -1,6 +1,8 @@
 import React, {useContext} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ThemeContext} from '../../context-store/context';
+import { DrawerActions } from '@react-navigation/native';
+import SearchBar from '../components/SearchBar';
 
 // Light-Mode Icons
 import Chat from '../../assets/chat.svg';
@@ -40,7 +42,7 @@ const addPostName = ' ';
 
 const Bottom_Tab = createBottomTabNavigator();
 
-export default function MainContainer({navigation, openDrawers}) {
+export default function MainContainer({navigation, openDrawer}) {
     const {theme,setTheme} = useContext(ThemeContext);
     let home, homeInactive, trend, trendInactive, post, chat, chatInactive, profile, profileInactive
 
@@ -116,12 +118,23 @@ export default function MainContainer({navigation, openDrawers}) {
                 /> */}
                 <Bottom_Tab.Screen name={homeName} component={MainScreen} 
                     options={{
-                        headerShown: false,
-                        
+                        header: () => <SearchBar 
+                            // term={term} 
+                            // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
+                            // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
+                            openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+                        />                        
                     }} 
                 />
                 <Bottom_Tab.Screen name={trendingName} component={TrendingScreen}
-                    options={{headerShown: false}} 
+                    options={{
+                        header: () => <SearchBar 
+                            // term={term} 
+                            // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
+                            // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
+                            openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+                        />
+                    }} 
                 />
 
                 <Bottom_Tab.Screen name={addPostName} component={AddPostScreen} 

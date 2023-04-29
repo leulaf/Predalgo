@@ -1,13 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
-import { ShowSearchContext } from '../../context-store/context';
 import PredalgoLogo from '../../assets/Predalogo_SignUp_logo.svg';
-import Firebase from '../config/firebase';
+import {firebase, Firebase, auth} from '../config/firebase';
 
-const auth = Firebase.auth();
+// import auth from '@react-native-firebase/auth';
 
 const AuthScreen = ({navigation}) => {
-    const {showSearch,setShowSearch} = useContext(ShowSearchContext);
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [confirmEmail, setConfirmEmail] = useState('');
@@ -17,7 +15,19 @@ const AuthScreen = ({navigation}) => {
     const onSignUp = async () => {
         try {
             if (email !== '' && password !== '' && confirmEmail !== '' && username !== '' && email === confirmEmail) {
-                await auth.createUserWithEmailAndPassword(email, password);
+                await auth.createUserWithEmailAndPassword(email, password)
+                .then((result) => {
+                    // Signed in 
+                    firebase.firestore().collection('users')
+                    .doc(firebase.auth().currentUser.uid).set({
+                        username: username,
+                        email: email,
+                    })
+                })
+                .catch((error) =>{
+                    // alert(error);
+                    console.log(error);
+                })
             }
             
             let error = "";

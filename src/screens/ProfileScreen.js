@@ -1,55 +1,77 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, Component} from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
-import {ShowSearchContext} from '../../context-store/context';
 import {AuthenticatedUserContext} from '../../context-store/context';
-import Firebase from '../config/firebase';
+import {Firebase, auth} from '../config/firebase';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchUser } from '../../redux/actions/index';
 
-const auth = Firebase.auth();
-const user = Firebase.auth().currentUser;
+// const auth = getAuth(Firebase);
+const user = auth.currentUser;
 
+const handleSignOut = async () => {
+    try {
+        await auth.signOut();
+    } catch (error) {
+        console.log(error);
+    }
+};
+class ProfileScreen extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          LoggedIn: false,
+          username: '',
+          email: '',
+        };
+    }
+    
+    // componentDidMount() {
+    //     auth.onAuthStateChanged((user) => {
+    //         if (!user) {
+    //         this.setState({
+    //             loggedIn: false,
+    //             loaded: true,
+    //         });
+    //         } else {
+    //         this.setState({
+    //             loggedIn: true,
+    //             loaded: true,
+    //         });
+    //         }
+    //     });
+    // }
 
-const ProfileScreen = ({navigation}) => {
-    const {showSearch,setShowSearch} = useContext(ShowSearchContext);
-    const [email, setEmail] = useState('');
-
-    useEffect(() => {
+    componentDidMount() {
         auth.onAuthStateChanged((user) => {
             if (user) {
-                setEmail(user.email);
-            } else {
-                setEmail("Not Signed In");
-                // navigation.navigate('LogIn');
+                this.props.fetchUser();
             }
         });
-    }, []);
-
-    const handleSignOut = async () => {
-        try {
-          await auth.signOut();
-        } catch (error) {
-          console.log(error);
-        }
-      };
+    };
     
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-          // The screen is focused
-          setShowSearch(false);
-        });
+    render() {
+        
+        
+        const {currentUser} = this.props;
+        
+        console.log(currentUser);
+        return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Text
+                    onPress={() => handleSignOut()}
+                    style={{ fontSize: 26, fontWeight: 'bold' }}>Profile email: {currentUser !== undefined ? currentUser.email : ""}</Text>
+            </View>
+        );
+    }
     
-        // Return the function to unsubscribe from the event so it gets removed on unmount
-        return unsubscribe;
-    }, [navigation]);
-
-    return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Text
-                onPress={() => handleSignOut()}
-                style={{ fontSize: 26, fontWeight: 'bold' }}>Profile {email}</Text>
-        </View>
-    );
 }
+
+const mapStateToProps = (store) => ({
+    currentUser: store.userState.currentUser
+})
+const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
 
 const styles = StyleSheet.create({});
 
-export default ProfileScreen;
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen);

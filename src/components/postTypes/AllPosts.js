@@ -17,10 +17,10 @@ export default function AllPosts({navigation, posts}){
 
     const renderItem = (item, index) => {
         let post
-        if(item.url){
+        if(item.imageUrl){
             post = <ImagePost 
                 key={index} 
-                url={item.url} 
+                imageUrl={item.imageUrl} 
                 title={item.title + " " + index}
                 tags={item.tags}
                 memeText={item.memeText}
@@ -55,7 +55,7 @@ export default function AllPosts({navigation, posts}){
                 parallaxScrollingScale: 1,
                 parallaxAdjacentItemScale: .97 ,
             }}
-            style={{ marginTop: 130, height: height }}
+            style={{ marginTop: 20, height: height }}
             vertical
             pagingEnabled={true}
             snapEnabled={true}
@@ -63,15 +63,6 @@ export default function AllPosts({navigation, posts}){
             scrollAnimationDuration={400}
             onSnapToItem={(index) => console.log('current index:', index)}
             renderItem={({ item, index }) => (
-                // if(item.url != null){
-                //     <ImagePost 
-                //         key={index} 
-                //         url={item.url} 
-                //         title={"item: " + index}
-                //         tags={tags}
-                //         memeText={"For more complex rendering, we can introduce variables to store our React elements"}
-                //     />
-                // }
                 renderItem(item, index)
             )}
         />

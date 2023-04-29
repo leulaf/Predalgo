@@ -3,8 +3,8 @@ import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'r
 import TextTicker from 'react-native-text-ticker'
 import {ThemeContext} from '../../../context-store/context';
 
-import DarkMemeCreate from '../../../assets/meme_create_light.svg';
-import LightMemeCreate from '../../../assets/meme_create_dark.svg';
+import DarkMemeCreate from '../../../assets/post_meme_create_light.svg';
+import LightMemeCreate from '../../../assets/post_meme_create_dark.svg';
 
 import GlobalStyles from '../../constants/GlobalStyles';
 

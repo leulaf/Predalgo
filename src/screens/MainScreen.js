@@ -2,7 +2,6 @@ import React, {useState, useEffect, useContext} from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ScrollView, Image, View, Text, StyleSheet, TextInput} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
-import {ShowSearchContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 
 import SearchBar from '../components/SearchBar';
@@ -17,17 +16,6 @@ const Top_Tab = createMaterialTopTabNavigator();
 export default function MainScreen({navigation}){
     const {theme,setTheme} = useContext(ThemeContext);
     const [term, setTerm] = useState('');
-    const {showSearch,setShowSearch} = useContext(ShowSearchContext);
-
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-          // The screen is focused
-          setShowSearch(true);
-        });
-    
-        // Return the function to unsubscribe from the event so it gets removed on unmount
-        return unsubscribe;
-    }, [navigation]);
 
     return (
             <>

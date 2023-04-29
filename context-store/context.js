@@ -14,28 +14,6 @@ const ThemeProvider = ({ children }) => {
     )
 }
 
-const ShowSearchContext = createContext();
-
-const ShowSearchProvider = ({ children }) => {
-    // Manage theme state
-    const [showSearch, setShowSearch] = useState(true);
-
-    // const handleChange = () => {
-    //     setHide(hide);
-    // }
-
-    // useEffect(() => {
-    //     console.log('theme changed');
-    // }, [hide]);
-
-    return (
-        <ShowSearchContext.Provider
-            value={{ showSearch, setShowSearch }}>
-            {children}
-        </ShowSearchContext.Provider>
-    )
-}
-
 const AuthenticatedUserContext = createContext({});
 
 const AuthenticatedUserProvider = ({ children }) => {
@@ -104,8 +82,6 @@ const AuthenticatedUserProvider = ({ children }) => {
 export {
     ThemeContext,
     ThemeProvider,
-    ShowSearchContext,
-    ShowSearchProvider,
     AuthenticatedUserContext,
     AuthenticatedUserProvider
 }

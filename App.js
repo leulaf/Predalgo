@@ -1,18 +1,28 @@
 import React, {Component, useContext, useState, useEffect} from 'react';
 import { View, Text } from 'react-native';
 import {ThemeProvider} from './context-store/context';
-import {ShowSearchProvider} from './context-store/context';
 import {AuthenticatedUserProvider} from './context-store/context';
 import {AuthenticatedUserContext} from './context-store/context';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import 'react-native-gesture-handler';
+
+import {Firebase, auth} from './src/config/firebase';
+
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './redux/reducers';
+import thunk from 'redux-thunk';
+
 import AuthScreen from './src/screens/AuthScreen';
 import DrawerScreen from './src/screens/DrawerScreen';
-import Firebase from './src/config/firebase';
-const Stack = createStackNavigator();
+import UploadScreen from './src/screens/UploadScreen';
+import CreatePostScreen from './src/screens/CreatePostScreen';
+import SaveImage from './src/components/SaveImage';
 
-const auth = Firebase.auth();
+const store = createStore(rootReducer, applyMiddleware(thunk));
+
+const Stack = createStackNavigator();
 
 class App extends Component {
   constructor(props) {
@@ -44,32 +54,39 @@ class App extends Component {
 
     if(!loggedIn) {
       return(
-        <AuthenticatedUserProvider>
-          <ShowSearchProvider>
-            <ThemeProvider>
-              <NavigationContainer>
-                <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="LogIn">
-                  <Stack.Screen name="Drawer" component={DrawerScreen} />
-                  <Stack.Screen name="LogIn" component={AuthScreen} />
-                </Stack.Navigator>
-              </NavigationContainer>
-            </ThemeProvider>
-          </ShowSearchProvider>
-        </AuthenticatedUserProvider>
+        <Provider store={store}>
+          <AuthenticatedUserProvider>
+              <ThemeProvider>
+                <NavigationContainer>
+                  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="LogIn">
+                    <Stack.Screen name="Drawer" component={DrawerScreen} />
+                    <Stack.Screen name="LogIn" component={AuthScreen} />
+                    <Stack.Screen name="Upload" component={UploadScreen} />
+                    <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </ThemeProvider>
+          </AuthenticatedUserProvider>
+        </Provider>
+          
       );
     } else {
       return(
-        <AuthenticatedUserProvider>
-          <ShowSearchProvider>
-            <ThemeProvider>
-              <NavigationContainer>
-                <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Drawer">
-                  <Stack.Screen name="Drawer" component={DrawerScreen} />
-                </Stack.Navigator>
-              </NavigationContainer>
-            </ThemeProvider>
-          </ShowSearchProvider>
-        </AuthenticatedUserProvider>
+        <Provider store={store}>
+          <AuthenticatedUserProvider>
+              <ThemeProvider>
+                <NavigationContainer>
+                  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Drawer">
+                    <Stack.Screen name="Drawer" component={DrawerScreen} />
+                    <Stack.Screen name="Upload" component={UploadScreen} />
+                    <Stack.Screen name="Upload" component={UploadScreen} />
+                    <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+                  </Stack.Navigator>
+                </NavigationContainer>
+              </ThemeProvider>
+          </AuthenticatedUserProvider>
+        </Provider>
+          
       );
     }
 
@@ -77,50 +94,4 @@ class App extends Component {
   }
 }
 
-// const App = () => {
-//   const [user, setUser] = useState(null);
-//   const [loggedIn, setLoggedIn] = useState(false);
-
-//   useEffect(() => {
-//     // Adding listener for firebase auth
-//     const unsubscribe = auth.onAuthStateChanged((currUser) => {
-//       if (currUser) {
-//         setUser(currUser);
-//         setLoggedIn(true);
-//       } else {
-//         console.log('user not logged in')
-//         setLoggedIn(false);
-//       }
-//     });
-
-//     return unsubscribe
-//   }, [])
-
-//   if(!loggedIn) {
-//     return <AuthenticatedUserProvider>
-//       <ShowSearchProvider>
-//         <ThemeProvider>
-//           <NavigationContainer>
-//             <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="LogIn">
-//               <Stack.Screen name="Drawer" component={DrawerScreen} />
-//               <Stack.Screen name="LogIn" component={AuthScreen} />
-//             </Stack.Navigator>
-//           </NavigationContainer>
-//         </ThemeProvider>
-//       </ShowSearchProvider>
-//     </AuthenticatedUserProvider>
-//   } else {
-//     return <AuthenticatedUserProvider>
-//       <ShowSearchProvider>
-//         <ThemeProvider>
-//           <NavigationContainer>
-//             <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Drawer">
-//               <Stack.Screen name="Drawer" component={DrawerScreen} />
-//             </Stack.Navigator>
-//           </NavigationContainer>
-//         </ThemeProvider>
-//       </ShowSearchProvider>
-//     </AuthenticatedUserProvider>
-//   }
-// }
 export default App;

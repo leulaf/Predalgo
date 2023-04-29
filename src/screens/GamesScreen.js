@@ -2,11 +2,7 @@ import React, {useContext} from 'react';
 import {View, Text, StyleSheet, TextInput, Dimensions, FlatList} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
-import Carousel from 'react-native-reanimated-carousel';
-import ImagePost from '../components/postTypes/ImagePost';
-import SideBar from '../components/SideBar';
 import AllPosts from '../components/postTypes/AllPosts';
-const { height: windowHeight } = Dimensions.get("window");
 
 const posts = [
     {

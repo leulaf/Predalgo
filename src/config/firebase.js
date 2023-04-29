@@ -1,9 +1,11 @@
 // Import the functions you need from the SDKs you need
 // import firebase from 'firebase/app';
-import firebase from "firebase/compat/app";
-import "firebase/compat/auth";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID, FIREBASE_MEASUREMENT_ID } from "@env";
 
 
@@ -30,6 +32,10 @@ if (firebase.apps.length == 0) {
     Firebase = firebase.app(); // if already initialized, use that one
 }
 
-const analytics = getAnalytics(Firebase);
 
-export default Firebase;
+const analytics = getAnalytics(Firebase);
+const auth = firebase.auth();
+const db = getFirestore(Firebase);
+
+
+export {Firebase, firebase, auth, db};

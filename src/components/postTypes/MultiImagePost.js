@@ -73,8 +73,7 @@ const styles = StyleSheet.create({
     image: {
         // flex: 1,
         // marginHorizontal: 5,
-        minHeight: 350,
-        maxHeight: 350,
+        height: 350,
         borderRadius: 20,
     },
     indicatorContainer: {

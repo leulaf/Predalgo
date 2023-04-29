@@ -4,14 +4,14 @@ import FlexImage from 'react-native-flex-image';
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 
-const ImagePost = ({ navigation, title, url, memeText, tags }) => {
+const ImagePost = ({ navigation, title, imageUrl, memeText, tags }) => {
         return (
             <PostContainer 
                 title={title}
                 content={
                     <View>
                         <View style={{flexDirection: "row"}}>
-                            <Image source={{ uri: url }} style={styles.image}/>
+                            <Image source={{ uri: imageUrl }} style={styles.image}/>
                         </View>
                         <PostBottom tags={tags} memeText={memeText}/>
                     </View>
@@ -23,9 +23,7 @@ const ImagePost = ({ navigation, title, url, memeText, tags }) => {
 const styles = StyleSheet.create({
     image: {
         flex: 1,
-        // marginHorizontal: 5,
-        minHeight: 350,
-        maxHeight: 350,
+        height: 350,
         borderRadius: 15,
 
     }

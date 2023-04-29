@@ -35,7 +35,7 @@ const SideBar = ({navigation, profile, likeCount, dislikeCount, commentCount, sh
         <View style={{
             flexDirection: "column",
             alignItems: "center",
-            marginTop: 240,
+            marginTop: 245,
             marginLeft: 358,
             position: "absolute",
             position: "absolute",

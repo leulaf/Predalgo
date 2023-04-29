@@ -1,7 +1,6 @@
 import React, {useEffect, useContext} from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {ShowSearchContext} from '../../context-store/context';
 import {ThemeContext} from '../../context-store/context';
 import FunnyScreen from '../screens/TrendingScreens/FunnyScreen';
 import ScienceScreen from '../screens/TrendingScreens/ScienceScreen';
@@ -14,17 +13,7 @@ const Top_Tab = createMaterialTopTabNavigator();
 
 export default function TrendingScreen({navigation}){
     const {theme,setTheme} = useContext(ThemeContext);
-    const {showSearch,setShowSearch} = useContext(ShowSearchContext);
 
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-          // The screen is focused
-          setShowSearch(true);
-        });
-    
-        // Return the function to unsubscribe from the event so it gets removed on unmount
-        return unsubscribe;
-    }, [navigation]);
     return (
         
             <Top_Tab.Navigator 
