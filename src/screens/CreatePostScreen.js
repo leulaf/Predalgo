@@ -1,6 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TextInput, ScrollView, Image, Dimensions} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {View, Text, StyleSheet, TextInput, ScrollView, Image, Dimensions, TouchableOpacity} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 
 import firebase from 'firebase/compat/app';
@@ -96,13 +95,13 @@ const CreatePostScreen = ({navigation, route}) => {
     let exitIcon, upload, link, createMeme, postButton;
 
     if(theme == 'light'){
-        exitIcon = <ExitIconLight width={50} height={50} style={{marginLeft: 200,}} onPress={() => navigation.goBack()}/>;
+        exitIcon = <ExitIconLight width={50} height={50}  style={{marginLeft: 90, position: 'absolute'}} />;
         upload = <UploadLight width={35} height={35} style={{ marginLeft: 10, marginTop:2}}/>;
         link = <LinkLight width={33} height={33} style={{ marginLeft: 15, marginTop:4}}/>;
         createMeme = <CreateMemeLight width={30} height={30} style={{ marginLeft: 20, marginRight: 5, marginTop:5}}/>;
         postButton = <PostButtonLight width={115} height={40} style={{ marginLeft: 22, marginTop:2}}/>;
     }else{
-        exitIcon = <ExitIconDark width={50} height={50} style={{marginLeft: 200}} onPress={() => navigation.goBack()}/>;
+        exitIcon = <ExitIconDark width={50} height={50} style={{marginLeft: 90, position: 'absolute'}}/>;
         upload = <UploadDark width={35} height={35} style={{ marginLeft: 10, marginTop:2}}/>;
         link = <LinkDark width={33} height={33} style={{ marginLeft: 15, marginTop:4}}/>;
         createMeme = <CreateMemeDark width={30} height={30} style={{ marginLeft: 20, marginRight: 5, marginTop:5}}/>;
@@ -122,13 +121,11 @@ const CreatePostScreen = ({navigation, route}) => {
 
                         <Image source={{ uri: imageUrl }} style={styles.imageExpanded} />
 
-                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 265, marginTop:30}}>
-                            <ShrinkImage width={30} height={30} style={{ }}/>
-                            <Text style={{fontSize: 24, marginHorizontal: 10, fontWeight: 'bold',color: 'white',}}>
+                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 285, marginTop:30}}>
+                            <ShrinkImage width={26} height={26}/>
+                            <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white',}}>
                                 Shrink
                             </Text>
-                            
-                            
                         </View>
                     </TouchableOpacity>
                 :
@@ -139,9 +136,9 @@ const CreatePostScreen = ({navigation, route}) => {
                     
                         <Image source={{ uri: imageUrl }} style={styles.imageShrinked}  width={395} height={350}/>
 
-                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 265, marginTop:30}}>
-                            <ExpandImage width={30} height={30} style={{ }}/>
-                            <Text style={{fontSize: 24, marginHorizontal: 10, fontWeight: 'bold',color: 'white',}}>
+                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 275, marginTop:30}}>
+                            <ExpandImage width={25} height={25}/>
+                            <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white',}}>
                                 Expand
                             </Text>
                         </View>
@@ -159,7 +156,7 @@ const CreatePostScreen = ({navigation, route}) => {
             blurOnSubmit
             autoCapitalize="none"
             autoCorrect
-            placeholder="Type your post..."
+            placeholder=" Type your post here..."
             placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
             value={text}
             onChangeText={(newValue) => setText(newValue)}
@@ -168,13 +165,22 @@ const CreatePostScreen = ({navigation, route}) => {
 
     return (
         <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+            
             <ScrollView automaticallyAdjustKeyboardInsets={true} style={theme == 'light' ? styles.lightPostContainer : styles.darkPostContainer}>
                 
                 <View style={{flexDirection: 'row'}}>
                     <Image source={require('../../assets/profile_default.png')} style={{width: 40, height: 40, margin: 10}}/>
-                    <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>Username</Text>
-
-                    {exitIcon}
+                    <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
+                        @Username
+                    </Text>
+                    
+                    {/* Exit Icon */}
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                    >
+                        {exitIcon}
+                    </TouchableOpacity>
+                    
                 </View>
 
                 {/* Title input text */}
@@ -249,7 +255,6 @@ const CreatePostScreen = ({navigation, route}) => {
 
                     </TouchableOpacity>
                     
-                    
                 </View>
                 
             </ScrollView>
@@ -292,12 +297,14 @@ const styles = StyleSheet.create({
     },
     lightUsername: {
         fontSize: 18,
+        width: 200,
         fontWeight: '500',
         color: '#444444',
         alignSelf: 'center',
     },
     darkUsername: {
         fontSize: 18,
+        width: 200,
         fontWeight: '500',
         color: '#EEEEEE',
         alignSelf: 'center',

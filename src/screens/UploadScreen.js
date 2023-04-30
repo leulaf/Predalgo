@@ -10,6 +10,8 @@ import GalleryIcon from '../../assets/gallery.svg';
 import BackIcon from '../../assets/back_light.svg';
 import DeleteImageIcon from '../../assets/x.svg';
 import CorrectIcon from '../../assets/correct.svg';
+import FlashOn from '../../assets/flash_on.svg';
+import FlashOff from '../../assets/flash_off.svg';
 
 
 export default function UploadScreen({navigation}) {
@@ -17,6 +19,7 @@ export default function UploadScreen({navigation}) {
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [flashOn, setFlashOn] = useState(false);
 
   if (!permission) {
     // Camera permissions are still loading
@@ -58,17 +61,31 @@ export default function UploadScreen({navigation}) {
 
   return (
     <View style={styles.container}>
+        <View style={{flexDirection: 'row'}}>
 
-        {/* back button */}
-        <TouchableOpacity style={styles.backButton} 
-            onPress={() => navigation.goBack(null)}
-        >
-            <BackIcon height={25} width={25}/>
-            <Text style={styles.text}>Back</Text>
-        </TouchableOpacity>
-        
+          {/* back button */}
+          <TouchableOpacity style={styles.backButton} 
+              onPress={() => navigation.goBack(null)}
+          >
+              <BackIcon height={25} width={25}/>
+              <Text style={styles.text}>Back</Text>
+          </TouchableOpacity>
+
+          {/* Flash On/Off button */}
+          <TouchableOpacity style={styles.flashButton} onPress={() => setFlashOn(!flashOn)}>                
+              {flashOn ?
+                <FlashOn height={25} width={25} marginLeft={5}/>
+              :
+                <FlashOff height={25} width={25} marginLeft={5}/>
+              }
+          </TouchableOpacity>
+
+        </View>
+          
+
         <Camera style={styles.camera} type={type}
             ref={ref => setCamera(ref)}
+            flashMode={flashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off}
         >
             {image && 
                 <View style={{flexDirection: 'row'}}>
@@ -128,6 +145,8 @@ export default function UploadScreen({navigation}) {
                     <Text style={styles.text}>Flip</Text>
                 </TouchableOpacity>
 
+                
+
             
             </View>
             
@@ -166,6 +185,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  flashButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'flex-start',
+    marginLeft: '65%',
+    marginTop: 50,
+
   },
   takePhotoButton: {
     flex: 1,

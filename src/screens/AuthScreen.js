@@ -88,6 +88,7 @@ const AuthScreen = ({navigation}) => {
                         <TextInput
                             secureTextEntry={false}
                             style={styles.input}
+                            maxLength={15}
                             autoCapitalize="none"
                             autoCorrect={false}
                             placeholder="Username"
@@ -97,6 +98,7 @@ const AuthScreen = ({navigation}) => {
                             // onEndEditing={( ) => console.log('submitted')}
                         />
 
+                        {/* Emain input */}
                         <TextInput
                             secureTextEntry={false}
                             style={styles.input}
@@ -109,7 +111,7 @@ const AuthScreen = ({navigation}) => {
                             // onEndEditing={( ) => console.log('submitted')}
                         />
                         
-                        {/* Emain/UserName input */}
+                        {/* Confirm Emain input */}
                         <TextInput
                             secureTextEntry={false}
                             style={styles.input}
@@ -138,7 +140,7 @@ const AuthScreen = ({navigation}) => {
                     
                 :
                     <ScrollView automaticallyAdjustKeyboardInsets={true} width={"100%"}>
-                        {/* Emain/UserName input */}
+                        {/* Emain input */}
                         <TextInput
                             secureTextEntry={false}
                             style={styles.input}
