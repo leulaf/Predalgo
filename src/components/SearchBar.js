@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: '#FEFEFE',
         borderWidth: 1.5,
-        borderColor: '#CCCCCC',
+        borderColor: '#DDDDDD',
     },
     darkSearchBar: {
         height: 36,

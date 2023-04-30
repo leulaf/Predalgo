@@ -79,7 +79,6 @@ class App extends Component {
                   <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Drawer">
                     <Stack.Screen name="Drawer" component={DrawerScreen} />
                     <Stack.Screen name="Upload" component={UploadScreen} />
-                    <Stack.Screen name="Upload" component={UploadScreen} />
                     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
                   </Stack.Navigator>
                 </NavigationContainer>

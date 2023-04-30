@@ -42,7 +42,7 @@ const PostBar = ({}) => {
             {/* Text input */}
             <TouchableOpacity 
              style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}
-                onPress={() => navigation.navigate("CreatePost")}
+                onPress={() => navigation.navigate("CreatePost", { imageUrl: null, imageUrls: null })}
             >
                 <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
                     Type your post...
@@ -78,24 +78,24 @@ const PostBar = ({}) => {
 const styles = StyleSheet.create({
     lightMainContainer: {
         flexDirection: "row",
-        width: "97%",
+        width: "98%",
         height: 60,
         marginTop:  55,
         alignSelf: "center",
         alignItems: "center",
         backgroundColor: "#FBFBFB",
         borderWidth: 1,
-        borderColor: "#CCCCCC",
+        borderColor: "#DDDDDD",
         borderRadius: 30
     },
     darkMainContainer: {
         flexDirection: "row",
-        width: "97%",
+        width: "98%",
         height: 60,
         marginTop:  55,
         alignSelf: "center",
         alignItems: "center",
-        backgroundColor: "#1A1A1A",
+        backgroundColor: "#1D1D1D",
         borderWidth: 1,
         borderColor: "#444444",
         borderRadius: 30
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         backgroundColor: "#FFFFFF",
         borderWidth: 1,
-        borderColor: "#CCCCCC",
+        borderColor: "#DDDDDD",
         borderRadius: 30
     },
     darkTextContainer: {

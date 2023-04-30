@@ -40,8 +40,6 @@ export default function UploadScreen({navigation}) {
         // allowsEditing: true,
     });
 
-    console.log(result);
-
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
@@ -51,7 +49,6 @@ export default function UploadScreen({navigation}) {
     if (camera) {
       const picture = await camera.takePictureAsync();
       setImage(picture.uri);
-      console.log(picture.uri);
     }
   };
 
@@ -75,27 +72,33 @@ export default function UploadScreen({navigation}) {
         >
             {image && 
                 <View style={{flexDirection: 'row'}}>
+
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('CreatePost', {imageUrl: image})}
+                  >
                     <Image 
-                        source={{ uri: image }} 
-                        style={{
-                            margin: 5,
-                            borderRadius: 20
-                        }}  
-                        width={200} 
-                        height={300}
-                    />
+                          source={{ uri: image }} 
+                          style={{
+                              margin: 5,
+                              borderRadius: 20
+                          }}  
+                          width={200} 
+                          height={300}
+                      />
+                  </TouchableOpacity>
+                      
 
                     <View style={{flexDirection: 'column'}}>
 
                         {/* Delete Image and retake */}
-                        <TouchableOpacity style={{ marginRight: 10, marginTop: 10}} onPress={() => setImage(null)}>
+                        <TouchableOpacity style={{ marginRight: 10, marginTop: 10, }} onPress={() => setImage(null)}>
                             <DeleteImageIcon height={30} width={30}/>
                         </TouchableOpacity>
                         
                         {/* Use image */}
                         <TouchableOpacity 
                             style={{ marginRight: 10, marginTop: 230, flexDirection: 'row'}} 
-                            onPress={() => navigation.navigate('SaveImage', {imageUrl: image})}
+                            onPress={() => navigation.navigate('CreatePost', {imageUrl: image})}
                         >
                             <CorrectIcon height={30} width={30}/>
                             <Text style={styles.text} alignSelf={'center'}>Use Image</Text>
@@ -144,7 +147,7 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
   },
   camera: {
-    marginTop: 20,
+    marginTop: 15,
     height: "85%",
   },
   backButton: {
