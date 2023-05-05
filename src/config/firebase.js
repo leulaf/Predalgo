@@ -3,6 +3,8 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import 'firebase/firestore';
+import { getStorage } from "firebase/storage";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
@@ -37,5 +39,8 @@ const analytics = getAnalytics(Firebase);
 const auth = firebase.auth();
 const db = getFirestore(Firebase);
 
+// Create a root reference
+const storage = getStorage(Firebase);
 
-export {Firebase, firebase, auth, db};
+
+export {Firebase, firebase, auth, db, storage};

@@ -5,8 +5,8 @@ import { DrawerActions } from '@react-navigation/native';
 import SearchBar from '../components/SearchBar';
 
 // Light-Mode Icons
-import Chat from '../../assets/chat.svg';
-import Chat_Inactive from '../../assets/chat_inactive.svg';
+import Saved from '../../assets/saved.svg';
+import Saved_Inactive from '../../assets/saved_inactive.svg';
 import Home from '../../assets/home.svg';
 import Home_Inactive from '../../assets/home_inactive.svg';
 import Profile_Inactive from '../../assets/profile_inactive.svg';
@@ -16,8 +16,8 @@ import Trend from '../../assets/topics.svg';
 import Post from '../../assets/post.svg';
 
 // Dark-Mode Icons
-import Chat_Dark from '../../assets/chat_dark.svg';
-import Chat_Inactive_Dark from '../../assets/chat_inactive_dark.svg';
+import Saved_Dark from '../../assets/saved_dark.svg';
+import Saved_Inactive_Dark from '../../assets/saved_inactive_dark.svg';
 import Home_Dark from '../../assets/home_dark.svg';
 import Home_Inactive_Dark from '../../assets/home_inactive_dark.svg';
 import Profile_Inactive_Dark from '../../assets/profile_inactive_dark.svg';
@@ -30,21 +30,21 @@ import Post_Dark from '../../assets/post_dark.svg';
 import MainScreen from './MainScreen';
 import TrendingScreen from './TrendingScreen';
 import ProfileScreen from './ProfileScreen';
-import ChatScreen from './ChatScreen';
+import SavedScreen from './SavedScreen';
 import AddPostScreen from './AddPostScreen';
 
 // Screen Names
 const homeName = 'Home';
 const trendingName = 'Trend';
 const profileName = 'Profile';
-const chatName = 'Chat';
+const savedName = 'Saved';
 const addPostName = ' ';
 
 const Bottom_Tab = createBottomTabNavigator();
 
 export default function MainContainer({navigation, openDrawer}) {
     const {theme,setTheme} = useContext(ThemeContext);
-    let home, homeInactive, trend, trendInactive, post, chat, chatInactive, profile, profileInactive
+    let home, homeInactive, trend, trendInactive, post, saved, savedInactive, profile, profileInactive
 
     if(theme == "light"){
         home = <Home width={28} height={28}/>;
@@ -55,12 +55,11 @@ export default function MainContainer({navigation, openDrawer}) {
 
         post = <Post width={60} height={60} style={{marginTop:10}}/>;
         
+        saved = <Saved width={25} height={25}/>;
+        savedInactive =  <Saved_Inactive width={25} height={25}/>;
+
         profile = <Profile width={30} height={30}/>;
         profileInactive = <Profile_Inactive width={30} height={30}/>;
-        
-        chat = <Chat width={30} height={30}/>;
-        chatInactive =  <Chat_Inactive width={30} height={30}/>;
-
     }else{
         home = <Home_Dark width={28} height={28}/>;
         homeInactive = <Home_Inactive_Dark width={28} height={28}/>;
@@ -70,8 +69,8 @@ export default function MainContainer({navigation, openDrawer}) {
 
         post = <Post_Dark width={60} height={60} style={{marginTop:10}}/>;
        
-        chat = <Chat_Dark width={30} height={30}/>;
-        chatInactive =  <Chat_Inactive_Dark width={30} height={30}/>;
+        saved = <Saved_Dark width={25} height={25}/>;
+        savedInactive =  <Saved_Inactive_Dark width={25} height={25}/>;
         
         profile = <Profile_Dark width={30} height={30}/>;
         profileInactive = <Profile_Inactive_Dark width={30} height={30}/>;
@@ -89,8 +88,8 @@ export default function MainContainer({navigation, openDrawer}) {
                         return focused ? trend : trendInactive;
                     } else if (route.name === profileName) {
                         return focused ? profile : profileInactive;
-                    }else if (route.name === chatName) {
-                        return focused ? chat : chatInactive;
+                    }else if (route.name === savedName) {
+                        return focused ? saved : savedInactive;
                     }else if (route.name === addPostName) {
                         return post;
                     }
@@ -145,7 +144,7 @@ export default function MainContainer({navigation, openDrawer}) {
                     }} 
                 />
 
-                <Bottom_Tab.Screen name={chatName} component={ChatScreen}
+                <Bottom_Tab.Screen name={savedName} component={SavedScreen}
                     options={{headerShown: false}} 
                 />
                 <Bottom_Tab.Screen name={profileName} component={ProfileScreen} 
