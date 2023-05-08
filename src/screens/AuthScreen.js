@@ -22,6 +22,8 @@ const AuthScreen = ({navigation}) => {
                     .doc(firebase.auth().currentUser.uid).set({
                         username: username,
                         email: email,
+                        profilePic: "",
+                        bio: "User bio is empty",
                     })
                 })
                 .catch((error) =>{
@@ -182,12 +184,12 @@ const AuthScreen = ({navigation}) => {
             </TouchableOpacity>
 
             {/* Skip button */}
-            <TouchableOpacity 
+            {/* <TouchableOpacity 
                 style={styles.skipButtonContainer}
                 onPress={() => navigation.navigate("Drawer")}
             >
                 <Text style={styles.skipButtonText}>Skip</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             
             
         </View>
@@ -220,7 +222,7 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         borderWidth: 3,
         borderColor: '#DDDDDD',
-        marginTop: 25,
+        marginBottom: 150,
     },
     skipButtonContainer: {
         flexDirection: 'column',

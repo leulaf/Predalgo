@@ -148,7 +148,15 @@ export default function MainContainer({navigation, openDrawer}) {
                     options={{headerShown: false}} 
                 />
                 <Bottom_Tab.Screen name={profileName} component={ProfileScreen} 
-                    options={{headerShown: false}} 
+                    options={{
+                        // headerShown: false
+                        header: () => <SearchBar 
+                            // term={term} 
+                            // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
+                            // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
+                            openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+                        />
+                    }} 
                 />
 
             </Bottom_Tab.Navigator>
