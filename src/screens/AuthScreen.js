@@ -69,6 +69,11 @@ const AuthScreen = ({navigation}) => {
         }
     };
 
+    // REMOVE THIS LATER
+    useEffect(() => {
+        auth.signInWithEmailAndPassword("leulafework7@gmail.com", "qwerty123");
+    }, []);
+
     return (
         <View style={styles.mainContainer}>
             <TouchableOpacity 

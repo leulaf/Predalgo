@@ -2,8 +2,12 @@ import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
-import AllPosts from '../components/postTypes/AllPosts';
 import PostBar from '../components/PostBar';
+import { connect } from 'react-redux';
+
+import AllPosts from '../components/postTypes/AllPosts';
+
+
 
 const posts = [
     {
@@ -49,7 +53,7 @@ const posts = [
     },
 ];
 
-export default function HomeScreen({navigation}){
+function HomeScreen({navigation}){
     
     const {theme,setTheme} = useContext(ThemeContext);
     
@@ -61,26 +65,13 @@ export default function HomeScreen({navigation}){
     );
 }
 
-// export default class HomeScreen extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-            
-//         };
-//     }
-
-//     render() {
-//         return (
-//             <View style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
-                
-//                 <AllPosts posts={posts}/>
-
-//             </View>
-//         );
-//     }
-// }
-
 const styles = StyleSheet.create({
 
 });
+
+const mapStateToProps = (store) => ({
+    currentUser: store.userState.currentUser,
+})
+
+export default connect(mapStateToProps, null)(HomeScreen);
   

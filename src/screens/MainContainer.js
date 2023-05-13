@@ -3,6 +3,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ThemeContext} from '../../context-store/context';
 import { DrawerActions } from '@react-navigation/native';
 import SearchBar from '../components/SearchBar';
+import MainProfileTop from '../components/MainProfileTop';
 
 // Light-Mode Icons
 import Saved from '../../assets/saved.svg';
@@ -29,7 +30,7 @@ import Post_Dark from '../../assets/post_dark.svg';
 // Screens
 import MainScreen from './MainScreen';
 import TrendingScreen from './TrendingScreen';
-import ProfileScreen from './ProfileScreen';
+import MainProfileScreen from './MainProfileScreen';
 import SavedScreen from './SavedScreen';
 import AddPostScreen from './AddPostScreen';
 
@@ -147,15 +148,10 @@ export default function MainContainer({navigation, openDrawer}) {
                 <Bottom_Tab.Screen name={savedName} component={SavedScreen}
                     options={{headerShown: false}} 
                 />
-                <Bottom_Tab.Screen name={profileName} component={ProfileScreen} 
+                <Bottom_Tab.Screen name={profileName} component={MainProfileScreen} 
                     options={{
                         // headerShown: false
-                        header: () => <SearchBar 
-                            // term={term} 
-                            // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
-                            // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
-                            openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-                        />
+                        header: () => <MainProfileTop/>
                     }} 
                 />
 
