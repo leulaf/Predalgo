@@ -4,7 +4,7 @@ import {ScrollView, Image, View, Text, StyleSheet, TextInput} from 'react-native
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 
-import SearchBar from '../components/SearchBar';
+import TopBar from '../components/TopBar';
 
 import GamesScreen from '../screens/GamesScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -32,7 +32,7 @@ export default function MainScreen({navigation}){
                         // tabBarScrollEnabled: true, // makes the tabs scrollable
                         // hide tab bar
                         tabBarVisible: false,
-                        header: <SearchBar 
+                        header: <TopBar 
                             term={term} 
                             onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
                             // onTermSubmit={() => searchApi(term)} // searchApi alone would also work

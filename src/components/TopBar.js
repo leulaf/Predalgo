@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../context-store/context';
 import { Feather } from '@expo/vector-icons';
 import MenuLight from '../../assets/menu_light.svg';
@@ -7,24 +8,35 @@ import MenuDark from '../../assets/menu_dark.svg';
 import PredalgoLight from '../../assets/Predalgo_logo_light.svg';
 import PredalgoDark from '../../assets/Predalgo_logo_dark.svg';
 
-const SearchBar = ({navigation, term, onTermChange, onTermSubmit, openDrawer}) => {
+const SearchBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
     const {theme,setTheme} = useContext(ThemeContext);
+    const navigation = useNavigation();
 
     return <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+        <TouchableOpacity 
+            onPress={() => openDrawer()}
+            style={styles.menuButton}
+        >
+            {theme == "light" ?
+                <MenuLight width={26} height={26}/>
+                :
+                <MenuDark width={26} height={26}/>
+            }
+            
+        </TouchableOpacity>
         
-        <View style={theme == 'light' ? styles.lightSearchBar : styles.darkSearchBar}>
+        <TouchableOpacity 
+            style={theme == 'light' ? styles.lightBar : styles.darkBar}
+            onPress={() => navigation.navigate('Search')}
+        >
+            
             <Feather name="search" style={theme == "light" ? styles.lightIconStyle : styles.darkIconStyle}/>
-            <TextInput 
-                autoCapitalize="none"
-                autoCorrect={false}
-                style={styles.inputStyle} 
-                placeholder="Search"
-                value={term}
-                placeholderTextColor={theme == "light" ? "#777777" : "#AAAAAA"}
-                onChangeText={newTerm => onTermChange(newTerm)}
-                // onEndEditing={(newTerm) => onTermChange(newTerm)}
-            />
-        </View>
+
+            <Text style={theme == "light" ? styles.lightTextStyle : styles.darkTextStyle}>
+                Search
+            </Text>
+
+        </TouchableOpacity>
 
         {theme == "light" ?
             <PredalgoLight style={styles.logoStyle} width={35} height={35}/>
@@ -35,7 +47,7 @@ const SearchBar = ({navigation, term, onTermChange, onTermSubmit, openDrawer}) =
 }
 
 const styles = StyleSheet.create({
-    lightSearchBar: {
+    lightBar: {
         height: 36,
         width: 300,
         borderRadius: 20,
@@ -49,7 +61,7 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: '#DDDDDD',
     },
-    darkSearchBar: {
+    darkBar: {
         height: 36,
         width: 300,
         borderRadius: 20,
@@ -63,9 +75,17 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: '#444444',
     },
-    inputStyle: {
+    darkTextStyle: {
         flex: 1,
+        alignSelf: 'center',
         fontSize: 18,
+        color: '#AAAAAA',
+    },
+    lightTextStyle: {
+        flex: 1,
+        alignSelf: 'center',
+        fontSize: 18,
+        color: '#777777',
     },
     lightIconStyle: {
         fontSize: 22,
@@ -107,3 +127,4 @@ const styles = StyleSheet.create({
 });
 
 export default SearchBar;
+ 

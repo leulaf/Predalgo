@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ThemeContext} from '../../context-store/context';
 import { DrawerActions } from '@react-navigation/native';
-import SearchBar from '../components/SearchBar';
+import TopBar from '../components/TopBar';
 import MainProfileTop from '../components/MainProfileTop';
 
 // Light-Mode Icons
@@ -110,7 +110,7 @@ export default function MainContainer({navigation, openDrawer}) {
 
                 {/* <Tab.Screen name={homeName} component={HomeScreen} /> */}
                 {/* <Bottom_Tab.Screen name={homeName} component={MainScreen}
-                    options={{ header: () => <SearchBar 
+                    options={{ header: () => <TopBar 
                         term={term} 
                         onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
                         // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
@@ -118,7 +118,7 @@ export default function MainContainer({navigation, openDrawer}) {
                 /> */}
                 <Bottom_Tab.Screen name={homeName} component={MainScreen} 
                     options={{
-                        header: () => <SearchBar 
+                        header: () => <TopBar 
                             // term={term} 
                             // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
                             // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
@@ -128,7 +128,7 @@ export default function MainContainer({navigation, openDrawer}) {
                 />
                 <Bottom_Tab.Screen name={trendingName} component={TrendingScreen}
                     options={{
-                        header: () => <SearchBar 
+                        header: () => <TopBar 
                             // term={term} 
                             // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
                             // onTermSubmit={() => searchApi(term)} // searchApi alone would also work

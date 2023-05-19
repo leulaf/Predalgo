@@ -261,9 +261,10 @@ function MainProfileScreen (props) {
 
        <Tabs.Container
            renderHeader={header}
-           revealHeaderOnScroll
+        //    revealHeaderOnScroll
            pointerEvents="box-none"
            renderTabBar={tabBar}
+           initialTabName="Posts"
        >
            <Tabs.Tab name="Alerts">
                <Tabs.ScrollView>
@@ -294,7 +295,6 @@ function MainProfileScreen (props) {
            </Tabs.Tab>
        </Tabs.Container>
    );
-  
   
 }
 

@@ -18,7 +18,7 @@ import AuthScreen from './src/screens/AuthScreen';
 import DrawerScreen from './src/screens/DrawerScreen';
 import UploadScreen from './src/screens/UploadScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
-import SaveImage from './src/components/SaveImage';
+import SearchScreen from './src/screens/SearchScreen';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -63,6 +63,7 @@ class App extends Component {
                     <Stack.Screen name="LogIn" component={AuthScreen} />
                     <Stack.Screen name="Upload" component={UploadScreen} />
                     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+                    <Stack.Screen name="Search" component={SearchScreen} />
                   </Stack.Navigator>
                 </NavigationContainer>
               </ThemeProvider>
@@ -80,6 +81,7 @@ class App extends Component {
                     <Stack.Screen name="Drawer" component={DrawerScreen} />
                     <Stack.Screen name="Upload" component={UploadScreen} />
                     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
+                    <Stack.Screen name="Search" component={SearchScreen} />
                   </Stack.Navigator>
                 </NavigationContainer>
               </ThemeProvider>
