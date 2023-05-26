@@ -35,7 +35,7 @@ if (firebase.apps.length == 0) {
 }
 
 
-const analytics = getAnalytics(Firebase);
+// const analytics = getAnalytics(Firebase);
 const auth = firebase.auth();
 const db = getFirestore(Firebase);
 

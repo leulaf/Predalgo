@@ -19,6 +19,9 @@ import DrawerScreen from './src/screens/DrawerScreen';
 import UploadScreen from './src/screens/UploadScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
 import SearchScreen from './src/screens/SearchScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+
+import ProfileTop from './src/components/ProfileTop';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -82,6 +85,11 @@ class App extends Component {
                     <Stack.Screen name="Upload" component={UploadScreen} />
                     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
                     <Stack.Screen name="Search" component={SearchScreen} />
+                    <Stack.Screen name="Profile" component={ProfileScreen} 
+                       options={{
+                        header: () => <ProfileTop/>,
+                      }}
+                    />
                   </Stack.Navigator>
                 </NavigationContainer>
               </ThemeProvider>

@@ -4,10 +4,10 @@ import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import PostBar from '../components/PostBar';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { fetchUser } from '../../redux/actions/index';
 
 import AllPosts from '../components/postTypes/AllPosts';
-
-
 
 const posts = [
     {
@@ -53,9 +53,21 @@ const posts = [
     },
 ];
 
-function HomeScreen({navigation}){
+function HomeScreen(props){
     
     const {theme,setTheme} = useContext(ThemeContext);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const { currentUser } = props;
+       
+        if(currentUser != null){
+            setUser(currentUser);
+        }else{
+            props.fetchUser();
+        }
+   
+    }, [props.currentUser]);
     
     return (
         <View style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
@@ -73,5 +85,7 @@ const mapStateToProps = (store) => ({
     currentUser: store.userState.currentUser,
 })
 
-export default connect(mapStateToProps, null)(HomeScreen);
+const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
   

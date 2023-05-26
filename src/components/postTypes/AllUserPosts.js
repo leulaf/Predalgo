@@ -38,23 +38,31 @@ export default function AllUserPosts({navigation, posts}){
     //         );
     //     }else 
         if(item.imageUrl){
-           post = <ImagePost
-               key={index}
-               imageUrl={item.imageUrl}
-               title={item.title}
-               tags={item.tags}
-               memeText={item.memeText}
-           />
-       }else if(item.imageUrls){
-           post = <MultiImagePost
-               key={index}
-               title={item.title}
-               imageUrls={item.imageUrls}
-               tags={item.tags}
-           />
-       }else if(item.text){
-           post = <TextPost title={item.title} text={item.text} tags={item.tags} />
-       }
+            post = <ImagePost
+                key={index}
+                imageUrl={item.imageUrl}
+                title={item.title}
+                tags={item.tags}
+                memeText={item.memeText}
+            />
+        }else if(item.imageUrls){
+            post = <MultiImagePost
+                key={index}
+                title={item.title}
+                imageUrls={item.imageUrls}
+                tags={item.tags}
+            />
+        }else if(item.text){
+            post = <TextPost title={item.title} text={item.text} tags={item.tags} />
+        }
+
+        if(index == posts.length -1){
+            return (
+                <View style={{marginBottom: 150}}>
+                    {post}
+                </View>
+            );
+        }
 
 
        return post;
@@ -77,11 +85,9 @@ const styles = StyleSheet.create({
     darkContainer: {
         backgroundColor: "#282828",
         marginTop: 25,
-        marginBottom: 75
     },
     lightContainer: {
         backgroundColor: "#F6F6F6",
         marginTop: 25,
-        marginBottom: 75
     },
 });

@@ -45,7 +45,7 @@ const GlobalStyles = StyleSheet.create({
         minHeight: 50,
     },
     darkPostContainer: {
-        backgroundColor: '#282828',
+        backgroundColor: '#222222',
         borderStyle: "solid",
         borderColor: "#444444",
         borderWidth: 1.5,

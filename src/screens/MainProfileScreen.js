@@ -10,7 +10,6 @@ import {db, Firebase, firebase, auth, storage} from '../config/firebase';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUser, fetchUserPosts } from '../../redux/actions/index';
-import MainProfileTop from '../components/MainProfileTop';
 import AddIconLight from '../../assets/add.svg';
 import AddIconDark from '../../assets/add_dark.svg';
 import AllUserPosts from '../components/postTypes/AllUserPosts';
@@ -60,9 +59,9 @@ const pickProfilePic = async () => {
 
 
    if (!result.canceled) {
-       await uploadImage(result.assets[0].uri);
+        await uploadImage(result.assets[0].uri);
    }else{
-       console.log('cancelled');
+        console.log('cancelled');
    }
 };
 
@@ -88,38 +87,35 @@ const setNewBio = async (description) => {
 
 
 function MainProfileScreen (props) {
-   const {theme, setTheme} = useContext(ThemeContext);
-   const [user, setUser] = useState(null)
-   const [userPosts, setUserPosts] = useState([]);
-   const [username, setUsername] = useState('');
-   const [profilePic, setProfilePic] = useState('');
-   const [bio, setBio] = useState('');
-   const [overlayVisible, setOverlayVisible] = useState(false);
+    const {theme, setTheme} = useContext(ThemeContext);
+    const [user, setUser] = useState(null)
+    const [userPosts, setUserPosts] = useState([]);
+    const [username, setUsername] = useState('');
+    const [profilePic, setProfilePic] = useState('');
+    const [bio, setBio] = useState('');
+    const [overlayVisible, setOverlayVisible] = useState(false);
 
+    useEffect(() => {
+        props.fetchUser();
+        props.fetchUserPosts();
+   }, []);
 
-   useEffect(() => {
-       const { currentUser, posts } = props;
-      
-       if(currentUser != null){
-           setUser(currentUser);
-           setUserPosts(posts);
-           // console.log("sfsdfsdf");
-           // console.log(currentUser);
-           // console.log(posts);
-           setUsername(currentUser.username);
-           setProfilePic(currentUser.profilePic);
-           setBio(currentUser.bio);
-       }else{
-           props.fetchUser();
-           props.fetchUserPosts();
-       }
-  
+    useEffect(() => {
+        const { currentUser, posts } = props;
+        
+        if(currentUser != null){
+            setUser(currentUser);
+            setUserPosts(posts);
+            setUsername(currentUser.username);
+            setProfilePic(currentUser.profilePic);
+            setBio(currentUser.bio);
+        }
    }, [props.currentUser, props.posts]);
-
 
    const finishEdit = () => {
        setNewBio(bio);
        setOverlayVisible(!overlayVisible);
+       props.fetchUser();
    };
 
 
@@ -127,111 +123,110 @@ function MainProfileScreen (props) {
        return (
            <View style={theme == 'light' ? styles.lightProfileContainer :styles.darkProfileContainer }>
               
-              
-               {/* Profile picture and username */}
-               <TouchableOpacity
-                   onPress={() => pickProfilePic().then(() => {
-                       setProfilePic(user.profilePic);
-                   })}
-                   style={{flexDirection: 'column'}}
-               >
-                   {
-                       profilePic != "" ? (                           
-                           <Image source={{uri: profilePic}} style={styles.profilePicture}/>
-                       ) : (
-                           <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
-                       )
-                   }
-                  
-                   {theme == 'light' ?
-                       <AddIconLight width={30} height={30} style={styles.addIcon}/>
-                   :
-                       <AddIconDark width={30} height={30} style={styles.addIcon}/>
-                   }
+                <View style={{flexDirection: 'column'}}>
+                    {/* Profile picture and username */}
+                    <TouchableOpacity
+                        onPress={() => pickProfilePic().then(() => {
+                                props.fetchUser();
+                                setProfilePic(user.profilePic);
+                        })}
+                        style={{flexDirection: 'column'}}
+                    >
+                        {
+                            profilePic != "" ? (                           
+                                <Image source={{uri: profilePic}} style={styles.profilePicture}/>
+                            ) : (
+                                <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
+                            )
+                        }
+                        
+                        {theme == 'light' ?
+                            <AddIconLight width={30} height={30} style={styles.addIcon}/>
+                        :
+                            <AddIconDark width={30} height={30} style={styles.addIcon}/>
+                        }
+
+                    </TouchableOpacity>
+                    
+                    {/* Edit Bio button */}
+                    <TouchableOpacity
+                        onPress={() => {
+                            setOverlayVisible(!overlayVisible);
+                        }}
+                        style={theme == 'light' ? styles.lightEditButton : styles.darkEditButton}
+                    >
+                        <Text style={theme == 'light' ? styles.lightEditText : styles.darkEditText}>Edit Bio</Text>
+                    </TouchableOpacity>
+                </View>
+                    
+
+                {/* Posts, Followers, Following */}
+                <View style={{flexDirection: 'column', marginLeft: 10, }}>
+                    <View style={{flexDirection: 'row'}}>
+                        {/* Posts */}
+                        <View
+                            style={styles.countContainer}
+                        >
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>100</Text>
+                            <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
+                        </View>
 
 
-                   <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>{username}99999</Text>
-               </TouchableOpacity>
+                        {/* Followers */}
+                        <TouchableOpacity
+                                // onPress={onPress}
+                                style={styles.countContainer}
+                        >
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>100</Text>
+                            <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Followers</Text>
+                        </TouchableOpacity>
 
 
-               <View style={{flexDirection: 'column', marginLeft: 5}}>
-                   {/* Posts, Followers, Following */}
-                   <View style={{flexDirection: 'row'}}>
-                       {/* Posts */}
-                       <View
-                           style={styles.countContainer}
-                       >
-                           <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>100</Text>
-                           <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
-                       </View>
+                        {/* Following */}
+                        <TouchableOpacity
+                                // onPress={onPress}
+                                style={styles.countContainer}
+                        >
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>903</Text>
+                            <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Following</Text>
+                        </TouchableOpacity>
+                    </View>
 
+                    {/* Bio */}
+                    <Text style={theme == 'light' ? styles.lightText : styles.darkText} marginLeft={15} marginTop={10} width={275} numberOfLines={4}>
+                        {bio}
+                    </Text>
 
-                       {/* Followers */}
-                       <TouchableOpacity
-                               // onPress={onPress}
-                               style={styles.countContainer}
-                       >
-                           <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>100</Text>
-                           <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Followers</Text>
-                       </TouchableOpacity>
+                </View>
 
+                {/* Edit profile bio */}
+                <Overlay isVisible={overlayVisible} onBackdropPress={finishEdit} overlayStyle={{borderRadius: 20}}>
+                    <Text style={styles.lightCountText}>Edit Bio</Text>
+                    <TextInput
+                        secureTextEntry={false}
+                        multiline
+                        blurOnSubmit
+                        maxLength={150}
+                        style={{fontSize: 20, width: 300, height: 200, borderColor: 'gray', borderWidth: 1, marginTop: 10, borderRadius: 10}}
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        placeholder="Enter Bio"
+                        placeholderTextColor= "#888888"
+                        value={bio}
+                        onChangeText={(newValue) => setBio(newValue)}
+                        // onEndEditing={( ) => console.log('submitted')}
+                    />
+                    {/* Done editing button */}
+                    <TouchableOpacity
+                        onPress={() =>
+                            finishEdit()
+                        }
+                        style={styles.lightDoneButton}
+                    >
+                        <Text style={styles.lightEditText}>Done</Text>
+                    </TouchableOpacity>
+                </Overlay>
 
-                       {/* Following */}
-                       <TouchableOpacity
-                               // onPress={onPress}
-                               style={styles.countContainer}
-                       >
-                           <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>903</Text>
-                           <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Following</Text>
-                       </TouchableOpacity>
-                   </View>
-
-
-                   {/* Bio */}
-                   <Text style={theme == 'light' ? styles.lightText : styles.darkText} marginLeft={15} marginTop={10} width={275} numberOfLines={4}>
-                       {bio}
-                   </Text>
-
-
-                   {/* Edit Bio button */}
-                   <TouchableOpacity
-                       onPress={() => {
-                           setOverlayVisible(!overlayVisible);
-                       }}
-                       style={theme == 'light' ? styles.lightEditButton : styles.darkEditButton}
-                   >
-                       <Text style={theme == 'light' ? styles.lightEditText : styles.darkEditText}>Edit Bio</Text>
-                   </TouchableOpacity>
-
-
-                   {/* Edit profile bio */}
-                   <Overlay isVisible={overlayVisible} onBackdropPress={finishEdit} overlayStyle={{borderRadius: 20}}>
-                       <Text style={styles.lightCountText}>Edit Bio</Text>
-                       <TextInput
-                           secureTextEntry={false}
-                           multiline
-                           blurOnSubmit
-                           maxLength={150}
-                           style={{fontSize: 20, width: 300, height: 200, borderColor: 'gray', borderWidth: 1, marginTop: 10, borderRadius: 10}}
-                           autoCapitalize="none"
-                           autoCorrect={false}
-                           placeholder="Enter Bio"
-                           placeholderTextColor= "#888888"
-                           value={bio}
-                           onChangeText={(newValue) => setBio(newValue)}
-                           // onEndEditing={( ) => console.log('submitted')}
-                       />
-                       {/* Done editing button */}
-                       <TouchableOpacity
-                           onPress={() =>
-                               finishEdit()
-                           }
-                           style={styles.lightEditButton}
-                       >
-                           <Text style={styles.lightEditText}>Done</Text>
-                       </TouchableOpacity>
-                   </Overlay>
-               </View>    
            </View>
        )
    }
@@ -257,8 +252,6 @@ function MainProfileScreen (props) {
    );
   
    return (
-
-
        <Tabs.Container
            renderHeader={header}
         //    revealHeaderOnScroll
@@ -304,8 +297,6 @@ const styles = StyleSheet.create({
        flex: 1,
        flexDirection: 'row',
        backgroundColor: '#ffffff',
-
-
    },
    darkProfileContainer: {
        flex: 1,
@@ -343,30 +334,28 @@ const styles = StyleSheet.create({
    lightUsername: {
        fontSize: 18,
        color: '#222222',
-       fontWeight: '600',
+       fontWeight: '500',
        alignSelf: 'center',
        marginTop: 15,
-       marginLeft: 15
+       marginLeft: 10
    },
    darkUsername: {
        fontSize: 20,
        color: '#f2f2f2',
-       fontWeight: '600',
+       fontWeight: '500',
        alignSelf: 'center',
        marginTop: 15,
-       marginLeft: 15
+       marginLeft: 10
    },
    lightCountText: {
        fontSize: 18,
        color: '#222222',
        fontWeight: '600',
-       // marginTop: 20,
    },
    darkCountText: {
        fontSize: 18,
        color: '#ffffff',
        fontWeight: '600',
-       marginTop: 5,
    },
    lightText: {
        fontSize: 16,
@@ -378,27 +367,40 @@ const styles = StyleSheet.create({
        color: '#f4f4f4',
        fontWeight: '500',
    },
+   lightDoneButton: {
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#222222',
+        width: 80,
+        height: 30,
+        marginVertical: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'flex-end',
+    },
    lightEditButton: {
-       borderRadius: 20,
-       borderWidth: 1,
-       borderColor: '#222222',
-       width: 80,
-       height: 30,
-       marginVertical: 10,
-       alignItems: 'center',
-       justifyContent: 'center',
-       alignSelf: 'flex-end',
+        width: 80,
+        height: 30,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#222222',
+        marginLeft: 25,
+        marginTop: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'flex-end',
    },
    darkEditButton: {
-       borderRadius: 20,
-       borderWidth: 1,
-       borderColor: '#DDDDDD',
-       width: 80,
-       height: 30,
-       marginVertical: 10,
-       alignItems: 'center',
-       justifyContent: 'center',
-       alignSelf: 'flex-end',
+        width: 80,
+        height: 30,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#DDDDDD',
+        marginLeft: 25,
+        marginTop: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'flex-end',
    },
    lightEditText: {
        fontSize: 18,

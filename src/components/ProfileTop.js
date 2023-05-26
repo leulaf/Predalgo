@@ -14,7 +14,7 @@ import SettingDark from '../../assets/setting_dark.svg';
 
 const windowWidth = Dimensions.get('window').width;
 
-const MainProfileTop = (props) => {
+const ProfileTop = (props) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [username, setUsername] = useState('');
 
@@ -109,4 +109,4 @@ const mapStateToProps = (store) => ({
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
 
-export default connect(mapStateToProps, null)(MainProfileTop);
+export default connect(mapStateToProps, null)(ProfileTop);

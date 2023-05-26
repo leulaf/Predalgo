@@ -1,43 +1,50 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
+import { useNavigation } from '@react-navigation/native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Feather } from '@expo/vector-icons';
-import MenuLight from '../../assets/menu_light.svg';
-import MenuDark from '../../assets/menu_dark.svg';
-import PredalgoLight from '../../assets/Predalgo_logo_light.svg';
-import PredalgoDark from '../../assets/Predalgo_logo_dark.svg';
+import { updateSeach } from '../../redux/actions';
 
-const SearchBar = ({navigation, term, onTermChange, onTermSubmit, openDrawer}) => {
+const SearchBar = (props) => {
+    const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
+    const [term, setTerm] = useState('');
 
     return <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
         
         <View style={theme == 'light' ? styles.lightSearchBar : styles.darkSearchBar}>
             <Feather name="search" style={theme == "light" ? styles.lightIconStyle : styles.darkIconStyle}/>
-            <TextInput 
+            <TextInput
+                autoFocus={true}
                 autoCapitalize="none"
                 autoCorrect={false}
-                style={styles.inputStyle} 
+                maxLength={50}
+                style={theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle} 
                 placeholder="Search"
                 value={term}
                 placeholderTextColor={theme == "light" ? "#777777" : "#AAAAAA"}
-                onChangeText={newTerm => onTermChange(newTerm)}
-                // onEndEditing={(newTerm) => onTermChange(newTerm)}
+                onChangeText={newTerm => setTerm(newTerm)}
+                onEndEditing={(newTerm) => props.updateSeach(newTerm.nativeEvent.text)}
             />
         </View>
 
-        {theme == "light" ?
-            <PredalgoLight style={styles.logoStyle} width={35} height={35}/>
-            :
-            <PredalgoDark style={styles.logoStyle} width={35} height={35}/>
-        }
+        <TouchableOpacity
+            style={{marginTop: 60}}
+            onPress={() => navigation.goBack(null)}
+        >
+            <Text style={theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle}>
+                Cancel
+            </Text>
+        </TouchableOpacity>
     </View>
 }
 
 const styles = StyleSheet.create({
     lightSearchBar: {
-        height: 36,
-        width: 300,
+        height: 40,
+        width: 325,
         borderRadius: 20,
         marginLeft: 5,
         marginRight: 10,
@@ -50,8 +57,8 @@ const styles = StyleSheet.create({
         borderColor: '#DDDDDD',
     },
     darkSearchBar: {
-        height: 36,
-        width: 300,
+        height: 40,
+        width: 325,
         borderRadius: 20,
         marginLeft: 5,
         marginRight: 10,
@@ -63,9 +70,17 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: '#444444',
     },
-    inputStyle: {
+    lightInputStyle: {
         flex: 1,
         fontSize: 18,
+        color: '#444444',
+        alignSelf: 'center',
+    },
+    darkInputStyle: {
+        flex: 1,
+        fontSize: 18,
+        color: '#EEEEEE',
+        alignSelf: 'center',
     },
     lightIconStyle: {
         fontSize: 22,
@@ -79,12 +94,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 7,
         color: '#888888',
     },
-    darkIconStyle: {
-        fontSize: 22,
-        alignSelf: 'center',
-        marginHorizontal: 7,
-        color: '#BBBBBB',
-    },
     lightContainer: {
         backgroundColor: 'white',
         height: 100,
@@ -95,15 +104,13 @@ const styles = StyleSheet.create({
         height: 100,
         flexDirection: 'row',
     },
-    menuButton: {
-        marginTop: 55,
-        marginLeft: 10,
-        padding: 5,
-    },
-    logoStyle: {
-        marginTop: 55,
-        marginRight: 15,
-    }
+
 });
 
-export default SearchBar;
+const mapStateToProps = (store) => ({
+    searchState: store.searchState.currentSearch,
+})
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({ updateSeach }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchBar);

@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         minHeight: 353,
         maxHeight: 353,
         width: "100%",
-        backgroundColor: "#1E1E1E",
+        backgroundColor: "#1D1D1D",
         borderRadius: 13,
         borderColor: "#444444",
         borderWidth: 1,
