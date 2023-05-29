@@ -85,11 +85,7 @@ class App extends Component {
                     <Stack.Screen name="Upload" component={UploadScreen} />
                     <Stack.Screen name="CreatePost" component={CreatePostScreen} />
                     <Stack.Screen name="Search" component={SearchScreen} />
-                    <Stack.Screen name="Profile" component={ProfileScreen} 
-                       options={{
-                        header: () => <ProfileTop/>,
-                      }}
-                    />
+                    <Stack.Screen name="Profile" component={ProfileScreen} />
                   </Stack.Navigator>
                 </NavigationContainer>
               </ThemeProvider>

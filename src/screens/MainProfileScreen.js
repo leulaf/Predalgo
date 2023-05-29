@@ -272,7 +272,7 @@ function MainProfileScreen (props) {
                </Tabs.ScrollView>
            </Tabs.Tab>
            <Tabs.Tab name="Posts">
-                   <AllUserPosts posts={userPosts}/>
+                <AllUserPosts posts={userPosts}/>
            </Tabs.Tab>
            <Tabs.Tab name="Media">
                <Tabs.ScrollView>

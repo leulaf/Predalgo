@@ -2,7 +2,9 @@ import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Alert} from 'react-native';
 import { Tabs, MaterialTabBar } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../context-store/context';
-import ProfileTop from '../components/ProfileTop';
+import { firebase, db, storage } from '../config/firebase';
+import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy} from "firebase/firestore";
+import AllUserPosts from '../components/postTypes/AllUserPosts';
 
 // light mode icons
 import BackLight from '../../assets/back.svg';
@@ -12,13 +14,67 @@ import BackDark from '../../assets/back_light.svg';
 
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
+    const [following, setFollowing] = useState(false);
+    const [posts, setPosts] = useState([]);
     const user = route.params.user;
-    
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            title: "Profile",
+
+    useEffect(async() => {
+        fetchPostsByRecent();
+
+        // Check if current user is following the user
+        const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+        const docSnap = getDoc(docRef)
+        .then((docSnap) => {
+            if (docSnap.exists()) {
+                setFollowing(true);
+            } else {
+                setFollowing(false);
+            }
         });
-    }, [navigation]);
+
+        
+    }, []);
+
+    // Get users posts by most recent
+    const fetchPostsByRecent = () => {
+        const q = query(collection(db, "posts", user.id, "userPosts"), orderBy("creationDate", "desc"));
+
+        getDocs(q)
+        .then((snapshot) => {
+            let posts = snapshot.docs.map(doc => {
+                const data = doc.data();
+                const id = doc.id;
+                return { id, ...data }
+            })
+            setPosts(posts);
+        });
+    }
+
+    // Follow current user
+    const onFollow = () => {
+        const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+        
+        setDoc(followRef, {
+            id: user.id,
+        }).then(() => {
+            setFollowing(true);
+            Alert.alert('Followed');
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+
+    // Unfollow current user
+    const onUnfollow = () => {
+        const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+
+        deleteDoc(unfollowRef).then(() => {
+            setFollowing(false);
+            Alert.alert('Unfollowed');
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
     
     const header = () => {
         return (
@@ -45,27 +101,36 @@ export default function ProfileScreen ({route, navigation}) {
                     </TouchableOpacity>
                     
                      
-                     {/* Profile picture*/}
-                     <View
-                         style={{flexDirection: 'column'}}
-                     >
-                         {
-                             user.profilePic != "" ? (                           
-                                 <Image source={{uri: user.profilePic}} style={styles.profilePicture}/>
-                             ) : (
-                                 <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
-                             )
-                         }
-                     </View>
+                    {/* Profile picture*/}
+                    <View
+                        style={{flexDirection: 'column'}}
+                    >
+                        {
+                            user.profilePic != "" ? (                           
+                                <Image source={{uri: user.profilePic}} style={styles.profilePicture}/>
+                            ) : (
+                                <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
+                            )
+                        }
+                    </View>
 
-                    
+                    {/* Follow/Following button */}
+                    <TouchableOpacity
+                        style={theme == 'light' ? styles.lightFollowButton : styles.darkFollowButton}
+                        onPress={() => { following ? onUnfollow() : onFollow()}}
+                    >
+                        <Text style={theme == 'light' ? styles.lightFollowText : styles.darkFollowText}>
+                            {following ? 'Following' : 'Follow'}
+                        </Text>
+                    </TouchableOpacity>
                      
                  </View>
                      
  
-                 {/* Posts, Followers, Following */}
+                 {/* Posts, Following */}
                  <View style={{flexDirection: 'column', marginTop: 65, marginLeft: 115}}>
                      <View style={{flexDirection: 'row'}}>
+                         
                          {/* Posts */}
                          <View
                              style={styles.countContainer}
@@ -124,17 +189,7 @@ export default function ProfileScreen ({route, navigation}) {
             initialTabName="Posts"
         >
             <Tabs.Tab name="Posts">
-                    {/* <AllUserPosts posts={userPosts}/> */}
-                <Tabs.ScrollView>
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                </Tabs.ScrollView>
+                <AllUserPosts posts={posts}/>
             </Tabs.Tab>
             <Tabs.Tab name="Media">
                 <Tabs.ScrollView>
@@ -194,6 +249,42 @@ export default function ProfileScreen ({route, navigation}) {
     backIcon: {
         alignSelf: 'center',
         marginLeft: 5
+    },
+    lightFollowButton: {
+        flexDirection: 'column',
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        width: 110,
+        height: 30,
+        marginLeft: 5,
+        marginTop: 10,
+        borderWidth: 1.5,
+        borderColor: '#222222'
+    },
+    darkFollowButton: {
+        flexDirection: 'column',
+        backgroundColor: '#1A1A1A',
+        borderRadius: 20,
+        width: 110,
+        height: 30,
+        marginLeft: 5,
+        marginTop: 10,
+        borderWidth: 1.5,
+        borderColor: '#f2f2f2'
+    },
+    lightFollowText: {
+        fontSize: 18,
+        color: '#222222',
+        fontWeight: '600',
+        alignSelf: 'center',
+        marginTop: 1
+    },
+    darkFollowText: {
+        fontSize: 18,
+        color: '#ffffff',
+        fontWeight: '600',
+        alignSelf: 'center',
+        marginTop: 1
     },
     lightUsername: {
         fontSize: 20,
