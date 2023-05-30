@@ -1,112 +1,81 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../context-store/context';
-import { connect } from 'react-redux';
-import { fetchUser } from '../../redux/actions/index';
 
 // light mode icons
-import SettingLight from '../../assets/setting_light.svg';
-
+import BackLight from '../../assets/back.svg';
 
 // dark mode icons
-import SettingDark from '../../assets/setting_dark.svg';
+import BackDark from '../../assets/back_light.svg';
 
 
 const windowWidth = Dimensions.get('window').width;
 
-const ProfileTop = (props) => {
+const ProfileTop = ({username}) => {
+    const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
-    const [username, setUsername] = useState('');
 
-
-    useEffect( () => {
-        if(props.currentUser != null){
-            setUsername(props.currentUser.username);
-        }else{
-            props.fetchUser();
-        }
-    }, [props.currentUser]);
-
-
-   return (
-        <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
-            
-            <Text style={theme == 'light' ? styles.lightUsernameText : styles.darkUsernameText}>
-                    @{username}-9999
-                </Text>
-            
-            {/* Account/Setting button */}
-            <TouchableOpacity
-                    // onPress={() => }
-                    style={styles.setting}
-            >
-                <Text style={theme == 'light' ? styles.lightAccountText : styles.darkAccountText}>
-                    Account
-                </Text>
+    return (
+            <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
                 
-                {theme == "light" ?
-                    <SettingLight width={23} height={23}/>
-                    :
-                    <SettingDark width={23} height={23}/>
-                }
-            </TouchableOpacity>
 
+                {/* Username / back button */}
+                <TouchableOpacity 
+                            style={{flexDirection: 'row'}}
+                            onPress={() => {navigation.goBack()}}
+                >
+                    {
+                        theme == 'light' ?
+                            <BackLight style={styles.backIcon} width={22} height={22}/>
+                        :
+                            <BackDark style={styles.backIcon} width={22} height={22}/>
+                    }
+                    
+                    <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
+                        @{username}
+                    </Text>
+                    
+                </TouchableOpacity>
 
-            
-        </View>
-   );
+                
+                
+            </View>
+    );
 }
 
 
 const styles = StyleSheet.create({
-   lightTopContainer: {
-       backgroundColor: 'white',
-       height: 100,
-       flexDirection: 'row',
-   },
-   darkTopContainer: {
-       backgroundColor: '#1A1A1A',
-       height: 100,
-       flexDirection: 'row',
-   },
-   lightUsernameText: {
-        fontSize: 18,
-        color: '#555555',
-        fontWeight: '600',
-        marginTop: 63,
-        marginLeft: 10,
-    },
-    darkUsernameText: {
-        fontSize: 18,
-        color: '#eeeeee',
-        fontWeight: '600',
-        marginTop: 63,
-        marginLeft: 10,
-    },
-    lightAccountText: {
-        fontSize: 18,
-        color: '#555555',
-        fontWeight: '600',
-        marginRight: 10,
-    },
-    darkAccountText: {
-        fontSize: 18,
-        color: '#eeeeee',
-        fontWeight: '600',
-        marginRight: 10,
-    },
-    setting: {
+    lightTopContainer: {
+        backgroundColor: 'white',
+        height: 75,
         flexDirection: 'row',
-        position: 'absolute',
-        marginTop: 60,
-        marginLeft: 300,
-    }
+    },
+    darkTopContainer: {
+        backgroundColor: '#1A1A1A',
+        height: 75,
+        flexDirection: 'row',
+    },
+    backIcon: {
+        // alignSelf: 'center',
+        marginTop: 47,
+        marginLeft: 5
+    },
+    lightUsername: {
+        fontSize: 20,
+        color: '#222222',
+        fontWeight: '600',
+        marginTop: 45,
+        marginLeft: 5
+    },
+    darkUsername: {
+        fontSize: 20,
+        color: '#f2f2f2',
+        fontWeight: '600',
+        marginTop: 45,
+        marginLeft: 5
+    },
 });
 
-const mapStateToProps = (store) => ({
-    currentUser: store.userState.currentUser,
-})
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
-
-export default connect(mapStateToProps, null)(ProfileTop);
+export default ProfileTop;

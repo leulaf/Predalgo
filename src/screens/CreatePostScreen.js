@@ -38,348 +38,370 @@ const win = Dimensions.get('window');
 
 
 const CreatePostScreen = ({navigation, route}) => {
-  const {theme,setTheme} = useContext(ThemeContext);
-  const [title, setTitle] = React.useState('');
-  const [text, setText] = React.useState('');
-  const {imageUrl, imageUrls} = route.params;
-  const [tempTags, setTempTags] = React.useState('');
-  const [uploading, setUploading] = useState(false)
-  const [correctTags, setCorrectTags] = React.useState([]);
-  const [expandImage, setExpandImage] = React.useState(false);
-   async function uploadImagePost() {
-       setUploading(true)
-       Alert.alert("Post being uploaded, please wait...");
-      
-       // Convert image to blob format(array of bytes)
-       const response = await fetch(imageUrl);
-       const blob = await response.blob();
+    const {theme,setTheme} = useContext(ThemeContext);
+    const [title, setTitle] = React.useState('');
+    const [text, setText] = React.useState('');
+    const {imageUrl, imageUrls} = route.params;
+    const [tempTags, setTempTags] = React.useState('');
+    const [uploading, setUploading] = useState(false)
+    const [correctTags, setCorrectTags] = React.useState([]);
+    const [expandImage, setExpandImage] = React.useState(false);
+    
+    async function uploadImagePost() {
+        setUploading(true)
+        Alert.alert("Post being uploaded, please wait...");
+        
+        // Convert image to blob format(array of bytes)
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
 
-       const filename = imageUrl.substring(imageUrl.lastIndexOf('/')+1);
-       const childPath = `posts/users/${firebase.auth().currentUser.uid}/${filename}`;
-      
-       const storageRef = ref(storage, childPath);
-       const uploadTask =  uploadBytesResumable(storageRef, blob)
-       .catch ((e) => {
-           console.log(e);
-       })
-
-
-       uploadTask.then((snapshot) => {
-           // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
-           // console.log('File metadata:', snapshot.metadata);
-           // Let's get a download URL for the file.
-           getDownloadURL(snapshot.ref).then((url) => {
-               console.log(imageUrl);
-               console.log('File available at', url);
-               saveImagePostData(url);
-           });
-       }).catch((error) => {
-           console.error('Upload failed', error);
-           // ...
-       });
-  };
+        const filename = imageUrl.substring(imageUrl.lastIndexOf('/')+1);
+        const childPath = `posts/users/${firebase.auth().currentUser.uid}/${filename}`;
+        
+        const storageRef = ref(storage, childPath);
+        const uploadTask =  uploadBytesResumable(storageRef, blob)
+        .catch ((e) => {
+            console.log(e);
+        })
 
 
-  const saveImagePostData = async (url) => {
-       // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
-       const docRef = await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
-           title: title,
-           imageUrl: url,
-           tags: correctTags,
-           likesCount: 0,
-           commentsCount: 0,
-           creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-           profile: firebase.auth().currentUser.uid
-       }).then(function () {
-           setUploading(false);
-           Alert.alert("Post uploaded successfully!");
-           navigation.goBack();
-       }).catch(function (error) {
+        uploadTask.then((snapshot) => {
+            // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
+            // console.log('File metadata:', snapshot.metadata);
+            // Let's get a download URL for the file.
+            getDownloadURL(snapshot.ref).then((url) => {
+                // console.log(imageUrl);
+                // console.log('File available at', url);
+                saveImagePostData(url);
+            });
+        }).catch((error) => {
+            console.error('Upload failed', error);
+            // ...
+        });
+    };
+
+
+    const saveImagePostData = async (url) => {
+        // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
+        const docRef = await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
+            title: title,
+            imageUrl: url,
+            tags: correctTags,
+            likesCount: 0,
+            commentsCount: 0,
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+            profile: firebase.auth().currentUser.uid
+        }).then(async () => {
+            
+            // Add a new document in collection "allPosts" with a generated id for the post.
+            await addDoc(collection(db, "allPosts"), {
+                title: title,
+                imageUrl: url,
+                tags: correctTags,
+                likesCount: 0,
+                commentsCount: 0,
+                creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+                profile: firebase.auth().currentUser.uid,
+            })
+            
+            setUploading(false);
+            Alert.alert("Post uploaded successfully!");
+            navigation.goBack();
+        }).catch(function (error) {
+                console.log(error);
+        });
+    };
+
+
+    const uploadTextPost = async () => {
+        // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
+        const docRef = await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
+            title: title,
+            text: text,
+            tags: correctTags,
+            likesCount: 0,
+            commentsCount: 0,
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+            profile: firebase.auth().currentUser.uid
+        }).then(async () => {
+            
+            // Add a new document in collection "allPosts" with a generated id for the post.
+            await addDoc(collection(db, "allPosts"), {
+                title: title,
+                text: text,
+                tags: correctTags,
+                likesCount: 0,
+                commentsCount: 0,
+                creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+                profile: firebase.auth().currentUser.uid,
+            })
+            
+            setUploading(false);
+            Alert.alert("Post uploaded successfully!");
+            navigation.goBack();
+        }).catch(function (error) {
             console.log(error);
         });
-  };
-
-
-  const uploadTextPost = async () => {
-       // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
-       const docRef = await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
-           title: title,
-           text: text,
-           tags: correctTags,
-           likesCount: 0,
-           commentsCount: 0,
-           creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-           profile: firebase.auth().currentUser.uid
-       }).then(function () {
-           setUploading(false);
-           Alert.alert("Post uploaded successfully!");
-           navigation.goBack();
-       }).catch(function (error) {
-           console.log(error);
-       });
-   };
+    };
 
 
 
 
-  const fixTags = (tempTags) => {
-      let newTags = tempTags.split(' ');
-      let tags = [];
-      newTags.forEach((tag) => {
-          if(tag[0] == '@' && tag.length > 1){
-              tags.push(tag);
-          }else if(tag[0] == '#' && tag.length > 1){
-              tags.push(tag);
-          }
-      })
+    const fixTags = (tempTags) => {
+        let newTags = tempTags.split(' ');
+        let tags = [];
+        newTags.forEach((tag) => {
+            if(tag[0] == '@' && tag.length > 1){
+                tags.push(tag);
+            }else if(tag[0] == '#' && tag.length > 1){
+                tags.push(tag);
+            }
+        })
+
+        setTempTags(tags.join(' '));
+        setCorrectTags(tags);
+    };
 
 
 
 
-      setTempTags(tags.join(' '));
-      setCorrectTags(tags);
-  };
+    let exitIcon, upload, link, createMeme, postButton;
 
 
 
 
-  let exitIcon, upload, link, createMeme, postButton;
+    if(theme == 'light'){
+        exitIcon = <ExitIconLight width={50} height={50}  style={{marginLeft: 90, position: 'absolute'}} />;
+        upload = <UploadLight width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
+        link = <LinkLight width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
+        createMeme = <CreateMemeLight width={33} height={33} style={{ marginLeft: 10, marginRight: 5, marginTop:5}}/>;
+        postButton = <PostButtonLight width={115} height={40} style={{ marginLeft: 22, marginTop:2}}/>;
+    }else{
+        exitIcon = <ExitIconDark width={50} height={50} style={{marginLeft: 90, position: 'absolute'}}/>;
+        upload = <UploadDark width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
+        link = <LinkDark width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
+        createMeme = <CreateMemeDark width={33} height={33} style={{ marginLeft: 10, marginRight: 5, marginTop:5}}/>;
+        postButton = <PostButtonDark width={115} height={40} style={{ marginLeft: 22, marginTop:2}}/>;
+    }
 
 
 
 
-  if(theme == 'light'){
-      exitIcon = <ExitIconLight width={50} height={50}  style={{marginLeft: 90, position: 'absolute'}} />;
-      upload = <UploadLight width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-      link = <LinkLight width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-      createMeme = <CreateMemeLight width={33} height={33} style={{ marginLeft: 10, marginRight: 5, marginTop:5}}/>;
-      postButton = <PostButtonLight width={115} height={40} style={{ marginLeft: 22, marginTop:2}}/>;
-  }else{
-      exitIcon = <ExitIconDark width={50} height={50} style={{marginLeft: 90, position: 'absolute'}}/>;
-      upload = <UploadDark width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-      link = <LinkDark width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-      createMeme = <CreateMemeDark width={33} height={33} style={{ marginLeft: 10, marginRight: 5, marginTop:5}}/>;
-      postButton = <PostButtonDark width={115} height={40} style={{ marginLeft: 22, marginTop:2}}/>;
-  }
+    let content;
 
 
 
 
-  let content;
+    if(imageUrl){
+        content = (
+            <>
+                {expandImage ?
+                    <TouchableOpacity
+                            style={{flexDirection: 'column',}}
+                            onPress={() => setExpandImage(!expandImage)}
+                    >
 
 
 
 
-  if(imageUrl){
-      content = (
-          <>
-              {expandImage ?
-                  <TouchableOpacity
-                          style={{flexDirection: 'column',}}
-                          onPress={() => setExpandImage(!expandImage)}
-                  >
+                        <Image source={{ uri: imageUrl }} style={styles.imageExpanded} />
 
 
 
 
-                      <Image source={{ uri: imageUrl }} style={styles.imageExpanded} />
+                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 285, marginTop:30}}>
+                            <ShrinkImage width={26} height={26}/>
+                            <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white'}}>
+                                Shrink
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                :
+                    <TouchableOpacity
+                        style={{flexDirection: 'column',}}
+                        onPress={() => setExpandImage(!expandImage)}
+                    >
+                    
+                        <Image source={{ uri: imageUrl }} style={styles.imageShrinked}  width={395} height={350}/>
 
 
 
 
-                      <View style={{flexDirection: 'row', position:'absolute', marginLeft: 285, marginTop:30}}>
-                          <ShrinkImage width={26} height={26}/>
-                          <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white'}}>
-                              Shrink
-                          </Text>
-                      </View>
-                  </TouchableOpacity>
-              :
-                  <TouchableOpacity
-                      style={{flexDirection: 'column',}}
-                      onPress={() => setExpandImage(!expandImage)}
-                  >
+                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 275, marginTop:30}}>
+                            <ExpandImage width={24} height={24}/>
+                            <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white'}}>
+                                Expand
+                            </Text>
+                        </View>
+
+
+
+
+                    </TouchableOpacity>
+                    
+                }
+            </>
+        )
+    }else{
+        content = <TextInput
+            style={theme == 'light' ? styles.lightTextInput : styles.darkTextInput}
+            multiline
+            maxLength={10000}
+            blurOnSubmit
+            autoCapitalize="none"
+            autoCorrect
+            placeholder=" Type your post here..."
+            placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+            value={text}
+            onChangeText={(newValue) => setText(newValue)}
+        />
+    }
+
+
+
+
+    return (
+        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+            
+            
+            
+            
+            <ScrollView automaticallyAdjustKeyboardInsets={true} style={theme == 'light' ? styles.lightPostContainer : styles.darkPostContainer}>
                 
-                      <Image source={{ uri: imageUrl }} style={styles.imageShrinked}  width={395} height={350}/>
+                <View style={{flexDirection: 'row'}}>
 
 
 
 
-                      <View style={{flexDirection: 'row', position:'absolute', marginLeft: 275, marginTop:30}}>
-                          <ExpandImage width={24} height={24}/>
-                          <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white'}}>
-                              Expand
-                          </Text>
-                      </View>
+                    {/* Profile image and @Username  */}
+                    <Image source={require('../../assets/profile_default.png')} style={{width: 40, height: 40, margin: 10}}/>
+                    <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
+                        @Username
+                    </Text>
+                    
+                    {/* Exit Icon */}
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                    >
+                        {exitIcon}
+                    </TouchableOpacity>
+                    
+                </View>
 
 
 
 
-                  </TouchableOpacity>
+                {/* Title input text */}
+                <TextInput
+                    style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
+                    autoCapitalize="none"
+                    multiline
+                    blurOnSubmit
+                    maxLength={80}
+                    autoCorrect
+                    placeholder="Title *Optional*"
+                    placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                    value={title}
+                    onChangeText={(newValue) => setTitle(newValue)}
+                />
+
+
+
+
+                {/* line break */}
+                <View style={{borderBottomColor: '#CCCCCC', borderBottomWidth: 2, marginHorizontal: 10,}}/>
+
+
+
+
+                {/* Content of the post, TextInput, Image */}
+                {content}
+
+
+
+
+                {/* Hashtags and mentions*/}
+                <TextInput
+                    style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
+                    autoCapitalize="none"
+                    autoCorrect
+                    placeholder="@mentions #hashtags"
+                    placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                    value={tempTags}
+                    onChangeText={(newValue) => setTempTags(newValue)}
+                    onEndEditing={() => fixTags(tempTags)}
+                />
+
+
+
+
+                <View style={{flexDirection: 'row', marginTop: 90}}>
+
+
+                    <TouchableOpacity
+                        style={{flexDirection: 'row',}}
+                        // onPress={onPress}
+
+
+
+
+                    >
+                        {createMeme}
+                        <Text marginBottom={15} width={61} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                            Memes
+                        </Text>
+                    </TouchableOpacity>
+
+
+
+
+                    <TouchableOpacity
+                            style={{flexDirection: 'row',}}
+                            onPress={() => navigation.navigate("Upload")}
+                        >
+                        {upload}
+                    </TouchableOpacity>                
+
+
+
+
+                    <TouchableOpacity
+                        style={{flexDirection: 'row',}}
+                        // onPress={onPress}
+
+
+
+
+                    >
+                        {link}
+                        <Text marginBottom={15} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                            Link
+                        </Text>
+                    </TouchableOpacity>
+
+
+
+
+                    <TouchableOpacity
+                        style={{flexDirection: 'row',}}
+                        onPress={ async() =>
+                                {
+                                    if(imageUrl){
+                                        await uploadImagePost()
+                                    }else{
+                                        await uploadTextPost()
+                                    }
+                                }
+                            }
+                    >
+                        {postButton}
+                    </TouchableOpacity>
+                    
+                </View>
                 
-              }
-          </>
-      )
-  }else{
-      content = <TextInput
-          style={theme == 'light' ? styles.lightTextInput : styles.darkTextInput}
-          multiline
-          maxLength={10000}
-          blurOnSubmit
-          autoCapitalize="none"
-          autoCorrect
-          placeholder=" Type your post here..."
-          placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-          value={text}
-          onChangeText={(newValue) => setText(newValue)}
-      />
-  }
-
-
-
-
-  return (
-      <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-        
-          
-          
-          
-           <ScrollView automaticallyAdjustKeyboardInsets={true} style={theme == 'light' ? styles.lightPostContainer : styles.darkPostContainer}>
-              
-               <View style={{flexDirection: 'row'}}>
-
-
-
-
-                   {/* Profile image and @Username  */}
-                   <Image source={require('../../assets/profile_default.png')} style={{width: 40, height: 40, margin: 10}}/>
-                   <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
-                       @Username
-                   </Text>
-                  
-                   {/* Exit Icon */}
-                   <TouchableOpacity
-                       onPress={() => navigation.goBack()}
-                   >
-                       {exitIcon}
-                   </TouchableOpacity>
-                  
-               </View>
-
-
-
-
-               {/* Title input text */}
-               <TextInput
-                   style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
-                   autoCapitalize="none"
-                   multiline
-                   blurOnSubmit
-                   maxLength={80}
-                   autoCorrect
-                   placeholder="Title *Optional*"
-                   placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                   value={title}
-                   onChangeText={(newValue) => setTitle(newValue)}
-               />
-
-
-
-
-               {/* line break */}
-               <View style={{borderBottomColor: '#CCCCCC', borderBottomWidth: 2, marginHorizontal: 10,}}/>
-
-
-
-
-               {/* Content of the post, TextInput, Image */}
-               {content}
-
-
-
-
-               {/* Hashtags and mentions*/}
-               <TextInput
-                   style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
-                   autoCapitalize="none"
-                   autoCorrect
-                   placeholder="@mentions #hashtags"
-                   placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                   value={tempTags}
-                   onChangeText={(newValue) => setTempTags(newValue)}
-                   onEndEditing={() => fixTags(tempTags)}
-               />
-
-
-
-
-               <View style={{flexDirection: 'row', marginTop: 90}}>
-
-
-                   <TouchableOpacity
-                       style={{flexDirection: 'row',}}
-                       // onPress={onPress}
-
-
-
-
-                   >
-                       {createMeme}
-                       <Text marginBottom={15} width={61} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
-                           Memes
-                       </Text>
-                   </TouchableOpacity>
-
-
-
-
-                   <TouchableOpacity
-                           style={{flexDirection: 'row',}}
-                           onPress={() => navigation.navigate("Upload")}
-                       >
-                       {upload}
-                   </TouchableOpacity>                
-
-
-
-
-                   <TouchableOpacity
-                       style={{flexDirection: 'row',}}
-                       // onPress={onPress}
-
-
-
-
-                   >
-                       {link}
-                       <Text marginBottom={15} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
-                           Link
-                       </Text>
-                   </TouchableOpacity>
-
-
-
-
-                   <TouchableOpacity
-                       style={{flexDirection: 'row',}}
-                       onPress={ async() =>
-                               {
-                                   if(imageUrl){
-                                       await uploadImagePost()
-                                   }else{
-                                       await uploadTextPost()
-                                   }
-                               }
-                           }
-                   >
-                       {postButton}
-                   </TouchableOpacity>
-                  
-               </View>
-              
-           </ScrollView>
-      </View>
-  );
+            </ScrollView>
+        </View>
+    );
 }
 
 

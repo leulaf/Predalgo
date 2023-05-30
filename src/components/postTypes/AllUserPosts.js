@@ -44,6 +44,8 @@ export default function AllUserPosts({navigation, posts}){
                 title={item.title}
                 tags={item.tags}
                 memeText={item.memeText}
+                profile={item.profile}
+                postId={item.id}
             />
         }else if(item.imageUrls){
             post = <MultiImagePost
@@ -51,9 +53,17 @@ export default function AllUserPosts({navigation, posts}){
                 title={item.title}
                 imageUrls={item.imageUrls}
                 tags={item.tags}
+                profile={item.profile}
+                postId={item.id}
             />
         }else if(item.text){
-            post = <TextPost title={item.title} text={item.text} tags={item.tags} />
+            post = <TextPost 
+                title={item.title}
+                text={item.text}
+                tags={item.tags}
+                profile={item.profile}
+                postId={item.id}
+            />
         }
 
         if(index == posts.length -1){

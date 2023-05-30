@@ -5,12 +5,7 @@ import {ThemeContext} from '../../context-store/context';
 import { firebase, db, storage } from '../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy} from "firebase/firestore";
 import AllUserPosts from '../components/postTypes/AllUserPosts';
-
-// light mode icons
-import BackLight from '../../assets/back.svg';
-
-// dark mode icons
-import BackDark from '../../assets/back_light.svg';
+import ProfileTop from '../components/ProfileTop';
 
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
@@ -18,7 +13,14 @@ export default function ProfileScreen ({route, navigation}) {
     const [posts, setPosts] = useState([]);
     const user = route.params.user;
 
-    useEffect(async() => {
+    useEffect(() => {
+        navigation.setOptions({
+            header: () => <ProfileTop username={user.username}/>
+        });
+    }, [navigation]);
+
+    // Get users posts by most recent and check if current user is following the user
+    useEffect(() => {
         fetchPostsByRecent();
 
         // Check if current user is following the user
@@ -31,8 +33,6 @@ export default function ProfileScreen ({route, navigation}) {
                 setFollowing(false);
             }
         });
-
-        
     }, []);
 
     // Get users posts by most recent
@@ -81,25 +81,7 @@ export default function ProfileScreen ({route, navigation}) {
             <View style={theme == 'light' ? styles.lightProfileContainer :styles.darkProfileContainer }>
                
                  
-                 <View style={{flexDirection: 'column', marginTop: 40, position: 'absolute'}}>
-                    
-                    {/* Username / back button */}
-                    <TouchableOpacity 
-                        style={{flexDirection: 'row'}}
-                        onPress={() => {navigation.goBack()}}
-                    >
-                        {
-                            theme == 'light' ?
-                                <BackLight style={styles.backIcon} width={22} height={22}/>
-                            :
-                                <BackDark style={styles.backIcon} width={22} height={22}/>
-                        }
-
-                        <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
-                            @{user.username}
-                        </Text>
-                    </TouchableOpacity>
-                    
+                 <View style={{flexDirection: 'column', marginTop: 5,}}>               
                      
                     {/* Profile picture*/}
                     <View
@@ -128,7 +110,7 @@ export default function ProfileScreen ({route, navigation}) {
                      
  
                  {/* Posts, Following */}
-                 <View style={{flexDirection: 'column', marginTop: 65, marginLeft: 115}}>
+                 <View style={{flexDirection: 'column', marginTop: 0, marginLeft: 2}}>
                      <View style={{flexDirection: 'row'}}>
                          
                          {/* Posts */}
@@ -170,9 +152,9 @@ export default function ProfileScreen ({route, navigation}) {
                 { backgroundColor: '#BBBBBB' }
             }
             style= {theme == 'light' ?
-                { backgroundColor: 'white', height: 100}
+                { backgroundColor: 'white'}
             :
-                { backgroundColor: '#1A1A1A', height: 100}
+                { backgroundColor: '#1A1A1A'}
             }
             labelStyle = {theme == 'light' ? styles.lightLabel : styles.darkLabel}
             activeColor = {theme == 'light' ? '#222222' : 'white'}
@@ -223,20 +205,16 @@ export default function ProfileScreen ({route, navigation}) {
         color: '#880808',
         fontSize: 16,
         fontWeight: '600',
-        height: 100,
-        marginTop: 180
     },
     darkLabel: {
         color: '#FFFFFF',
         fontSize: 16,
         fontWeight: '600',
-        height: 100,
-        marginTop: 180
     },
     profilePicture: {
-        width: 90,
-        height: 90,
-        marginLeft: 15,
+        width: 100,
+        height: 100,
+        marginLeft: 10,
         marginTop: 10,
         borderRadius: 100,
     },
@@ -246,10 +224,6 @@ export default function ProfileScreen ({route, navigation}) {
         marginTop: 15,
         alignItems: 'center'
     },
-    backIcon: {
-        alignSelf: 'center',
-        marginLeft: 5
-    },
     lightFollowButton: {
         flexDirection: 'column',
         backgroundColor: '#ffffff',
@@ -257,7 +231,8 @@ export default function ProfileScreen ({route, navigation}) {
         width: 110,
         height: 30,
         marginLeft: 5,
-        marginTop: 10,
+        marginTop: 12,
+        marginBottom: 10,
         borderWidth: 1.5,
         borderColor: '#222222'
     },
@@ -268,7 +243,8 @@ export default function ProfileScreen ({route, navigation}) {
         width: 110,
         height: 30,
         marginLeft: 5,
-        marginTop: 10,
+        marginTop: 12,
+        marginBottom: 10,
         borderWidth: 1.5,
         borderColor: '#f2f2f2'
     },
@@ -285,22 +261,6 @@ export default function ProfileScreen ({route, navigation}) {
         fontWeight: '600',
         alignSelf: 'center',
         marginTop: 1
-    },
-    lightUsername: {
-        fontSize: 20,
-        color: '#222222',
-        fontWeight: '600',
-        alignSelf: 'center',
-        marginVertical: 5,
-        marginLeft: 5
-    },
-    darkUsername: {
-        fontSize: 20,
-        color: '#f2f2f2',
-        fontWeight: '600',
-        alignSelf: 'center',
-        marginVertical: 5,
-        marginLeft: 5
     },
     lightCountText: {
         fontSize: 18,

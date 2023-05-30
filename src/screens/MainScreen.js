@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     lightTabBarStyle: {
         backgroundColor: 'rgba(255, 255, 255, 0.90)', 
         position: 'absolute', 
-        height: 35, 
+        height: 40, 
         width: '100%',
         borderBottomLeftRadius: 50,
         borderBottomRightRadius: 50,
@@ -62,18 +62,18 @@ const styles = StyleSheet.create({
     darkTabBarStyle: {
         backgroundColor: 'rgba(0, 0, 0, 0.25)', 
         position: 'absolute', 
-        height: 35, 
+        height: 40, 
         width: '100%',
         borderBottomLeftRadius: 50,
         borderBottomRightRadius: 50,
     },
     lightIndicatorStyle: {
-        backgroundColor: '#AAAAAA', 
+        backgroundColor: '#BBBBBB', 
         width: 90, 
         marginLeft: 24,
     },
     darkIndicatorStyle: {
-        backgroundColor: '#444444', 
+        backgroundColor: '#666666', 
         width: 90, 
         marginLeft: 24,
     }

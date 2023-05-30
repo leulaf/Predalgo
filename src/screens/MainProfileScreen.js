@@ -106,6 +106,7 @@ function MainProfileScreen (props) {
         if(currentUser != null){
             setUser(currentUser);
             setUserPosts(posts);
+            // console.log(posts);
             setUsername(currentUser.username);
             setProfilePic(currentUser.profilePic);
             setBio(currentUser.bio);

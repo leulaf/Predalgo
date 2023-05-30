@@ -80,12 +80,32 @@ class App extends Component {
           <AuthenticatedUserProvider>
               <ThemeProvider>
                 <NavigationContainer>
-                  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Drawer">
-                    <Stack.Screen name="Drawer" component={DrawerScreen} />
-                    <Stack.Screen name="Upload" component={UploadScreen} />
-                    <Stack.Screen name="CreatePost" component={CreatePostScreen} />
-                    <Stack.Screen name="Search" component={SearchScreen} />
-                    <Stack.Screen name="Profile" component={ProfileScreen} />
+                  <Stack.Navigator screenOptions={{ headerShown: true }} initialRouteName="Drawer">
+                    <Stack.Screen name="Drawer" component={DrawerScreen}
+                      options={{
+                          headerShown: false,
+                      }} 
+                    />
+                    <Stack.Screen name="Upload" component={UploadScreen}
+                      options={{
+                          headerShown: false,
+                      }} 
+                    />
+                    <Stack.Screen name="CreatePost" component={CreatePostScreen}
+                      options={{
+                          headerShown: false,
+                      }} 
+                    />
+                    <Stack.Screen name="Search" component={SearchScreen}
+                      options={{
+                          headerShown: false,
+                      }} 
+                    />
+                    <Stack.Screen name="Profile" component={ProfileScreen} 
+                       options={{
+                        // header: () => <ProfileTop/>,
+                      }}
+                    />
                   </Stack.Navigator>
                 </NavigationContainer>
               </ThemeProvider>
