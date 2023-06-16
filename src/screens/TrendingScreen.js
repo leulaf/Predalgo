@@ -28,7 +28,7 @@ export default function TrendingScreen({navigation}){
                         width: '100%'
                     },
                     tabBarIndicatorStyle: {
-                        backgroundColor: theme == 'light' ? '#AAAAAA' : '#444444',
+                        backgroundColor: theme == 'light' ? '#AAAAAA' : '#555555',
                     },
                     tabBarActiveTintColor: theme == 'light' ? '#2D2D2D' : '#F6F6F6',
                     tabBarInactiveTintColor: theme == 'light' ? '#929292' : '#C8C8C8',

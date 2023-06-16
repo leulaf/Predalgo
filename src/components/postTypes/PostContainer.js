@@ -12,7 +12,7 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const PostContainer = ({ navigation, title, content, profile, postId }) => {
+const PostContainer = ({ navigation, title, content, profile, postId, userPostId }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [overlayVisible, setOverlayVisible] = useState(false);
     let threeDots
@@ -24,10 +24,17 @@ const PostContainer = ({ navigation, title, content, profile, postId }) => {
     }
 
     const deletePost = () => {
-        const postRef = doc(db, 'posts', firebase.auth().currentUser.uid, "userPosts", postId);
+        const postRef = doc(db, 'allPosts', postId);
+        const userPostRef = doc(db, "posts", firebase.auth().currentUser.uid, "userPosts", userPostId);
     
         deleteDoc(postRef).then(() => {
             Alert.alert('Post deleted! \n Refresh App to see changes.');
+        }).catch((error) => {
+            console.log(error);
+        });
+
+        deleteDoc(userPostRef).then(() => {
+            // console.log("Document successfully deleted!");
         }).catch((error) => {
             console.log(error);
         });

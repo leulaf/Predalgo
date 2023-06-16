@@ -7,13 +7,14 @@ import Carousel from 'react-native-reanimated-carousel';
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
 
-const MultiImagePost = ({ navigation, title, imageUrls, tags, profile, postId }) => {
+const MultiImagePost = ({ navigation, title, imageUrls, tags, profile, postId, userPostId }) => {
 
     return (
         <PostContainer 
             title={title}
             profile={profile}
             postId={postId}
+            userPostId={userPostId}
             content={
                 <View>
                     <Carousel

@@ -5,14 +5,8 @@ import { db, storage } from '../config/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc, collection, addDoc } from "firebase/firestore";
 
-
-
-
 import firebase from 'firebase/compat/app';
 require('firebase/firestore');
-
-
-
 
 // light mode icons
 import ExitIconLight from '../../assets/exit_light.svg';
@@ -23,9 +17,6 @@ import PostButtonLight from '../../assets/post_button_light.svg';
 import ExpandImage from '../../assets/expand_image.svg';
 import ShrinkImage from '../../assets/shrink_image.svg';
 
-
-
-
 // dark mode icons
 import ExitIconDark from '../../assets/exit_dark.svg';
 import UploadDark from '../../assets/upload_dark.svg';
@@ -33,9 +24,7 @@ import LinkDark from '../../assets/link_dark.svg';
 import CreateMemeDark from '../../assets/meme_create_dark.svg';
 import PostButtonDark from '../../assets/post_button_dark.svg';
 
-
 const win = Dimensions.get('window');
-
 
 const CreatePostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -83,7 +72,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
     const saveImagePostData = async (url) => {
         // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
-        const docRef = await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
+        await addDoc(collection(db, "allPosts"), {
             title: title,
             imageUrl: url,
             tags: correctTags,
@@ -91,17 +80,12 @@ const CreatePostScreen = ({navigation, route}) => {
             commentsCount: 0,
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
             profile: firebase.auth().currentUser.uid
-        }).then(async () => {
+        }).then(async (docRef) => {
             
             // Add a new document in collection "allPosts" with a generated id for the post.
-            await addDoc(collection(db, "allPosts"), {
-                title: title,
-                imageUrl: url,
-                tags: correctTags,
-                likesCount: 0,
-                commentsCount: 0,
+            await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
+                refId: docRef.id,
                 creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-                profile: firebase.auth().currentUser.uid,
             })
             
             setUploading(false);
@@ -115,7 +99,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
     const uploadTextPost = async () => {
         // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
-        const docRef = await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
+        await addDoc(collection(db, "allPosts"), {
             title: title,
             text: text,
             tags: correctTags,
@@ -123,17 +107,12 @@ const CreatePostScreen = ({navigation, route}) => {
             commentsCount: 0,
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
             profile: firebase.auth().currentUser.uid
-        }).then(async () => {
+        }).then(async (docRef) => {
             
             // Add a new document in collection "allPosts" with a generated id for the post.
-            await addDoc(collection(db, "allPosts"), {
-                title: title,
-                text: text,
-                tags: correctTags,
-                likesCount: 0,
-                commentsCount: 0,
+            await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
+                refId: docRef.id,
                 creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-                profile: firebase.auth().currentUser.uid,
             })
             
             setUploading(false);

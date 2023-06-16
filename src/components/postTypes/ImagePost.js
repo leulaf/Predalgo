@@ -4,12 +4,13 @@ import FlexImage from 'react-native-flex-image';
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 
-const ImagePost = ({ navigation, title, imageUrl, memeText, tags, profile, postId }) => {
+const ImagePost = ({ navigation, title, imageUrl, memeText, tags, profile, postId, userPostId }) => {
         return (
             <PostContainer 
                 title={title}
                 profile={profile}
                 postId={postId}
+                userPostId={userPostId}
                 content={
                     <View>
                         <View style={{flexDirection: "row"}}>

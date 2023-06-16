@@ -52,7 +52,7 @@ export default function MainScreen({navigation}){
 
 const styles = StyleSheet.create({
     lightTabBarStyle: {
-        backgroundColor: 'rgba(255, 255, 255, 0.90)', 
+        backgroundColor: 'rgba(255, 255, 255, 0.50)', 
         position: 'absolute', 
         height: 40, 
         width: '100%',
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 50,
     },
     darkTabBarStyle: {
-        backgroundColor: 'rgba(0, 0, 0, 0.25)', 
+        backgroundColor: 'rgba(0, 0, 0, 0.50)', 
         position: 'absolute', 
         height: 40, 
         width: '100%',
@@ -68,12 +68,12 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 50,
     },
     lightIndicatorStyle: {
-        backgroundColor: '#BBBBBB', 
+        backgroundColor: '#AAAAAA', 
         width: 90, 
         marginLeft: 24,
     },
     darkIndicatorStyle: {
-        backgroundColor: '#666666', 
+        backgroundColor: '#555555', 
         width: 90, 
         marginLeft: 24,
     }

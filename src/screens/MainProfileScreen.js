@@ -168,7 +168,7 @@ function MainProfileScreen (props) {
                         <View
                             style={styles.countContainer}
                         >
-                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>100</Text>
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{userPosts.length}</Text>
                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                         </View>
 
@@ -260,7 +260,7 @@ function MainProfileScreen (props) {
            renderTabBar={tabBar}
            initialTabName="Posts"
        >
-           <Tabs.Tab name="Alerts">
+           <Tabs.Tab name="Feedback">
                <Tabs.ScrollView>
                    <View style={[styles.box, styles.boxA]} />
                    {/* <View style={[styles.box, styles.boxB]} />

@@ -139,7 +139,7 @@ export default function MainContainer({navigation, openDrawer}) {
 
                 <Bottom_Tab.Screen name={addPostName} component={AddPostScreen} 
                     options={{
-                        headerShown: false,
+                        // headerShown: false,
                     }} 
                 />
 

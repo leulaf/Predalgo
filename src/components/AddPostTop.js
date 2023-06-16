@@ -11,7 +11,7 @@ import BackDark from '../../assets/back_light.svg';
 
 const windowWidth = Dimensions.get('window').width;
 
-const ProfileTop = ({username}) => {
+const AddPostTop = ({username}) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
 
@@ -19,7 +19,7 @@ const ProfileTop = ({username}) => {
             <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
                 
 
-                {/* Username / back button */}
+                {/* back button */}
                 <TouchableOpacity 
                             style={{flexDirection: 'row'}}
                             onPress={() => {navigation.goBack()}}
@@ -31,8 +31,8 @@ const ProfileTop = ({username}) => {
                             <BackDark style={styles.backIcon} width={22} height={22}/>
                     }
                     
-                    <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
-                        @{username}
+                    <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                        Back
                     </Text>
                     
                 </TouchableOpacity>
@@ -47,12 +47,12 @@ const ProfileTop = ({username}) => {
 const styles = StyleSheet.create({
     lightTopContainer: {
         backgroundColor: 'white',
-        height: 75,
+        height: 80,
         flexDirection: 'row',
     },
     darkTopContainer: {
         backgroundColor: '#1A1A1A',
-        height: 75,
+        height: 80,
         flexDirection: 'row',
     },
     backIcon: {
@@ -60,14 +60,14 @@ const styles = StyleSheet.create({
         marginTop: 47,
         marginLeft: 5
     },
-    lightUsername: {
+    lightText: {
         fontSize: 20,
         color: '#222222',
         fontWeight: '600',
         marginTop: 45,
         marginLeft: 5
     },
-    darkUsername: {
+    darkText: {
         fontSize: 20,
         color: '#f2f2f2',
         fontWeight: '600',
@@ -77,4 +77,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default ProfileTop;
+export default AddPostTop;

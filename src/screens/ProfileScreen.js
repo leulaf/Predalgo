@@ -121,13 +121,13 @@ export default function ProfileScreen ({route, navigation}) {
                              <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                          </View>
  
-                         {/* Following */}
+                         {/* Followers */}
                          <TouchableOpacity
                                  // onPress={onPress}
                                  style={styles.countContainer}
                          >
                              <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>903</Text>
-                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Following</Text>
+                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Followers</Text>
                          </TouchableOpacity>
                      </View>
  

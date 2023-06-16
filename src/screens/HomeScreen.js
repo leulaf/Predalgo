@@ -70,10 +70,10 @@ function HomeScreen(props){
     }, [props.currentUser]);
     
     return (
-        <View style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
+        <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
             <PostBar/>
             <AllPosts posts={posts}/>
-        </View>
+        </ScrollView>
     );
 }
 

@@ -17,7 +17,7 @@ const PostBottom = ({ memeText, tags, hideBottom }) => {
         bottomTags = tags.map((d, index) => 
             <TouchableOpacity key={index}>
                 <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>
-                    #meme
+                    {tags[index]}
                 </Text>
             </TouchableOpacity>);
     }

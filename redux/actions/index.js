@@ -31,7 +31,8 @@ export function fetchUserPosts() {
     return ((dispatch) => {
         getDocs(q)
         .then((snapshot) => {
-            let posts = snapshot.docs.map(doc => {
+            let posts = snapshot.docs
+            .map(doc => {
                 const data = doc.data();
                 const id = doc.id;
                 
