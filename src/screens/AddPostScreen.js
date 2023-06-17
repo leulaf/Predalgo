@@ -58,7 +58,7 @@ const AddPostScreen = ({navigation}) => {
             renderItem={({ item }) => {
               return (
                 <TouchableOpacity
-                  // onPress={() => }
+                  onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
                 >
                   <Image
                     style={styles.image}

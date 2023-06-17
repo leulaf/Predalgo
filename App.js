@@ -20,6 +20,7 @@ import UploadScreen from './src/screens/UploadScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import EditMemeScreen from './src/screens/EditMemeScreen';
 
 import ProfileTop from './src/components/ProfileTop';
 
@@ -104,6 +105,11 @@ class App extends Component {
                     <Stack.Screen name="Profile" component={ProfileScreen} 
                        options={{
                         // header: () => <ProfileTop/>,
+                      }}
+                    />
+                    <Stack.Screen name="EditMeme" component={EditMemeScreen}
+                      options={{
+                          // headerShown: false,
                       }}
                     />
                   </Stack.Navigator>
