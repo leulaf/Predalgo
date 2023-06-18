@@ -1,5 +1,6 @@
 import React, {useContext, useState, useEffect,} from 'react';
 import {View, TextInput, StyleSheet, Button, Image, TouchableOpacity, ScrollView} from 'react-native';
+// import { PESDK } from "react-native-photoeditorsdk";
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import AddPostTop from '../components/AddPostTop';
@@ -11,26 +12,32 @@ const EditMemeScreen = ({ navigation, route }) => {
     const { imageUrl, memeId, memeName } = route.params;
     const [image, setImage] = useState(imageUrl);
     const [textInputs, setTextInputs] = useState([]);
+
+    useEffect(() => {
+        
+    }, []);
     
     const handleAddTextInput = () => {
         const id = counter++;
         const newTextInput = {
-        id,
-        x: '',
-        y: '',
-        height: '',
-        width: '',
-        fontSize: 20,
-        text: '',
+            id,
+            x: '50',
+            y: '50',
+            height: '100',
+            width: '200',
+            fontSize: '20',
+            text: '',
         };
         setTextInputs([...textInputs, newTextInput]);
     };
 
+    // delete text input
     const handleDeleteTextInput = (id) => {
         const updatedInputs = textInputs.filter((textInput) => textInput.id !== id);
         setTextInputs(updatedInputs);
     };
 
+    // update text input
     const handleInputChange = (text, id, inputType) => {
         const updatedInputs = textInputs.map((textInput) => {
         if (textInput.id === id) {
@@ -41,6 +48,7 @@ const EditMemeScreen = ({ navigation, route }) => {
         setTextInputs(updatedInputs);
     };
 
+    // update text
     const handleTextInputChange = (text, id) => {
         const updatedInputs = textInputs.map((textInput) => {
         if (textInput.id === id) {
@@ -59,72 +67,73 @@ const EditMemeScreen = ({ navigation, route }) => {
 
     return (
         <ScrollView automaticallyAdjustKeyboardInsets={true} style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
+            
             <Image source={{ uri: image }} style={styles.image} />
         
             <View style={{ marginBottom: 20 }}>
                 <Button title="Add Text Input" onPress={handleAddTextInput} />
                 {textInputs.map((textInput) => (
-                <View key={textInput.id}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    <View key={textInput.id}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                            <TextInput
+                                style={styles.smallTextInput}
+                                keyboardType="numeric"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="X"
+                                value={textInput.x}
+                                onChangeText={(text) => handleInputChange(text, textInput.id, 'x')}
+                            />
+                            <TextInput
+                                style={styles.smallTextInput}
+                                keyboardType="numeric"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Y"
+                                value={textInput.y}
+                                onChangeText={(text) => handleInputChange(text, textInput.id, 'y')}
+                            />
+                            <TextInput
+                                style={styles.smallTextInput}
+                                keyboardType="numeric"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Height"
+                                value={textInput.height}
+                                onChangeText={(text) => handleInputChange(text, textInput.id, 'height')}
+                            />
+                            <TextInput
+                                style={styles.smallTextInput}
+                                keyboardType="numeric"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Width"
+                                value={textInput.width}
+                                onChangeText={(text) => handleInputChange(text, textInput.id, 'width')}
+                            />
+                            <TextInput
+                                style={styles.smallTextInput}
+                                keyboardType="numeric"
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Font"
+                                value={textInput.fontSize}
+                                onChangeText={(text) => handleInputChange(text, textInput.id, 'fontSize')}
+                            />
+                        </View>
                         <TextInput
-                            style={styles.smallTextInput}
-                            keyboardType="numeric"
+                            style={styles.textInput}
                             autoCapitalize="none"
                             autoCorrect={false}
-                            placeholder="X"
-                            value={textInput.x}
-                            onChangeText={(text) => handleInputChange(text, textInput.id, 'x')}
+                            placeholder="Text here"
+                            placeholderTextColor="#888888"
+                            value={textInput.text}
+                            onChangeText={(text) => handleTextInputChange(text, textInput.id)}
                         />
-                        <TextInput
-                            style={styles.smallTextInput}
-                            keyboardType="numeric"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Y"
-                            value={textInput.y}
-                            onChangeText={(text) => handleInputChange(text, textInput.id, 'y')}
-                        />
-                        <TextInput
-                            style={styles.smallTextInput}
-                            keyboardType="numeric"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Height"
-                            value={textInput.height}
-                            onChangeText={(text) => handleInputChange(text, textInput.id, 'height')}
-                        />
-                        <TextInput
-                            style={styles.smallTextInput}
-                            keyboardType="numeric"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Width"
-                            value={textInput.width}
-                            onChangeText={(text) => handleInputChange(text, textInput.id, 'width')}
-                        />
-                        <TextInput
-                            style={styles.smallTextInput}
-                            keyboardType="numeric"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Font"
-                            value={textInput.fontSize}
-                            onChangeText={(text) => handleInputChange(text, textInput.id, 'fontSize')}
-                        />
+                        <Button title="Delete" onPress={() => handleDeleteTextInput(textInput.id)} />
                     </View>
-                    <TextInput
-                        style={styles.textInput}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        placeholder="Text here"
-                        placeholderTextColor="#888888"
-                        value={textInput.text}
-                        onChangeText={(text) => handleTextInputChange(text, textInput.id)}
-                    />
-                    <Button title="Delete" onPress={() => handleDeleteTextInput(textInput.id)} />
-                </View>
-            ))}
-        </View>
+                ))}
+            </View>
         </ScrollView>
   );
 };

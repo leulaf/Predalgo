@@ -180,13 +180,7 @@ const CreatePostScreen = ({navigation, route}) => {
                             onPress={() => setExpandImage(!expandImage)}
                     >
 
-
-
-
                         <Image source={{ uri: imageUrl }} style={styles.imageExpanded} />
-
-
-
 
                         <View style={{flexDirection: 'row', position:'absolute', marginLeft: 285, marginTop:30}}>
                             <ShrinkImage width={26} height={26}/>
@@ -202,9 +196,6 @@ const CreatePostScreen = ({navigation, route}) => {
                     >
                     
                         <Image source={{ uri: imageUrl }} style={styles.imageShrinked}  width={395} height={350}/>
-
-
-
 
                         <View style={{flexDirection: 'row', position:'absolute', marginLeft: 275, marginTop:30}}>
                             <ExpandImage width={24} height={24}/>
@@ -474,14 +465,14 @@ const styles = StyleSheet.create({
       marginBottom: 50,
   },
   imageExpanded: {
-      flex: 1,
+    //   flex: 1,
       alignSelf: "center",
       resizeMode: "contain",
       borderRadius: 15,
       marginTop: 20,
       marginBottom: 50,
-      width: 400,
-      height: win.height,
+      width: "100%",
+      height: 400,
   },
   lightBottomText: {
       color: '#666666',
