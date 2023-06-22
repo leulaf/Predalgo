@@ -4,6 +4,7 @@ import {ThemeContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
 import { firebase, db } from '../../config/firebase';
 import { doc, deleteDoc} from "firebase/firestore";
+import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../../constants/GlobalStyles';
 
 import DeleteIcon from '../../../assets/trash_delete.svg';
@@ -12,7 +13,8 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const PostContainer = ({ navigation, title, content, profile, postId, userPostId }) => {
+const PostContainer = ({ title, content, profile, postId, userPostId }) => {
+    const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
     const [overlayVisible, setOverlayVisible] = useState(false);
     let threeDots

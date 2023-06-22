@@ -1,27 +1,30 @@
 import React from 'react';
 import {Image, View, StyleSheet,} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import FlexImage from 'react-native-flex-image';
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 
-const ImagePost = ({ navigation, title, imageUrl, memeText, tags, profile, postId, userPostId }) => {
-        return (
-            <PostContainer 
-                title={title}
-                profile={profile}
-                postId={postId}
-                userPostId={userPostId}
-                content={
-                    <View>
-                        <View style={{flexDirection: "row"}}>
-                            <Image source={{ uri: imageUrl }} style={styles.image}/>
-                        </View>
-                        <PostBottom tags={tags} memeText={memeText}/>
+const ImagePost = ({ title, imageUrl, memeText, tags, profile, postId, userPostId }) => {
+    const navigation = useNavigation();
+    
+    return (
+        <PostContainer 
+            title={title}
+            profile={profile}
+            postId={postId}
+            userPostId={userPostId}
+            content={
+                <View>
+                    <View style={{flexDirection: "row"}}>
+                        <Image source={{ uri: imageUrl }} style={styles.image}/>
                     </View>
-                }
-            />
-        );
-    }
+                    <PostBottom tags={tags} memeText={memeText}/>
+                </View>
+            }
+        />
+    );
+}
 
 const styles = StyleSheet.create({
     image: {

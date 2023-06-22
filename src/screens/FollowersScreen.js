@@ -28,7 +28,7 @@ export default function FollowersScreen({navigation, route}){
 
             fetchUserProfiles(users);
         });
-    }
+    };
 
     const fetchUserProfiles = async (userIds) => {
         const newUserList = [];
@@ -61,7 +61,6 @@ export default function FollowersScreen({navigation, route}){
     }, [navigation]);
 
     const renderItem = (item) => {
-
         return (
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightListItem : styles.darkListItem}

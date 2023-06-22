@@ -175,7 +175,7 @@ export default function ProfileScreen ({route, navigation}) {
  
                          {/* Followers */}
                          <TouchableOpacity
-                                 // onPress={onPress}
+                                onPress={() => navigation.navigate('Followers', {profile: user.id})}
                                  style={styles.countContainer}
                          >
                              <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.followers}</Text>

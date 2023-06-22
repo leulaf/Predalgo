@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import TextTicker from 'react-native-text-ticker'
 import {ThemeContext} from '../../../context-store/context';
 
@@ -10,12 +11,16 @@ import GlobalStyles from '../../constants/GlobalStyles';
 
 const PostBottom = ({ memeText, tags, hideBottom }) => {
     const {theme,setTheme} = useContext(ThemeContext);
+    const navigation = useNavigation();
     let content
     let bottomTags
 
     if(tags){
         bottomTags = tags.map((d, index) => 
-            <TouchableOpacity key={index}>
+            <TouchableOpacity
+                onPress={() => navigation.navigate('Tag', {tag: tags[index]})}
+                key={index}
+            >
                 <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>
                     {tags[index]}
                 </Text>
