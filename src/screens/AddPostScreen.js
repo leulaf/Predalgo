@@ -4,7 +4,7 @@ import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import imgflip from '../api/imgflip';
 import PostBar from '../components/PostBar';
-import AddPostTop from '../components/AddPostTop';
+import SimpleTopBar from '../components/SimpleTopBar';
 
 const AddPostScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -22,7 +22,7 @@ const AddPostScreen = ({navigation}) => {
     // Sets the header to the AddPostTop component
     useEffect(() => {
         navigation.setOptions({
-            header: () => <AddPostTop/>
+            header: () => <SimpleTopBar title={"Back"}/>
         });
     }, [navigation]);
     
@@ -113,12 +113,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   darkText: {
-      fontSize: 22,
-      color: '#f2f2f2',
-      fontWeight: '600',
-      alignSelf: 'center',
-      marginHorizontal: 10,
-      marginTop: 5,
+    fontSize: 22,
+    color: '#f2f2f2',
+    fontWeight: '600',
+    alignSelf: 'center',
+    marginHorizontal: 10,
+    marginTop: 5,
   },
 });
 

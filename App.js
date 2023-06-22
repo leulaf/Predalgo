@@ -21,8 +21,8 @@ import CreatePostScreen from './src/screens/CreatePostScreen';
 import SearchScreen from './src/screens/SearchScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import EditMemeScreen from './src/screens/EditMemeScreen';
-
-import ProfileTop from './src/components/ProfileTop';
+import FollowingScreen from './src/screens/FollowingScreen';
+import FollowersScreen from './src/screens/FollowersScreen';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -108,6 +108,16 @@ class App extends Component {
                       }}
                     />
                     <Stack.Screen name="EditMeme" component={EditMemeScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen name="Following" component={FollowingScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen name="Followers" component={FollowersScreen}
                       options={{
                           // headerShown: false,
                       }}

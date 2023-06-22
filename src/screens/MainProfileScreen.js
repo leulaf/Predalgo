@@ -13,6 +13,7 @@ import { fetchUser, fetchUserPosts } from '../../redux/actions/index';
 import AddIconLight from '../../assets/add.svg';
 import AddIconDark from '../../assets/add_dark.svg';
 import AllUserPosts from '../components/postTypes/AllUserPosts';
+import { set } from 'react-native-reanimated';
 
 
 async function uploadImage(imageUrl) {
@@ -86,9 +87,11 @@ const setNewBio = async (description) => {
 };
 
 
-function MainProfileScreen (props) {
+function MainProfileScreen ({navigation, ...props}) {
     const {theme, setTheme} = useContext(ThemeContext);
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null);
+    const [followers, setFollowers] = useState(0);
+    const [following, setFollowing] = useState(0);
     const [userPosts, setUserPosts] = useState([]);
     const [username, setUsername] = useState('');
     const [profilePic, setProfilePic] = useState('');
@@ -105,6 +108,8 @@ function MainProfileScreen (props) {
         
         if(currentUser != null){
             setUser(currentUser);
+            setFollowers(currentUser.followers);
+            setFollowing(currentUser.following);
             setUserPosts(posts);
             // console.log(posts);
             setUsername(currentUser.username);
@@ -175,20 +180,20 @@ function MainProfileScreen (props) {
 
                         {/* Followers */}
                         <TouchableOpacity
-                                // onPress={onPress}
-                                style={styles.countContainer}
+                            onPress={() => navigation.navigate("Followers", {profile: firebase.auth().currentUser.uid})}
+                            style={styles.countContainer}
                         >
-                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>100</Text>
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{followers}</Text>
                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Followers</Text>
                         </TouchableOpacity>
 
 
                         {/* Following */}
                         <TouchableOpacity
-                                // onPress={onPress}
-                                style={styles.countContainer}
+                            onPress={() => navigation.navigate("Following", {profile: firebase.auth().currentUser.uid})}
+                            style={styles.countContainer}
                         >
-                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>903</Text>
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{following}</Text>
                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Following</Text>
                         </TouchableOpacity>
                     </View>
@@ -383,7 +388,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 30,
         borderRadius: 20,
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderColor: '#222222',
         marginLeft: 25,
         marginTop: 15,
@@ -395,7 +400,7 @@ const styles = StyleSheet.create({
         width: 80,
         height: 30,
         borderRadius: 20,
-        borderWidth: 1,
+        borderWidth: 1.5,
         borderColor: '#DDDDDD',
         marginLeft: 25,
         marginTop: 15,

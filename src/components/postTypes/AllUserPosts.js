@@ -18,27 +18,6 @@ export default function AllUserPosts({navigation, posts}){
     const width = Dimensions.get('window').width;
     const {theme,setTheme} = useContext(ThemeContext);
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const q = query(collection(db, "allPosts"), where("profile", "==", profile));
-
-    //         getDocs(q)
-    //         .then((snapshot) => {
-    //             let posts = snapshot.docs
-    //             .map(doc => {
-    //                 const data = doc.data();
-    //                 const id = doc.id;
-                    
-    //                 return { id, ...data }
-    //             })
-
-    //             setPostList(posts);
-    //         })
-    //     };
-
-    //     fetchData();
-    // }, []);
-
     const renderItem = ({ item, index }) => {
         let post;
         if(item.imageUrl){

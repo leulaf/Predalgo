@@ -3,9 +3,9 @@ import {View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Alert} from 
 import { Tabs, MaterialTabBar } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../context-store/context';
 import { firebase, db, storage } from '../config/firebase';
-import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where} from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import AllUserPosts from '../components/postTypes/AllUserPosts';
-import ProfileTop from '../components/ProfileTop';
+import SimpleTopBar from '../components/SimpleTopBar';
 
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
@@ -15,7 +15,7 @@ export default function ProfileScreen ({route, navigation}) {
 
     useEffect(() => {
         navigation.setOptions({
-            header: () => <ProfileTop username={user.username}/>
+            header: () => <SimpleTopBar title={"@" + user.username}/>
         });
     }, [navigation]);
 
@@ -55,6 +55,7 @@ export default function ProfileScreen ({route, navigation}) {
 
     // Follow current user
     const onFollow = () => {
+        // add user to following collection
         const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
         
         setDoc(followRef, {
@@ -65,10 +66,36 @@ export default function ProfileScreen ({route, navigation}) {
         }).catch((error) => {
             console.log(error);
         });
+
+        // add user to followers collection
+        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
+
+        setDoc(followerRef, {
+            id: firebase.auth().currentUser.uid,
+        }).then(() => {
+            // console.log('Added to followers collection');
+        }).catch((error) => {
+            console.log(error);
+        });
+
+        // update followers count for user being followed
+        const userRef = doc(db, 'users', user.id);
+
+        updateDoc(userRef, {
+            followers: increment(1)
+        });
+
+        // update following count for current user
+        const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
+
+        updateDoc(currentUserRef, {
+            following: increment(1)
+        });
     }
 
     // Unfollow current user
     const onUnfollow = () => {
+        // remove user from following collection
         const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
 
         deleteDoc(unfollowRef).then(() => {
@@ -77,13 +104,35 @@ export default function ProfileScreen ({route, navigation}) {
         }).catch((error) => {
             console.log(error);
         });
+
+        // remove user from followers collection
+        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
+
+        deleteDoc(followerRef).then(() => {
+            // console.log('Removed from followers collection');
+        }).catch((error) => {
+            console.log(error);
+        });
+
+        // update followers count for user being unfollowed
+        const userRef = doc(db, 'users', user.id);
+
+        updateDoc(userRef, {
+            followers: increment(-1)
+        });
+
+        // update following count for current user
+        const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
+
+        updateDoc(currentUserRef, {
+            following: increment(-1)
+        });
     }
     
     const header = () => {
         return (
             <View style={theme == 'light' ? styles.lightProfileContainer :styles.darkProfileContainer }>
                
-                 
                  <View style={{flexDirection: 'column', marginTop: 5,}}>               
                      
                     {/* Profile picture*/}
@@ -120,7 +169,7 @@ export default function ProfileScreen ({route, navigation}) {
                          <View
                              style={styles.countContainer}
                          >
-                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>100</Text>
+                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{postList.length}</Text>
                              <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                          </View>
  
@@ -129,7 +178,7 @@ export default function ProfileScreen ({route, navigation}) {
                                  // onPress={onPress}
                                  style={styles.countContainer}
                          >
-                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>903</Text>
+                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.followers}</Text>
                              <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Followers</Text>
                          </TouchableOpacity>
                      </View>

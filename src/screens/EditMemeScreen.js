@@ -3,7 +3,7 @@ import {View, TextInput, StyleSheet, Button, Image, TouchableOpacity, ScrollView
 // import { PESDK } from "react-native-photoeditorsdk";
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
-import AddPostTop from '../components/AddPostTop';
+import SimpleTopBar from '../components/SimpleTopBar';
 
 let counter = 0;
 
@@ -61,7 +61,7 @@ const EditMemeScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         navigation.setOptions({
-        header: () => <AddPostTop />,
+        header: () => <SimpleTopBar title={"Back"}/>,
         });
     }, [navigation]);
 

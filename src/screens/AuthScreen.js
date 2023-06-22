@@ -24,6 +24,8 @@ const AuthScreen = ({navigation}) => {
                         email: email,
                         profilePic: "",
                         bio: "User bio is empty",
+                        followers: 0,
+                        following: 0,
                     })
                 })
                 .catch((error) =>{
