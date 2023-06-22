@@ -81,13 +81,6 @@ const CreatePostScreen = ({navigation, route}) => {
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
             profile: firebase.auth().currentUser.uid
         }).then(async (docRef) => {
-            
-            // Add a new document in collection "allPosts" with a generated id for the post.
-            await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
-                refId: docRef.id,
-                creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            })
-            
             setUploading(false);
             Alert.alert("Post uploaded successfully!");
             navigation.goBack();
@@ -108,13 +101,6 @@ const CreatePostScreen = ({navigation, route}) => {
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
             profile: firebase.auth().currentUser.uid
         }).then(async (docRef) => {
-            
-            // Add a new document in collection "allPosts" with a generated id for the post.
-            await addDoc(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), {
-                refId: docRef.id,
-                creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            })
-            
             setUploading(false);
             Alert.alert("Post uploaded successfully!");
             navigation.goBack();
@@ -122,9 +108,6 @@ const CreatePostScreen = ({navigation, route}) => {
             console.log(error);
         });
     };
-
-
-
 
     const fixTags = (tempTags) => {
         let newTags = tempTags.split(' ');
@@ -351,7 +334,6 @@ const CreatePostScreen = ({navigation, route}) => {
 
 
 
-
                     <TouchableOpacity
                         style={{flexDirection: 'row',}}
                         onPress={ async() =>
@@ -373,9 +355,6 @@ const CreatePostScreen = ({navigation, route}) => {
         </View>
     );
 }
-
-
-
 
 const styles = StyleSheet.create({
   lightContainer: {

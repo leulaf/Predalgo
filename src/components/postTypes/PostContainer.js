@@ -25,16 +25,9 @@ const PostContainer = ({ navigation, title, content, profile, postId, userPostId
 
     const deletePost = () => {
         const postRef = doc(db, 'allPosts', postId);
-        const userPostRef = doc(db, "posts", firebase.auth().currentUser.uid, "userPosts", userPostId);
     
         deleteDoc(postRef).then(() => {
             Alert.alert('Post deleted! \n Refresh App to see changes.');
-        }).catch((error) => {
-            console.log(error);
-        });
-
-        deleteDoc(userPostRef).then(() => {
-            // console.log("Document successfully deleted!");
         }).catch((error) => {
             console.log(error);
         });
@@ -68,6 +61,12 @@ const PostContainer = ({ navigation, title, content, profile, postId, userPostId
                 </TouchableOpacity>
             }
 
+            {/* 
+                an overlay popup that appears when you click on the three dots.
+                if the post is from the current users, user can delete it.
+                if the post is not from the current users, user can report it.
+            */}
+
             <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 100}}>
                 
                 {profile === firebase.auth().currentUser.uid ?
@@ -97,7 +96,7 @@ const PostContainer = ({ navigation, title, content, profile, postId, userPostId
             {content}
         </View>
     );
-    }
+}
 
 const styles = StyleSheet.create({
     threeDots: {

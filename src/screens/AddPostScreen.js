@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#999999'
+    borderColor: '#888888'
   },
   lightText: {
     fontSize: 22,

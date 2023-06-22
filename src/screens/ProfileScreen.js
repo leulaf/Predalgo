@@ -3,14 +3,14 @@ import {View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Alert} from 
 import { Tabs, MaterialTabBar } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../context-store/context';
 import { firebase, db, storage } from '../config/firebase';
-import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy} from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where} from "firebase/firestore";
 import AllUserPosts from '../components/postTypes/AllUserPosts';
 import ProfileTop from '../components/ProfileTop';
 
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
     const [following, setFollowing] = useState(false);
-    const [posts, setPosts] = useState([]);
+    const [postList, setPostList] = useState([]);
     const user = route.params.user;
 
     useEffect(() => {
@@ -37,17 +37,20 @@ export default function ProfileScreen ({route, navigation}) {
 
     // Get users posts by most recent
     const fetchPostsByRecent = () => {
-        const q = query(collection(db, "posts", user.id, "userPosts"), orderBy("creationDate", "desc"));
+        const q = query(collection(db, "allPosts"), where("profile", "==", user.id), orderBy("creationDate", "desc"));
 
         getDocs(q)
         .then((snapshot) => {
-            let posts = snapshot.docs.map(doc => {
+            let posts = snapshot.docs
+            .map(doc => {
                 const data = doc.data();
                 const id = doc.id;
+                
                 return { id, ...data }
             })
-            setPosts(posts);
-        });
+
+            setPostList(posts);
+        })
     }
 
     // Follow current user
@@ -171,7 +174,7 @@ export default function ProfileScreen ({route, navigation}) {
             initialTabName="Posts"
         >
             <Tabs.Tab name="Posts">
-                <AllUserPosts posts={posts}/>
+                <AllUserPosts posts={postList}/>
             </Tabs.Tab>
             <Tabs.Tab name="Media">
                 <Tabs.ScrollView>

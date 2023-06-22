@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
-import { doc, getDoc } from "firebase/firestore";
+import { doc, where, getDocs, collection } from "firebase/firestore";
 import { db } from '../../config/firebase';
 import { Tabs } from 'react-native-collapsible-tab-view'
 import {ThemeContext} from '../../../context-store/context';
@@ -18,30 +18,26 @@ export default function AllUserPosts({navigation, posts}){
     const width = Dimensions.get('window').width;
     const {theme,setTheme} = useContext(ThemeContext);
 
-    const [postList, setPostList] = useState([]);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const q = query(collection(db, "allPosts"), where("profile", "==", profile));
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const newPostList = [];
-            for (let item of posts) {
-                const docRef = doc(db, "allPosts", item.refId);
-                const docSnap = await getDoc(docRef);
-                const data = docSnap.data();
-                data.refId = item.refId;
-                data.id = item.id;
-                
-                if (docSnap.exists()) {
-                    // console.log("Document data:", docSnap.data());
-                    newPostList.push(data);
-                } else {
-                    // console.log("No such document!");
-                }
-            }
-            setPostList(newPostList);
-        };
+    //         getDocs(q)
+    //         .then((snapshot) => {
+    //             let posts = snapshot.docs
+    //             .map(doc => {
+    //                 const data = doc.data();
+    //                 const id = doc.id;
+                    
+    //                 return { id, ...data }
+    //             })
 
-        fetchData();
-    }, [posts]);
+    //             setPostList(posts);
+    //         })
+    //     };
+
+    //     fetchData();
+    // }, []);
 
     const renderItem = ({ item, index }) => {
         let post;
@@ -77,7 +73,7 @@ export default function AllUserPosts({navigation, posts}){
             />
         }
 
-        if(index == postList.length -1){
+        if(index == posts.length -1){
             return (
                 <View style={{marginBottom: 150}}>
                     {post}
@@ -88,12 +84,12 @@ export default function AllUserPosts({navigation, posts}){
     };
 
     return (
-            <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-                <Tabs.FlatList
-                    data={postList}
-                    renderItem={renderItem}
-                />
-            </View>
+        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+            <Tabs.FlatList
+                data={posts}
+                renderItem={renderItem}
+            />
+        </View>
     );
 }
 

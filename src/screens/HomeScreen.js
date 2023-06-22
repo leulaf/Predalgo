@@ -51,6 +51,15 @@ const posts = [
         imageUrls : null,
         text: 'In the upcoming lecture, we will be generating our project. This command has changed and no longer requires the expo-cli global module. Now, we simply need to run the following command In the upcoming lecture, we will be generating our project. This command has changed and no longer requires the expo-cli global module.',
     },
+    {
+        id: 5,
+        title : 'example title',
+        memeText: 'meme name text goes here',
+        tags: ['#memes', '#memes'],
+        imageUrl : 'https://i.imgur.com/LD0cG39.jpeg',
+        imageUrls: null,
+        text: null,
+    },
 ];
 
 function HomeScreen(props){

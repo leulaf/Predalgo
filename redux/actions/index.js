@@ -26,7 +26,7 @@ export function fetchUser() {
 }
 
 export function fetchUserPosts() {
-    const q = query(collection(db, "posts", firebase.auth().currentUser.uid, "userPosts"), orderBy("creationDate", "desc"));
+    const q = query(collection(db, "allPosts"), where("profile", "==", firebase.auth().currentUser.uid));
 
     return ((dispatch) => {
         getDocs(q)
