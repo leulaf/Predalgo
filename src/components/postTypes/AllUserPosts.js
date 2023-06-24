@@ -140,6 +140,8 @@ export default function AllUserPosts({ userId }){
                 memeText={item.memeText}
                 profile={item.profile}
                 postId={item.id}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
             />
         }else if(item.imageUrls){
             post = <MultiImagePost
@@ -149,6 +151,8 @@ export default function AllUserPosts({ userId }){
                 tags={item.tags}
                 profile={item.profile}
                 postId={item.id}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
             />
         }else if(item.text){
             post = <TextPost 
@@ -157,6 +161,8 @@ export default function AllUserPosts({ userId }){
                 tags={item.tags}
                 profile={item.profile}
                 postId={item.id}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
             />
         }
 
@@ -213,7 +219,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#AAAAAA'
+        borderColor: '#BBBBBB'
     },
     darkPopularButtonActive: {
         flexDirection: 'column',
@@ -224,7 +230,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#555555'
+        borderColor: '#444444'
     },
     lightPopularButtonInactive: {
         flexDirection: 'column',
@@ -258,7 +264,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#AAAAAA'
+        borderColor: '#BBBBBB'
     },
     darkNewButtonActive: {
         flexDirection: 'column',
@@ -269,7 +275,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#555555'
+        borderColor: '#444444'
     },
     lightNewButtonInactive: {
         flexDirection: 'column',

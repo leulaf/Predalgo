@@ -90,7 +90,7 @@ function MainProfileScreen ({navigation, ...props}) {
     const [user, setUser] = useState(null);
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
-    const [posts, setPosts] = useState(0);
+    const [postCount, setPostCount] = useState(0);
     const [username, setUsername] = useState('');
     const [profilePic, setProfilePic] = useState('');
     const [bio, setBio] = useState('');
@@ -107,7 +107,7 @@ function MainProfileScreen ({navigation, ...props}) {
             setUser(currentUser);
             setFollowers(currentUser.followers);
             setFollowing(currentUser.following);
-            setPosts(currentUser.posts);
+            setPostCount(currentUser.posts);
             // console.log(posts);
             setUsername(currentUser.username);
             setProfilePic(currentUser.profilePic);
@@ -170,7 +170,7 @@ function MainProfileScreen ({navigation, ...props}) {
                         <View
                             style={styles.countContainer}
                         >
-                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{posts}</Text>
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{postCount}</Text>
                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                         </View>
 
@@ -275,6 +275,7 @@ function MainProfileScreen ({navigation, ...props}) {
                </Tabs.ScrollView>
            </Tabs.Tab>
            <Tabs.Tab name="Posts">
+                {/* <AllUserPosts userId={firebase.auth().currentUser.uid}/> */}
                 <AllUserPosts userId={firebase.auth().currentUser.uid}/>
            </Tabs.Tab>
            <Tabs.Tab name="Media">

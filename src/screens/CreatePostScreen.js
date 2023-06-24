@@ -71,7 +71,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
 
     const saveImagePostData = async (url) => {
-        // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
+        // add text post to database
         await addDoc(collection(db, "allPosts"), {
             title: title,
             imageUrl: url,
@@ -98,7 +98,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
 
     const uploadTextPost = async () => {
-        // Add a new document in collection "posts"->"userId"->"userPosts" with a generated id for the post.
+        // add text post to database
         await addDoc(collection(db, "allPosts"), {
             title: title,
             text: text,

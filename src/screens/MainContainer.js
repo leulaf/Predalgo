@@ -98,7 +98,7 @@ export default function MainContainer({navigation, openDrawer}) {
                 tabBarActiveTintColor: theme == 'light' ? 'black' : 'white',
                 tabBarInactiveTintColor: theme == 'light' ? 'gray' : '#E4E4E4',
                 tabBarStyle: {
-                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.97)' : 'rgba(29, 29, 29, 0.97)', // Translucent white background
+                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(29, 29, 29, 0.95)', // Translucent white background
                     position: 'absolute',
                     borderColor: "#000000",
                     borderTopWidth: 0,

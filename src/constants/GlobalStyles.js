@@ -14,24 +14,6 @@ const GlobalStyles = StyleSheet.create({
     lightContainer: {
         backgroundColor: "#F6F6F6"
     },
-    lightPostText: {
-        fontSize: 22,
-        fontWeight: "500",
-        color: '#000000',
-        textAlign: "left",
-        marginHorizontal: 10,
-        marginVertical: 10,
-        width: 330,
-    },
-    darkPostText: {
-        fontSize: 22,
-        fontWeight: "500",
-        color: '#FFFFFF',
-        textAlign: "left",
-        marginHorizontal: 10,
-        marginVertical: 10,
-        width: 330,
-    },
     lightPostContainer: {
         backgroundColor: '#FFFFFF',
         borderStyle: "solid",

@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import {ThemeContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
 import { ref } from "firebase/storage";
@@ -14,9 +14,10 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const PostContainer = ({ title, content, profile, postId }) => {
+const PostContainer = ({ title, content, profile, postId, profilePic, username }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
+
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
     let threeDots
@@ -26,6 +27,11 @@ const PostContainer = ({ title, content, profile, postId }) => {
     }else{
         threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
     }
+
+    useEffect(() => {
+        // console.log(username);
+        // console.log(profilePic);
+    }, []);
 
     const deletePost = () => {
         if(deleted){
@@ -81,29 +87,50 @@ const PostContainer = ({ title, content, profile, postId }) => {
 
     return (
         <View style={theme == 'light' ? GlobalStyles.lightPostContainer: GlobalStyles.darkPostContainer}>
-            {title? 
-                
-                <View 
-                    style={{flexDirection: 'row'}}
-                >
-                    <Text numberOfLines={2} 
-                    style={theme == 'light' ? GlobalStyles.lightPostText: GlobalStyles.darkPostText}>{title}</Text>
-                    
-                    <TouchableOpacity 
-                        style={{flexDirection: 'row'}}
-                        onPress= {() => setOverlayVisible(true)}
-                    >
-                        {threeDots}
-                    </TouchableOpacity>
-                    
-                </View>
-            :
+            
+            {/* profile pic, username and title*/}
             <View 
                 style={{flexDirection: 'row'}}
             >
-                <Text numberOfLines={2} 
-                style={theme == 'light' ? GlobalStyles.lightPostText: GlobalStyles.darkPostText}></Text>
+                {/* profile pic */}
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate('Profile', {
+                            profile: profile,
+                            username: username,
+                            profilePic: profilePic,
+                        });
+                    }}
+                >
+                    {profilePic != "" ? (
+                        <Image source={{ uri: profilePic }} style={styles.profileImage}/>
+                    ) : (
+                        <Image source={require('../../../assets/profile_default.png')} style={styles.profileImage}/>
+                    )}
+                </TouchableOpacity>
                 
+                {/* username and title */}
+                <View style={{flexDirection: 'column'}}>
+
+                    {/* username */}
+                    <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                        @{username}
+                    </Text>
+
+
+                    {/* title */}
+                    <Text numberOfLines={2} 
+                        style={theme == 'light' ? styles.lightPostTitle: styles.darkPostTitle}>
+                            {title ?
+                                title
+                            :
+                                ""
+                            }
+                    </Text>
+
+                </View>
+                
+                {/* three dots */}
                 <TouchableOpacity 
                     style={{flexDirection: 'row'}}
                     onPress= {() => setOverlayVisible(true)}
@@ -112,7 +139,8 @@ const PostContainer = ({ title, content, profile, postId }) => {
                 </TouchableOpacity>
                 
             </View>
-            }
+
+            {content}
 
             {/* 
                 an overlay popup that appears when you click on the three dots.
@@ -146,7 +174,6 @@ const PostContainer = ({ title, content, profile, postId }) => {
                 }
             </Overlay>
 
-            {content}
         </View>
     );
 }
@@ -155,7 +182,47 @@ const styles = StyleSheet.create({
     threeDots: {
         // marginLeft: 365,
         padding: 10,
+        marginTop: -3,
         marginHorizontal: 10,
+    },
+    profileImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 50,
+        marginHorizontal: 5,
+        marginVertical: 8,
+    },
+    lightUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#666666',
+        textAlign: "left",
+        marginTop: 8,
+    },
+    darkUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#CCCCCC',
+        textAlign: "left",
+        marginTop: 8,
+    },
+    lightPostTitle: {
+        fontSize: 22,
+        fontWeight: "500",
+        color: '#333333',
+        textAlign: "left",
+        marginRight: 10,
+        marginBottom: 10,
+        width: 290,
+    },
+    darkPostTitle: {
+        fontSize: 22,
+        fontWeight: "500",
+        color: '#DDDDDD',
+        textAlign: "left",
+        marginRight: 10,
+        marginBottom: 10,
+        width: 290,
     },
     overlayText: {
         fontSize: 22,

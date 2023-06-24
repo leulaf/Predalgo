@@ -24,6 +24,7 @@ export default function AllPosts({navigation, posts}){
                 title={item.title + " " + index}
                 tags={item.tags}
                 memeText={item.memeText}
+                profile={item.profile}
             />
         }else if(item.imageUrls){
             post = <MultiImagePost 
@@ -32,9 +33,10 @@ export default function AllPosts({navigation, posts}){
                 title={item.title + index}
                 imageUrls={item.imageUrls}
                 tags={item.tags}
+                profile={item.profile}
             />
         }else if(item.text){
-            post = <TextPost title={item.title} text={item.text} tags={item.tags} />
+            post = <TextPost title={item.title} text={item.text} tags={item.tags} profile={item.profile}/>
         }
 
         return post;
