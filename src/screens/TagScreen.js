@@ -4,7 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import {ThemeContext} from '../../context-store/context';
 import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
-import { collection, query, where, limit, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, query, where, orderBy, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
 import SimpleTopBar from '../components/SimpleTopBar';
 
@@ -15,8 +15,9 @@ export default function FollowersScreen({navigation, route}){
     
     // Get users posts by most recent
     const fetchPostsByRecent = () => {
-        const q = query(collection(db, "allPosts"), where("tags", "array-contains", tag), 
-            // orderBy("creationDate", "desc")
+        const q = query(collection(db, "allPosts"), 
+            where("tags", "array-contains", tag), 
+            orderBy("creationDate", "desc")
         );
 
         getDocs(q)

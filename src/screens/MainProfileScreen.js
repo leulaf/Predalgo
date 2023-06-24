@@ -9,12 +9,10 @@ import {ThemeContext} from '../../context-store/context';
 import {db, Firebase, firebase, auth, storage} from '../config/firebase';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchUser, fetchUserPosts } from '../../redux/actions/index';
+import { fetchUser } from '../../redux/actions/index';
 import AddIconLight from '../../assets/add.svg';
 import AddIconDark from '../../assets/add_dark.svg';
 import AllUserPosts from '../components/postTypes/AllUserPosts';
-import { set } from 'react-native-reanimated';
-
 
 async function uploadImage(imageUrl) {
    // Convert image to blob format(array of bytes)
@@ -92,7 +90,7 @@ function MainProfileScreen ({navigation, ...props}) {
     const [user, setUser] = useState(null);
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
-    const [userPosts, setUserPosts] = useState([]);
+    const [posts, setPosts] = useState(0);
     const [username, setUsername] = useState('');
     const [profilePic, setProfilePic] = useState('');
     const [bio, setBio] = useState('');
@@ -100,23 +98,22 @@ function MainProfileScreen ({navigation, ...props}) {
 
     useEffect(() => {
         props.fetchUser();
-        props.fetchUserPosts();
    }, []);
 
     useEffect(() => {
-        const { currentUser, posts } = props;
+        const { currentUser } = props;
         
         if(currentUser != null){
             setUser(currentUser);
             setFollowers(currentUser.followers);
             setFollowing(currentUser.following);
-            setUserPosts(posts);
+            setPosts(currentUser.posts);
             // console.log(posts);
             setUsername(currentUser.username);
             setProfilePic(currentUser.profilePic);
             setBio(currentUser.bio);
         }
-   }, [props.currentUser, props.posts]);
+   }, [props.currentUser]);
 
    const finishEdit = () => {
        setNewBio(bio);
@@ -173,7 +170,7 @@ function MainProfileScreen ({navigation, ...props}) {
                         <View
                             style={styles.countContainer}
                         >
-                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{userPosts.length}</Text>
+                            <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{posts}</Text>
                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                         </View>
 
@@ -278,7 +275,7 @@ function MainProfileScreen ({navigation, ...props}) {
                </Tabs.ScrollView>
            </Tabs.Tab>
            <Tabs.Tab name="Posts">
-                <AllUserPosts posts={userPosts} profile={firebase.auth().currentUser.uid}/>
+                <AllUserPosts userId={firebase.auth().currentUser.uid}/>
            </Tabs.Tab>
            <Tabs.Tab name="Media">
                <Tabs.ScrollView>
@@ -385,24 +382,24 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end',
     },
    lightEditButton: {
-        width: 80,
+        width: 85,
         height: 30,
         borderRadius: 20,
         borderWidth: 1.5,
-        borderColor: '#222222',
-        marginLeft: 25,
+        borderColor: '#888888',
+        marginLeft: 10,
         marginTop: 15,
         alignItems: 'center',
         justifyContent: 'center',
         alignSelf: 'flex-end',
    },
    darkEditButton: {
-        width: 80,
+        width: 85,
         height: 30,
         borderRadius: 20,
         borderWidth: 1.5,
-        borderColor: '#DDDDDD',
-        marginLeft: 25,
+        borderColor: '#888888',
+        marginLeft: 10,
         marginTop: 15,
         alignItems: 'center',
         justifyContent: 'center',
@@ -435,11 +432,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (store) => ({
    currentUser: store.userState.currentUser,
-   posts: store.userState.posts
 })
 
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser, fetchUserPosts }, dispatch);
+const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
 
 
 export default connect(mapStateToProps, mapDispatchToProps)(MainProfileScreen);

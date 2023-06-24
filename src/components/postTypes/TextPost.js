@@ -4,7 +4,7 @@ import {ThemeContext} from '../../../context-store/context';
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 
-const TextPost = ({ navigation, title, text, tags, profile, postId, userPostId }) => {
+const TextPost = ({ navigation, title, text, tags, profile, postId }) => {
     const {theme,setTheme} = useContext(ThemeContext);
 
     return (
@@ -12,7 +12,6 @@ const TextPost = ({ navigation, title, text, tags, profile, postId, userPostId }
             title={title}
             profile={profile}
             postId={postId}
-            userPostId={userPostId}
             content={
                 <>
                     <View style={theme == "light" ? styles.lightTextContainer : styles.darkTextContainer}>

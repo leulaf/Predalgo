@@ -10,7 +10,6 @@ import SimpleTopBar from '../components/SimpleTopBar';
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
     const [following, setFollowing] = useState(false);
-    const [postList, setPostList] = useState([]);
     const user = route.params.user;
 
     useEffect(() => {
@@ -19,11 +18,8 @@ export default function ProfileScreen ({route, navigation}) {
         });
     }, [navigation]);
 
-    // Get users posts by most recent and check if current user is following the user
+    // Check if current user is following the user
     useEffect(() => {
-        fetchPostsByRecent();
-
-        // Check if current user is following the user
         const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
         const docSnap = getDoc(docRef)
         .then((docSnap) => {
@@ -34,24 +30,6 @@ export default function ProfileScreen ({route, navigation}) {
             }
         });
     }, []);
-
-    // Get users posts by most recent
-    const fetchPostsByRecent = () => {
-        const q = query(collection(db, "allPosts"), where("profile", "==", user.id), orderBy("creationDate", "desc"));
-
-        getDocs(q)
-        .then((snapshot) => {
-            let posts = snapshot.docs
-            .map(doc => {
-                const data = doc.data();
-                const id = doc.id;
-                
-                return { id, ...data }
-            })
-
-            setPostList(posts);
-        })
-    }
 
     // Follow current user
     const onFollow = () => {
@@ -169,7 +147,7 @@ export default function ProfileScreen ({route, navigation}) {
                          <View
                              style={styles.countContainer}
                          >
-                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{postList.length}</Text>
+                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.posts}</Text>
                              <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                          </View>
  
@@ -223,7 +201,7 @@ export default function ProfileScreen ({route, navigation}) {
             initialTabName="Posts"
         >
             <Tabs.Tab name="Posts">
-                <AllUserPosts posts={postList}/>
+                <AllUserPosts userId={user.id}/>
             </Tabs.Tab>
             <Tabs.Tab name="Media">
                 <Tabs.ScrollView>
@@ -286,7 +264,7 @@ export default function ProfileScreen ({route, navigation}) {
         marginTop: 12,
         marginBottom: 10,
         borderWidth: 1.5,
-        borderColor: '#222222'
+        borderColor: '#888888'
     },
     darkFollowButton: {
         flexDirection: 'column',
@@ -298,7 +276,7 @@ export default function ProfileScreen ({route, navigation}) {
         marginTop: 12,
         marginBottom: 10,
         borderWidth: 1.5,
-        borderColor: '#f2f2f2'
+        borderColor: '#888888'
     },
     lightFollowText: {
         fontSize: 18,

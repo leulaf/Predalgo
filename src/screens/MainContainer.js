@@ -48,33 +48,33 @@ export default function MainContainer({navigation, openDrawer}) {
     let home, homeInactive, trend, trendInactive, post, saved, savedInactive, profile, profileInactive
 
     if(theme == "light"){
-        home = <Home width={28} height={28}/>;
-        homeInactive = <Home_Inactive width={28} height={28}/>;
+        home = <Home width={28} height={28} style={{marginTop: 25}}/>;
+        homeInactive = <Home_Inactive width={28} height={28} style={{marginTop: 25}}/>;
         
-        trend = <Trend width={29} height={30}/>;
-        trendInactive = <Trend_Inactive width={29} height={30}/>;
+        trend = <Trend width={29} height={30} style={{marginTop: 25}}/>;
+        trendInactive = <Trend_Inactive width={29} height={30} style={{marginTop: 25}}/>;
 
-        post = <Post width={60} height={60} style={{marginTop:10}}/>;
+        post = <Post width={60} height={60} style={{marginTop: 35}}/>;
         
-        saved = <Saved width={25} height={25}/>;
-        savedInactive =  <Saved_Inactive width={25} height={25}/>;
+        saved = <Saved width={25} height={25} style={{marginTop: 25}}/>;
+        savedInactive =  <Saved_Inactive width={25} height={25} style={{marginTop: 25}}/>;
 
-        profile = <Profile width={30} height={30}/>;
-        profileInactive = <Profile_Inactive width={30} height={30}/>;
+        profile = <Profile width={30} height={30} style={{marginTop: 25}}/>;
+        profileInactive = <Profile_Inactive width={30} height={30} style={{marginTop: 25}}/>;
     }else{
-        home = <Home_Dark width={28} height={28}/>;
-        homeInactive = <Home_Inactive_Dark width={28} height={28}/>;
+        home = <Home_Dark width={28} height={28} style={{marginTop: 25}}/>;
+        homeInactive = <Home_Inactive_Dark width={28} height={28} style={{marginTop: 25}}/>;
         
-        trend = <Trend_Dark width={29} height={30}/>;
-        trendInactive =  <Trend_Inactive_Dark width={29} height={30}/>;
+        trend = <Trend_Dark width={29} height={30} style={{marginTop: 25}}/>;
+        trendInactive =  <Trend_Inactive_Dark width={29} height={30} style={{marginTop: 25}}/>;
 
-        post = <Post_Dark width={60} height={60} style={{marginTop:10}}/>;
+        post = <Post_Dark width={60} height={60} style={{marginTop: 35}}/>;
        
-        saved = <Saved_Dark width={25} height={25}/>;
-        savedInactive =  <Saved_Inactive_Dark width={25} height={25}/>;
+        saved = <Saved_Dark width={25} height={25} style={{marginTop: 25}}/>;
+        savedInactive =  <Saved_Inactive_Dark width={25} height={25} style={{marginTop: 25}}/>;
         
-        profile = <Profile_Dark width={30} height={30}/>;
-        profileInactive = <Profile_Inactive_Dark width={30} height={30}/>;
+        profile = <Profile_Dark width={30} height={30} style={{marginTop: 25}}/>;
+        profileInactive = <Profile_Inactive_Dark width={30} height={30} style={{marginTop: 25}}/>;
     }
 
     return (
@@ -102,9 +102,9 @@ export default function MainContainer({navigation, openDrawer}) {
                     position: 'absolute',
                     borderColor: "#000000",
                     borderTopWidth: 0,
-                    height: 90
+                    height: 85
                 },
-                tabBarLabelStyle: { fontSize: 14 , fontWeight: '400'},
+                tabBarLabelStyle: { marginTop: 22, fontSize: 14 , fontWeight: '400'},
             })}
             >
 

@@ -24,22 +24,3 @@ export function fetchUser() {
         })
     })
 }
-
-export function fetchUserPosts() {
-    const q = query(collection(db, "allPosts"), where("profile", "==", firebase.auth().currentUser.uid));
-
-    return ((dispatch) => {
-        getDocs(q)
-        .then((snapshot) => {
-            let posts = snapshot.docs
-            .map(doc => {
-                const data = doc.data();
-                const id = doc.id;
-                
-                return { id, ...data }
-            })
-
-            dispatch({ type: USER_POSTS_STATE_CHANGE, posts});
-        })
-    })
-}

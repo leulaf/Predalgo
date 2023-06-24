@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
    },
    lightUsernameText: {
         fontSize: 18,
-        color: '#555555',
+        color: '#444444',
         fontWeight: '600',
         marginTop: 63,
         marginLeft: 10,
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     },
     lightAccountText: {
         fontSize: 18,
-        color: '#555555',
+        color: '#444444',
         fontWeight: '600',
         marginRight: 10,
     },

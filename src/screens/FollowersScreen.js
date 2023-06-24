@@ -74,7 +74,6 @@ export default function FollowersScreen({navigation, route}){
 
             </TouchableOpacity>
         );
-
     }
     
     return (

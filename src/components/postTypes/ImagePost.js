@@ -5,7 +5,7 @@ import FlexImage from 'react-native-flex-image';
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 
-const ImagePost = ({ title, imageUrl, memeText, tags, profile, postId, userPostId }) => {
+const ImagePost = ({ title, imageUrl, memeText, tags, profile, postId }) => {
     const navigation = useNavigation();
     
     return (
@@ -13,7 +13,6 @@ const ImagePost = ({ title, imageUrl, memeText, tags, profile, postId, userPostI
             title={title}
             profile={profile}
             postId={postId}
-            userPostId={userPostId}
             content={
                 <View>
                     <View style={{flexDirection: "row"}}>

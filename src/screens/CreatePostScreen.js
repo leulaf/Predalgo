@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, TextInput, ScrollView, Image, Dimensions, Toucha
 import {ThemeContext} from '../../context-store/context';
 import { db, storage } from '../config/firebase';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, updateDoc, increment } from "firebase/firestore";
 
 import firebase from 'firebase/compat/app';
 require('firebase/firestore');
@@ -81,6 +81,13 @@ const CreatePostScreen = ({navigation, route}) => {
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
             profile: firebase.auth().currentUser.uid
         }).then(async (docRef) => {
+            // update posts count for current user
+            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
+
+            updateDoc(currentUserRef, {
+                posts: increment(1)
+            });
+            
             setUploading(false);
             Alert.alert("Post uploaded successfully!");
             navigation.goBack();
@@ -101,6 +108,13 @@ const CreatePostScreen = ({navigation, route}) => {
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
             profile: firebase.auth().currentUser.uid
         }).then(async (docRef) => {
+            // update posts count for current user
+            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
+
+            updateDoc(currentUserRef, {
+                posts: increment(1)
+            });
+
             setUploading(false);
             Alert.alert("Post uploaded successfully!");
             navigation.goBack();

@@ -2,8 +2,9 @@ import React, {useContext, useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import {ThemeContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
-import { firebase, db } from '../../config/firebase';
-import { doc, deleteDoc} from "firebase/firestore";
+import { ref } from "firebase/storage";
+import { firebase, storage, db } from '../../config/firebase';
+import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../../constants/GlobalStyles';
 
@@ -13,9 +14,10 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const PostContainer = ({ title, content, profile, postId, userPostId }) => {
+const PostContainer = ({ title, content, profile, postId }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
+    const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
     let threeDots
     
@@ -26,13 +28,55 @@ const PostContainer = ({ title, content, profile, postId, userPostId }) => {
     }
 
     const deletePost = () => {
+        if(deleted){
+            return;
+        }
         const postRef = doc(db, 'allPosts', postId);
+        const postSnapshot = getDoc(postRef);
+        
+        postSnapshot.then((snapshot) => {
+            if (snapshot.exists) {
+                deleteDoc(postRef).then(() => {
+                    Alert.alert('Post deleted! \n Refresh App to see changes.');
+
+                    setDeleted(true);
+
+                    // update posts count for current user
+                    const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
+
+                    updateDoc(currentUserRef, {
+                        posts: increment(-1)
+                    });
+
+                }).catch((error) => {
+                    console.log(error);
+                });
+
+                data = snapshot.data();
+                // console.log(data.imageUrl);
+
+                // if (data.imageUrl) {
+                //     const imageRef = ref(storage, "gs://predalgo-backend.appspot.com/profilePics/adaptive-icon.png");
+  
+                //     // Delete the file
+                //     deleteObject(imageRef).then(() => {
+                //         // File deleted successfully
+                //         console.log('Image deleted!');
+                //     }).catch((error) => {
+                //         // Uh-oh, an error occurred!
+                //         console.log(error);
+                //     });
+                // }
+            }
+
+            
+        })
     
-        deleteDoc(postRef).then(() => {
-            Alert.alert('Post deleted! \n Refresh App to see changes.');
-        }).catch((error) => {
-            console.log(error);
-        });
+        
+    }
+
+    if (deleted) {
+        return null;
     }
 
     return (
@@ -54,13 +98,20 @@ const PostContainer = ({ title, content, profile, postId, userPostId }) => {
                     
                 </View>
             :
+            <View 
+                style={{flexDirection: 'row'}}
+            >
+                <Text numberOfLines={2} 
+                style={theme == 'light' ? GlobalStyles.lightPostText: GlobalStyles.darkPostText}></Text>
+                
                 <TouchableOpacity 
                     style={{flexDirection: 'row'}}
                     onPress= {() => setOverlayVisible(true)}
                 >
-                    <View style={{marginVertical: 22}}></View>
                     {threeDots}
                 </TouchableOpacity>
+                
+            </View>
             }
 
             {/* 

@@ -24,6 +24,7 @@ const AuthScreen = ({navigation}) => {
                         email: email,
                         profilePic: "",
                         bio: "User bio is empty",
+                        posts: 0,
                         followers: 0,
                         following: 0,
                     })
