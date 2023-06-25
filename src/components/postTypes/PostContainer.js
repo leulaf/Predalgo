@@ -96,7 +96,7 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username }
                 <TouchableOpacity
                     onPress={() => {
                         navigation.navigate('Profile', {
-                            profile: profile,
+                            user: profile,
                             username: username,
                             profilePic: profilePic,
                         });
@@ -197,14 +197,14 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: '#666666',
         textAlign: "left",
-        marginTop: 8,
+        marginTop: 6,
     },
     darkUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#CCCCCC',
         textAlign: "left",
-        marginTop: 8,
+        marginTop: 6,
     },
     lightPostTitle: {
         fontSize: 22,

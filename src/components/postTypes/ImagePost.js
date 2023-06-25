@@ -59,9 +59,8 @@ const ImagePost = ({ title, imageUrl, memeText, tags, profile, postId, likesCoun
 const styles = StyleSheet.create({
     image: {
         flex: 1,
-        height: 350,
+        height: 400,
         borderRadius: 15,
-
     }
 });
 
