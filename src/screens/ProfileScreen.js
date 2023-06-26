@@ -201,7 +201,7 @@ export default function ProfileScreen ({route, navigation}) {
             initialTabName="Posts"
         >
             <Tabs.Tab name="Posts">
-                <AllUserPosts userId={user.id}/>
+                <AllUserPosts userId={user.id} profilePic={user.profilePic}/>
             </Tabs.Tab>
             <Tabs.Tab name="Media">
                 <Tabs.ScrollView>

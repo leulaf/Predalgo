@@ -14,7 +14,7 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const PostContainer = ({ title, content, profile, postId, profilePic, username }) => {
+const PostContainer = ({ title, content, profile, postId, profilePic, username, repostUsername }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
 
@@ -111,6 +111,15 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username }
                 
                 {/* username and title */}
                 <View style={{flexDirection: 'column'}}>
+
+                    {
+                        repostUsername ?
+                            <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                                @{repostUsername} reposted
+                            </Text>
+                        :
+                            null
+                    }
 
                     {/* username */}
                     <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>

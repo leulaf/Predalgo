@@ -275,7 +275,6 @@ function MainProfileScreen ({navigation, ...props}) {
                </Tabs.ScrollView>
            </Tabs.Tab>
            <Tabs.Tab name="Posts">
-                {/* <AllUserPosts userId={firebase.auth().currentUser.uid}/> */}
                 <AllUserPosts userId={firebase.auth().currentUser.uid}/>
            </Tabs.Tab>
            <Tabs.Tab name="Media">

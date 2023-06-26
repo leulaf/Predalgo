@@ -2,7 +2,6 @@ import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
-import { Tabs } from 'react-native-collapsible-tab-view'
 import {ThemeContext} from '../../../context-store/context';
 import ImagePost from './ImagePost';
 import MultiImagePost from './MultiImagePost';
@@ -10,13 +9,17 @@ import TextPost from './TextPost';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
-export default function AllUserPosts({ userId }){
+export default function AllTagPosts({ tag }){
+    if(tag === "" || tag === null){
+        return null;
+    }
     const {theme,setTheme} = useContext(ThemeContext);
     const [postList, setPostList] = useState([]);
     const [newPosts, setNewPosts] = useState(true);
     const [popularPosts, setPopularPosts] = useState(false);
 
     useEffect(() => {
+        
         fetchPostsByRecent();
     }, []);
 
@@ -38,7 +41,11 @@ export default function AllUserPosts({ userId }){
 
 
     const fetchPostsByRecent = async() => {
-        const q = query(collection(db, "allPosts"), where("profile", "==", userId), orderBy("creationDate", "desc"));
+        const q = query(collection(db, "allPosts"), 
+            where("tags", "array-contains", tag), 
+            orderBy("creationDate", "desc")
+        );
+        
         await getDocs(q)
         .then(async(snapshot) => {
             let posts = snapshot.docs
@@ -62,11 +69,15 @@ export default function AllUserPosts({ userId }){
             Promise.all(posts).then((resolvedPosts) => {
                 setPostList(resolvedPosts);
             });
+            
         })
     }
     
     const fetchPostsByPopular = async() => {
-        const q = query(collection(db, "allPosts"), where("profile", "==", userId), orderBy("likesCount", "desc"));
+        const q = query(collection(db, "allPosts"), 
+            where("tags", "array-contains", tag), 
+            orderBy("likesCount", "desc")
+        );
     
         await getDocs(q)
         .then(async(snapshot) => {
@@ -96,7 +107,7 @@ export default function AllUserPosts({ userId }){
 
     {/* New/Popular/Refresh button */}
     const topButtons = (
-        <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 15}}>
+        <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 10}}>
             {/* New button */}
             {
                 newPosts ?
@@ -225,7 +236,7 @@ export default function AllUserPosts({ userId }){
 
     return (
         <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-            <Tabs.FlatList
+            <FlatList
                 data={postList}
                 keyExtractor={(result) => result.id}
                 renderItem={({ item, index }) => {

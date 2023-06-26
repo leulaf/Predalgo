@@ -6,12 +6,28 @@ import {ThemeContext} from '../../../context-store/context';
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 
-const TextPost = ({ navigation, title, text, tags, profile, postId, likesCount, commentsCount }) => {
+const TextPost = ({ navigation, title, text, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [profilePic, setProfilePic] = useState("");
     const [username, setUsername] = useState("");
+    const [repostUsername, setRepostUsername] = useState(null);
 
     useEffect(() => {
+        if(repostProfile != null){
+            const userRef = doc(db, 'users', repostProfile);
+            const userSnapshot = getDoc(userRef);
+
+            userSnapshot.then((snapshot) => {
+                if (snapshot.exists) {
+                    setRepostUsername(snapshot.data().username);
+                } else {
+                    console.log("No such document!");
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            });
+        }
+
         const userRef = doc(db, 'users', profile);
         const userSnapshot = getDoc(userRef);
 
@@ -38,6 +54,7 @@ const TextPost = ({ navigation, title, text, tags, profile, postId, likesCount, 
             postId={postId}
             profilePic={profilePic}
             username={username}
+            repostUsername={repostUsername}
             content={
                 <>
                     <View style={theme == "light" ? styles.lightTextContainer : styles.darkTextContainer}>
@@ -76,7 +93,7 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#222222",
         borderRadius: 13,
-        borderColor: "#444444",
+        borderColor: "#393939",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'

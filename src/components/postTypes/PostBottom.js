@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { firebase, storage, db } from '../../config/firebase';
 import { collection, addDoc, doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
@@ -111,11 +111,32 @@ const PostBottom = ({ memeText, tags, hideBottom, postId, likesCount, commentsCo
         });
     }
 
+    // upload repost to database
+    const onRepost = async () => {
+        // add text post to database
+        await addDoc(collection(db, "allPosts"), {
+            repostPostId: postId,
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+            profile: firebase.auth().currentUser.uid
+        }).then(async (docRef) => {
+            // update posts count for current user
+            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
+
+            updateDoc(currentUserRef, {
+                posts: increment(1)
+            });
+
+            Alert.alert("Reposted!");
+        }).catch(function (error) {
+            console.log(error);
+        });
+    };
+
     if(tags){
         bottomTags = tags.map((d, index) => 
             <TouchableOpacity
-                onPress={() => navigation.navigate('Tag', {tag: tags[index]})}
                 key={index}
+                onPress={() => navigation.navigate('Tag', {tag: tags[index]})}
             >
                 <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>
                     {tags[index]}
@@ -199,7 +220,7 @@ const PostBottom = ({ memeText, tags, hideBottom, postId, likesCount, commentsCo
                     {/* Repost button */}
                     <TouchableOpacity
                         style={styles.bottomButtonContainer}
-                        // onPress={() => }
+                        onPress={() => onRepost()}
                     >
                         {repost}
 
