@@ -29,7 +29,7 @@ const GlobalStyles = StyleSheet.create({
     darkPostContainer: {
         backgroundColor: '#222222',
         borderStyle: "solid",
-        borderColor: "#444444",
+        borderColor: "#3d3d3d",
         borderWidth: 1.5,
         borderRadius: 15,
         marginBottom: 15,

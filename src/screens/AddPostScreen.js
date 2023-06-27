@@ -1,18 +1,47 @@
 import React, {useContext, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import imgflip from '../api/imgflip';
 import PostBar from '../components/PostBar';
 import SimpleTopBar from '../components/SimpleTopBar';
+import Image from 'react-native-scalable-image';
 
+ImageContainer = (props) => {    
+    return (
+        <Image 
+            width={200} // this will make image take full width of the device
+            source={props.imageSource} // pass the image source via props
+            style={{borderRadius: 10, marginHorizontal: 3, marginVertical: 6}}
+        />
+    );
+};
 const AddPostScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [memeTemplates, setMemeTemplates] = useState([]);
+    // const [memeTemplates, setMemeTemplates] = useState([]);
+    const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
+    const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
 
     const getTemplates = async () => {
         const response = await imgflip.get(`/get_memes`);
-        setMemeTemplates(response.data.data.memes);
+        await setLeftAndRightMemeTemplates(response.data.data.memes);
+    };
+
+    // a function to split the meme templates into two arrays, the left should be odd indexes and the right should be even indexes
+    const setLeftAndRightMemeTemplates = async (memeTemplates) => {
+        let left = [];
+        let right = [];
+
+        for(let i = 0; i < memeTemplates.length; i++){
+            if(i % 2 == 0){
+                left.push(memeTemplates[i]);
+            }else{
+                right.push(memeTemplates[i]);
+            }
+        }
+
+        setLeftMemeTemplates(left);
+        setRightMemeTemplates(right);
     };
 
     useEffect(() => {
@@ -51,23 +80,45 @@ const AddPostScreen = ({navigation}) => {
               </View>
           </View> 
 
-          <FlatList
-            numColumns={2}
-            data={memeTemplates}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
-                >
-                  <Image
-                    style={styles.image}
-                    source={{ uri: item.url }}
-                  />
-                </TouchableOpacity>
-              );
-            }}
-            />         
+          <View style={{flexDirection: 'row'}}>
+            <View style={{flex: 1}}>
+              <FlatList
+                numColumns={1}
+                data={leftMemeTemplates}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
+                    >
+                      <ImageContainer
+                        imageSource={{ uri: item.url }}
+                      />
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+            <View style={{flex: 1}}>
+              <FlatList
+                numColumns={1}
+                data={rightMemeTemplates}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
+                    >
+                      <ImageContainer
+                        imageSource={{ uri: item.url }}
+                      />
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          </View>
+       
         </ScrollView>
     );
 }

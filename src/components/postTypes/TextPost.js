@@ -69,7 +69,6 @@ const TextPost = ({ navigation, title, text, tags, profile, postId, likesCount, 
                         hideBottom
                     />
                 </>
-                
             }
         />
     );
@@ -82,7 +81,7 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#FFFFFF",
         borderRadius: 13,
-        borderColor: "#EEEEEE",
+        borderColor: "#f4f4f4",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#222222",
         borderRadius: 13,
-        borderColor: "#393939",
+        borderColor: "#2d2d2d",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'

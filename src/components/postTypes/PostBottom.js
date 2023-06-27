@@ -26,7 +26,7 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const PostBottom = ({ memeText, tags, hideBottom, postId, likesCount, commentsCount }) => {
+const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
     const [likeCount, setLikeCount] = useState(likesCount);
@@ -145,7 +145,7 @@ const PostBottom = ({ memeText, tags, hideBottom, postId, likesCount, commentsCo
         );
     }
     
-    if (memeText && tags) {
+    if (memeName && tags) {
         content =  <View flexDirection={"row"}>
             <View style={styles.memeName}>
                 
@@ -163,7 +163,7 @@ const PostBottom = ({ memeText, tags, hideBottom, postId, likesCount, commentsCo
                     repeatSpacer={50}
                     marqueeDelay={1000}
                 >
-                    {memeText}
+                    {memeName}
                 </TextTicker>
                 
             </View>
@@ -172,7 +172,7 @@ const PostBottom = ({ memeText, tags, hideBottom, postId, likesCount, commentsCo
                 {bottomTags}
             </ScrollView>
         </View>
-    } else if (memeText) {
+    } else if (memeName) {
         content =
             <View style={styles.memeName}>
                 
@@ -190,7 +190,7 @@ const PostBottom = ({ memeText, tags, hideBottom, postId, likesCount, commentsCo
                     repeatSpacer={50}
                     marqueeDelay={1000}
                 >
-                    {memeText}
+                    {memeName}
                 </TextTicker>
             </View>
     }else if (tags) {

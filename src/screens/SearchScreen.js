@@ -37,6 +37,7 @@ export default function SearchScreen({navigation}){
                 tabBarVisible: false,
                 }}>
                 <Top_Tab.Screen name="Users" component={SearchUsers} />
+                <Top_Tab.Screen name="#Tag" component={SearchUsers} />
             </Top_Tab.Navigator>
         </View>
       );

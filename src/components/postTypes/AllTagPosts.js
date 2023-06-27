@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#444444'
+        borderColor: '#4b4b4b'
     },
     lightPopularButtonInactive: {
         flexDirection: 'column',
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#444444'
+        borderColor: '#3f3f3f'
     },
     // New button
     lightNewButtonActive: {
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#444444'
+        borderColor: '#4b4b4b'
     },
     lightNewButtonInactive: {
         flexDirection: 'column',
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#444444'
+        borderColor: '#3f3f3f'
     },
     lightPopularText: {
         fontSize: 18,

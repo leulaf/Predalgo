@@ -1,25 +1,13 @@
 import React, {useContext, useState, useEffect} from 'react';
 import { View, StyleSheet, Dimensions} from 'react-native';
-import Image from 'react-native-scalable-image';
 import { useNavigation } from '@react-navigation/native';
 import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
+import ImageContainer from '../ImageContainer';
 
-const ImageContainer = (props) => {
-    const windowWidth = Dimensions.get('window').width;
-    
-    return (
-        <Image 
-            width={windowWidth} // this will make image take full width of the device
-            source={props.imageSource} // pass the image source via props
-            style={{borderRadius: 15}}
-        />
-    );
-  };
-
-const ImagePost = ({ title, imageUrl, memeText, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
+const ImagePost = ({ title, imageUrl, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
     const navigation = useNavigation();
     const [profilePic, setProfilePic] = useState("");
     const [username, setUsername] = useState("");
@@ -70,12 +58,12 @@ const ImagePost = ({ title, imageUrl, memeText, tags, profile, postId, likesCoun
             repostUsername={repostUsername}
             content={
                 <View >
-                    <View style={{flexDirection: "row"}}>
+                    <View style={{flexDirection: "row", alignSelf: 'center'}}>
                         <ImageContainer imageSource={{ uri: imageUrl }} />
                     </View>
                     <PostBottom
                         tags={tags}
-                        memeText={memeText}
+                        memeName={memeName}
                         postId={postId}
                         likesCount={likesCount}
                         commentsCount={commentsCount}
