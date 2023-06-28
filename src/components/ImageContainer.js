@@ -10,7 +10,7 @@ export default ImageContainer = (props) => {
             width={windowWidth} // this will make image take full width of the device
             height={800}
             source={props.imageSource} // pass the image source via props
-            style={{borderRadius: 13, alignSelf: 'center'}}
+            style={{borderRadius: 10, alignSelf: 'center'}}
         />
     );
 };
