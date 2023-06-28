@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     },
     darkUsernameText: {
         fontSize: 18,
-        color: '#dadada',
+        color: '#dddddd',
         fontWeight: '600',
         marginTop: 63,
         marginLeft: 10,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     },
     darkAccountText: {
         fontSize: 18,
-        color: '#dadada',
+        color: '#dddddd',
         fontWeight: '600',
         marginRight: 10,
     },

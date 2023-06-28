@@ -6,6 +6,7 @@ import { firebase, db, storage } from '../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import AllUserPosts from '../components/postTypes/AllUserPosts';
 import SimpleTopBar from '../components/SimpleTopBar';
+import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
 
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
@@ -204,16 +205,7 @@ export default function ProfileScreen ({route, navigation}) {
                 <AllUserPosts userId={user.id} profilePic={user.profilePic}/>
             </Tabs.Tab>
             <Tabs.Tab name="Media">
-                <Tabs.ScrollView>
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                    <View style={[styles.box, styles.boxA]} />
-                    <View style={[styles.box, styles.boxB]} />
-                </Tabs.ScrollView>
+                <AllUserMediaPosts userId={user.id} profilePic={user.profilePic}/>
             </Tabs.Tab>
         </Tabs.Container>
     );

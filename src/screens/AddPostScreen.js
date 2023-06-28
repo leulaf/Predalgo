@@ -18,7 +18,6 @@ ImageContainer = (props) => {
 };
 const AddPostScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    // const [memeTemplates, setMemeTemplates] = useState([]);
     const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
     const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
 
@@ -80,6 +79,7 @@ const AddPostScreen = ({navigation}) => {
               </View>
           </View> 
 
+          {/* left side of meme templates */}
           <View style={{flexDirection: 'row'}}>
             <View style={{flex: 1}}>
               <FlatList
@@ -99,6 +99,8 @@ const AddPostScreen = ({navigation}) => {
                 }}
               />
             </View>
+
+            {/* right side of meme templates */}
             <View style={{flex: 1}}>
               <FlatList
                 numColumns={1}

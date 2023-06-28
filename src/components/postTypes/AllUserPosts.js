@@ -2,7 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
-import { Tabs } from 'react-native-collapsible-tab-view'
+import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
 import ImagePost from './ImagePost';
 import MultiImagePost from './MultiImagePost';
@@ -165,7 +165,7 @@ export default function AllUserPosts({ userId }){
         let post;
         if(item.imageUrl){
             post = <ImagePost
-                key={item.repostProfile ? item.id + "1" : item.id}
+                key={index}
                 repostProfile={item.repostProfile ? item.repostProfile : null}
                 imageUrl={item.imageUrl}
                 title={item.title}

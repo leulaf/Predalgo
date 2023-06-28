@@ -13,6 +13,7 @@ import { fetchUser } from '../../redux/actions/index';
 import AddIconLight from '../../assets/add.svg';
 import AddIconDark from '../../assets/add_dark.svg';
 import AllUserPosts from '../components/postTypes/AllUserPosts';
+import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
 
 async function uploadImage(imageUrl) {
    // Convert image to blob format(array of bytes)
@@ -278,16 +279,7 @@ function MainProfileScreen ({navigation, ...props}) {
                 <AllUserPosts userId={firebase.auth().currentUser.uid}/>
            </Tabs.Tab>
            <Tabs.Tab name="Media">
-               <Tabs.ScrollView>
-                   <View style={[styles.box, styles.boxA]} />
-                   <View style={[styles.box, styles.boxB]} />
-                   <View style={[styles.box, styles.boxA]} />
-                   <View style={[styles.box, styles.boxB]} />
-                   <View style={[styles.box, styles.boxA]} />
-                   <View style={[styles.box, styles.boxB]} />
-                   <View style={[styles.box, styles.boxA]} />
-                   <View style={[styles.box, styles.boxB]} />
-               </Tabs.ScrollView>
+                <AllUserMediaPosts userId={firebase.auth().currentUser.uid}/>
            </Tabs.Tab>
        </Tabs.Container>
    );

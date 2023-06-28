@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#FFFFFF",
         borderRadius: 13,
-        borderColor: "#f4f4f4",
+        borderColor: "#f0f0f0",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#222222",
         borderRadius: 13,
-        borderColor: "#2d2d2d",
+        borderColor: "#333333",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
         textAlign: "left",
         marginLeft: 10,
         marginRight: 65,
-        marginVertical: 25,
+        marginVertical: 20,
     },
     darkText: {
         fontSize: 20,
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
         textAlign: "left",
         marginLeft: 10,
         marginRight: 65,
-        marginVertical: 25,
+        marginVertical: 20,
     }
 });
 
