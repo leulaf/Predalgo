@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
+import React, {useState, useEffect, useContext, useRef} from 'react';
+import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions, Animated, PanResponder} from 'react-native';
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import { Tabs } from 'react-native-collapsible-tab-view';
@@ -93,64 +93,133 @@ export default function AllUserMediaPosts({ userId }){
         });
       };
 
-    return (
-        <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
+    // return (
+    //     <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
 
-            <View style={{flexDirection: 'row', marginTop: 210, marginBottom: 175}}>
-                {/* left side of images */}
-                <View style={{flex: 1}}>
-                    <Tabs.FlatList
-                        numColumns={1}
-                        data={leftMediaPosts}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => {
-                            return (
-                                <TouchableOpacity
-                                //   onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
-                                >
-                                    <ImageContainer
-                                        imageSource={{ uri: item.imageUrl }}
-                                    />
-                                </TouchableOpacity>
-                            );
-                        }}
-                    />
-                </View>
+    //         <View style={{flexDirection: 'row', marginTop: 210, marginBottom: 175}}>
+    //             {/* left side of images */}
+    //             <View style={{flex: 1}}>
+    //                 <Tabs.FlatList
+    //                     numColumns={1}
+    //                     data={leftMediaPosts}
+    //                     keyExtractor={(item) => item.id}
+    //                     renderItem={({ item }) => {
+    //                         return (
+    //                             <TouchableOpacity
+    //                             //   onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
+    //                             >
+    //                                 <ImageContainer
+    //                                     imageSource={{ uri: item.imageUrl }}
+    //                                 />
+    //                             </TouchableOpacity>
+    //                         );
+    //                     }}
+    //                 />
+    //             </View>
 
-                {/* right side of images */}
-                <View style={{flex: 1}}>
-                    <Tabs.FlatList
-                        numColumns={1}
-                        data={rightMediaPosts}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => {
-                            return (
-                                <TouchableOpacity
-                                //   onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
-                                >
-                                    <ImageContainer
-                                        imageSource={{ uri: item.imageUrl }}
-                                    />
-                                </TouchableOpacity>
-                            );
-                        }}
-                    />
-                </View>
-            </View>
+    //             {/* right side of images */}
+    //             <View style={{flex: 1}}>
+    //                 <Tabs.FlatList
+    //                     numColumns={1}
+    //                     data={rightMediaPosts}
+    //                     keyExtractor={(item) => item.id}
+    //                     renderItem={({ item }) => {
+    //                         return (
+    //                             <TouchableOpacity
+    //                             //   onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
+    //                             >
+    //                                 <ImageContainer
+    //                                     imageSource={{ uri: item.imageUrl }}
+    //                                 />
+    //                             </TouchableOpacity>
+    //                         );
+    //                     }}
+    //                 />
+    //             </View>
+    //         </View>
        
-        </ScrollView>
-    );
+    //     </ScrollView>
+    // );
+
+    const panResponder = useRef(
+        PanResponder.create({
+          onMoveShouldSetPanResponder: (evt, gestureState) => {
+            // Set the pan responder to respond to horizontal gestures only
+            return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+          },
+          onPanResponderMove: (evt, gestureState) => {
+            // Move the scroll view horizontally based on the gesture state
+            scrollViewRef.current.scrollTo({
+              x: -gestureState.dx,
+              animated: false,
+            });
+          },
+        })
+      ).current;
+    
+      const scrollViewRef = useRef(null);
+    
+      return (
+        <View style={{ flex: 1 }}>
+          <Animated.View {...panResponder.panHandlers}>
+            <ScrollView
+              ref={scrollViewRef}
+              style={theme == "light" ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}
+            >
+              <View style={{ flexDirection: "row", marginTop: 220, marginBottom: 175 }}>
+                {/* left side of images */}
+                <View style={{ flex: 1 }}>
+                  <FlatList
+                    numColumns={1}
+                    data={leftMediaPosts}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                      return (
+                        <TouchableOpacity>
+                          <ImageContainer imageSource={{ uri: item.imageUrl }} />
+                        </TouchableOpacity>
+                      );
+                    }}
+                  />
+                </View>
+    
+                {/* right side of images */}
+                <View style={{ flex: 1 }}>
+                  <FlatList
+                    numColumns={1}
+                    data={rightMediaPosts}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => {
+                      return (
+                        <TouchableOpacity>
+                          <ImageContainer imageSource={{ uri: item.imageUrl }} />
+                        </TouchableOpacity>
+                      );
+                    }}
+                  />
+                </View>
+              </View>
+            </ScrollView>
+          </Animated.View>
+        </View>
+      );
 }
 
 
 const styles = StyleSheet.create({
     darkContainer: {
+        flexDirection: 'row', 
         flex: 1,
         backgroundColor: "#282828",
+        marginTop: 210, 
+        marginBottom: 175
     },
     lightContainer: {
+        flexDirection: 'row', 
         flex: 1,
         backgroundColor: "#F6F6F6",
+        marginTop: 210, 
+        marginBottom: 175
     },
     // Popular button
     lightPopularButtonActive: {

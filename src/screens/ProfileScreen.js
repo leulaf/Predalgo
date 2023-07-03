@@ -196,6 +196,7 @@ export default function ProfileScreen ({route, navigation}) {
     return (
         <Tabs.Container
             renderHeader={header}
+            lazy={true}
         //    revealHeaderOnScroll
             pointerEvents="box-none"
             renderTabBar={tabBar}

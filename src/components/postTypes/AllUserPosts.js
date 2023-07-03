@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#4b4b4b'
+        borderColor: '#494949'
     },
     lightPopularButtonInactive: {
         flexDirection: 'column',
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#4b4b4b'
+        borderColor: '#494949'
     },
     lightNewButtonInactive: {
         flexDirection: 'column',

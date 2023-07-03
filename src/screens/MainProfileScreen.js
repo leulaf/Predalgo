@@ -258,6 +258,7 @@ function MainProfileScreen ({navigation, ...props}) {
    return (
        <Tabs.Container
            renderHeader={header}
+           lazy={true}
         //    revealHeaderOnScroll
            pointerEvents="box-none"
            renderTabBar={tabBar}

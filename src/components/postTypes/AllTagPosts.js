@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#4b4b4b'
+        borderColor: '#494949'
     },
     lightPopularButtonInactive: {
         flexDirection: 'column',
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     },
     darkNewButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#494949',
         borderRadius: 20,
         width: 70,
         height: 35,
