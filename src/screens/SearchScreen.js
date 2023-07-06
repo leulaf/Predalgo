@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import {ThemeContext} from '../../context-store/context';
 import { Feather } from '@expo/vector-icons';
 import SearchUsers from '../components/searchBy/SearchUsers';
+import SearchTagScreen from './SearchTagScreen';
 import SearchBar from '../components/SearchBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
@@ -23,7 +24,8 @@ export default function SearchScreen({navigation}){
                 screenOptions={{
                 tabBarLabelStyle: { fontSize: 18, fontWeight: '600', marginTop: 0 },
                 tabBarStyle: {
-                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.25)',
+                    // backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.25)',
+                    backgroundColor: theme == 'light' ? "#FFFFFF" : "#1A1A1A",
                     position: 'absolute',
                     height: 40,
                     width: '100%',
@@ -35,9 +37,10 @@ export default function SearchScreen({navigation}){
                 tabBarInactiveTintColor: theme == 'light' ? '#929292' : '#C8C8C8',
                 tabBarScrollEnabled: true, // makes the tabs scrollable
                 tabBarVisible: false,
+                lazy: true, // only renders the screen when the tab is pressed
                 }}>
                 <Top_Tab.Screen name="Users" component={SearchUsers} />
-                <Top_Tab.Screen name="#Tag" component={SearchUsers} />
+                <Top_Tab.Screen name="#Tag" component={SearchTagScreen} />
             </Top_Tab.Navigator>
         </View>
       );

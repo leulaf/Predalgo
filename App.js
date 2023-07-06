@@ -24,6 +24,7 @@ import EditMemeScreen from './src/screens/EditMemeScreen';
 import FollowingScreen from './src/screens/FollowingScreen';
 import FollowersScreen from './src/screens/FollowersScreen';
 import TagScreen from './src/screens/TagScreen';
+import SearchTagScreen from './src/screens/SearchTagScreen';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -124,6 +125,11 @@ class App extends Component {
                       }}
                     />
                     <Stack.Screen name="Tag" component={TagScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen name="SearchTag" component={SearchTagScreen}
                       options={{
                           // headerShown: false,
                       }}

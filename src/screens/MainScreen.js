@@ -32,6 +32,7 @@ export default function MainScreen({navigation}){
                         // tabBarScrollEnabled: true, // makes the tabs scrollable
                         // hide tab bar
                         tabBarVisible: false,
+                        lazy: true, // only renders the screen when the tab is pressed
                         header: <TopBar 
                             term={term} 
                             onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work

@@ -318,14 +318,14 @@ const styles = StyleSheet.create({
     },
     darkNewButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#494949',
+        backgroundColor: '#1A1A1A',
         borderRadius: 20,
         width: 70,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1.5,
-        borderColor: '#4b4b4b'
+        borderColor: '#494949'
     },
     lightNewButtonInactive: {
         flexDirection: 'column',

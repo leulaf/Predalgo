@@ -1,12 +1,12 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
 import firebase from 'firebase/compat/app';
-// require('firebase/firestore');
 import { db, storage } from '../../config/firebase';
 import { collection, query, where, limit, getDocs } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../../context-store/context';
 import { connect } from 'react-redux';
+import { AntDesign } from '@expo/vector-icons';
 
 function SearchUsers(props){
     const navigation = useNavigation();
@@ -53,14 +53,33 @@ function SearchUsers(props){
                 >
                     <Image source={{uri: item.profilePic}} style={styles.profilePicture}/>
                     
-                    <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                    <Text style={theme == 'light' ? styles.lightUsernameText : styles.darkUsernameText}>
                         {"@"+item.username}
                     </Text>
+
+                    <AntDesign
+                        name="right"
+                        style={
+                            theme == "light"
+                            ? styles.lightRightIconStyle
+                            : styles.darkRightIconStyle
+                        }
+                    />
 
                 </TouchableOpacity>
             );
         }
 
+    }
+
+    if(users.length == 0){
+        return (
+            <View style={theme ==  'light' ? styles.lightContainer : styles.darkContainer}>
+                <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                    No users found
+                </Text>
+            </View>
+        );
     }
     
     return (
@@ -89,20 +108,36 @@ const styles = StyleSheet.create({
         marginRight: 10,
         borderRadius: 100,
     },
-    lightText: {
+    lightUsernameText: {
+        flex: 1,
         fontSize: 20,
         marginRight: 20,
         fontWeight: '500',
         color: '#555555',
     },
-    darkText: {
+    darkUsernameText: {
+        flex: 1,
         fontSize: 20,
         marginRight: 20,
         fontWeight: '500',
         color: '#EEEEEE',
     },
-    lightListItem: { 
-        flex: 1, 
+    lightRightIconStyle: {
+        fontSize: 30,
+        alignSelf: 'center',
+        marginLeft: 10,
+        marginRight: 10,
+        color: '#777777',
+    },
+    darkRightIconStyle: {
+        fontSize: 28,
+        alignSelf: 'center',
+        marginRight: 10,
+        color: '#CCCCCC',
+    },
+    lightListItem: {
+        flex: 1,
+        flexDirection: 'row',
         height: 60, 
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
@@ -113,8 +148,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#CCCCCC',
     },
-    darkListItem: { 
+    darkListItem: {
         flex: 1, 
+        flexDirection: 'row',
         height: 60, 
         flexDirection: 'row',
         backgroundColor: "#1D1D1D",
@@ -124,6 +160,30 @@ const styles = StyleSheet.create({
         borderRadius: 100,
         borderWidth: 1,
         borderColor: '#444444',
+    },
+    lightContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: "#F4F4F4"
+    },
+    darkContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: "#282828"
+    },
+    lightText: {
+        fontSize: 22,
+        marginRight: 20,
+        fontWeight: '500',
+        color: '#555555',
+    },
+    darkText: {
+        fontSize: 22,
+        marginRight: 20,
+        fontWeight: '500',
+        color: '#DDDDDD',
     },
 });
 
