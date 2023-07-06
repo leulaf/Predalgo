@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { firebase, storage, db } from '../../config/firebase';
-import { collection, addDoc, doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+import { query, where, collection, getDocs, addDoc, doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import TextTicker from 'react-native-text-ticker'
 import {ThemeContext} from '../../../context-store/context';
 
@@ -132,11 +132,35 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
         });
     };
 
+    const navigateToTag = async(tag) => {
+        if(tag.charAt(0) == '#'){
+            navigation.push('Tag', {tag: tag});
+        }else if(tag.charAt(0) == '@'){
+            const username = tag.substring(1);
+
+            const q = query(collection(db, "users"), where("username", "==", username));
+
+            let user = null;
+
+            await getDocs(q).then((snapshot) => {
+                snapshot.docs.map((doc) => {
+                    const data = doc.data();
+                    user = { ...data, id: doc.id }; // Add the id property to the user object
+                });
+            });
+
+            if(user){
+                navigation.push('Profile', { user: user });
+            }
+
+        }
+    }
+
     if(tags){
         bottomTags = tags.map((d, index) => 
             <TouchableOpacity
                 key={index}
-                onPress={() => navigation.navigate('Tag', {tag: tags[index]})}
+                onPress={() => navigateToTag(tags[index])}
             >
                 <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>
                     {tags[index]}

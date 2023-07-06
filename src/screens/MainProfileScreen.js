@@ -10,8 +10,10 @@ import {db, Firebase, firebase, auth, storage} from '../config/firebase';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUser } from '../../redux/actions/index';
+
 import AddIconLight from '../../assets/add.svg';
 import AddIconDark from '../../assets/add_dark.svg';
+
 import AllUserPosts from '../components/postTypes/AllUserPosts';
 import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
 
