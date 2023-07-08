@@ -29,11 +29,6 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
         threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
     }
 
-    useEffect(() => {
-        // console.log(username);
-        // console.log(profilePic);
-    }, []);
-
     const deletePost = () => {
         if(deleted){
             return;

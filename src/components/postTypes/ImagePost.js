@@ -7,11 +7,12 @@ import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 import ImageContainer from '../ImageContainer';
 
-const ImagePost = ({ title, imageUrl, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
+const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
     const navigation = useNavigation();
-    const [profilePic, setProfilePic] = useState("");
-    const [username, setUsername] = useState("");
+    const [profilePicState, setProfilePicState] = useState(profilePic);
+    const [usernameState, setUsernameState] = useState(username);
     const [repostUsername, setRepostUsername] = useState(null);
+    const [repostProfilePic, setRepostProfilePic] = useState(null);
 
     useEffect(() => {
         if(repostProfile != null){
@@ -21,6 +22,7 @@ const ImagePost = ({ title, imageUrl, memeName, tags, profile, postId, likesCoun
             userSnapshot.then((snapshot) => {
                 if (snapshot.exists) {
                     setRepostUsername(snapshot.data().username);
+                    setRepostProfilePic(snapshot.data().profilePic);
                 } else {
                     console.log("No such document!");
                 }
@@ -29,22 +31,24 @@ const ImagePost = ({ title, imageUrl, memeName, tags, profile, postId, likesCoun
             });
         }
         
-        const userRef = doc(db, 'users', profile);
-        const userSnapshot = getDoc(userRef);
+        if(username != ""){
+            const userRef = doc(db, 'users', profile);
+            const userSnapshot = getDoc(userRef);
 
-        userSnapshot.then((snapshot) => {
-            if (snapshot.exists) {
-                setProfilePic(snapshot.data().profilePic);
-                setUsername(snapshot.data().username);
-            } else {
-                console.log("No such document!");
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
+            userSnapshot.then((snapshot) => {
+                if (snapshot.exists) {
+                    setProfilePicState(snapshot.data().profilePic);
+                    setUsernameState(snapshot.data().username);
+                } else {
+                    console.log("No such document!");
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            });
+        }
     }, []);
 
-    if (username === "") {
+    if (usernameState === "") {
         return null;
     }
     
@@ -53,8 +57,8 @@ const ImagePost = ({ title, imageUrl, memeName, tags, profile, postId, likesCoun
             title={title}
             profile={profile}
             postId={postId}
-            profilePic={profilePic}
-            username={username}
+            profilePic={profilePicState}
+            username={usernameState}
             repostUsername={repostUsername}
             content={
                 <View >

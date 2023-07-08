@@ -6,10 +6,10 @@ import {ThemeContext} from '../../../context-store/context';
 import PostContainer from './PostContainer';
 import PostBottom from './PostBottom';
 
-const TextPost = ({ navigation, title, text, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
+const TextPost = ({ navigation, title, username = "", profilePic = "", text, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [profilePic, setProfilePic] = useState("");
-    const [username, setUsername] = useState("");
+    const [profilePicState, setProfilePicState] = useState(profilePic);
+    const [usernameState, setUsernameState] = useState(username);
     const [repostUsername, setRepostUsername] = useState(null);
 
     useEffect(() => {
@@ -28,22 +28,24 @@ const TextPost = ({ navigation, title, text, tags, profile, postId, likesCount, 
             });
         }
 
-        const userRef = doc(db, 'users', profile);
-        const userSnapshot = getDoc(userRef);
+        if(username != ""){
+            const userRef = doc(db, 'users', profile);
+            const userSnapshot = getDoc(userRef);
 
-        userSnapshot.then((snapshot) => {
-            if (snapshot.exists) {
-                setProfilePic(snapshot.data().profilePic);
-                setUsername(snapshot.data().username);
-            } else {
-                console.log("No such document!");
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
+            userSnapshot.then((snapshot) => {
+                if (snapshot.exists) {
+                    setProfilePicState(snapshot.data().profilePic);
+                    setUsernameState(snapshot.data().username);
+                } else {
+                    console.log("No such document!");
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            });
+        }
     }, []);
 
-    if (username === "") {
+    if (usernameState === "") {
         return null;
     }
 
@@ -52,8 +54,8 @@ const TextPost = ({ navigation, title, text, tags, profile, postId, likesCount, 
             title={title}
             profile={profile}
             postId={postId}
-            profilePic={profilePic}
-            username={username}
+            profilePic={profilePicState}
+            username={usernameState}
             repostUsername={repostUsername}
             content={
                 <>

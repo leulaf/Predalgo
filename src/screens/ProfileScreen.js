@@ -238,6 +238,8 @@ export default function ProfileScreen ({route, navigation}) {
             <Tabs.Tab name="Posts">
                 <AllUserPosts
                     userId={user.id}
+                    username={user.username}
+                    profilePic={user.profilePic}
                     postList={postList}
                     byNewPosts={byNewPosts}
                     byPopularPosts={byPopularPosts}

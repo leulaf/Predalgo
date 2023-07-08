@@ -9,7 +9,7 @@ import MultiImagePost from './MultiImagePost';
 import TextPost from './TextPost';
 import { set } from 'react-native-reanimated';
 
-export default function AllUserPosts({ userId, postList, byNewPosts, byPopularPosts, setByNewPosts, setByPopularPosts, handleNewPostsClick, handlePopularPostsClick, handleRefreshPostsClick, handleNewPostsRefreshClick, handlePopularPostsRefreshClick }){
+export default function AllUserPosts({ userId, username, profilePic, postList, byNewPosts, byPopularPosts, setByNewPosts, setByPopularPosts, handleNewPostsClick, handlePopularPostsClick, handleRefreshPostsClick, handleNewPostsRefreshClick, handlePopularPostsRefreshClick }){
     const {theme,setTheme} = useContext(ThemeContext);
 
     {/* New/Popular/Refresh button */}
@@ -80,6 +80,8 @@ export default function AllUserPosts({ userId, postList, byNewPosts, byPopularPo
                 tags={item.tags}
                 memeName={item.memeName}
                 profile={item.profile}
+                username={username}
+                profilePic={profilePic}
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
@@ -92,6 +94,8 @@ export default function AllUserPosts({ userId, postList, byNewPosts, byPopularPo
                 imageUrls={item.imageUrls}
                 tags={item.tags}
                 profile={item.profile}
+                username={username}
+                profilePic={profilePic}
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
@@ -104,6 +108,8 @@ export default function AllUserPosts({ userId, postList, byNewPosts, byPopularPo
                 text={item.text}
                 tags={item.tags}
                 profile={item.profile}
+                username={username}
+                profilePic={profilePic}
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}

@@ -314,6 +314,8 @@ function MainProfileScreen ({navigation, ...props}) {
            <Tabs.Tab name="Posts">
                 <AllUserPosts
                     userId={firebase.auth().currentUser.uid}
+                    username={username}
+                    profilePic={profilePic}
                     postList={postList}
                     byNewPosts={byNewPosts}
                     byPopularPosts={byPopularPosts}
