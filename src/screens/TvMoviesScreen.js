@@ -83,7 +83,7 @@ const TvMoviesScreen = ({navigation}) => {
     return (
         <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
             <PostBar/>
-            <AllPosts posts={posts}/>
+            {/* <AllPosts posts={posts}/> */}
         </ScrollView>
     );
 }

@@ -81,7 +81,7 @@ const GamesScreen = ({navigation}) => {
     
     return (
         <View style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
-            <AllPosts posts={posts}/>
+            {/* <AllPosts posts={posts}/> */}
         {/* <SideBar /> */}
 
         </View>

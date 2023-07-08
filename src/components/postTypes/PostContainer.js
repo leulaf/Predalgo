@@ -1,5 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { Image } from 'expo-image';
 import {ThemeContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
 import { ref } from "firebase/storage";
@@ -105,7 +106,7 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
                     {profilePic != "" ? (
                         <Image source={{ uri: profilePic }} style={styles.profileImage}/>
                     ) : (
-                        <Image source={require('../../../assets/profile_default.png')} style={styles.profileImage}/>
+                        <Image source={require('../../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
                     )}
                 </TouchableOpacity>
                 

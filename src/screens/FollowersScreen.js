@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, Text, Image, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import { Image } from 'expo-image';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ThemeContext} from '../../context-store/context';
 import firebase from 'firebase/compat/app';
@@ -64,7 +65,7 @@ export default function FollowersScreen({navigation, route}){
         return (
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightListItem : styles.darkListItem}
-                onPress={() => navigation.navigate('Profile', {user: item})}
+                onPress={() => navigation.push('Profile', {user: item})}
             >
                 <Image source={{uri: item.profilePic}} style={styles.profilePicture}/>
                 

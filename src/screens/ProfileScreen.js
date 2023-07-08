@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
-import {View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Alert} from 'react-native';
+import { Image } from 'expo-image';
 import { Tabs, MaterialTabBar } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../context-store/context';
 import { firebase, db, storage } from '../config/firebase';
@@ -7,11 +8,16 @@ import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, wh
 import AllUserPosts from '../components/postTypes/AllUserPosts';
 import SimpleTopBar from '../components/SimpleTopBar';
 import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
+import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
     const [following, setFollowing] = useState(false);
     const user = route.params.user;
+
+    const [postList, setPostList] = useState([]);
+    const [byNewPosts, setByNewPosts] = useState(true);
+    const [byPopularPosts, setByPopularPosts] = useState(false);
 
     useEffect(() => {
         navigation.setOptions({
@@ -31,6 +37,33 @@ export default function ProfileScreen ({route, navigation}) {
             }
         });
     }, []);
+
+    // Fetch posts
+    useEffect(() => {
+        (async () => {
+            try {
+                if(byNewPosts){
+                    const posts = await fetchUserPostsByRecent(user.id);
+                    setPostList(posts);
+                }else if(byPopularPosts){
+                    const posts = await fetchUserPostsByPopular(user.id);
+                    setPostList(posts);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        })();
+    }, [byNewPosts, byPopularPosts]);
+
+    const handleNewPostsClick = () => {
+        setByNewPosts(true);
+        setByPopularPosts(false);
+    };
+    
+    const handlePopularPostsClick = () => {
+        setByNewPosts(false);
+        setByPopularPosts(true);
+    };
 
     // Follow current user
     const onFollow = () => {
@@ -120,7 +153,7 @@ export default function ProfileScreen ({route, navigation}) {
                     >
                         {
                             user.profilePic != "" ? (                           
-                                <Image source={{uri: user.profilePic}} style={styles.profilePicture}/>
+                                <Image source={{uri: user.profilePic}} style={styles.profilePicture} cachePolicy='disk'/>
                             ) : (
                                 <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
                             )
@@ -154,7 +187,7 @@ export default function ProfileScreen ({route, navigation}) {
  
                          {/* Followers */}
                          <TouchableOpacity
-                                onPress={() => navigation.navigate('Followers', {profile: user.id})}
+                                onPress={() => navigation.push('Followers', {profile: user.id})}
                                  style={styles.countContainer}
                          >
                              <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.followers}</Text>
@@ -203,10 +236,23 @@ export default function ProfileScreen ({route, navigation}) {
             initialTabName="Posts"
         >
             <Tabs.Tab name="Posts">
-                <AllUserPosts userId={user.id} profilePic={user.profilePic}/>
+                <AllUserPosts
+                    userId={user.id}
+                    postList={postList}
+                    byNewPosts={byNewPosts}
+                    byPopularPosts={byPopularPosts}
+                    setByNewPosts={setByNewPosts}
+                    setByPopularPosts={setByPopularPosts}
+                    handleNewPostsClick={handleNewPostsClick}
+                    handlePopularPostsClick={handlePopularPostsClick}
+                />
             </Tabs.Tab>
             <Tabs.Tab name="Media">
-                <AllUserMediaPosts userId={user.id} profilePic={user.profilePic}/>
+                <AllUserMediaPosts
+                    userId={user.id}
+                    postList={postList}
+                    profilePic={user.profilePic}
+                />
             </Tabs.Tab>
         </Tabs.Container>
     );

@@ -7,105 +7,21 @@ import {ThemeContext} from '../../../context-store/context';
 import ImagePost from './ImagePost';
 import MultiImagePost from './MultiImagePost';
 import TextPost from './TextPost';
-import GlobalStyles from '../../constants/GlobalStyles';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { set } from 'react-native-reanimated';
 
-export default function AllUserPosts({ userId }){
+export default function AllUserPosts({ userId, postList, byNewPosts, byPopularPosts, setByNewPosts, setByPopularPosts, handleNewPostsClick, handlePopularPostsClick, handleRefreshPostsClick, handleNewPostsRefreshClick, handlePopularPostsRefreshClick }){
     const {theme,setTheme} = useContext(ThemeContext);
-    const [postList, setPostList] = useState([]);
-    const [newPosts, setNewPosts] = useState(true);
-    const [popularPosts, setPopularPosts] = useState(false);
-
-    useEffect(() => {
-        fetchPostsByRecent();
-    }, []);
-
-    const getRepost = async(repostPostId, profile) => {
-        const repostRef = doc(db, 'allPosts', repostPostId);
-        const repostSnapshot = await getDoc(repostRef);
-    
-        if(repostSnapshot.exists){
-            const repostData = repostSnapshot.data();
-            const id = repostSnapshot.id;
-            const repostProfile = profile;
-    
-            // Return the reposted post data along with the original post data
-            return { id, repostProfile, ...repostData }
-        }else{
-            return;
-        }
-    }
-
-
-    const fetchPostsByRecent = async() => {
-        const q = query(collection(db, "allPosts"), where("profile", "==", userId), orderBy("creationDate", "desc"));
-        await getDocs(q)
-        .then(async(snapshot) => {
-            let posts = snapshot.docs
-            .map(async(doc) => {
-                const data = doc.data();
-                const id = doc.id;
-    
-                if(data.repostPostId){
-                    // Get the reposted post data
-                    const repostData = await getRepost(data.repostPostId, data.profile);
-                    if(repostData){
-                        // Add the reposted post data to the postList array
-                        return { ...repostData }
-                    }
-                }
-                
-                return { id, ...data }
-            })
-    
-            // Wait for all promises to resolve before setting the postList state
-            Promise.all(posts).then((resolvedPosts) => {
-                setPostList(resolvedPosts);
-            });
-        })
-    }
-    
-    const fetchPostsByPopular = async() => {
-        const q = query(collection(db, "allPosts"), where("profile", "==", userId), orderBy("likesCount", "desc"));
-    
-        await getDocs(q)
-        .then(async(snapshot) => {
-            let posts = snapshot.docs
-            .map(async(doc) => {
-                const data = doc.data();
-                const id = doc.id;
-    
-                if(data.repostPostId){
-                    // Get the reposted post data
-                    const repostData = await getRepost(data.repostPostId, data.profile);
-                    if(repostData){
-                        // Add the reposted post data to the postList array
-                        return { ...repostData }
-                    }
-                }
-                
-                return { id, ...data }
-            })
-    
-            // Wait for all promises to resolve before setting the postList state
-            Promise.all(posts).then((resolvedPosts) => {
-                setPostList(resolvedPosts);
-            });
-        })
-    }
 
     {/* New/Popular/Refresh button */}
     const topButtons = (
         <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 15}}>
             {/* New button */}
             {
-                newPosts ?
+                byNewPosts ?
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightNewButtonActive : styles.darkNewButtonActive}
                         onPress={() => { 
-                            setNewPosts(true);
-                            setPopularPosts(false);
-                            fetchPostsByRecent(); 
+                            handleNewPostsClick();
                         }}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
@@ -116,9 +32,7 @@ export default function AllUserPosts({ userId }){
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightNewButtonInactive : styles.darkNewButtonInactive}
                         onPress={() => { 
-                            setNewPosts(true);
-                            setPopularPosts(false);
-                            fetchPostsByRecent(); 
+                            handleNewPostsClick();
                         }}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
@@ -129,13 +43,11 @@ export default function AllUserPosts({ userId }){
             
             {/* Popular button */}
             {
-                popularPosts ?
+                byPopularPosts ?
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightPopularButtonActive : styles.darkPopularButtonActive}
                         onPress={() => { 
-                            setPopularPosts(true);
-                            setNewPosts(false);
-                            fetchPostsByPopular(); 
+                            handlePopularPostsClick(); 
                         }}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
@@ -146,9 +58,7 @@ export default function AllUserPosts({ userId }){
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightPopularButtonInactive : styles.darkPopularButtonInactive}
                         onPress={() => { 
-                            setPopularPosts(true);
-                            setNewPosts(false);
-                            fetchPostsByPopular(); 
+                            handlePopularPostsClick(); 
                         }}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
@@ -156,8 +66,6 @@ export default function AllUserPosts({ userId }){
                         </Text>
                     </TouchableOpacity>
             }
-
-            
         </View>
     );
 
@@ -222,6 +130,10 @@ export default function AllUserPosts({ userId }){
         }
         return post;
     };
+
+    useEffect(() => {
+        // This effect will re-render the component when the postList prop changes
+    }, [postList]);
 
     return (
         <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>

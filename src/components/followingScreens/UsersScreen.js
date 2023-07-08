@@ -1,5 +1,6 @@
 import React, {useContext, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, FlatList, Image, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView} from 'react-native';
+import { Image } from 'expo-image';
 import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../../context-store/context';
 import firebase from 'firebase/compat/app';
@@ -64,7 +65,7 @@ const UsersScreen = ({ route }) => {
         return (
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightListItem : styles.darkListItem}
-                onPress={() => navigation.navigate('Profile', {user: item})}
+                onPress={() => navigation.push('Profile', {user: item})}
             >
                 <Image source={{uri: item.profilePic}} style={styles.profilePicture}/>
                 

@@ -1,12 +1,15 @@
 import React, {useContext, useEffect, useState, Component, useReducer} from 'react';
-import {View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Alert} from 'react-native';
+import { Image } from 'expo-image';
 import { Tabs, MaterialTabBar } from 'react-native-collapsible-tab-view';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Overlay } from 'react-native-elements';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker';
 import {ThemeContext} from '../../context-store/context';
 import {db, Firebase, firebase, auth, storage} from '../config/firebase';
+import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUser } from '../../redux/actions/index';
@@ -99,6 +102,10 @@ function MainProfileScreen ({navigation, ...props}) {
     const [bio, setBio] = useState('');
     const [overlayVisible, setOverlayVisible] = useState(false);
 
+    const [postList, setPostList] = useState([]);
+    const [byNewPosts, setByNewPosts] = useState(true);
+    const [byPopularPosts, setByPopularPosts] = useState(false);
+
     useEffect(() => {
         props.fetchUser();
    }, []);
@@ -111,12 +118,38 @@ function MainProfileScreen ({navigation, ...props}) {
             setFollowers(currentUser.followers);
             setFollowing(currentUser.following);
             setPostCount(currentUser.posts);
-            // console.log(posts);
             setUsername(currentUser.username);
             setProfilePic(currentUser.profilePic);
             setBio(currentUser.bio);
         }
-   }, [props.currentUser]);
+    }, [props.currentUser]);
+
+    // Fetch posts
+    useEffect(() => {
+        (async () => {
+            try {
+                if(byNewPosts && !byPopularPosts){
+                    const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
+                    setPostList(posts);
+                }else if(byPopularPosts && !byNewPosts){
+                    const posts = await fetchUserPostsByPopular(firebase.auth().currentUser.uid);
+                    setPostList(posts);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        })();
+    }, [byNewPosts, byPopularPosts]);
+
+    const handleNewPostsClick = () => {
+        setByNewPosts(true);
+        setByPopularPosts(false);
+    };
+    
+    const handlePopularPostsClick = () => {
+        setByNewPosts(false);
+        setByPopularPosts(true);
+    };
 
    const finishEdit = () => {
        setNewBio(bio);
@@ -140,7 +173,7 @@ function MainProfileScreen ({navigation, ...props}) {
                     >
                         {
                             profilePic != "" ? (                           
-                                <Image source={{uri: profilePic}} style={styles.profilePicture}/>
+                                <Image source={{uri: profilePic}} style={styles.profilePicture} cachePolicy='disk'/>
                             ) : (
                                 <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
                             )
@@ -279,10 +312,22 @@ function MainProfileScreen ({navigation, ...props}) {
                </Tabs.ScrollView>
            </Tabs.Tab>
            <Tabs.Tab name="Posts">
-                <AllUserPosts userId={firebase.auth().currentUser.uid}/>
+                <AllUserPosts
+                    userId={firebase.auth().currentUser.uid}
+                    postList={postList}
+                    byNewPosts={byNewPosts}
+                    byPopularPosts={byPopularPosts}
+                    setByNewPosts={setByNewPosts}
+                    setByPopularPosts={setByPopularPosts}
+                    handleNewPostsClick={handleNewPostsClick}
+                    handlePopularPostsClick={handlePopularPostsClick}
+                />
            </Tabs.Tab>
            <Tabs.Tab name="Media">
-                <AllUserMediaPosts userId={firebase.auth().currentUser.uid}/>
+                <AllUserMediaPosts
+                    userId={firebase.auth().currentUser.uid}
+                    postList={postList}
+                />
            </Tabs.Tab>
        </Tabs.Container>
    );
