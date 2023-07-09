@@ -1,6 +1,7 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 
 // Icons
@@ -30,8 +31,8 @@ export default function UploadScreen({navigation}) {
     // Camera permissions are not granted yet
     return (
       <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Text style={[styles.text, { textAlign: "center" }]}>We need your permission to show the camera</Text>
+        <Button onPress={() => requestPermission()}  title="grant permission" />
       </View>
     );
   }
@@ -44,19 +45,31 @@ export default function UploadScreen({navigation}) {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      compressedResult = await compressImage(result.assets[0].uri);
+      setImage(compressedResult);
     }
   };
 
   const takePicture = async () => {
     if (camera) {
       const picture = await camera.takePictureAsync();
-      setImage(picture.uri);
+      compressedResult = await compressImage(picture.uri);
+      setImage(compressedResult);
     }
   };
 
   function toggleCameraType() {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
+  }
+
+  async function compressImage(imageUrl){
+    const compressedImage = await manipulateAsync(
+      imageUrl,
+      [{ resize: {height:500}}],
+      { compress: 0.3, format: SaveFormat.JPEG }
+    );
+
+    return compressedImage.uri;
   }
 
   return (
@@ -163,6 +176,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // marginTop: 60,
     backgroundColor: '#000',
+    // alignItems: 'center',
     // justifyContent: 'center',
   },
   camera: {

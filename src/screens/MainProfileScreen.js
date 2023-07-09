@@ -8,6 +8,7 @@ import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, wh
 import * as ImagePicker from 'expo-image-picker';
 import {ThemeContext} from '../../context-store/context';
 import {db, Firebase, firebase, auth, storage} from '../config/firebase';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 
 import { connect } from 'react-redux';
@@ -64,11 +65,22 @@ const pickProfilePic = async () => {
 
 
    if (!result.canceled) {
-        await uploadImage(result.assets[0].uri);
+        const compressedImage = await compressImage(result.assets[0].uri);
+        await uploadImage(compressedImage);
    }else{
         console.log('cancelled');
    }
 };
+
+async function compressImage(imageUrl){
+    const compressedImage = await manipulateAsync(
+      imageUrl,
+      [{ resize: {height:300}}],
+      { compress: 0.3, format: SaveFormat.JPEG }
+    );
+
+    return compressedImage.uri;
+  }
 
 
 const setProfilePic = async (url) => {
