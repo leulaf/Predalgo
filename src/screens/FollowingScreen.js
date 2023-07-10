@@ -14,7 +14,7 @@ export default function FollowingScreen({navigation, route}){
     // Sets the header to the SimpleTopBar component
     useEffect(() => {
         navigation.setOptions({
-            header: () => <SimpleTopBar title={"Back"}/>
+            header: () => <SimpleTopBar title={"Following"}/>
         });
     }, [navigation]);
 

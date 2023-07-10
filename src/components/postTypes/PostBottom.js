@@ -171,7 +171,10 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
     
     if (memeName && tags) {
         content =  <View flexDirection={"row"}>
-            <View style={styles.memeName}>
+            <TouchableOpacity
+                onPress={() => navigation.push('Meme', {memeName: memeName})}
+                style={styles.memeName}
+            >
                 
                 {theme == "light" ?
                     <LightMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={10}/>
@@ -190,7 +193,7 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
                     {memeName}
                 </TextTicker>
                 
-            </View>
+            </TouchableOpacity>
             
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={30} >
                 {bottomTags}
@@ -198,7 +201,10 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
         </View>
     } else if (memeName) {
         content =
-            <View style={styles.memeName}>
+            <TouchableOpacity 
+                onPress={() => navigation.navigate('Meme', {memeName: memeName})}
+                style={styles.memeName}
+            >
                 
                 {theme == "light" ?
                     <LightMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={10}/>
@@ -216,7 +222,7 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
                 >
                     {memeName}
                 </TextTicker>
-            </View>
+            </TouchableOpacity>
     }else if (tags) {
         content = <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={5}>
                     {bottomTags}

@@ -4,12 +4,13 @@ import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../context-store/context';
 import { Feather } from '@expo/vector-icons';
 
-
 // light mode icons
 import BackLight from '../../assets/back.svg';
+import BookmarkLight from '../../assets/saved_inactive.svg';
 
 // dark mode icons
 import BackDark from '../../assets/back_light.svg';
+import BookmarkDark from '../../assets/saved_inactive_dark.svg';
 
 const AddPostTopBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -44,13 +45,28 @@ const AddPostTopBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
 
         </TouchableOpacity>
 
+        {/* bookmark button */}
+        <TouchableOpacity 
+            style={{flexDirection: 'row'}}
+            onPress={() => navigation.navigate('FavoriteTemplates')}
+        >
+            {
+                theme == 'light' ?
+                    <BookmarkLight style={styles.saveIcon} width={24} height={24}/>
+                :
+                    <BookmarkDark style={styles.saveIcon} width={24} height={24}/>
+            }
+
+            
+        </TouchableOpacity>
+
     </View>
 }
 
 const styles = StyleSheet.create({
     lightBar: {
         height: 36,
-        width: 350,
+        width: 315,
         borderRadius: 20,
         marginRight: 10,
         marginTop: 40,
@@ -63,7 +79,7 @@ const styles = StyleSheet.create({
     },
     darkBar: {
         height: 36,
-        width: 350,
+        width: 315,
         borderRadius: 20,
         marginRight: 10,
         marginTop: 40,
@@ -79,10 +95,16 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         padding: 5,
     },
+    saveIcon: {
+        marginTop: 54,
+        marginLeft: 5,
+        padding: 5,
+    },
     backIcon: {
         // alignSelf: 'center',
         marginTop: 57,
-        marginHorizontal: 10
+        marginHorizontal: 10,
+        padding: 10,
     },
     lightText: {
         fontSize: 20,

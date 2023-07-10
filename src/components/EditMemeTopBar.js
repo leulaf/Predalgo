@@ -21,16 +21,16 @@ const EditMemeTopBar = ({title, onSave}) => {
 
                 {/* back button */}
                 <TouchableOpacity 
-                            style={{flex: 1, flexDirection: 'row'}}
+                            style={{flexDirection: 'row'}}
                             onPress={() => {navigation.goBack()}}
                 >
                     <BackLight style={styles.backIcon} width={22} height={22}/>
                     
-                    <Text style={styles.text}>
-                        {title}
-                    </Text>
-                    
                 </TouchableOpacity>
+
+                <View style={{flex: 1}}>
+                
+                </View>
 
                 {/* back button */}
                 <TouchableOpacity 
@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
     backIcon: {
         // alignSelf: 'center',
         marginTop: 60,
-        marginLeft: 5
+        marginLeft: 10,
+        padding: 10,
     },
     text: {
         fontSize: 20,

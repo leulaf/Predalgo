@@ -57,7 +57,7 @@ export default function FollowersScreen({navigation, route}){
     // Sets the header to the SimpleTopBar component
     useEffect(() => {
         navigation.setOptions({
-            header: () => <SimpleTopBar title={"Back"}/>
+            header: () => <SimpleTopBar title={"Followers"}/>
         });
     }, [navigation]);
 
@@ -80,17 +80,6 @@ export default function FollowersScreen({navigation, route}){
     return (
         <View style={{ flex: 1, backgroundColor: theme == 'light' ? '#F4F4F4' : "#282828" }}>
 
-            <View style={{
-                backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.25)',
-                height: 40,
-                alignContent: 'center',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}>
-                <Text style={theme == 'light' ? styles.lightTitle : styles.darkTitle}>
-                    Followers
-                </Text>
-            </View>
             <View style={{flex: 1, marginTop: 10}}>
                 <FlatList
                     numColumns={1}

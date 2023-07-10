@@ -19,7 +19,7 @@ export default function AllTagPosts({ tag }){
     const [popularPosts, setPopularPosts] = useState(false);
 
     useEffect(() => {
-        
+
         fetchPostsByRecent();
     }, []);
 
@@ -46,31 +46,31 @@ export default function AllTagPosts({ tag }){
             orderBy("creationDate", "desc")
         );
         
-        await getDocs(q)
-        .then(async(snapshot) => {
-            let posts = snapshot.docs
-            .map(async(doc) => {
-                const data = doc.data();
-                const id = doc.id;
-    
-                if(data.repostPostId){
-                    // Get the reposted post data
-                    const repostData = await getRepost(data.repostPostId, data.profile);
-                    if(repostData){
-                        // Add the reposted post data to the postList array
-                        return { ...repostData }
-                    }
+        const snapshot = await getDocs(q);
+
+        const posts = snapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const id = doc.id;
+
+            if(data.repostPostId){
+                // Get the reposted post data
+                const repostData = await getRepost(data.repostPostId, data.profile);
+                if(repostData){
+                    // Add the reposted post data to the postList array
+                    return { ...repostData }
                 }
-                
-                return { id, ...data }
-            })
-    
-            // Wait for all promises to resolve before setting the postList state
-            Promise.all(posts).then((resolvedPosts) => {
-                setPostList(resolvedPosts);
-            });
+            }
             
-        })
+            return { id, ...data }
+        });
+            
+    
+        // Wait for all promises to resolve before setting the postList state
+
+        // Wait for all promises to resolve before returning the resolved posts
+        const resolvedPosts = await Promise.all(posts);
+        console.log(resolvedPosts);
+        setPostList(resolvedPosts);
     }
     
     const fetchPostsByPopular = async() => {
@@ -79,30 +79,30 @@ export default function AllTagPosts({ tag }){
             orderBy("likesCount", "desc")
         );
     
-        await getDocs(q)
-        .then(async(snapshot) => {
-            let posts = snapshot.docs
-            .map(async(doc) => {
-                const data = doc.data();
-                const id = doc.id;
-    
-                if(data.repostPostId){
-                    // Get the reposted post data
-                    const repostData = await getRepost(data.repostPostId, data.profile);
-                    if(repostData){
-                        // Add the reposted post data to the postList array
-                        return { ...repostData }
-                    }
+        const snapshot = await getDocs(q);
+
+        const posts = snapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const id = doc.id;
+
+            if(data.repostPostId){
+                // Get the reposted post data
+                const repostData = await getRepost(data.repostPostId, data.profile);
+                if(repostData){
+                    // Add the reposted post data to the postList array
+                    return { ...repostData }
                 }
-                
-                return { id, ...data }
-            })
+            }
+            
+            return { id, ...data }
+        });
+            
     
-            // Wait for all promises to resolve before setting the postList state
-            Promise.all(posts).then((resolvedPosts) => {
-                setPostList(resolvedPosts);
-            });
-        })
+        // Wait for all promises to resolve before setting the postList state
+
+        // Wait for all promises to resolve before returning the resolved posts
+        const resolvedPosts = await Promise.all(posts);
+        setPostList(resolvedPosts);
     }
 
     {/* New/Popular/Refresh button */}
@@ -174,14 +174,15 @@ export default function AllTagPosts({ tag }){
 
     const renderItem = ({ item, index }) => {
         let post;
+        console.log(item);
         if(item.imageUrl){
             post = <ImagePost
-                key={item.repostProfile ? item.id + "1" : item.id}
+                key={index}
                 repostProfile={item.repostProfile ? item.repostProfile : null}
                 imageUrl={item.imageUrl}
                 title={item.title}
                 tags={item.tags}
-                memeText={item.memeText}
+                memeName={item.memeName}
                 profile={item.profile}
                 postId={item.id}
                 likesCount={item.likesCount}
@@ -213,17 +214,6 @@ export default function AllTagPosts({ tag }){
             />
         }
 
-        if(index == 0){
-            return (
-                <View style={{}}>
-                    {/* New/Popular/Refresh button */}
-                    {topButtons}
-
-                    {post}
-                </View>
-            );
-        }
-
         if(index == postList.length -1){
             return (
                 <View style={{marginBottom: 150}}>
@@ -239,6 +229,7 @@ export default function AllTagPosts({ tag }){
             <FlatList
                 data={postList}
                 keyExtractor={(result) => result.id}
+                ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top
                 renderItem={({ item, index }) => {
                     return (
                         renderItem({ item, index })

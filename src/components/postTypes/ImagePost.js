@@ -31,7 +31,7 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, 
             });
         }
         
-        if(username != ""){
+        if(usernameState == ""){
             const userRef = doc(db, 'users', profile);
             const userSnapshot = getDoc(userRef);
 

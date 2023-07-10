@@ -28,7 +28,7 @@ const TextPost = ({ navigation, title, username = "", profilePic = "", text, tag
             });
         }
 
-        if(username != ""){
+        if(usernameState == ""){
             const userRef = doc(db, 'users', profile);
             const userSnapshot = getDoc(userRef);
 

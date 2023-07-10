@@ -2,8 +2,9 @@ import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TextInput, ScrollView, Image, Dimensions, TouchableOpacity, Alert} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 import { db, storage } from '../config/firebase';
+import { manipulateAsync } from 'expo-image-manipulator';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, setDoc, collection, addDoc, updateDoc, increment } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, addDoc, updateDoc, increment } from "firebase/firestore";
 
 import firebase from 'firebase/compat/app';
 require('firebase/firestore');
@@ -23,6 +24,7 @@ import UploadDark from '../../assets/upload_dark.svg';
 import LinkDark from '../../assets/link_dark.svg';
 import CreateMemeDark from '../../assets/meme_create_dark.svg';
 import PostButtonDark from '../../assets/post_button_dark.svg';
+import { add } from 'react-native-reanimated';
 
 const win = Dimensions.get('window');
 
@@ -30,11 +32,29 @@ const CreatePostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [title, setTitle] = React.useState('');
     const [text, setText] = React.useState('');
-    const {imageUrl, memeName, imageUrls} = route.params;
+    const {imageUrl, memeName, imageUrls, newTemplate, newTemplateImage} = route.params;
     const [tempTags, setTempTags] = React.useState('');
     const [uploading, setUploading] = useState(false)
     const [correctTags, setCorrectTags] = React.useState([]);
     const [expandImage, setExpandImage] = React.useState(false);
+
+    const addNewTemplate = async (newUrl) => {
+        const userRef = doc(db, "users", firebase.auth().currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        const username = userSnap.data().username;
+
+        console.log("adding new template");
+        
+        const addTemplateRef = await addDoc(collection(db, "imageTemplates"), {
+            name: memeName,
+            uploader: username,
+            url: newUrl,
+            useCount: 1,
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+        });
+
+        return "success";
+    }
     
     async function uploadImagePost() {
         setUploading(true)
@@ -48,27 +68,73 @@ const CreatePostScreen = ({navigation, route}) => {
         const childPath = `posts/users/${firebase.auth().currentUser.uid}/${filename}`;
         
         const storageRef = ref(storage, childPath);
-        const uploadTask =  uploadBytesResumable(storageRef, blob)
+        const uploadTask = uploadBytesResumable(storageRef, blob)
         .catch ((e) => {
             console.log(e);
-        })
-
-
-        uploadTask.then((snapshot) => {
+        });
+        
+        await uploadTask.then(async(snapshot) => {
             // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
             // console.log('File metadata:', snapshot.metadata);
+            
             // Let's get a download URL for the file.
-            getDownloadURL(snapshot.ref).then((url) => {
+            
+            getDownloadURL(snapshot.ref).then(async (url) => {
                 // console.log(imageUrl);
                 // console.log('File available at', url);
-                saveImagePostData(url);
+                
+                if(memeName == null || memeName == undefined || memeName == ''){
+                    saveImagePostData(url);
+                }else{
+                    if(newTemplate){
+                        // upload new template image to storage imageTemplates folder
+                        
+                         // Convert image to blob format(array of bytes)
+                        const newResponse = await fetch(newTemplateImage);
+                        const newBlob = await newResponse.blob();
+
+                        const newFilename = newTemplateImage.substring(newTemplateImage.lastIndexOf('/')+1);
+                        const newChildPath = `imageTemplates/${newFilename}`;
+                        
+                        const newStorageRef = ref(storage, newChildPath);
+                        
+                        const newUploadTask = uploadBytesResumable(newStorageRef, newBlob)
+                        .catch ((e) => {
+                            console.log(e);
+                        });
+
+                        await newUploadTask.then(async(snapshot) => {
+                            // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
+                            // console.log('File metadata:', snapshot.metadata);
+                            
+                            // Let's get a download URL for the file.
+                            getDownloadURL(snapshot.ref).then(async (newUrl) => {
+                                // console.log(imageUrl);
+                                // console.log('File available at', url);
+                                await addNewTemplate(newUrl).then(async () => {
+                                    await saveMemePostData(url);
+                                })
+                            }).catch((error) => {
+                                console.error('Upload failed', error);
+                                // ...
+                            });
+
+
+                        }).catch((error) => {
+                            console.error('Upload failed', error);
+                            // ...
+                        });
+                    }else{
+                        saveMemePostData(url);
+                    }
+                }
             });
         }).catch((error) => {
             console.error('Upload failed', error);
             // ...
         });
     };
-
+    
 
     const saveImagePostData = async (url) => {
         // add text post to database
@@ -76,7 +142,33 @@ const CreatePostScreen = ({navigation, route}) => {
             title: title,
             imageUrl: url,
             tags: correctTags,
+            likesCount: 0,
+            commentsCount: 0,
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+            profile: firebase.auth().currentUser.uid
+        }).then(async (docRef) => {
+            // update posts count for current user
+            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
+
+            updateDoc(currentUserRef, {
+                posts: increment(1)
+            });
+            
+            setUploading(false);
+            Alert.alert("Post uploaded successfully!");
+            navigation.goBack();
+        }).catch(function (error) {
+                console.log(error);
+        });
+    };
+
+    const saveMemePostData = async (url) => {
+        // add text post to database
+        await addDoc(collection(db, "allPosts"), {
+            title: title,
+            imageUrl: url,
             memeName: memeName,
+            tags: correctTags,
             likesCount: 0,
             commentsCount: 0,
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),

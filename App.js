@@ -7,6 +7,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import 'react-native-gesture-handler';
 
+import "./src/global"
+
 import {Firebase, auth} from './src/config/firebase';
 
 import { Provider } from 'react-redux';
@@ -27,6 +29,7 @@ import TagScreen from './src/screens/TagScreen';
 import SearchTagScreen from './src/screens/SearchTagScreen';
 import MemeScreen from './src/screens/MemeScreen';
 import SearchMemesScreen from './src/screens/SearchMemesScreen';
+import FavoriteTemplatesScreen from './src/screens/FavoriteTemplatesScreen';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -142,6 +145,11 @@ class App extends Component {
                       }}
                     />
                     <Stack.Screen name="SearchMemes" component={SearchMemesScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen name="FavoriteTemplates" component={FavoriteTemplatesScreen}
                       options={{
                           // headerShown: false,
                       }}

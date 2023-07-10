@@ -15,30 +15,33 @@ function SearchUsers(props){
 
     const fetchUsers = (search) => {
         let q;
-        
-        if(search.charAt(0) == '@'){
-            q = query(
-                collection(db, "users"),
-                where("username", ">=", search.substring(1)),
-                limit(4)
-            );
-        }else{
-            q = query(collection(db, "users"),
-                where("username", ">=", search),
-                limit(4)
-            );
-        }
+        if(search != ""){
+            if(search.charAt(0) == '@'){
+                q = query(
+                    collection(db, "users"),
+                    where("username", ">=", search.substring(1)),
+                    where('username', '<=', search.substring(1) + '\uf8ff'),
+                    limit(4)
+                );
+            }else{
+                q = query(collection(db, "users"),
+                    where("username", ">=", search),
+                    where('username', '<=', search + '\uf8ff'),
+                    limit(4)
+                );
+            }
 
-        getDocs(q)
-        .then((snapshot) => {
-            let users = snapshot.docs.map(doc => {
-                const data = doc.data();
-                const id = doc.id;
-                return { id, ...data }
-            })
-            setUsers(users);
+            getDocs(q)
+            .then((snapshot) => {
+                let users = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    return { id, ...data }
+                })
+                setUsers(users);
+            });
+        }
             
-        });
     }
 
     useEffect(() => {

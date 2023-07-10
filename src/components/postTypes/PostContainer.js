@@ -39,7 +39,7 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
         postSnapshot.then((snapshot) => {
             if (snapshot.exists) {
                 deleteDoc(postRef).then(() => {
-                    Alert.alert('Post deleted! \n Refresh App to see changes.');
+                    Alert.alert('Post deleted!');
 
                     setDeleted(true);
 
@@ -91,7 +91,7 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
                 {/* profile pic */}
                 <TouchableOpacity
                     onPress={() => {
-                        navigation.navigate('Profile', {
+                        navigation.push('Profile', {
                             user: profile,
                             username: username,
                             profilePic: profilePic,

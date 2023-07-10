@@ -56,7 +56,7 @@ const UsersScreen = ({ route }) => {
     // Sets the header to the SimpleTopBar component
     useEffect(() => {
         navigation.setOptions({
-            header: () => <SimpleTopBar title={"Back"}/>
+            header: () => <SimpleTopBar title={""}/>
         });
     }, [navigation]);
 

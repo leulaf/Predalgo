@@ -4,10 +4,10 @@ import TextTicker from 'react-native-text-ticker'
 import { Image } from 'expo-image';
 import {ThemeContext} from '../../context-store/context';
 import { db, storage } from '../config/firebase';
-import { collection, addDoc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, orderBy, limit, getDocs, } from "firebase/firestore";
 import firebase from 'firebase/compat/app';
 import GlobalStyles from '../constants/GlobalStyles';
-import SimpleTopBar from '../components/SimpleTopBar';
+import MemeTopBar from '../components/MemeTopBar';
 
 import DarkMemeCreate from '../../assets/post_meme_create_light.svg';
 import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
@@ -26,12 +26,36 @@ ImageContainer = (props) => {
 
 const MemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
-    const { imageUrl, memeName, uploader, useCount } = route.params;
+    const { memeName } = route.params;
+
+    const [imageUrl, setImageUrl] = useState("");
+    const [uploader, setUploader] = useState("");
+    const [useCount, setUseCount] = useState("");
+
     const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
     const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
 
     useEffect(() => {
-        getFirstTenMemes();
+        
+        const q = query(
+            collection(db, "imageTemplates"),
+            where("name", "==", memeName),
+            limit(1)
+        );
+
+        getDocs(q)
+        .then((snapshot) => {
+            snapshot.docs.map(doc => {
+                const data = doc.data();
+
+                setImageUrl(data.url);
+                setUploader(data.uploader);
+                setUseCount(data.useCount);
+            })
+        }).then(() => {
+            getFirstTenMemes();
+        });
+
     }, []);
 
     const getFirstTenMemes = async () => {
@@ -41,13 +65,11 @@ const MemeScreen = ({ navigation, route }) => {
             orderBy("likesCount", "desc"),
             limit(10)
         );
-        console.log(memeName);
         
         await getDocs(q)
         .then((snapshot) => {
             let templates = snapshot.docs.map(doc => {
                 const data = doc.data();
-                console.log(data);
                 const id = doc.id;
                 return { id, ...data }
             })
@@ -77,9 +99,9 @@ const MemeScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         navigation.setOptions({
-        header: () => <SimpleTopBar title={"Back"}/>,
+            header: () => <MemeTopBar name={memeName} url={imageUrl}/>,
         });
-    }, [navigation]);
+    }, [navigation, imageUrl, memeName]);
 
     return (
         <View style={styles.container}>
@@ -285,7 +307,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 700,
         position: 'absolute',
-        backgroundColor: '#005FFF',
+        backgroundColor: '#1C70FF',
         alignSelf: 'center',
         justifyContent: 'center',
     },

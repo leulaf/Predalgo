@@ -47,35 +47,36 @@ const SimpleTopBar = ({title}) => {
 const styles = StyleSheet.create({
     lightTopContainer: {
         backgroundColor: 'white',
-        height: 80,
+        height: 90,
         flexDirection: 'row',
         borderBottomWidth: 1.5,
         borderColor: '#efefef'
     },
     darkTopContainer: {
         backgroundColor: '#1A1A1A',
-        height: 80,
+        height: 90,
         flexDirection: 'row',
         borderBottomWidth: 1.5,
         borderColor: '#2f2f2f'
     },
     backIcon: {
         // alignSelf: 'center',
-        marginTop: 47,
-        marginLeft: 5
+        marginTop: 52,
+        marginLeft: 10,
+        padding: 10,
     },
     lightText: {
         fontSize: 20,
         color: '#222222',
         fontWeight: '600',
-        marginTop: 45,
+        marginTop: 50,
         marginLeft: 5
     },
     darkText: {
         fontSize: 20,
         color: '#f2f2f2',
         fontWeight: '600',
-        marginTop: 45,
+        marginTop: 50,
         marginLeft: 5
     },
 });

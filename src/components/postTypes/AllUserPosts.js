@@ -116,17 +116,6 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
             />
         }
 
-        if(index == 0){
-            return (
-                <View style={{}}>
-                    {/* New/Popular/Refresh button */}
-                    {topButtons}
-
-                    {post}
-                </View>
-            );
-        }
-
         if(index == postList.length -1){
             return (
                 <View style={{marginBottom: 150}}>
@@ -146,6 +135,7 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
             <Tabs.FlatList
                 data={postList}
                 keyExtractor={(result) => result.id}
+                ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top
                 renderItem={({ item, index }) => {
                     return (
                         renderItem({ item, index })

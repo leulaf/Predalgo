@@ -20,6 +20,7 @@ export default function SearchMemesScreen({navigation, route}){
             q = query(
                 collection(db, "imageTemplates"),
                 where("name", ">=", term),
+                where('name', '<=', term + '\uf8ff'),
                 limit(2)
             );
     

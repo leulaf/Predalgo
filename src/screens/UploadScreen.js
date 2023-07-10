@@ -13,6 +13,9 @@ import DeleteImageIcon from '../../assets/x.svg';
 import CorrectIcon from '../../assets/correct.svg';
 import FlashOn from '../../assets/flash_on.svg';
 import FlashOff from '../../assets/flash_off.svg';
+import MakeMeme from '../../assets/make_meme.svg';
+
+
 
 
 export default function UploadScreen({navigation}) {
@@ -72,6 +75,16 @@ export default function UploadScreen({navigation}) {
     return compressedImage.uri;
   }
 
+  const getbase64AndNav = async (image) => {
+    const manipResult = await manipulateAsync(image, [], {
+      // compress: 0.2,
+      // format: SaveFormat.PNG,
+      base64: true,
+    });
+
+    await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`});
+  };
+
   return (
     <View style={styles.container}>
         <View style={{flexDirection: 'row'}}>
@@ -124,14 +137,27 @@ export default function UploadScreen({navigation}) {
                         <TouchableOpacity style={{ marginRight: 10, marginTop: 10, }} onPress={() => setImage(null)}>
                             <DeleteImageIcon height={30} width={30}/>
                         </TouchableOpacity>
+
+                        {/* Make meme */}
+                        <TouchableOpacity 
+                            style={{ marginRight: 10, marginTop: 120, flexDirection: 'row'}} 
+                            onPress={() => getbase64AndNav(image)}
+                        >
+                            <MakeMeme height={35} width={35}/>
+                            <Text style={styles.text} alignSelf={'center'}>
+                              Meme-it
+                            </Text>
+                        </TouchableOpacity>
                         
                         {/* Use image */}
                         <TouchableOpacity 
-                            style={{ marginRight: 10, marginTop: 230, flexDirection: 'row'}} 
+                            style={{ marginRight: 10, marginTop: 70, flexDirection: 'row'}} 
                             onPress={() => navigation.navigate('CreatePost', {imageUrl: image})}
                         >
                             <CorrectIcon height={30} width={30}/>
-                            <Text style={styles.text} alignSelf={'center'}>Use Image</Text>
+                            <Text style={styles.text} alignSelf={'center'}>
+                              Use Image
+                            </Text>
                         </TouchableOpacity>
 
                     </View>

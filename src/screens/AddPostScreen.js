@@ -11,7 +11,7 @@ import PostBar from '../components/PostBar';
 import AddPostTopBar from '../components/AddPostTopBar';
 import Image from 'react-native-scalable-image';
 
-ImageContainer = (props) => {    
+const ImageContainer = (props) => {    
     return (
         <Image 
             width={200} // this will make image take full width of the device
@@ -55,8 +55,6 @@ const AddPostScreen = ({navigation}) => {
 
             setLeftAndRightMemeTemplates(templates);
         });
-
-        // await setLeftAndRightMemeTemplates(memeTemplates);
     };
 
     // a function to split the meme templates into two arrays, the left should be odd indexes and the right should be even indexes
@@ -118,7 +116,7 @@ const AddPostScreen = ({navigation}) => {
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
+                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -138,7 +136,7 @@ const AddPostScreen = ({navigation}) => {
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
+                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#999999'
+    borderColor: '#BBBBBB'
   },
   darkPickTemplateContainer: {
     flexDirection: 'column',
@@ -184,7 +182,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#888888'
+    borderColor: '#5D5D5D'
   },
   lightText: {
     fontSize: 22,
