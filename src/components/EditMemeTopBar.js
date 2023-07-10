@@ -24,12 +24,7 @@ const EditMemeTopBar = ({title, onSave}) => {
                             style={{flex: 1, flexDirection: 'row'}}
                             onPress={() => {navigation.goBack()}}
                 >
-                    {
-                        theme == 'light' ?
-                            <BackLight style={styles.backIcon} width={22} height={22}/>
-                        :
-                            <BackDark style={styles.backIcon} width={22} height={22}/>
-                    }
+                    <BackLight style={styles.backIcon} width={22} height={22}/>
                     
                     <Text style={styles.text}>
                         {title}

@@ -30,7 +30,7 @@ const CreatePostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [title, setTitle] = React.useState('');
     const [text, setText] = React.useState('');
-    const {imageUrl, imageUrls} = route.params;
+    const {imageUrl, memeName, imageUrls} = route.params;
     const [tempTags, setTempTags] = React.useState('');
     const [uploading, setUploading] = useState(false)
     const [correctTags, setCorrectTags] = React.useState([]);
@@ -76,6 +76,7 @@ const CreatePostScreen = ({navigation, route}) => {
             title: title,
             imageUrl: url,
             tags: correctTags,
+            memeName: memeName,
             likesCount: 0,
             commentsCount: 0,
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),

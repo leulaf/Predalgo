@@ -49,11 +49,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         height: 80,
         flexDirection: 'row',
+        borderBottomWidth: 1.5,
+        borderColor: '#efefef'
     },
     darkTopContainer: {
         backgroundColor: '#1A1A1A',
         height: 80,
         flexDirection: 'row',
+        borderBottomWidth: 1.5,
+        borderColor: '#2f2f2f'
     },
     backIcon: {
         // alignSelf: 'center',

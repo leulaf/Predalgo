@@ -1,10 +1,14 @@
 import React, {useContext, useState, useEffect,} from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView} from 'react-native';
+import { db, storage } from '../config/firebase';
+import { collection, addDoc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import firebase from 'firebase/compat/app';
+
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import imgflip from '../api/imgflip';
 import PostBar from '../components/PostBar';
-import SimpleTopBar from '../components/SimpleTopBar';
+import AddPostTopBar from '../components/AddPostTopBar';
 import Image from 'react-native-scalable-image';
 
 ImageContainer = (props) => {    
@@ -16,14 +20,43 @@ ImageContainer = (props) => {
         />
     );
 };
+
+// const docRef = await addDoc(collection(db, "imageTemplates"), {
+//   name: response.data.data.memes[i].name,
+//   uploader: "imgflip",
+//   url: response.data.data.memes[i].url,
+//   useCount: 1000-i,
+//   creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+// });
+
 const AddPostScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
     const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
 
-    const getTemplates = async () => {
-        const response = await imgflip.get(`/get_memes`);
-        await setLeftAndRightMemeTemplates(response.data.data.memes);
+    useEffect(() => {
+      getFirstTenTemplates();
+    }, []);
+
+    const getFirstTenTemplates = async () => {
+        const q = query(
+            collection(db, "imageTemplates"),
+            orderBy("useCount", "desc"),
+            limit(10)
+        );
+        
+        await getDocs(q)
+        .then((snapshot) => {
+            let templates = snapshot.docs.map(doc => {
+                const data = doc.data();
+                const id = doc.id;
+                return { id, ...data }
+            })
+
+            setLeftAndRightMemeTemplates(templates);
+        });
+
+        // await setLeftAndRightMemeTemplates(memeTemplates);
     };
 
     // a function to split the meme templates into two arrays, the left should be odd indexes and the right should be even indexes
@@ -43,14 +76,10 @@ const AddPostScreen = ({navigation}) => {
         setRightMemeTemplates(right);
     };
 
-    useEffect(() => {
-      getTemplates();
-    }, []);
-
     // Sets the header to the AddPostTop component
     useEffect(() => {
         navigation.setOptions({
-            header: () => <SimpleTopBar title={"Back"}/>
+            header: () => <AddPostTopBar />
         });
     }, [navigation]);
     
@@ -89,7 +118,7 @@ const AddPostScreen = ({navigation}) => {
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
+                      onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -109,7 +138,7 @@ const AddPostScreen = ({navigation}) => {
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeId: item.id, memeName: item.name})}
+                      onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}

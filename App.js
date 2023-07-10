@@ -25,6 +25,8 @@ import FollowingScreen from './src/screens/FollowingScreen';
 import FollowersScreen from './src/screens/FollowersScreen';
 import TagScreen from './src/screens/TagScreen';
 import SearchTagScreen from './src/screens/SearchTagScreen';
+import MemeScreen from './src/screens/MemeScreen';
+import SearchMemesScreen from './src/screens/SearchMemesScreen';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -130,6 +132,16 @@ class App extends Component {
                       }}
                     />
                     <Stack.Screen name="SearchTag" component={SearchTagScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen name="Meme" component={MemeScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen name="SearchMemes" component={SearchMemesScreen}
                       options={{
                           // headerShown: false,
                       }}
