@@ -75,7 +75,7 @@ const pickProfilePic = async () => {
 async function compressImage(imageUrl){
     const compressedImage = await manipulateAsync(
       imageUrl,
-      [{ resize: {height:300}}],
+      [{ resize: {height:100}}],
       { compress: 0.3, format: SaveFormat.JPEG }
     );
 

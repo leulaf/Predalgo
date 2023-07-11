@@ -69,7 +69,7 @@ export default function UploadScreen({navigation}) {
     const compressedImage = await manipulateAsync(
       imageUrl,
       [{ resize: {height:500}}],
-      { compress: 0.3, format: SaveFormat.JPEG }
+      { compress: 0.4, format: SaveFormat.JPEG }
     );
 
     return compressedImage.uri;

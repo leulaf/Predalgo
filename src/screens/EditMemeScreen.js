@@ -18,7 +18,6 @@ const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
     const { imageUrl, memeName } = route.params;
     const [image, setImage] = useState(imageUrl);
-
     const [imageResult, setImageResult] = useState(null);
 
     const [overlayVisible, setOverlayVisible] = useState(false);
@@ -136,6 +135,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                     <TouchableOpacity
                         onPress={() =>
                             {
+                                console.log("imageResult", imageResult);
                                 setOverlayVisible(false);
                                 navigation.navigate('CreatePost', {imageUrl: imageResult});
                             }

@@ -75,7 +75,7 @@ export default function SearchMemesScreen({navigation, route}){
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
+                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -95,7 +95,7 @@ export default function SearchMemesScreen({navigation, route}){
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
+                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}

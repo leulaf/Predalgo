@@ -1,8 +1,15 @@
 import React, {useContext, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import { Overlay } from 'react-native-elements';
 import { db, storage } from '../config/firebase';
-import { collection, addDoc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDoc, doc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import firebase from 'firebase/compat/app';
+
+import uuid from 'react-native-uuid';
+
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
 
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
@@ -10,6 +17,7 @@ import imgflip from '../api/imgflip';
 import PostBar from '../components/PostBar';
 import AddPostTopBar from '../components/AddPostTopBar';
 import Image from 'react-native-scalable-image';
+import { set } from 'react-native-reanimated';
 
 const ImageContainer = (props) => {    
     return (
@@ -21,16 +29,13 @@ const ImageContainer = (props) => {
     );
 };
 
-// const docRef = await addDoc(collection(db, "imageTemplates"), {
-//   name: response.data.data.memes[i].name,
-//   uploader: "imgflip",
-//   url: response.data.data.memes[i].url,
-//   useCount: 1000-i,
-//   creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-// });
-
 const AddPostScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
+
+    const [newTemplate, setNewTemplate] = useState(null);
+    const [newMemeName, setNewMemeName] = useState("");
+    const [overlayVisible, setOverlayVisible] = useState(false);
+
     const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
     const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
 
@@ -74,6 +79,99 @@ const AddPostScreen = ({navigation}) => {
         setRightMemeTemplates(right);
     };
 
+    const pickImage = async () => {
+      // No permissions request is necessary for launching the image library
+      let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          // allowsEditing: true,
+      });
+    
+      if (!result.canceled) {
+        compressedResult = await compressImage(result.assets[0].uri);
+        setNewTemplate(compressedResult);
+        setOverlayVisible(true);
+      }
+    };
+
+    async function compressImage(imageUrl){
+      const compressedImage = await manipulateAsync(
+        imageUrl,
+        [{ resize: {height:500}}],
+        { compress: 0.3, format: SaveFormat.JPEG }
+      );
+    
+      return compressedImage.uri;
+    }
+
+    const uploadNewTemplate = async (newTemplateImage, memeName) => {
+      // check if the meme name is unique
+      const q = query(
+          collection(db, "imageTemplates"),
+          where("name", "==", memeName),
+          limit(1)
+      );
+      
+      const snapshot = await getDocs(q);
+
+      if (snapshot.docs.length !== 0) {
+        Alert.alert("Meme with that name already exists. Please choose a different name.");
+        return; // Exit the function immediately
+      }
+
+      setOverlayVisible(false);
+
+      // upload the new template to firebase storage
+      const newResponse = await fetch(newTemplateImage);
+      const newBlob = await newResponse.blob();
+
+      const newFilename = uuid.v4();
+      const newChildPath = `imageTemplates/${newFilename}`;
+      
+      const newStorageRef = ref(storage, newChildPath);
+      
+      const newUploadTask = uploadBytesResumable(newStorageRef, newBlob)
+      .catch ((e) => {
+          console.log(e);
+      });
+
+      await newUploadTask.then(async(snapshot) => {
+          // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
+          // console.log('File metadata:', snapshot.metadata);
+          
+          // Let's get a download URL for the file.
+          getDownloadURL(snapshot.ref).then(async (newUrl) => {
+              // console.log(imageUrl);
+              // console.log('File available at', url);
+              await addNewTemplate(newUrl, memeName);
+          }).catch((error) => {
+              console.error('Upload failed', error);
+              // ...
+          });
+
+
+      }).catch((error) => {
+          console.error('Upload failed', error);
+          // ...
+      });
+    }
+
+    const addNewTemplate = async (newUrl, memeName) => {
+        const userRef = doc(db, "users", firebase.auth().currentUser.uid);
+        const userSnap = await getDoc(userRef);
+        const username = userSnap.data().username;
+        
+        const addTemplateRef = await addDoc(collection(db, "imageTemplates"), {
+            name: memeName,
+            uploader: username,
+            url: newUrl,
+            useCount: 1,
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+        }).then(() => {
+          Alert.alert("Meme template added successfully!");
+        });
+
+    }
+    
     // Sets the header to the AddPostTop component
     useEffect(() => {
         navigation.setOptions({
@@ -94,12 +192,13 @@ const AddPostScreen = ({navigation}) => {
     }, [navigation]);
 
     return (
+      <View style={styles.container}>
         <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
           
           <PostBar/>
 
           <View style={{width: '100%', flexDirection: 'row', alignContent: 'center', justifyContent: 'center'}}>
-              <View style={theme == 'light' ? styles.lightPickTemplateContainer : styles.darkPickTemplateContainer}>
+              <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
                   <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
                       Meme Templates
                   </Text>
@@ -147,12 +246,67 @@ const AddPostScreen = ({navigation}) => {
               />
             </View>
           </View>
-       
+
+          
         </ScrollView>
+
+        {/* create meme button */}
+        <TouchableOpacity
+              style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
+              onPress={() => pickImage()}
+          >
+            <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
+                Add meme template
+            </Text>
+        </TouchableOpacity>
+
+        <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
+              
+            <View>
+              <Text style={styles.askText}>What do you want to name the template?</Text>
+
+              {/* Meme Template Name */}
+              <TextInput
+                  secureTextEntry={false}
+                  multiline
+                  blurOnSubmit
+                  maxLength={15}
+                  style={{fontSize: 20, width: 350, height: 50, alignSelf: 'center', marginBottom: 15, borderColor: 'gray', borderWidth: 1.5, marginTop: 10, borderRadius: 15}}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  placeholder="  Meme Template Name"
+                  placeholderTextColor= "#888888"
+                  value={newMemeName}
+                  onChangeText={(newValue) => setNewMemeName(newValue)}
+                  // onEndEditing={( ) => console.log('submitted')}
+              />
+
+              {/* Done */}
+              <TouchableOpacity
+                  onPress={() =>
+                    {
+                      uploadNewTemplate(newTemplate, newMemeName);
+                    }
+                    
+                  }
+                  style={styles.answerButton}
+              >
+                  <Text style={styles.answerText}>
+                    Done
+                  </Text>
+              </TouchableOpacity>
+
+            </View>
+
+        </Overlay>
+      </View>
     );
 }
 
 const styles = StyleSheet.create({
+  container: {
+      flex: 1,
+  },
   image: {
     width: 200,
     height: 250,
@@ -160,7 +314,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 10,
   },
-  lightPickTemplateContainer: {
+  lightMemeTemplateContainer: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
     borderRadius: 15,
@@ -172,7 +326,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#BBBBBB'
   },
-  darkPickTemplateContainer: {
+  darkMemeTemplateContainer: {
     flexDirection: 'column',
     backgroundColor: '#1A1A1A',
     borderRadius: 15,
@@ -199,6 +353,72 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginHorizontal: 10,
     marginTop: 5,
+  },
+  lightAddTemplateButton: {
+    width: 225,
+    height: 55,
+    borderRadius: 100,
+    flexDirection: 'row',
+    marginTop: 700,
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#BBBBBB'
+  },
+  darkAddTemplateButton: {
+    width: 225,
+    height: 55,
+    borderRadius: 100,
+    flexDirection: 'row',
+    marginTop: 700,
+    position: 'absolute',
+    backgroundColor: '#151515',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#555555'
+  },
+  lightAddTemplateText: {
+      fontSize: 20,
+      color: '#111111',
+      fontWeight: '500',
+      alignSelf: 'center',
+  },
+  darkAddTemplateText: {
+      fontSize: 20,
+      color: '#F0F0F0',
+      fontWeight: '500',
+      alignSelf: 'center',
+  },
+  askText: {
+    fontSize: 20,
+    color: '#222222',
+    fontWeight: '500',
+    alignSelf: 'center',
+    marginTop: 5,
+    marginBottom: 15,
+  },
+  answerButton: {
+      width: 85,
+      height: 50,
+      borderRadius: 100,
+      borderWidth: 2,
+      borderColor: '#AAAAAA',
+      marginLeft: 10,
+      marginTop: 15,
+      marginRight: 40,
+      marginBottom: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'flex-end',
+  },
+  answerText: {
+      fontSize: 20,
+      color: '#222222',
+      fontWeight: '500',
+      alignSelf: 'center'
   },
 });
 

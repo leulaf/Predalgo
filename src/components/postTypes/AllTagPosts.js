@@ -69,7 +69,6 @@ export default function AllTagPosts({ tag }){
 
         // Wait for all promises to resolve before returning the resolved posts
         const resolvedPosts = await Promise.all(posts);
-        console.log(resolvedPosts);
         setPostList(resolvedPosts);
     }
     
@@ -174,7 +173,7 @@ export default function AllTagPosts({ tag }){
 
     const renderItem = ({ item, index }) => {
         let post;
-        console.log(item);
+        
         if(item.imageUrl){
             post = <ImagePost
                 key={index}

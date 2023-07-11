@@ -2,6 +2,7 @@ import React, {useContext, useState, useEffect,} from 'react';
 import {View, Text, StyleSheet, FlatList, Button, TouchableOpacity, ScrollView} from 'react-native';
 import TextTicker from 'react-native-text-ticker'
 import { Image } from 'expo-image';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {ThemeContext} from '../../context-store/context';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, query, where, orderBy, limit, getDocs, } from "firebase/firestore";
@@ -95,6 +96,16 @@ const MemeScreen = ({ navigation, route }) => {
 
         setLeftMemeTemplates(left);
         setRightMemeTemplates(right);
+    };
+
+    const getbase64AndNav = async (image, memeName) => {
+        const manipResult = await manipulateAsync(image, [], {
+          // compress: 0.2,
+          // format: SaveFormat.PNG,
+          base64: true,
+        });
+    
+        await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`});
     };
 
     useEffect(() => {
@@ -195,12 +206,16 @@ const MemeScreen = ({ navigation, route }) => {
             
             {/* create meme button */}
             <TouchableOpacity
-                style={styles.useTemplateButton}
-                onPress={() => navigation.navigate('EditMeme', {imageUrl: imageUrl, memeName: memeName, uploader: uploader, useCount: useCount})}
+                style={theme == 'light' ? styles.lightUseTemplateButton : styles.darkUseTemplateButton}
+                onPress={() => getbase64AndNav(imageUrl, memeName)}
             >
-                <DarkMemeCreate width={26} height={26} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                {theme == "light" ?
+                    <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                    :
+                    <DarkMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                }
 
-                <Text style={styles.useTemplateButtonText}>
+                <Text style={theme == 'light' ? styles.lightUseTemplateText : styles.darkUseTemplateText}>
                     Use meme template
                 </Text>
             </TouchableOpacity>
@@ -213,7 +228,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     lightContainer: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#FCFCFC',
     },
     darkContainer: {
         backgroundColor: '#1A1A1A',
@@ -222,7 +237,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderRadius: 20,
         borderBottomWidth: 1.5,
-        borderColor: '#efefef'
+        borderColor: '#DDDDDD'
     },
     darkMemeInfoContainer: {
         flexDirection: 'row',
@@ -300,23 +315,44 @@ const styles = StyleSheet.create({
         // marginHorizontal: 10,
         // marginTop: 5,
     },
-    useTemplateButton: {
-        width: 225,
+    lightUseTemplateButton: {
+        width: 240,
         height: 55,
         borderRadius: 100,
         flexDirection: 'row',
         marginTop: 700,
         position: 'absolute',
-        backgroundColor: '#1C70FF',
+        backgroundColor: '#FFFFFF',
         alignSelf: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#BBBBBB'
     },
-    useTemplateButtonText: {
-        fontSize: 18,
-        color: '#FFFFFF',
+    darkUseTemplateButton: {
+        width: 240,
+        height: 55,
+        borderRadius: 100,
+        flexDirection: 'row',
+        marginTop: 700,
+        position: 'absolute',
+        backgroundColor: '#151515',
+        alignSelf: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#333333'
+    },
+    lightUseTemplateText: {
+        fontSize: 20,
+        color: '#111111',
         fontWeight: '500',
         alignSelf: 'center',
-    }
+    },
+    darkUseTemplateText: {
+        fontSize: 20,
+        color: '#F0F0F0',
+        fontWeight: '500',
+        alignSelf: 'center',
+    },
 });
 
 export default MemeScreen;

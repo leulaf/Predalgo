@@ -6,6 +6,8 @@ import { manipulateAsync } from 'expo-image-manipulator';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc, getDoc, collection, addDoc, updateDoc, increment } from "firebase/firestore";
 
+import uuid from 'react-native-uuid';
+
 import firebase from 'firebase/compat/app';
 require('firebase/firestore');
 
@@ -42,8 +44,6 @@ const CreatePostScreen = ({navigation, route}) => {
         const userRef = doc(db, "users", firebase.auth().currentUser.uid);
         const userSnap = await getDoc(userRef);
         const username = userSnap.data().username;
-
-        console.log("adding new template");
         
         const addTemplateRef = await addDoc(collection(db, "imageTemplates"), {
             name: memeName,
@@ -64,7 +64,7 @@ const CreatePostScreen = ({navigation, route}) => {
         const response = await fetch(imageUrl);
         const blob = await response.blob();
 
-        const filename = imageUrl.substring(imageUrl.lastIndexOf('/')+1);
+        const filename = uuid.v4();
         const childPath = `posts/users/${firebase.auth().currentUser.uid}/${filename}`;
         
         const storageRef = ref(storage, childPath);
@@ -93,7 +93,7 @@ const CreatePostScreen = ({navigation, route}) => {
                         const newResponse = await fetch(newTemplateImage);
                         const newBlob = await newResponse.blob();
 
-                        const newFilename = newTemplateImage.substring(newTemplateImage.lastIndexOf('/')+1);
+                        const newFilename = uuid.v4();
                         const newChildPath = `imageTemplates/${newFilename}`;
                         
                         const newStorageRef = ref(storage, newChildPath);
@@ -466,12 +466,12 @@ const CreatePostScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
   lightContainer: {
     height: '100%',
-    backgroundColor: '#F4F4F4',
+    backgroundColor: '#F6F6F6',
     flexDirection: 'column',
   },
   darkContainer: {
     height: '100%',
-    backgroundColor: '#282828',
+    backgroundColor: '#1F1F1F',
     flexDirection: 'column',
   },
   lightPostContainer: {

@@ -91,11 +91,18 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
                 {/* profile pic */}
                 <TouchableOpacity
                     onPress={() => {
-                        navigation.push('Profile', {
-                            user: profile,
-                            username: username,
-                            profilePic: profilePic,
-                        });
+                        {
+                            profile != firebase.auth().currentUser.uid ?
+                            
+                                navigation.push('Profile', {
+                                    user: profile,
+                                    username: username,
+                                    profilePic: profilePic,
+                                })
+                            :
+                                null
+                        }
+                        
                     }}
                 >
                     {profilePic != "" ? (

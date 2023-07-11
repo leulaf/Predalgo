@@ -95,11 +95,11 @@ const MemeTopBar = ({name, url}) => {
 
 const styles = StyleSheet.create({
     lightTopContainer: {
-        backgroundColor: 'white',
+        backgroundColor: '#FCFCFC',
         height: 90,
         flexDirection: 'row',
         borderBottomWidth: 1.5,
-        borderColor: '#efefef'
+        borderColor: '#DDDDDD'
     },
     darkTopContainer: {
         backgroundColor: '#1A1A1A',
