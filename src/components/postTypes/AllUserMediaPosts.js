@@ -70,7 +70,7 @@ export default function AllUserMediaPosts({ userId, postList }){
     
     return (
       <Tabs.ScrollView
-        style={theme == 'light' ? styles.lightContainer : styles.darkContainer}
+        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1, marginTop: 15 }]}
       >
         <View style={{ flexDirection: "row" }}>
           {/* left side of images */}

@@ -173,7 +173,7 @@ export default function AllTagPosts({ tag }){
 
     const renderItem = ({ item, index }) => {
         let post;
-        
+
         if(item.imageUrl){
             post = <ImagePost
                 key={index}
@@ -224,7 +224,7 @@ export default function AllTagPosts({ tag }){
     };
 
     return (
-        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+        <View style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
             <FlatList
                 data={postList}
                 keyExtractor={(result) => result.id}

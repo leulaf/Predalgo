@@ -79,7 +79,9 @@ const UsersScreen = ({ route }) => {
     }
     
     return (
-        <View style={{ flex: 1, backgroundColor: theme == 'light' ? '#F4F4F4' : "#282828" }}>
+        <View 
+            style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1}]}
+        >
 
             <View style={{flex: 1, marginTop: 50}}>
                 <FlatList

@@ -2,6 +2,7 @@ import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
+import GlobalStyles from '../../constants/GlobalStyles';
 import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
 import ImagePost from './ImagePost';
@@ -131,7 +132,9 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
     }, [postList]);
 
     return (
-        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+        <View 
+            style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}
+        >
             <Tabs.FlatList
                 data={postList}
                 keyExtractor={(result) => result.id}

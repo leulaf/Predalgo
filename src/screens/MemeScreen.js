@@ -123,7 +123,7 @@ const MemeScreen = ({ navigation, route }) => {
 
                     <Image source={{uri: imageUrl}} style={styles.image} cachePolicy='disk'/>
 
-                    <View style={{flexDirection: 'column'}}>
+                    <View style={{flexDirection: 'column', marginLeft: 10}}>
                         {/* meme name */}
                         <View style={styles.memeName}>
                             {theme == "light" ?
@@ -325,8 +325,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         alignSelf: 'center',
         justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#BBBBBB'
+        borderWidth: 1.5,
+        borderColor: '#AAAAAA'
     },
     darkUseTemplateButton: {
         width: 240,
@@ -338,8 +338,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#151515',
         alignSelf: 'center',
         justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#333333'
+        borderWidth: 1.5,
+        borderColor: '#444444'
     },
     lightUseTemplateText: {
         fontSize: 20,

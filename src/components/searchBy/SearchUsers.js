@@ -5,6 +5,7 @@ import { db, storage } from '../../config/firebase';
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../../context-store/context';
+import GlobalStyles from '../../constants/GlobalStyles';
 import { connect } from 'react-redux';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -51,6 +52,7 @@ function SearchUsers(props){
    
     }, [props.searchState]);
 
+
     const renderItem = (item) => {
 
         // makes sure the current user is not displayed in the search results
@@ -84,7 +86,7 @@ function SearchUsers(props){
 
     if(users.length == 0){
         return (
-            <View style={theme ==  'light' ? styles.lightContainer : styles.darkContainer}>
+            <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
                 <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
                     No users found
                 </Text>
@@ -93,7 +95,7 @@ function SearchUsers(props){
     }
     
     return (
-        <View style={{ flex: 1, backgroundColor: theme == 'light' ? '#F4F4F4' : "#282828" }}>
+        <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
 
             <View style={{flex: 1, marginTop: 50}}>
                 <FlatList

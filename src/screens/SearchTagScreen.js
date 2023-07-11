@@ -7,7 +7,7 @@ import { db, storage } from '../config/firebase';
 import { collection, query, where, limit, getDocs } from "firebase/firestore";
 import { connect } from 'react-redux';
 import { Feather, AntDesign } from '@expo/vector-icons';
-import { not } from 'react-native-reanimated';
+import GlobalStyles from '../constants/GlobalStyles';
 
 function SearchTagScreen(props){
     const navigation = useNavigation();
@@ -86,9 +86,9 @@ function SearchTagScreen(props){
 
     if(!foundTag){
         return (
-            <View style={theme ==  'light' ? styles.lightContainer : styles.darkContainer}>
+            <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}>
                 <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                    No tag found
+                    No tags found
                 </Text>
             </View>
         );

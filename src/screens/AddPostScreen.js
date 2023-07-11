@@ -19,6 +19,9 @@ import AddPostTopBar from '../components/AddPostTopBar';
 import Image from 'react-native-scalable-image';
 import { set } from 'react-native-reanimated';
 
+import DarkMemeCreate from '../../assets/post_meme_create_light.svg';
+import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
+
 const ImageContainer = (props) => {    
     return (
         <Image 
@@ -255,6 +258,12 @@ const AddPostScreen = ({navigation}) => {
               style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
               onPress={() => pickImage()}
           >
+            {theme == "light" ?
+                <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                :
+                <DarkMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+            }
+
             <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
                 Add meme template
             </Text>
@@ -336,7 +345,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#5D5D5D'
+    borderColor: '#555555'
   },
   lightText: {
     fontSize: 22,
@@ -355,7 +364,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   lightAddTemplateButton: {
-    width: 225,
+    width: 245,
     height: 55,
     borderRadius: 100,
     flexDirection: 'row',
@@ -364,11 +373,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     alignSelf: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: '#BBBBBB'
   },
   darkAddTemplateButton: {
-    width: 225,
+    width: 245,
     height: 55,
     borderRadius: 100,
     flexDirection: 'row',
@@ -377,8 +386,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#151515',
     alignSelf: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#555555'
+    borderWidth: 1.5,
+    borderColor: '#666666'
   },
   lightAddTemplateText: {
       fontSize: 20,
