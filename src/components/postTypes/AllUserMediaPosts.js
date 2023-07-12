@@ -4,6 +4,7 @@ import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
+import GlobalStyles from '../../constants/GlobalStyles';
 
 ImageContainer = (props) => {    
     return (

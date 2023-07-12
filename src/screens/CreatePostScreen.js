@@ -150,7 +150,7 @@ const CreatePostScreen = ({navigation, route}) => {
             // update posts count for current user
             const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
 
-            updateDoc(currentUserRef, {
+            await updateDoc(currentUserRef, {
                 posts: increment(1)
             });
             
@@ -177,7 +177,7 @@ const CreatePostScreen = ({navigation, route}) => {
             // update posts count for current user
             const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
 
-            updateDoc(currentUserRef, {
+            await updateDoc(currentUserRef, {
                 posts: increment(1)
             });
             

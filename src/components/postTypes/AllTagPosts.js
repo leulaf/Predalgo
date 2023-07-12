@@ -224,7 +224,7 @@ export default function AllTagPosts({ tag }){
     };
 
     return (
-        <View style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
+        <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
             <FlatList
                 data={postList}
                 keyExtractor={(result) => result.id}

@@ -2,17 +2,32 @@ import React, {useContext, useState, useEffect, useRef} from 'react';
 import {View, Text, TextInput, StyleSheet, Button, Image, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { Overlay } from 'react-native-elements';
 import {ThemeContext} from '../../context-store/context';
-import PinturaEditor from "@pqina/react-native-pintura";
-import {
-    createMarkupEditorToolStyle,
-    createMarkupEditorToolStyles,
-} from "@pqina/pintura";
+
 import EditMemeTopBar from '../components/EditMemeTopBar';
 
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import firebase from 'firebase/compat/app';
 import { set } from 'react-native-reanimated';
+
+import PinturaEditor from "@pqina/react-native-pintura";
+import {
+    createMarkupEditorToolStyle,
+    createMarkupEditorToolStyles,
+    createDefaultImageReader,
+    createDefaultImageWriter,
+    createDefaultImageOrienter,
+    setPlugins,
+    plugin_crop,
+    locale_en_gb,
+    plugin_crop_locale_en_gb,
+} from "@pqina/pintura";
+
+setPlugins(plugin_crop);
+
+const editorDefaults = {
+    imageWriter: { quality: 0.3 },
+};
 
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
@@ -60,6 +75,7 @@ const EditMemeScreen = ({ navigation, route }) => {
 
             <PinturaEditor
                 ref={editorRef}
+                {...editorDefaults}
                 style={{
                     width: "100%",
                     height: "90%",
@@ -116,6 +132,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                     if(memeName){
                         navigation.navigate('CreatePost', {imageUrl: dest, memeName: memeName});
                     }else{
+                        console.log(memeName);
                         setImageResult(dest);
                         setOverlayVisible(true);
                     }
@@ -135,7 +152,6 @@ const EditMemeScreen = ({ navigation, route }) => {
                     <TouchableOpacity
                         onPress={() =>
                             {
-                                console.log("imageResult", imageResult);
                                 setOverlayVisible(false);
                                 navigation.navigate('CreatePost', {imageUrl: imageResult});
                             }

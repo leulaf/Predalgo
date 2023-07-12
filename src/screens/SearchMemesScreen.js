@@ -4,7 +4,9 @@ import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { Image } from 'expo-image';
+import { manipulateAsync } from 'expo-image-manipulator';
 import {ThemeContext} from '../../context-store/context';
+import GlobalStyles from '../constants/GlobalStyles';
 
 import MemesSearchBar from '../components/MemesSearchBar';
 import { set } from 'react-native-reanimated';
@@ -59,9 +61,22 @@ export default function SearchMemesScreen({navigation, route}){
             header: () => <MemesSearchBar title={"Back"} term={term} setTerm={setTerm}/>
         });
     }, [navigation]);
+
+    const getbase64AndNav = async (image, memeName) => {
+      const manipResult = await manipulateAsync(image, [], {
+        // compress: 0.2,
+        // format: SaveFormat.PNG,
+        base64: true,
+      });
+
+      console.log(memeName);
+      console.log(`data:image/jpeg;base64,${manipResult.base64}`);
+  
+      await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`, memeName: memeName});
+    };
     
     return (
-        <View style={{ flex: 1, backgroundColor: theme == 'light' ? '#F4F4F4' : "#282828" }}>
+      <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { alignItems: 'center', justifyContent: 'center', marginTop: 10 }]}>
 
             
           <View style={{flexDirection: 'row'}}>
@@ -75,7 +90,7 @@ export default function SearchMemesScreen({navigation, route}){
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
+                      onPress={() => getbase64AndNav(item.url, item.name)}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -95,7 +110,7 @@ export default function SearchMemesScreen({navigation, route}){
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
+                      onPress={() => getbase64AndNav(item.url, item.name)}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}

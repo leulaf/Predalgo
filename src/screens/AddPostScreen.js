@@ -4,6 +4,8 @@ import { Overlay } from 'react-native-elements';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, getDoc, doc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import PinturaCompressImage from '../shared/PinturaCompress';
+
 import firebase from 'firebase/compat/app';
 
 import uuid from 'react-native-uuid';
@@ -36,6 +38,7 @@ const AddPostScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
 
     const [newTemplate, setNewTemplate] = useState(null);
+    const [base64, setBase64] = useState(null);
     const [newMemeName, setNewMemeName] = useState("");
     const [overlayVisible, setOverlayVisible] = useState(false);
 
@@ -90,21 +93,35 @@ const AddPostScreen = ({navigation}) => {
       });
     
       if (!result.canceled) {
-        compressedResult = await compressImage(result.assets[0].uri);
-        setNewTemplate(compressedResult);
+        // compressedResult = await compressImage(result.assets[0].uri);
+        // setNewTemplate(compressedResult);
+        // const uri = await getUri(result.assets[0].uri);
+        const base64 = await getbase64(result.assets[0].uri);
+        setBase64(base64);
+
         setOverlayVisible(true);
       }
     };
 
-    async function compressImage(imageUrl){
+    async function getUri(imageUrl){
       const compressedImage = await manipulateAsync(
         imageUrl,
-        [{ resize: {height:500}}],
-        { compress: 0.3, format: SaveFormat.JPEG }
+        [],
+        { compress: 1, format: SaveFormat.JPEG }
       );
     
       return compressedImage.uri;
     }
+
+    const getbase64 = async (image) => {
+      const manipResult = await manipulateAsync(image, [], {
+        // compress: 0.2,
+        // format: SaveFormat.PNG,
+        base64: true,
+      });
+  
+      return `data:image/jpeg;base64,${manipResult.base64}`;
+    };
 
     const uploadNewTemplate = async (newTemplateImage, memeName) => {
       // check if the meme name is unique
@@ -167,10 +184,10 @@ const AddPostScreen = ({navigation}) => {
             name: memeName,
             uploader: username,
             url: newUrl,
-            useCount: 1,
+            useCount: 0,
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
         }).then(() => {
-          Alert.alert("Meme template added successfully!");
+          navigation.navigate('Meme', {memeName: memeName})
         });
 
     }
@@ -308,6 +325,15 @@ const AddPostScreen = ({navigation}) => {
             </View>
 
         </Overlay>
+
+        {/* For image compression */}
+        {base64 && (
+          <PinturaCompressImage
+            image={base64}
+            setImage={setNewTemplate}
+            setBase64={setBase64}
+          />
+        )}
       </View>
     );
 }

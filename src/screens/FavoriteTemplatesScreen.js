@@ -59,7 +59,7 @@ export default function FavoriteTemplatesScreen({navigation}){
     }, [navigation]);
     
     return (
-        <View  style={theme == 'light' ? {...GlobalStyles.lightContainer, flex: 1} : {...GlobalStyles.darkContainer, flex: 1}}>
+        <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
 
             <FlatList
                 numColumns={1}

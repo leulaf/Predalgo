@@ -1,8 +1,9 @@
 import { Camera, CameraType } from 'expo-camera';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
+import PinturaCompressImage from '../shared/PinturaCompress';
 
 // Icons
 import FlipCameraIcon from '../../assets/flip_camera.svg';
@@ -16,11 +17,11 @@ import FlashOff from '../../assets/flash_off.svg';
 import MakeMeme from '../../assets/make_meme.svg';
 
 
-
-
 export default function UploadScreen({navigation}) {
   const [type, setType] = useState(CameraType.back);
   const [camera, setCamera] = useState(null);
+  const [base64, setBase64] = useState(null);
+  const [cameraPic, setCameraPic] = useState(false);
   const [image, setImage] = useState(null);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
@@ -48,16 +49,22 @@ export default function UploadScreen({navigation}) {
     });
 
     if (!result.canceled) {
-      compressedResult = await compressImage(result.assets[0].uri);
-      setImage(compressedResult);
+      // const uri = await getUri(result.assets[0].uri);
+      
+      const base64 = await getbase64(result.assets[0].uri);
+      setBase64(base64);
     }
   };
 
   const takePicture = async () => {
     if (camera) {
       const picture = await camera.takePictureAsync();
-      compressedResult = await compressImage(picture.uri);
-      setImage(compressedResult);
+
+      // const uri = await getUri(picture.uri);
+
+      const base64 = await getbase64(picture.uri);
+      setBase64(base64);
+      setCameraPic(true);
     }
   };
 
@@ -65,15 +72,25 @@ export default function UploadScreen({navigation}) {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
 
-  async function compressImage(imageUrl){
+  async function getUri(imageUrl){
     const compressedImage = await manipulateAsync(
       imageUrl,
-      [{ resize: {height:500}}],
-      { compress: 0.4, format: SaveFormat.JPEG }
+      [],
+      { compress: 1, format: SaveFormat.JPEG }
     );
 
     return compressedImage.uri;
   }
+
+  const getbase64 = async (image) => {
+    const manipResult = await manipulateAsync(image, [], {
+      // compress: 0.2,
+      // format: SaveFormat.PNG,
+      base64: true,
+    });
+
+    return `data:image/jpeg;base64,${manipResult.base64}`;
+  };
 
   const getbase64AndNav = async (image) => {
     const manipResult = await manipulateAsync(image, [], {
@@ -113,7 +130,7 @@ export default function UploadScreen({navigation}) {
             ref={ref => setCamera(ref)}
             flashMode={flashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off}
         >
-            {image && 
+            {image &&
                 <View style={{flexDirection: 'row'}}>
 
                   <TouchableOpacity
@@ -192,7 +209,17 @@ export default function UploadScreen({navigation}) {
             </Camera>
 
             {/* {image && <Image source={{ uri: image }} style={{alignSelf: "center"}}  width={200} height={200}/>} */}
-
+            
+            {/* For image compression */}
+            {base64 && (
+              <PinturaCompressImage
+                image={base64}
+                setImage={setImage}
+                setBase64={setBase64}
+                cameraPic={cameraPic}
+                setCameraPic={setCameraPic}
+              />
+            )}
     </View>
   );
 }

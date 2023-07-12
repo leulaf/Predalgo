@@ -105,7 +105,7 @@ const MemeScreen = ({ navigation, route }) => {
           base64: true,
         });
     
-        await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`});
+        await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`, memeName: memeName});
     };
 
     useEffect(() => {

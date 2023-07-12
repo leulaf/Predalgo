@@ -61,8 +61,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.22.8",
+    "@pqina/jquery-pintura": "^9.0.1",
     "@types/react-native-snap-carousel": "^3.8.5",
-    "react-native-dotenv": "^3.4.8"
+    "react-native-dotenv": "^3.4.8",
+    "serve": "^14.2.0"
   },
   "private": true
 }
