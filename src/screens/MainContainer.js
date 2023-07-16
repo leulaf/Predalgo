@@ -98,7 +98,7 @@ export default function MainContainer({navigation, openDrawer}) {
                 tabBarActiveTintColor: theme == 'light' ? 'black' : 'white',
                 tabBarInactiveTintColor: theme == 'light' ? 'gray' : '#E4E4E4',
                 tabBarStyle: {
-                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(29, 29, 29, 0.95)', // Translucent white background
+                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.93)' : 'rgba(29, 29, 29, 0.95)', // Translucent white background
                     position: 'absolute',
                     borderColor: "#000000",
                     borderTopWidth: 0,
@@ -126,6 +126,7 @@ export default function MainContainer({navigation, openDrawer}) {
                         />                        
                     }} 
                 />
+                
                 <Bottom_Tab.Screen name={trendingName} component={TrendingScreen}
                     options={{
                         header: () => <TopBar 
@@ -146,6 +147,7 @@ export default function MainContainer({navigation, openDrawer}) {
                 <Bottom_Tab.Screen name={savedName} component={SavedScreen}
                     options={{headerShown: false}} 
                 />
+
                 <Bottom_Tab.Screen name={profileName} component={MainProfileScreen} 
                     options={{
                         // headerShown: false

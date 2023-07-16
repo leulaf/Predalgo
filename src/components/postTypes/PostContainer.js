@@ -1,13 +1,15 @@
 import React, {useContext, useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import { Image } from 'expo-image';
 import {ThemeContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
-import { ref } from "firebase/storage";
 import { firebase, storage, db } from '../../config/firebase';
-import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+import { doc, getDoc, getDocs, where, collection, query, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../../constants/GlobalStyles';
+
+import ContentBottom from './ContentBottom';
+import PostBottom from './PostBottom';
 
 import DeleteIcon from '../../../assets/trash_delete.svg';
 import ReportIcon from '../../../assets/danger.svg';
@@ -15,19 +17,48 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const PostContainer = ({ title, content, profile, postId, profilePic, username, repostUsername }) => {
+const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags, memeName, content, profile, postId, profilePic, username, repostUsername }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
 
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
-    let threeDots
+    // let threeDots
     
-    if(theme == 'light'){
-        threeDots = <ThreeDotsLight width={40} height={40} style={styles.threeDots}/>
-    }else{
-        threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
-    }
+    // if(theme == 'light'){
+    //     threeDots = <ThreeDotsLight width={40} height={40} style={styles.threeDots}/>
+    // }else{
+    //     threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
+    // }
+
+    const contentBottom = <ContentBottom
+        memeName={memeName}
+        tags={tags}
+    />
+
+    const postBottom = <PostBottom
+        postId={postId}
+        likesCount={likesCount}
+        commentsCount={commentsCount}
+    />
+
+    const navigateToPost = () => {
+        navigation.push('Post', {
+            title: title,
+            imageUrl: imageUrl,
+            text: text,
+            tags: tags,
+            memeName: memeName,
+            user: profile,
+            username: username,
+            profile: profile,
+            repostUsername: repostUsername,
+            profilePic: profilePic,
+            postId: postId,
+            likesCount: likesCount,
+            commentsCount: commentsCount,
+        });
+    };
 
     const deletePost = () => {
         if(deleted){
@@ -77,7 +108,8 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
         
     }
 
-    if (deleted) {
+    // if post is deleted or content is null, don't show post
+    if (deleted || content == null) {  
         return null;
     }
 
@@ -92,15 +124,13 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
                 <TouchableOpacity
                     onPress={() => {
                         {
-                            profile != firebase.auth().currentUser.uid ?
+                            profile != firebase.auth().currentUser.uid &&
                             
                                 navigation.push('Profile', {
                                     user: profile,
                                     username: username,
                                     profilePic: profilePic,
                                 })
-                            :
-                                null
                         }
                         
                     }}
@@ -113,11 +143,15 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
                 </TouchableOpacity>
                 
                 {/* username and title */}
-                <View style={{flexDirection: 'column'}}>
+                <TouchableOpacity
+                    onPress={navigateToPost}
+
+                    style={{flex: 1, flexDirection: 'column'}}
+                >
 
                     {
                         repostUsername ?
-                            <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                            <Text style={theme == 'light' ? styles.lightRepostUsername: styles.darkRepostUsername}>
                                 @{repostUsername} reposted
                             </Text>
                         :
@@ -140,19 +174,32 @@ const PostContainer = ({ title, content, profile, postId, profilePic, username, 
                             }
                     </Text>
 
-                </View>
+                </TouchableOpacity>
                 
                 {/* three dots */}
                 <TouchableOpacity 
                     style={{flexDirection: 'row'}}
                     onPress= {() => setOverlayVisible(true)}
                 >
-                    {threeDots}
+                    {
+                        theme == 'light' ?
+                            <ThreeDotsLight width={40} height={40} style={styles.threeDots}/>
+                        :
+                            <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
+                    }
                 </TouchableOpacity>
                 
             </View>
-
+            
+            
+            {/* Post content. Image, Text etc. */}
             {content}
+
+            {/* tags and meme name */}
+            {contentBottom}
+
+            {/* likes, comments, repost, share */}
+            {postBottom}
 
             {/* 
                 an overlay popup that appears when you click on the three dots.
@@ -204,37 +251,57 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
         marginVertical: 8,
     },
+    memeName: {
+        width: 170,
+        marginTop: 8,
+        marginLeft: 0,
+        flexDirection: 'row',
+    },
     lightUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#666666',
+        color: '#444444',
         textAlign: "left",
         marginTop: 6,
     },
     darkUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#CCCCCC',
+        color: '#DDDDDD',
+        textAlign: "left",
+        marginTop: 6,
+    },
+    lightRepostUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#777777',
+        textAlign: "left",
+        marginTop: 6,
+    },
+    darkRepostUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#BBBBBB',
         textAlign: "left",
         marginTop: 6,
     },
     lightPostTitle: {
         fontSize: 22,
-        fontWeight: "500",
+        fontWeight: "600",
         color: '#333333',
         textAlign: "left",
         marginRight: 10,
         marginBottom: 10,
-        width: 290,
+        // width: 290,
     },
     darkPostTitle: {
         fontSize: 22,
-        fontWeight: "500",
+        fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
         marginRight: 10,
         marginBottom: 10,
-        width: 290,
+        // width: 290,
     },
     overlayText: {
         fontSize: 22,

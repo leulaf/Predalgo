@@ -3,13 +3,7 @@ import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} 
 import { useNavigation } from '@react-navigation/native';
 import { firebase, storage, db } from '../../config/firebase';
 import { query, where, collection, getDocs, addDoc, doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
-import TextTicker from 'react-native-text-ticker'
 import {ThemeContext} from '../../../context-store/context';
-
-import DarkMemeCreate from '../../../assets/post_meme_create_light.svg';
-import LightMemeCreate from '../../../assets/post_meme_create_dark.svg';
-
-import GlobalStyles from '../../constants/GlobalStyles';
 
 // light mode icons
 import Likes from '../../../assets/likes.svg';
@@ -26,27 +20,34 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCount }) => {
+const PostBottom = ({ postId, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
-    const [likeCount, setLikeCount] = useState(likesCount);
+    const [likeCount, setLikeCount] = useState(0);
     const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(commentsCount);
+    const [commentCount, setCommentCount] = useState(0);
+    const [commentString, setCommentString] = useState("");
     const [liked, setLiked] = useState(false);
 
+    useEffect(() => {
+        setLikeCount(likesCount);
+        onUpdateLikeCount(likesCount);
+        setCommentCount(commentsCount);
+        onUpdateCommentCount(commentsCount); // update comment count string
+    }, []);
+
     let content
-    let bottomTags
 
     let likes, alreadyLiked, comments, share, repost;
 
     if(theme == 'light'){
-        comments = <Comments width={23} height={23} style={{ marginRight: 7, marginLeft: 3 }}/>;
+        comments = <Comments width={23} height={23} style={{ marginRight: 7 }}/>;
         likes = <Likes width={23} height={23} style={{ marginRight: 7 }}/>;
         alreadyLiked = <Liked width={23} height={23} style={{ marginRight: 7 }}/>;
         share = <Share width={21} height={21} style={{ marginRight: 7 }}/>;
         repost = <Repost width={19} height={19} style={{ marginRight: 7 }}/>;
     }else{
-        comments = <CommentsDark width={23} height={23} style={{ marginRight: 7, marginLeft: 3 }}/>;
+        comments = <CommentsDark width={23} height={23} style={{ marginRight: 7 }}/>;
         likes = <LikesDark width={23} height={23} style={{ marginRight: 7 }}/>;
         alreadyLiked = <LikedDark width={23} height={23} style={{ marginRight: 7 }}/>;
         share = <ShareDark width={21} height={21} style={{ marginRight: 7 }}/>;
@@ -56,49 +57,61 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
     // if like count is above 999 then display it as count/1000k + k
     // if like count is above 999999 then display it as count/1000000 + m
     // round down to whole number
-    onUpdateLikeCount = (likeCount) => {
-        if (likeCount > 999 && likeCount < 1000000) {
-            setLikeString(Math.floor(likeCount / 1000) + "k");
+    const onUpdateLikeCount = (likeCount) => {
+        if (likeCount === 0) {
+          setLikeString("0");
+        } else if (likeCount > 999 && likeCount < 1000000) {
+          setLikeString(Math.floor(likeCount / 1000) + "k");
         } else if (likeCount > 999999) {
-            setLikeString(Math.floor(likeCount / 1000000) + "m");
+          setLikeString(Math.floor(likeCount / 1000000) + "m");
         } else {
-            setLikeString(likeCount);
+          setLikeString(likeCount);
         }
-    }
+    };
 
-    useEffect(() => {
-        onUpdateLikeCount(likeCount);
-    }, [likeCount]);
+    // if comment count is above 999 then display it as count/1000k + k
+    // if comment count is above 999999 then display it as count/1000000 + m
+    // round down to whole number
+    const onUpdateCommentCount = (commentCount) => {
+        if (commentCount === 0) {
+          setCommentString("0");
+        } else if (commentCount > 999 && commentCount < 1000000) {
+          setCommentString(Math.floor(commentCount / 1000) + "k");
+        } else if (commentCount > 999999) {
+          setCommentString(Math.floor(commentCount / 1000000) + "m");
+        } else {
+          setCommentString(commentCount);
+        }
+    };
 
     // update like count and add post to liked collection
     const onLike = async () => {
-        const likedRef = doc(db, "liked", firebase.auth().currentUser.uid, postId, postId);
+        const likedRef = doc(db, "likedPosts", firebase.auth().currentUser.uid, postId, postId);
         const likedSnapshot = await getDoc(likedRef);
       
         if (!likedSnapshot.exists()) {
-            // add post to likes collection
-            await setDoc(likedRef, {});
-            // update like count for post
-            const postRef = doc(db, 'allPosts', postId);
-        
-            updateDoc(postRef, {
-                likesCount: increment(1)
-            }).then(() => {
-                setLikeCount(likeCount + 1);
-            });
+          // add post to likes collection
+          await setDoc(likedRef, {});
+          // update like count for post
+          const postRef = doc(db, 'allPosts', postId);
+      
+          updateDoc(postRef, {
+            likesCount: increment(1)
+          }).then(() => {
+            setLikeCount(likeCount + 1);
+            onUpdateLikeCount(likeCount + 1); // update like count string
+          });
         }
       
         setLiked(true);
     };
 
-
-
     // update like count and add post to liked collection
     const onDisike = async () => {
         // delete post from likes collection
-        deleteDoc(doc(db, "liked", firebase.auth().currentUser.uid, postId, postId))
+        deleteDoc(doc(db, "likedPosts", firebase.auth().currentUser.uid, postId, postId))
 
-        // update like count for user being followed
+        // update like count for post
         const postRef = doc(db, 'allPosts', postId);
 
         updateDoc(postRef, {
@@ -106,8 +119,6 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
         }).then(() => {
             setLikeCount(likeCount - 1);
             setLiked(false);
-        }).catch((error) => {
-            console.log("Error getting document:", error);
         });
     }
 
@@ -122,7 +133,7 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
             // update posts count for current user
             const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
 
-            updateDoc(currentUserRef, {
+            await updateDoc(currentUserRef, {
                 posts: increment(1)
             });
 
@@ -132,164 +143,61 @@ const PostBottom = ({ memeName, tags, hideBottom, postId, likesCount, commentsCo
         });
     };
 
-    const navigateToTag = async(tag) => {
-        if(tag.charAt(0) == '#'){
-            navigation.push('Tag', {tag: tag});
-        }else if(tag.charAt(0) == '@'){
-            const username = tag.substring(1);
-
-            const q = query(collection(db, "users"), where("username", "==", username));
-
-            let user = null;
-
-            await getDocs(q).then((snapshot) => {
-                snapshot.docs.map((doc) => {
-                    const data = doc.data();
-                    user = { ...data, id: doc.id }; // Add the id property to the user object
-                });
-            });
-
-            if(user){
-                navigation.push('Profile', { user: user });
-            }
-
-        }
-    }
-
-    if(tags){
-        bottomTags = tags.map((d, index) => 
+    return (
+        <View style={{flexDirection: 'row', height: 40, alignSelf: 'center', alignItems: 'center', alignContent: 'center'}}>     
+            {/* Comments button */}
             <TouchableOpacity
-                key={index}
-                onPress={() => navigateToTag(tags[index])}
+                style={styles.bottomButtonContainer}
+                // onPress={() => navigation.navigate('Comments', {postId: postId})}
             >
-                <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>
-                    {tags[index]}
+                {comments}
+
+                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                    {commentString}
                 </Text>
             </TouchableOpacity>
-        );
-    }
-    
-    if (memeName && tags) {
-        content =  <View flexDirection={"row"}>
+
+            {/* Repost button */}
             <TouchableOpacity
-                onPress={() => navigation.push('Meme', {memeName: memeName})}
-                style={styles.memeName}
+                style={styles.bottomButtonContainer}
+                onPress={() => onRepost()}
             >
-                
-                {theme == "light" ?
-                    <LightMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={10}/>
-                    :
-                    <DarkMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={10}/>
-                }
-                
-                <TextTicker
-                    style={theme == 'light' ? GlobalStyles.lightMemeName: GlobalStyles.darkMemeName}
-                    duration={12000}
-                    loop
-                    // bounce
-                    repeatSpacer={50}
-                    marqueeDelay={1000}
-                >
-                    {memeName}
-                </TextTicker>
-                
+                {repost}
+
+                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                    0
+                </Text>
             </TouchableOpacity>
             
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={30} >
-                {bottomTags}
-            </ScrollView>
-        </View>
-    } else if (memeName) {
-        content =
-            <TouchableOpacity 
-                onPress={() => navigation.navigate('Meme', {memeName: memeName})}
-                style={styles.memeName}
+            {/* Likes button */}
+            <TouchableOpacity
+                style={styles.bottomButtonContainer}
+                onPress={() => liked ? onDisike() : onLike()}
             >
-                
-                {theme == "light" ?
-                    <LightMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={10}/>
-                    :
-                    <DarkMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={10}/>
+                {liked ?
+                    alreadyLiked
+                :
+                    likes
                 }
 
-                <TextTicker
-                    style={theme == 'light' ? GlobalStyles.lightMemeName: GlobalStyles.darkMemeName}
-                    duration={12000}
-                    loop
-                    // bounce
-                    repeatSpacer={50}
-                    marqueeDelay={1000}
-                >
-                    {memeName}
-                </TextTicker>
+                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                    {likeString}
+                </Text>
             </TouchableOpacity>
-    }else if (tags) {
-        content = <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={5}>
-                    {bottomTags}
-                </ScrollView>;
-    } else {
-      content = <View marginVertical={hideBottom ? 0 : 10}></View>;
-    }
+            
+            {/* Share button */}
+            <TouchableOpacity
+                style={styles.shareButtonContainer}
+                // onPress={() => }
+            >
+                {share}
 
-    content = <View style={{flexDirection: 'column'}}>
-                {content}
-                <View style={{flexDirection: 'row', height: 40, marginLeft: 10, alignItems: 'center', alignContent: 'center'}}>
-                    
-                    {/* Comments button */}
-                    <TouchableOpacity
-                        style={styles.bottomButtonContainer}
-                        // onPress={() => navigation.navigate('Comments', {postId: postId})}
-                    >
-                        {comments}
-
-                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                            {commentCount}
-                        </Text>
-                    </TouchableOpacity>
-
-                    {/* Repost button */}
-                    <TouchableOpacity
-                        style={styles.bottomButtonContainer}
-                        onPress={() => onRepost()}
-                    >
-                        {repost}
-
-                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                            0
-                        </Text>
-                    </TouchableOpacity>
-                    
-                    {/* Likes button */}
-                    <TouchableOpacity
-                        style={styles.bottomButtonContainer}
-                        onPress={() => liked ? onDisike() : onLike()}
-                    >
-                        {liked ?
-                            alreadyLiked
-                        :
-                            likes
-                        }
-
-                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                            {likeString}
-                        </Text>
-                    </TouchableOpacity>
-                    
-                    {/* Share button */}
-                    <TouchableOpacity
-                        style={styles.bottomButtonContainer}
-                        // onPress={() => }
-                    >
-                        {share}
-
-                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                            Share
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-  
-    return content;
+                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                    Share
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -298,14 +206,15 @@ const styles = StyleSheet.create({
     },
     bottomButtonContainer: {
         flexDirection: 'row',
-        marginRight: 55,
+        marginRight: 60,
         alignItems: 'center',
         alignContent: 'center'
     },
-    memeName: {
-        width: 170,
-        marginLeft: 0,
+    shareButtonContainer: {
         flexDirection: 'row',
+        alignItems: 'center',
+        alignContent: 'center',
+        marginRight: 5
     },
     lightBottomText: {
         fontSize: 16,
@@ -317,13 +226,6 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#EEEEEE',
     },
-    hashTagAndAt: {
-        fontSize: 20, 
-        fontWeight: "400", 
-        color: '#0147BD', 
-        marginVertical: 7, 
-        marginHorizontal: 5
-    }
 });
 
 export default PostBottom;

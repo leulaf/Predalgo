@@ -1,9 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
 import PredalgoLogo from '../../assets/Predalogo_SignUp_logo.svg';
-import {firebase, Firebase, auth} from '../config/firebase';
-
+import {firebase, auth} from '../config/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 // import auth from '@react-native-firebase/auth';
+
+
 
 const AuthScreen = ({navigation}) => {
     const [username, setUsername] = useState('');
@@ -15,7 +17,7 @@ const AuthScreen = ({navigation}) => {
     const onSignUp = async () => {
         try {
             if (email !== '' && password !== '' && confirmEmail !== '' && username !== '' && email === confirmEmail) {
-                await auth.createUserWithEmailAndPassword(email, password)
+                await createUserWithEmailAndPassword(auth, email, password)
                 .then((result) => {
                     // Signed in 
                     firebase.firestore().collection('users')
@@ -65,122 +67,132 @@ const AuthScreen = ({navigation}) => {
     const onLogin = async () => {
         try {
             if (email !== '' && password !== '') {
-                await auth.signInWithEmailAndPassword(email, password);
+                await signInWithEmailAndPassword(auth, email, password)
+                    .catch((error) => {
+
+                    })
             }
         } catch (error) {
             alert("Pleace enter a valid email address\n" + error);
         }
     };
 
-    // REMOVE THIS LATER
-    useEffect(() => {
-        auth.signInWithEmailAndPassword("leulafework7@gmail.com", "qwerty123");
-    }, []);
 
     return (
         <View style={styles.mainContainer}>
-            <TouchableOpacity 
-                style={styles.smallButtonContainer}
-                onPress={() => setNewAccount(!newAccount)}
-            >
-                <Text style={styles.smallButtonText}>{newAccount ? "Log In" : "Sign Up"}</Text>
-            </TouchableOpacity>
-            {
-                newAccount ?
-                        <PredalgoLogo width={300} height={200} marginTop={40} marginLeft={0} marginBottom={20}/>
-                :
-                    <PredalgoLogo width={380} height={300} marginTop={50} marginLeft={4} marginBottom={20}/>
-            }
+            <ScrollView automaticallyAdjustKeyboardInsets={true} contentContainerStyle={{alignItems: 'center'}}>
+            
+                <TouchableOpacity 
+                    style={styles.smallButtonContainer}
+                    onPress={() => setNewAccount(!newAccount)}
+                >
+                    <Text style={styles.smallButtonText}>{newAccount ? "Log In" : "Sign Up"}</Text>
+                </TouchableOpacity>
+                
 
-            {
-                newAccount ?
-                    <ScrollView automaticallyAdjustKeyboardInsets={true} width={"100%"}>
-                        <TextInput
-                            secureTextEntry={false}
-                            style={styles.input}
-                            maxLength={15}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Username"
-                            placeholderTextColor= "#888888"
-                            value={username}
-                            onChangeText={(newValue) => setUsername(newValue)}
-                            // onEndEditing={( ) => console.log('submitted')}
+                {
+                    newAccount ?
+                        <PredalgoLogo width={340} height={300} marginTop={40} marginLeft={5} 
+                            marginBottom={10}
                         />
+                    :
+                        <PredalgoLogo width={380} height={300} marginTop={50} marginLeft={5} 
+                            marginBottom={10}
+                        />
+                }
 
-                        {/* Emain input */}
-                        <TextInput
-                            secureTextEntry={false}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Email"
-                            placeholderTextColor= "#888888"
-                            value={email}
-                            onChangeText={(newValue) => setEmail(newValue)}
-                            // onEndEditing={( ) => console.log('submitted')}
-                        />
-                        
-                        {/* Confirm Emain input */}
-                        <TextInput
-                            secureTextEntry={false}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Confirm Email"
-                            placeholderTextColor= "#888888"
-                            value={confirmEmail}
-                            onChangeText={(newValue) => setConfirmEmail(newValue)}
-                            // onEndEditing={( ) => console.log('submitted')}
-                        />
-
-                        {/* Password input */}
-                        <TextInput
-                            secureTextEntry={true}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Password"
-                            placeholderTextColor= "#888888"
-                            value={password}
-                            onChangeText={(newValue) => setPassword(newValue)}
-                            // onEndEditing={( ) => console.log('submitted')}
-                        />
-                    </ScrollView>
                     
-                :
-                    <ScrollView automaticallyAdjustKeyboardInsets={true} width={"100%"}>
-                        {/* Emain input */}
-                        <TextInput
-                            secureTextEntry={false}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder={!newAccount ? "Email or Username" : "Confirm Email"}
-                            placeholderTextColor= "#888888"
-                            value={email}
-                            onChangeText={(newValue) => setEmail(newValue)}
-                            // onEndEditing={( ) => console.log('submitted')}
-                        />
 
-                        {/* Password input */}
-                        <TextInput
-                            secureTextEntry={true}
-                            style={styles.input}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="Password"
-                            placeholderTextColor= "#888888"
-                            value={password}
-                            onChangeText={(newValue) => setPassword(newValue)}
-                            // onEndEditing={( ) => console.log('submitted')}
-                        />
-                    </ScrollView>
-            }
+                {
+                    newAccount ?
+                        <View automaticallyAdjustKeyboardInsets={true} style={{ width: '100%' }}>
+                            <TextInput
+                                secureTextEntry={false}
+                                style={styles.input}
+                                maxLength={15}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Username"
+                                placeholderTextColor= "#888888"
+                                value={username}
+                                onChangeText={(newValue) => setUsername(newValue)}
+                                // onEndEditing={( ) => console.log('submitted')}
+                            />
+
+                            {/* Emain input */}
+                            <TextInput
+                                secureTextEntry={false}
+                                style={styles.input}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Email"
+                                placeholderTextColor= "#888888"
+                                value={email}
+                                onChangeText={(newValue) => setEmail(newValue)}
+                                // onEndEditing={( ) => console.log('submitted')}
+                            />
+                            
+                            {/* Confirm Emain input */}
+                            <TextInput
+                                secureTextEntry={false}
+                                style={styles.input}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Confirm Email"
+                                placeholderTextColor= "#888888"
+                                value={confirmEmail}
+                                onChangeText={(newValue) => setConfirmEmail(newValue)}
+                                // onEndEditing={( ) => console.log('submitted')}
+                            />
+
+                            {/* Password input */}
+                            <TextInput
+                                secureTextEntry={true}
+                                style={styles.input}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Password"
+                                placeholderTextColor= "#888888"
+                                value={password}
+                                onChangeText={(newValue) => setPassword(newValue)}
+                                // onEndEditing={( ) => console.log('submitted')}
+                            />
+                        </View>
+                        
+                    :
+                        <View automaticallyAdjustKeyboardInsets={true} style={{ width: '100%' }}>
+                            {/* Emain input */}
+                            <TextInput
+                                secureTextEntry={false}
+                                style={styles.input}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder={!newAccount ? "Email or Username" : "Confirm Email"}
+                                placeholderTextColor= "#888888"
+                                value={email}
+                                onChangeText={(newValue) => setEmail(newValue)}
+                                // onEndEditing={( ) => console.log('submitted')}
+                            />
+
+                            {/* Password input */}
+                            <TextInput
+                                secureTextEntry={true}
+                                style={styles.input}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                placeholder="Password"
+                                placeholderTextColor= "#888888"
+                                value={password}
+                                onChangeText={(newValue) => setPassword(newValue)}
+                                // onEndEditing={( ) => console.log('submitted')}
+                            />
+                        </View>
+                }
 
             
-
-            
+                
+                
+            </ScrollView>
 
             <TouchableOpacity 
                 style={styles.largeButtonContainer}
@@ -198,17 +210,19 @@ const AuthScreen = ({navigation}) => {
             >
                 <Text style={styles.skipButtonText}>Skip</Text>
             </TouchableOpacity> */}
-            
-            
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     mainContainer: {
+        flex: 1,
+        width: "100%",
         backgroundColor: "#1155C5",
-        flex: 1, 
-        alignItems: 'center', 
+        // flexDirection: 'column',
+        alignItems: 'center',
+        // alignItems: 'center', 
         // justifyContent: 'center' 
     },
     smallButtonContainer: {
@@ -223,14 +237,14 @@ const styles = StyleSheet.create({
         marginLeft: 260,
     },
     largeButtonContainer: {
-        flexDirection: 'column',
+        // flexDirection: 'column',
         alignItems: 'center',
         height: 60,
         width: 250,
         borderRadius: 50,
         borderWidth: 3,
         borderColor: '#DDDDDD',
-        marginBottom: 150,
+        marginBottom: 75,
     },
     skipButtonContainer: {
         flexDirection: 'column',
@@ -263,8 +277,8 @@ const styles = StyleSheet.create({
     },
     input: {
         marginTop: 15,
-        width: "95%",
-        alignSelf: 'center',
+        width: '100%',
+        // alignSelf: 'center',
         height: 55,
         backgroundColor: "#FFFFFF",
         borderColor: '#CCCCCC',

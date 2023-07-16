@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
        flexDirection: 'row',
    },
    darkTopContainer: {
-       backgroundColor: '#1A1A1A',
+       backgroundColor: '#161616',
        height: 100,
        flexDirection: 'row',
    },

@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useContext, useRef} from 'react';
-import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions, Animated, PanResponder} from 'react-native';
+import {TouchableOpacity, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions, Animated, PanResponder} from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view';
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import { Tabs } from 'react-native-collapsible-tab-view';
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     },
     darkPopularButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#161616',
         borderRadius: 20,
         width: 95,
         height: 35,
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     },
     darkNewButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#161616',
         borderRadius: 20,
         width: 70,
         height: 35,

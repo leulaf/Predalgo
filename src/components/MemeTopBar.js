@@ -65,7 +65,7 @@ const MemeTopBar = ({name, url}) => {
                     }
 
                     <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                        {name.substring(0, 12) + '...'}
+                        {name.substring(0, Math.min(name.length, 12)) + '...'}
                     </Text>
                     
                 </TouchableOpacity>

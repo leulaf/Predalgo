@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: '#FEFEFE',
         borderWidth: 1.5,
-        borderColor: '#DDDDDD',
+        borderColor: '#DFDFDF',
     },
     darkBar: {
         height: 36,
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: '#282828',
         borderWidth: 1.5,
-        borderColor: '#444444',
+        borderColor: '#393939',
     },
     darkTextStyle: {
         flex: 1,
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     darkContainer: {
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#161616',
         height: 100,
         flexDirection: 'row',
     },

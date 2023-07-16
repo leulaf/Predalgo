@@ -111,9 +111,9 @@ const styles = StyleSheet.create({
        marginTop:  10,
        alignSelf: "center",
        alignItems: "center",
-       backgroundColor: "#1F1F1F",
+       backgroundColor: "#161616",
        borderWidth: 1,
-       borderColor: "#444444",
+       borderColor: "#2D2D2D",
        borderRadius: 30
    },
    lightTextContainer: {

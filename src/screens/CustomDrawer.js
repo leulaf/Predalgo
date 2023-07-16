@@ -11,9 +11,24 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 
+import { auth } from '../config/firebase';
+import { signOut } from "firebase/auth";
+
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {ThemeContext} from '../../context-store/context';
+
+const handleSignOut = () => {
+  signOut(auth)
+    .then(() => {
+      // console.log('User logged out successfully:');
+      setUser(null);
+    })
+    .catch((error) => {
+      // console.log('Error', error);
+    });
+};
+
 
 
 const CustomDrawer = props => {
@@ -59,7 +74,12 @@ const CustomDrawer = props => {
         </View>
       </DrawerContentScrollView>
       <View style={{padding: 20, borderTopWidth: 1, borderTopColor: '#ccc'}}>
-        <TouchableOpacity onPress={() => {}} style={{paddingVertical: 15}}>
+        
+        
+        
+        
+        
+        <TouchableOpacity onPress={() => {handleSignOut()}} style={{paddingVertical: 15}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Ionicons name="share-social-outline" size={22} />
             <Text
@@ -67,10 +87,13 @@ const CustomDrawer = props => {
                 fontSize: 15,
                 marginLeft: 5,
               }}>
-              Tell a Friend
+              Sing out
             </Text>
           </View>
         </TouchableOpacity>
+        
+        
+        
         <TouchableOpacity onPress={() => {handleThemeChange()}} style={{paddingVertical: 15}}>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
             <Ionicons name="contrast-outline" size={22} />
@@ -83,6 +106,10 @@ const CustomDrawer = props => {
             </Text>
           </View>
         </TouchableOpacity>
+
+
+
+
       </View>
     </View>
   );

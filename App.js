@@ -9,7 +9,8 @@ import 'react-native-gesture-handler';
 
 import "./src/global"
 
-import {Firebase, auth} from './src/config/firebase';
+import { onAuthStateChanged, getAuth } from "firebase/auth";
+import {Firebase} from './src/config/firebase';
 
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
@@ -21,6 +22,7 @@ import DrawerScreen from './src/screens/DrawerScreen';
 import UploadScreen from './src/screens/UploadScreen';
 import CreatePostScreen from './src/screens/CreatePostScreen';
 import SearchScreen from './src/screens/SearchScreen';
+import MainProfileScreen from './src/screens/MainProfileScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import EditMemeScreen from './src/screens/EditMemeScreen';
 import FollowingScreen from './src/screens/FollowingScreen';
@@ -30,6 +32,7 @@ import SearchTagScreen from './src/screens/SearchTagScreen';
 import MemeScreen from './src/screens/MemeScreen';
 import SearchMemesScreen from './src/screens/SearchMemesScreen';
 import FavoriteTemplatesScreen from './src/screens/FavoriteTemplatesScreen';
+import PostScreen from './src/screens/PostScreen';
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -44,7 +47,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(getAuth(), (user) => {
       if (!user) {
         this.setState({
           loggedIn: false,
@@ -65,21 +68,16 @@ class App extends Component {
 
     if(!loggedIn) {
       return(
-        <Provider store={store}>
-          <AuthenticatedUserProvider>
-              <ThemeProvider>
-                <NavigationContainer>
-                  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="LogIn">
-                    <Stack.Screen name="Drawer" component={DrawerScreen} />
-                    <Stack.Screen name="LogIn" component={AuthScreen} />
-                    <Stack.Screen name="Upload" component={UploadScreen} />
-                    <Stack.Screen name="CreatePost" component={CreatePostScreen} />
-                    <Stack.Screen name="Search" component={SearchScreen} />
-                  </Stack.Navigator>
-                </NavigationContainer>
-              </ThemeProvider>
-          </AuthenticatedUserProvider>
-        </Provider>
+        
+        <ThemeProvider>
+          <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="LogIn">
+              {/* <Stack.Screen name="Drawer" component={DrawerScreen} /> */}
+              <Stack.Screen name="LogIn" component={AuthScreen} />
+              {/* <Stack.Screen name="Search" component={SearchScreen} /> */}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ThemeProvider>
           
       );
     } else {
@@ -108,6 +106,11 @@ class App extends Component {
                       options={{
                           headerShown: false,
                       }} 
+                    />
+                    <Stack.Screen name="MainProfile" component={MainProfileScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
                     />
                     <Stack.Screen name="Profile" component={ProfileScreen} 
                        options={{
@@ -150,6 +153,11 @@ class App extends Component {
                       }}
                     />
                     <Stack.Screen name="FavoriteTemplates" component={FavoriteTemplatesScreen}
+                      options={{
+                          // headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen name="Post" component={PostScreen}
                       options={{
                           // headerShown: false,
                       }}

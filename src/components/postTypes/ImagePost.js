@@ -1,13 +1,14 @@
 import React, {useContext, useState, useEffect} from 'react';
 import { View, StyleSheet, Dimensions} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import PostContainer from './PostContainer';
-import PostBottom from './PostBottom';
 import ImageContainer from '../ImageContainer';
 
-const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile }) => {
+import { useNavigation } from '@react-navigation/native';
+
+
+const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
     const navigation = useNavigation();
     const [profilePicState, setProfilePicState] = useState(profilePic);
     const [usernameState, setUsernameState] = useState(username);
@@ -55,23 +56,24 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, 
     return (
         <PostContainer 
             title={title}
+            imageUrl={imageUrl}
+            likesCount={likesCount}
+            commentsCount={commentsCount}
+            tags={tags}
+            memeName={memeName}
             profile={profile}
             postId={postId}
             profilePic={profilePicState}
             username={usernameState}
             repostUsername={repostUsername}
+
+            navigation={navigation}
+            
             content={
                 <View >
                     <View style={{flexDirection: "row", alignSelf: 'center'}}>
                         <ImageContainer imageSource={{ uri: imageUrl }} />
                     </View>
-                    <PostBottom
-                        tags={tags}
-                        memeName={memeName}
-                        postId={postId}
-                        likesCount={likesCount}
-                        commentsCount={commentsCount}
-                    />
                 </View>
             }
         />

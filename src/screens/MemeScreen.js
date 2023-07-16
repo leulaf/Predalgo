@@ -1,5 +1,6 @@
 import React, {useContext, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, FlatList, Button, TouchableOpacity, ScrollView} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Button, TouchableOpacity} from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view';
 import TextTicker from 'react-native-text-ticker'
 import { Image } from 'expo-image';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
@@ -15,7 +16,7 @@ import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
 
 import ScalableImage from 'react-native-scalable-image';
 
-ImageContainer = (props) => {    
+const ImageContainer = (props) => {    
     return (
         <ScalableImage 
             width={200} // this will make image take full width of the device
@@ -115,7 +116,7 @@ const MemeScreen = ({ navigation, route }) => {
     }, [navigation, imageUrl, memeName]);
 
     return (
-        <View style={styles.container}>
+
             <ScrollView style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
                 
                 {/* template image, meme name, uploader, use count */}
@@ -163,6 +164,7 @@ const MemeScreen = ({ navigation, route }) => {
                     {/* left side of meme templates */}
                     <View style={{flex: 1}}>
                         <FlatList
+                            // nestedScrollEnabled={true}
                             numColumns={1}
                             data={leftMemeTemplates}
                             keyExtractor={(item) => item.id}
@@ -183,6 +185,7 @@ const MemeScreen = ({ navigation, route }) => {
                     {/* right side of meme templates */}
                     <View style={{flex: 1}}>
                         <FlatList
+                            // nestedScrollEnabled={true}
                             numColumns={1}
                             data={rightMemeTemplates}
                             keyExtractor={(item) => item.id}
@@ -200,38 +203,38 @@ const MemeScreen = ({ navigation, route }) => {
                         />
                     </View>
                 </View>
+                
+                {/* create meme button */}
+                <TouchableOpacity
+                    style={theme == 'light' ? styles.lightUseTemplateButton : styles.darkUseTemplateButton}
+                    onPress={() => getbase64AndNav(imageUrl, memeName)}
+                >
+                    {theme == "light" ?
+                        <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                        :
+                        <DarkMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                    }
 
+                    <Text style={theme == 'light' ? styles.lightUseTemplateText : styles.darkUseTemplateText}>
+                        Use meme template
+                    </Text>
+                </TouchableOpacity>
                 
             </ScrollView>
             
-            {/* create meme button */}
-            <TouchableOpacity
-                style={theme == 'light' ? styles.lightUseTemplateButton : styles.darkUseTemplateButton}
-                onPress={() => getbase64AndNav(imageUrl, memeName)}
-            >
-                {theme == "light" ?
-                    <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
-                    :
-                    <DarkMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
-                }
+            
 
-                <Text style={theme == 'light' ? styles.lightUseTemplateText : styles.darkUseTemplateText}>
-                    Use meme template
-                </Text>
-            </TouchableOpacity>
-        </View>
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
     lightContainer: {
-        backgroundColor: '#FCFCFC',
+        flex: 1,
+        backgroundColor: '#FAFAFA',
     },
     darkContainer: {
-        backgroundColor: '#1A1A1A',
+        flex: 1,
+        backgroundColor: '#161616',
     },
     lightMemeInfoContainer: {
         flexDirection: 'row',
@@ -326,7 +329,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         justifyContent: 'center',
         borderWidth: 1.5,
-        borderColor: '#AAAAAA'
+        borderColor: '#BBBBBB'
     },
     darkUseTemplateButton: {
         width: 240,

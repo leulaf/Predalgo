@@ -26,9 +26,6 @@ import UploadDark from '../../assets/upload_dark.svg';
 import LinkDark from '../../assets/link_dark.svg';
 import CreateMemeDark from '../../assets/meme_create_dark.svg';
 import PostButtonDark from '../../assets/post_button_dark.svg';
-import { add } from 'react-native-reanimated';
-
-const win = Dimensions.get('window');
 
 const CreatePostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -303,18 +300,22 @@ const CreatePostScreen = ({navigation, route}) => {
             </>
         )
     }else{
-        content = <TextInput
-            style={theme == 'light' ? styles.lightTextInput : styles.darkTextInput}
-            multiline
-            maxLength={10000}
-            blurOnSubmit
-            autoCapitalize="none"
-            autoCorrect
-            placeholder=" Type your post here..."
-            placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-            value={text}
-            onChangeText={(newValue) => setText(newValue)}
-        />
+        content = <View style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}>
+
+            <TextInput
+                style={theme == 'light' ? styles.lightTextInput : styles.darkTextInput}
+                multiline
+                maxLength={10000}
+                blurOnSubmit
+                autoCapitalize="none"
+                autoCorrect
+                placeholder="Type your post here..."
+                placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                value={text}
+                onChangeText={(newValue) => setText(newValue)}
+            />
+
+        </View>
     }
 
 
@@ -322,80 +323,76 @@ const CreatePostScreen = ({navigation, route}) => {
 
     return (
         <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-            
-            
-            
-            
-            <ScrollView automaticallyAdjustKeyboardInsets={true} style={theme == 'light' ? styles.lightPostContainer : styles.darkPostContainer}>
+            <View style={theme == 'light' ? styles.lightPostContainer : styles.darkPostContainer}>
+                <ScrollView automaticallyAdjustKeyboardInsets={true} style={{}}>
+                    
+                    <View style={{flexDirection: 'row'}}>
+
+                        {/* Profile image and @Username  */}
+                        <Image source={require('../../assets/profile_default.png')} style={{width: 40, height: 40, margin: 10}}/>
+                        <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
+                            @Username
+                        </Text>
+                        
+                        {/* Exit Icon */}
+                        <TouchableOpacity
+                            onPress={() => navigation.goBack()}
+                        >
+                            {exitIcon}
+                        </TouchableOpacity>
+                        
+                    </View>
+
+
+
+
+                    {/* Title input text */}
+                    <TextInput
+                        style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
+                        autoCapitalize="none"
+                        multiline
+                        blurOnSubmit
+                        maxLength={80}
+                        autoCorrect
+                        placeholder="Title *Optional*"
+                        placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                        value={title}
+                        onChangeText={(newValue) => setTitle(newValue)}
+                    />
+
+
+
+
+                    {/* line break */}
+                    <View style={{borderBottomColor: '#CCCCCC', borderBottomWidth: 1, marginHorizontal: 10,}}/>
+
+
+
+
+                    {/* Content of the post, TextInput, Image */}
+                    {content}
+
+
+
+
+                    {/* Hashtags and mentions*/}
+                    <TextInput
+                        style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
+                        autoCapitalize="none"
+                        autoCorrect
+                        placeholder="@mentions #hashtags"
+                        placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                        value={tempTags}
+                        onChangeText={(newValue) => setTempTags(newValue)}
+                        onEndEditing={() => fixTags(tempTags)}
+                    />
+
+
+                </ScrollView>
+
                 
-                <View style={{flexDirection: 'row'}}>
 
-
-
-
-                    {/* Profile image and @Username  */}
-                    <Image source={require('../../assets/profile_default.png')} style={{width: 40, height: 40, margin: 10}}/>
-                    <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
-                        @Username
-                    </Text>
-                    
-                    {/* Exit Icon */}
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                    >
-                        {exitIcon}
-                    </TouchableOpacity>
-                    
-                </View>
-
-
-
-
-                {/* Title input text */}
-                <TextInput
-                    style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
-                    autoCapitalize="none"
-                    multiline
-                    blurOnSubmit
-                    maxLength={80}
-                    autoCorrect
-                    placeholder="Title *Optional*"
-                    placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                    value={title}
-                    onChangeText={(newValue) => setTitle(newValue)}
-                />
-
-
-
-
-                {/* line break */}
-                <View style={{borderBottomColor: '#CCCCCC', borderBottomWidth: 2, marginHorizontal: 10,}}/>
-
-
-
-
-                {/* Content of the post, TextInput, Image */}
-                {content}
-
-
-
-
-                {/* Hashtags and mentions*/}
-                <TextInput
-                    style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
-                    autoCapitalize="none"
-                    autoCorrect
-                    placeholder="@mentions #hashtags"
-                    placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                    value={tempTags}
-                    onChangeText={(newValue) => setTempTags(newValue)}
-                    onEndEditing={() => fixTags(tempTags)}
-                />
-
-
-
-
-                <View style={{flexDirection: 'row', marginTop: 90}}>
+                <View style={theme == 'light' ? styles.lightBottomContainer : styles.darkBottomContainer}>
 
 
                     <TouchableOpacity
@@ -457,125 +454,142 @@ const CreatePostScreen = ({navigation, route}) => {
                     </TouchableOpacity>
                     
                 </View>
-                
-            </ScrollView>
+            </View>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-  lightContainer: {
-    height: '100%',
-    backgroundColor: '#F6F6F6',
-    flexDirection: 'column',
-  },
-  darkContainer: {
-    height: '100%',
-    backgroundColor: '#1F1F1F',
-    flexDirection: 'column',
-  },
-  lightPostContainer: {
-    marginTop: 70,
-    marginBottom: 80,
-    backgroundColor: '#fff',
-    height: '80%',
-    width: '97%',
-    alignSelf: 'center',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-  },
-  darkPostContainer: {
-    marginTop: 70,
-    marginBottom: 80,
-    backgroundColor: '#1A1A1A',
-    height: '80%',
-    width: '97%',
-    alignSelf: 'center',
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#555555',
-  },
-  lightUsername: {
-    fontSize: 18,
-    width: 200,
-    fontWeight: '500',
-    color: '#5F5F5F',
-    alignSelf: 'center',
-  },
-  darkUsername: {
-    fontSize: 18,
-    width: 200,
-    fontWeight: '500',
-    color: '#EEEEEE',
-    alignSelf: 'center',
-  },
-  lightTitleInput: {
-    color: '#444444',
-    height: 40,
-    margin: 10,
-    fontSize: 20,
-    fontWeight: '500',
-  },
-  darkTitleInput: {
-    color: '#EEEEEE',
-    height: 40,
-    margin: 10,
-    fontSize: 20,
-    fontWeight: '500'
-  },
-  lightTextInput: {
-    color: '#444444',
-    height: 400,
-    margin: 10,
-    fontSize: 20,
-    fontWeight: '500',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-  },
-  darkTextInput: {
-    color: '#EEEEEE',
-    height: 400,
-    margin: 10,
-    fontSize: 20,
-    fontWeight: '500',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#444444',
-  },
-  imageShrinked: {
-    alignSelf: "center",
-    borderRadius: 15,
-    marginTop: 20,
-    marginBottom: 50,
-  },
-  imageExpanded: {
-    //   flex: 1,
-    alignSelf: "center",
-    resizeMode: "contain",
-    borderRadius: 15,
-    marginTop: 20,
-    marginBottom: 50,
-    width: "100%",
-    height: 400,
-  },
-  lightBottomText: {
-    color: '#666666',
-    fontSize: 18,
-    fontWeight: '500',
-    alignSelf: 'center',
-    marginLeft: 5,
-    marginTop: 10,
-  },
-  darkBottomText: {
-    color: '#DDDDDD',
-    fontSize: 18,
-    fontWeight: '500',
-    alignSelf: 'center',
-    marginLeft: 5,
-    marginTop: 10,
-  },
+    lightContainer: {
+        flex: 1,
+        backgroundColor: '#FBFBFB',
+    },
+    darkContainer: {
+        flex: 1,
+        backgroundColor: '#181818',
+    },
+    lightPostContainer: {
+        marginTop: 70,
+        height: '85%',
+        width: '98%',
+        flexDirection: 'column',
+        backgroundColor: '#FFFFFF',
+        alignSelf: 'center',
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#D4D4D4',
+    },
+    darkPostContainer: {
+        marginTop: 70,
+        height: '85%',
+        width: '98%',
+        flexDirection: 'column',
+        backgroundColor: '#1C1C1C',
+        alignSelf: 'center',
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: '#333333',
+    },
+    lightBottomContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#FFFFFF',
+        marginBottom: 5,
+    },
+    darkBottomContainer: {
+        flexDirection: 'row',
+        backgroundColor: '#1C1C1C',
+        marginBottom: 5,
+    },
+    lightUsername: {
+        fontSize: 18,
+        width: 200,
+        fontWeight: '500',
+        color: '#5F5F5F',
+        alignSelf: 'center',
+    },
+    darkUsername: {
+        fontSize: 18,
+        width: 200,
+        fontWeight: '500',
+        color: '#EEEEEE',
+        alignSelf: 'center',
+    },
+    lightTitleInput: {
+        color: '#555555',
+        height: 40,
+        marginHorizontal: 13,
+        fontSize: 24,
+        fontWeight: '500',
+    },
+    darkTitleInput: {
+        color: '#EEEEEE',
+        height: 40,
+        marginHorizontal: 13,
+        fontSize: 24,
+        fontWeight: '500'
+    },
+    lightTextContainer: {
+        color: '#444444',
+        height: 400,
+        margin: 7,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#DDDDDD',
+    },
+    darkTextContainer: {
+        color: '#EEEEEE',
+        height: 400,
+        margin: 7,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#333333'
+    },
+    lightTextInput: {
+        color: '#666666',
+        height: 400,
+        fontSize: 22,
+        marginHorizontal: 10,
+        fontWeight: '500',
+    },
+    darkTextInput: {
+        color: '#EEEEEE',
+        height: 400,
+        fontSize: 22,
+        marginHorizontal: 10,
+        fontWeight: '500',
+    },
+    imageShrinked: {
+        alignSelf: "center",
+        borderRadius: 15,
+        marginTop: 20,
+        marginBottom: 50,
+    },
+    imageExpanded: {
+        //   flex: 1,
+        alignSelf: "center",
+        resizeMode: "contain",
+        borderRadius: 15,
+        marginTop: 20,
+        marginBottom: 50,
+        width: "100%",
+        height: 400,
+    },
+    lightBottomText: {
+        color: '#666666',
+        fontSize: 18,
+        fontWeight: '500',
+        alignSelf: 'center',
+        marginLeft: 5,
+        marginTop: 10,
+    },
+    darkBottomText: {
+        color: '#DDDDDD',
+        fontSize: 18,
+        fontWeight: '500',
+        alignSelf: 'center',
+        marginLeft: 5,
+        marginTop: 10,
+    },
 });
 
 

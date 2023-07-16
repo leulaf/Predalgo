@@ -1,15 +1,28 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, ScrollView, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view';
 import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";
-import { Image } from 'expo-image';
 import { manipulateAsync } from 'expo-image-manipulator';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 
 import MemesSearchBar from '../components/MemesSearchBar';
 import { set } from 'react-native-reanimated';
+
+import Image from 'react-native-scalable-image';
+
+const ImageContainer = (props) => {    
+
+    return (
+        <Image 
+            width={200} // this will make image take full width of the device
+            source={props.imageSource} // pass the image source via props
+            style={{borderRadius: 10, marginHorizontal: 3, marginVertical: 6}}
+        />
+    );
+};
 
 export default function SearchMemesScreen({navigation, route}){
     const {theme,setTheme} = useContext(ThemeContext);
@@ -76,21 +89,22 @@ export default function SearchMemesScreen({navigation, route}){
     };
     
     return (
-      <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { alignItems: 'center', justifyContent: 'center', marginTop: 10 }]}>
+      <ScrollView style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
 
             
-          <View style={{flexDirection: 'row'}}>
+          <View style={{flexDirection: 'row', marginTop: 10}}>
 
             {/* left side of meme templates */}
-            <View style={{flex: 1}}>
+            <View style={{}}>
               <FlatList
+                // nestedScrollEnabled={true}
                 numColumns={1}
                 data={leftMemeTemplates}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => getbase64AndNav(item.url, item.name)}
+                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -102,15 +116,16 @@ export default function SearchMemesScreen({navigation, route}){
             </View>
 
             {/* right side of meme templates */}
-            <View style={{flex: 1}}>
+            <View style={{}}>
               <FlatList
+                // nestedScrollEnabled={true}
                 numColumns={1}
                 data={rightMemeTemplates}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => getbase64AndNav(item.url, item.name)}
+                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -130,7 +145,7 @@ export default function SearchMemesScreen({navigation, route}){
             Try changing the captalization for some words and check spelling.
         </Text>
                 
-        </View>
+      </ScrollView>
     );
 }
 

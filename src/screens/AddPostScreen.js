@@ -1,5 +1,6 @@
 import React, {useContext, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import {View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Alert} from 'react-native';
+import { ScrollView } from 'react-native-virtualized-view';
 import { Overlay } from 'react-native-elements';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, getDoc, doc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
@@ -229,13 +230,14 @@ const AddPostScreen = ({navigation}) => {
           <View style={{flexDirection: 'row'}}>
             <View style={{flex: 1}}>
               <FlatList
+                // nestedScrollEnabled={true}
                 numColumns={1}
                 data={leftMemeTemplates}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
+                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -249,13 +251,14 @@ const AddPostScreen = ({navigation}) => {
             {/* right side of meme templates */}
             <View style={{flex: 1}}>
               <FlatList
+                // nestedScrollEnabled={true}
                 numColumns={1}
                 data={rightMemeTemplates}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('EditMeme', {imageUrl: item.url, memeName: item.name})}
+                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -270,7 +273,7 @@ const AddPostScreen = ({navigation}) => {
           
         </ScrollView>
 
-        {/* create meme button */}
+        {/* Add template button */}
         <TouchableOpacity
               style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
               onPress={() => pickImage()}
@@ -400,7 +403,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: '#BBBBBB'
+    borderColor: '#DDDDDD'
   },
   darkAddTemplateButton: {
     width: 245,
@@ -413,7 +416,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: '#666666'
+    borderColor: '#444444'
   },
   lightAddTemplateText: {
       fontSize: 20,

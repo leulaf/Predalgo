@@ -39,30 +39,23 @@ export default function ProfileScreen ({route, navigation}) {
     }, []);
 
     // Fetch posts
+    // Fetch posts
     useEffect(() => {
-        (async () => {
-            try {
-                if(byNewPosts){
-                    const posts = await fetchUserPostsByRecent(user.id);
-                    setPostList(posts);
-                }else if(byPopularPosts){
-                    const posts = await fetchUserPostsByPopular(user.id);
-                    setPostList(posts);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        })();
-    }, [byNewPosts, byPopularPosts]);
+        handleNewPostsClick();
+    }, []);
 
-    const handleNewPostsClick = () => {
+    const handleNewPostsClick = async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
+        const posts = await fetchUserPostsByRecent(user.id);
+        setPostList(posts);
     };
     
-    const handlePopularPostsClick = () => {
+    const handlePopularPostsClick = async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
+        const posts = await fetchUserPostsByPopular(user.id);
+        setPostList(posts);
     };
 
     // Follow current user
@@ -218,7 +211,7 @@ export default function ProfileScreen ({route, navigation}) {
             style= {theme == 'light' ?
                 { backgroundColor: 'white'}
             :
-                { backgroundColor: '#1A1A1A'}
+                { backgroundColor: '#161616'}
             }
             labelStyle = {theme == 'light' ? styles.lightLabel : styles.darkLabel}
             activeColor = {theme == 'light' ? '#222222' : 'white'}
@@ -270,7 +263,7 @@ export default function ProfileScreen ({route, navigation}) {
     darkProfileContainer: {
         flex: 1,
         flexDirection: 'row',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#161616',
     },
     lightLabel: {
         color: '#880808',

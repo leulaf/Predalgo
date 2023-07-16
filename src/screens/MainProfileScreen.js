@@ -11,6 +11,8 @@ import {db, Firebase, firebase, auth, storage} from '../config/firebase';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 
+import PinturaCompressImage from '../shared/PinturaCompress';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUser } from '../../redux/actions/index';
@@ -20,88 +22,6 @@ import AddIconDark from '../../assets/add_dark.svg';
 
 import AllUserPosts from '../components/postTypes/AllUserPosts';
 import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
-
-async function uploadImage(imageUrl) {
-   // Convert image to blob format(array of bytes)
-   const response = await fetch(imageUrl);
-   const blob = await response.blob();
-
-
-   // const filename = imageUrl.substring(imageUrl.lastIndexOf('/')+1);
-   const childPath = `profilePics/${firebase.auth().currentUser.uid}`;
-
-
-   const storageRef = ref(storage, childPath);
-
-
-   const uploadTask =  uploadBytesResumable(storageRef, blob)
-   .catch ((e) => {
-       console.log(e);
-   })
-
-
-   uploadTask.then((snapshot) => {
-       // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
-       // console.log('File metadata:', snapshot.metadata);
-       // Let's get a download URL for the file.
-       getDownloadURL(snapshot.ref).then(async (url) => {
-           // console.log(imageUrl);
-           // console.log('File available at', url);
-           await setProfilePic(url);
-       });
-   }).catch((error) => {
-       console.error('Upload failed', error);
-       // ...
-   });
-};
-
-
-const pickProfilePic = async () => {
-   // No permissions request is necessary for launching the image library
-   let result = await ImagePicker.launchImageLibraryAsync({
-       mediaTypes: ImagePicker.MediaTypeOptions.All,
-       // allowsEditing: true,
-   });
-
-
-   if (!result.canceled) {
-        const compressedImage = await compressImage(result.assets[0].uri);
-        await uploadImage(compressedImage);
-   }else{
-        console.log('cancelled');
-   }
-};
-
-async function compressImage(imageUrl){
-    const compressedImage = await manipulateAsync(
-      imageUrl,
-      [{ resize: {height:100}}],
-      { compress: 0.3, format: SaveFormat.JPEG }
-    );
-
-    return compressedImage.uri;
-  }
-
-
-const setProfilePic = async (url) => {
-   const profilePicRef = doc(db, "users", firebase.auth().currentUser.uid);
-   await updateDoc(profilePicRef, {
-       profilePic: url
-   }).then(() => {
-       Alert.alert('Profile picture updated successfully \n Refresh App to see changes');
-   })
-};
-
-
-const setNewBio = async (description) => {
-   const profileBioRef = doc(db, "users", firebase.auth().currentUser.uid);
-   await updateDoc(profileBioRef, {
-       bio: description
-   }).then(() => {
-       Alert.alert('Profile bio updated');
-   })
-};
-
 
 function MainProfileScreen ({navigation, ...props}) {
     const {theme, setTheme} = useContext(ThemeContext);
@@ -117,6 +37,88 @@ function MainProfileScreen ({navigation, ...props}) {
     const [postList, setPostList] = useState([]);
     const [byNewPosts, setByNewPosts] = useState(true);
     const [byPopularPosts, setByPopularPosts] = useState(false);
+
+    async function uploadImage(imageUrl) {
+        // Convert image to blob format(array of bytes)
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+     
+     
+        // const filename = imageUrl.substring(imageUrl.lastIndexOf('/')+1);
+        const childPath = `profilePics/${firebase.auth().currentUser.uid}`;
+     
+     
+        const storageRef = ref(storage, childPath);
+     
+     
+        const uploadTask =  uploadBytesResumable(storageRef, blob)
+        .catch ((e) => {
+            console.log(e);
+        })
+     
+     
+        uploadTask.then((snapshot) => {
+            // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
+            // console.log('File metadata:', snapshot.metadata);
+            // Let's get a download URL for the file.
+            getDownloadURL(snapshot.ref).then(async (url) => {
+                // console.log(imageUrl);
+                // console.log('File available at', url);
+                await addProfilePic(url);
+            });
+        }).catch((error) => {
+            console.error('Upload failed', error);
+            // ...
+        });
+     };
+     
+     
+     const pickProfilePic = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            // allowsEditing: true,
+        });
+     
+     
+        if (!result.canceled) {
+             const compressedImage = await compressImage(result.assets[0].uri);
+             await uploadImage(compressedImage);
+        }else{
+             console.log('cancelled');
+        }
+     };
+     
+     async function compressImage(imageUrl){
+         const compressedImage = await manipulateAsync(
+           imageUrl,
+           [{ resize: {height:100}}],
+           { compress: 0.7, format: SaveFormat.JPEG }
+         );
+     
+         return compressedImage.uri;
+     }
+     
+     
+     const addProfilePic = async (url) => {
+        const profilePicRef = doc(db, "users", firebase.auth().currentUser.uid);
+        await updateDoc(profilePicRef, {
+            profilePic: url
+        }).then(() => {
+            setProfilePic(url);
+            // Alert.alert('Profile picture updated successfully \n Refresh App to see changes');
+        })
+     };
+     
+     
+     const setNewBio = async (description) => {
+        const profileBioRef = doc(db, "users", firebase.auth().currentUser.uid);
+        await updateDoc(profileBioRef, {
+            bio: description
+        }).then(() => {
+            Alert.alert('Profile bio updated');
+        })
+     };
 
     useEffect(() => {
         props.fetchUser();
@@ -138,29 +140,21 @@ function MainProfileScreen ({navigation, ...props}) {
 
     // Fetch posts
     useEffect(() => {
-        (async () => {
-            try {
-                if(byNewPosts && !byPopularPosts){
-                    const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
-                    setPostList(posts);
-                }else if(byPopularPosts && !byNewPosts){
-                    const posts = await fetchUserPostsByPopular(firebase.auth().currentUser.uid);
-                    setPostList(posts);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        })();
-    }, [byNewPosts, byPopularPosts]);
+        handleNewPostsClick();
+    }, []);
 
-    const handleNewPostsClick = () => {
+    const handleNewPostsClick = async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
+        const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
+        setPostList(posts);
     };
     
-    const handlePopularPostsClick = () => {
+    const handlePopularPostsClick = async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
+        const posts = await fetchUserPostsByPopular(firebase.auth().currentUser.uid);
+        setPostList(posts);
     };
 
    const finishEdit = () => {
@@ -178,8 +172,7 @@ function MainProfileScreen ({navigation, ...props}) {
                     {/* Profile picture and username */}
                     <TouchableOpacity
                         onPress={() => pickProfilePic().then(() => {
-                                props.fetchUser();
-                                setProfilePic(user.profilePic);
+                            props.fetchUser();
                         })}
                         style={{flexDirection: 'column'}}
                     >
@@ -255,7 +248,7 @@ function MainProfileScreen ({navigation, ...props}) {
                     <Text style={styles.lightCountText}>Edit Bio</Text>
                     <TextInput
                         secureTextEntry={false}
-                        multiline
+                        // multiline
                         blurOnSubmit
                         maxLength={150}
                         style={{fontSize: 20, width: 300, height: 200, borderColor: 'gray', borderWidth: 1, marginTop: 10, borderRadius: 10}}
@@ -294,7 +287,7 @@ function MainProfileScreen ({navigation, ...props}) {
            style= {theme == 'light' ?
                { backgroundColor: 'white'}
            :
-               { backgroundColor: '#1A1A1A' }
+               { backgroundColor: '#161616' }
            }
            labelStyle = {theme == 'light' ? styles.lightLabel : styles.darkLabel}
            activeColor = {theme == 'light' ? '#222222' : 'white'}
@@ -358,7 +351,7 @@ const styles = StyleSheet.create({
    darkProfileContainer: {
        flex: 1,
        flexDirection: 'row',
-       backgroundColor: '#1A1A1A',
+       backgroundColor: '#141414',
    },
    lightLabel: {
        color: '#880808',
@@ -439,8 +432,8 @@ const styles = StyleSheet.create({
         width: 85,
         height: 30,
         borderRadius: 20,
-        borderWidth: 1.5,
-        borderColor: '#9e9e9e',
+        borderWidth: 1,
+        borderColor: '#B8B8B8',
         marginLeft: 10,
         marginTop: 15,
         alignItems: 'center',
@@ -451,8 +444,8 @@ const styles = StyleSheet.create({
         width: 85,
         height: 30,
         borderRadius: 20,
-        borderWidth: 1.5,
-        borderColor: '#5d5d5d',
+        borderWidth: 1,
+        borderColor: '#3D3D3D',
         marginLeft: 10,
         marginTop: 15,
         alignItems: 'center',

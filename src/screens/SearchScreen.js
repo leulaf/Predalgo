@@ -25,7 +25,7 @@ export default function SearchScreen({navigation}){
                 tabBarLabelStyle: { fontSize: 18, fontWeight: '600', marginTop: 0 },
                 tabBarStyle: {
                     // backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.25)',
-                    backgroundColor: theme == 'light' ? "#FFFFFF" : "#1A1A1A",
+                    backgroundColor: theme == 'light' ? "#FFFFFF" : "#161616",
                     position: 'absolute',
                     height: 40,
                     width: '100%',

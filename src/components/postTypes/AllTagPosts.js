@@ -177,7 +177,8 @@ export default function AllTagPosts({ tag }){
         if(item.imageUrl){
             post = <ImagePost
                 key={index}
-                repostProfile={item.repostProfile ? item.repostProfile : null}
+                repostProfile={item.repostProfile}
+                repostComment={item.repostComment}
                 imageUrl={item.imageUrl}
                 title={item.title}
                 tags={item.tags}
@@ -189,8 +190,9 @@ export default function AllTagPosts({ tag }){
             />
         }else if(item.imageUrls){
             post = <MultiImagePost
-                key={item.repostProfile ? item.id + "1" : item.id}
-                repostProfile={item.repostProfile ? item.repostProfile : null}
+                key={index}
+                repostProfile={item.repostProfile}
+                repostComment={item.repostComment}
                 title={item.title}
                 imageUrls={item.imageUrls}
                 tags={item.tags}
@@ -201,8 +203,9 @@ export default function AllTagPosts({ tag }){
             />
         }else if(item.text){
             post = <TextPost
-                key={item.repostProfile ? item.id + "1" : item.id}
-                repostProfile={item.repostProfile ? item.repostProfile : null}
+                key={index}
+                repostProfile={item.repostProfile}
+                repostComment={item.repostComment}
                 title={item.title}
                 text={item.text}
                 tags={item.tags}
@@ -227,7 +230,7 @@ export default function AllTagPosts({ tag }){
         <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
             <FlatList
                 data={postList}
-                keyExtractor={(result) => result.id}
+                keyExtractor={(item, index) => item.id + '-' + index}
                 ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top
                 renderItem={({ item, index }) => {
                     return (
@@ -258,41 +261,41 @@ const styles = StyleSheet.create({
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
-        borderColor: '#BBBBBB'
+        borderWidth: 1,
+        borderColor: '#CCCCCC'
     },
     darkPopularButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#161616',
         borderRadius: 20,
         width: 95,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
-        borderColor: '#494949'
+        borderWidth: 1,
+        borderColor: '#3F3F3F'
     },
     lightPopularButtonInactive: {
         flexDirection: 'column',
-        backgroundColor: '#F6F6F6',
+        backgroundColor: '#FAFAFA',
         borderRadius: 20,
         width: 95,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
+        borderWidth: 1,
         borderColor: '#CCCCCC'
     },
     darkPopularButtonInactive: {
         flexDirection: 'column',
-        backgroundColor: '#282828',
+        backgroundColor: '#1F1F1F',
         borderRadius: 20,
         width: 95,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
-        borderColor: '#3f3f3f'
+        borderWidth: 1,
+        borderColor: '#363636'
     },
     // New button
     lightNewButtonActive: {
@@ -303,41 +306,41 @@ const styles = StyleSheet.create({
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
-        borderColor: '#BBBBBB'
+        borderWidth: 1,
+        borderColor: '#CCCCCC'
     },
     darkNewButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#161616',
         borderRadius: 20,
         width: 70,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
-        borderColor: '#494949'
+        borderWidth: 1,
+        borderColor: '#3D3D3D'
     },
     lightNewButtonInactive: {
         flexDirection: 'column',
-        backgroundColor: '#F6F6F6',
+        backgroundColor: '#FAFAFA',
         borderRadius: 20,
         width: 70,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
+        borderWidth: 1,
         borderColor: '#BBBBBB'
     },
     darkNewButtonInactive: {
         flexDirection: 'column',
-        backgroundColor: '#282828',
+        backgroundColor: '#1F1F1F',
         borderRadius: 20,
         width: 70,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
-        borderWidth: 1.5,
-        borderColor: '#3f3f3f'
+        borderWidth: 1,
+        borderColor: '#3B3B3B'
     },
     lightPopularText: {
         fontSize: 18,
