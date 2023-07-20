@@ -18,9 +18,9 @@ const SearchBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
             style={styles.menuButton}
         >
             {theme == "light" ?
-                <MenuLight width={26} height={26}/>
+                <MenuLight width={24} height={24}/>
                 :
-                <MenuDark width={26} height={26}/>
+                <MenuDark width={24} height={24}/>
             }
             
         </TouchableOpacity>
@@ -39,9 +39,9 @@ const SearchBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
         </TouchableOpacity>
 
         {theme == "light" ?
-            <PredalgoLight style={styles.logoStyle} width={35} height={35}/>
+            <PredalgoLight style={styles.logoStyle} width={33} height={33}/>
             :
-            <PredalgoDark style={styles.logoStyle} width={35} height={35}/>
+            <PredalgoDark style={styles.logoStyle} width={33} height={33}/>
         }
     </View>
 }
@@ -52,28 +52,28 @@ const styles = StyleSheet.create({
         width: 300,
         borderRadius: 20,
         marginLeft: 5,
-        marginRight: 10,
-        marginTop: 47,
+        marginRight: 11,
+        marginTop: 40,
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
         backgroundColor: '#FEFEFE',
         borderWidth: 1.5,
-        borderColor: '#DFDFDF',
+        borderColor: '#EAEAEA',
     },
     darkBar: {
         height: 36,
         width: 300,
         borderRadius: 20,
         marginLeft: 5,
-        marginRight: 10,
-        marginTop: 47,
+        marginRight: 11,
+        marginTop: 40,
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#282828',
+        backgroundColor: '#1D1D1D',
         borderWidth: 1.5,
-        borderColor: '#393939',
+        borderColor: '#303030',
     },
     darkTextStyle: {
         flex: 1,
@@ -111,17 +111,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     darkContainer: {
-        backgroundColor: '#161616',
+        backgroundColor: '#0C0C0C',
         height: 100,
         flexDirection: 'row',
     },
     menuButton: {
-        marginTop: 55,
+        marginTop: 52,
         marginLeft: 10,
         padding: 5,
     },
     logoStyle: {
-        marginTop: 55,
+        marginTop: 52,
         marginRight: 15,
     }
 });

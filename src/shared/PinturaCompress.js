@@ -18,6 +18,10 @@ setPlugins(plugin_crop);
 
 
 const PinturaCompressImage = ({ image, setImage, setBase64, cameraPic, setCameraPic }) => {
+    // if (!image) {
+    //     return null;
+    // }
+  
     const editorRef = useRef(null);
 
     const editorDefaults = {
@@ -52,10 +56,13 @@ const PinturaCompressImage = ({ image, setImage, setBase64, cameraPic, setCamera
           onProcess={({ dest, imageState }) => {
             // dest is output file in dataURI format
             
-            setImage(dest);
+            if(image){
+                setImage(dest);
             setBase64(null);
+            }
+            
 
-            if (cameraPic) {
+            if (cameraPic && image) {
                 setCameraPic(false);
             }
 

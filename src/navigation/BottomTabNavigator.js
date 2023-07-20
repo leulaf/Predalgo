@@ -1,15 +1,12 @@
 import React, {useContext} from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {View, StyleSheet} from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { DrawerActions } from '@react-navigation/native';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ThemeContext} from '../../context-store/context';
-import { DrawerActions } from '@react-navigation/native';
 import TopBar from '../components/TopBar';
 
 import { BlurView } from 'expo-blur';
-import MainProfileTop from '../components/MainProfileTop';
 
 // Light-Mode Icons
 import Saved from '../../assets/saved.svg';
@@ -34,11 +31,11 @@ import Trend_Dark from '../../assets/trend_dark.svg';
 import Post_Dark from '../../assets/post_dark.svg';
 
 // Screens
-import MainScreen from './MainScreen';
-import TrendingScreen from './TrendingScreen';
-import MainProfileScreen from './MainProfileScreen';
-import SavedScreen from './SavedScreen';
-import AddPostScreen from './AddPostScreen';
+import MainScreen from '../screens/MainScreen';
+import TrendingScreen from '../screens/TrendingScreen';
+import MainProfileScreen from '../screens/MainProfileScreen';
+import SavedScreen from '../screens/SavedScreen';
+import AddPostScreen from '../screens/AddPostScreen';
 
 // Screen Names
 const homeName = 'Home';
@@ -48,14 +45,13 @@ const savedName = 'Saved';
 const addPostName = ' ';
 
 
-
-export default function MainContainer({navigation, openDrawer}) {
+function BottomTabNavigator ({navigation}) {
+    // const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
+    // const navigation =  
     let home, homeInactive, trend, trendInactive, post, saved, savedInactive, profile, profileInactive
 
-    const Bottom_Tab = createBottomTabNavigator(
-
-    );
+    const Bottom_Tab = createBottomTabNavigator();
 
     if(theme == "light"){
         home = <Home width={27} height={27} style={{marginTop: 25}}/>;
@@ -64,7 +60,7 @@ export default function MainContainer({navigation, openDrawer}) {
         trend = <Trend width={27} height={28} style={{marginTop: 25}}/>;
         trendInactive = <Trend_Inactive width={27} height={28} style={{marginTop: 25}}/>;
 
-        post = <Post width={57} height={57} style={{marginTop: 33}}/>;
+        post = <Post width={55} height={55} style={{marginTop: 33}}/>;
         
         saved = <Saved width={22} height={22} style={{marginTop: 25}}/>;
         savedInactive =  <Saved_Inactive width={22} height={22} style={{marginTop: 25}}/>;
@@ -78,7 +74,7 @@ export default function MainContainer({navigation, openDrawer}) {
         trend = <Trend_Dark width={27} height={28} style={{marginTop: 25}}/>;
         trendInactive =  <Trend_Inactive_Dark width={27} height={28} style={{marginTop: 25}}/>;
 
-        post = <Post_Dark width={57} height={57} style={{marginTop: 33}}/>;
+        post = <Post_Dark width={55} height={55} style={{marginTop: 33}}/>;
        
         saved = <Saved_Dark width={22} height={22} style={{marginTop: 25}}/>;
         savedInactive =  <Saved_Inactive_Dark width={22} height={22} style={{marginTop: 25}}/>;
@@ -87,25 +83,23 @@ export default function MainContainer({navigation, openDrawer}) {
         profileInactive = <Profile_Inactive_Dark width={27} height={27} style={{marginTop: 25}}/>;
     }
 
-    const TabBar = ({ state, descriptors, navigation }) => {
-
-            return (<BlurView tint="light" intensity={90} style={styles.blurView}>
-        <Bottom_Tab {...props} style={styles.bottomTabBar} />
-        </BlurView>)
-    }
-    
 
     return (
-        
-    //     <SafeAreaProvider>
-    //   <View style={{ flex: 1 }}>
-        // <NavigationContainer>
+
             <Bottom_Tab.Navigator
             initialRouteName={homeName}
 
-            // tabBar={props => <TabBar {...props} />}
+            // tabBar={TabBar}
+            
             screenOptions={({route}) => ({
-                
+                tabBarStyle: { position: 'absolute' },
+                tabBarBackground: () => (
+                    <BlurView 
+                        tint = {theme == 'light' ?  "light" : "dark"}
+                        intensity={theme == 'light' ?  100 : 100}
+                        style={StyleSheet.absoluteFill}
+                    />
+                ),
                 tabBarIcon: ({focused, color, size}) => {
                     if (route.name === homeName) {
                         return focused ? home: homeInactive;
@@ -122,7 +116,8 @@ export default function MainContainer({navigation, openDrawer}) {
                 tabBarActiveTintColor: theme == 'light' ? 'black' : 'white',
                 tabBarInactiveTintColor: theme == 'light' ? 'gray' : '#E4E4E4',
                 tabBarStyle: {
-                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.93)' : 'rgba(29, 29, 29, 0.95)', // Translucent white background
+                    // backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 1' : 'rgba(0, 0, 0, 0.5)', // Translucent white background
+                    backgroundColor: theme == 'light' ? 'transparent' : 'rgba(0, 0, 0, 0.6)', // Translucent white background
                     position: 'absolute',
                     borderColor: "#000000",
                     borderTopWidth: 0,
@@ -131,58 +126,56 @@ export default function MainContainer({navigation, openDrawer}) {
                 tabBarLabelStyle: { marginTop: 20, fontSize: 11 , fontWeight: '500'},
             })}
             >
-
-                {/* <Tab.Screen name={homeName} component={HomeScreen} /> */}
-                {/* <Bottom_Tab.Screen name={homeName} component={MainScreen}
-                    options={{ header: () => <TopBar 
-                        term={term} 
-                        onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
-                        // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
-                    />}} 
-                /> */}
-                <Bottom_Tab.Screen name={homeName} component={MainScreen} 
-                    options={{
-                        // header: () => <TopBar 
-                        //     // term={term} 
-                        //     // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
-                        //     // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
-                        //     openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-                        // />                        
+                <Bottom_Tab.Screen name={homeName} component={MainScreen}
+                 options={{
+                        header: () => <TopBar 
+                            // term={term} 
+                            // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
+                            // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
+                            openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+                        />
                     }} 
                 />
                 
                 <Bottom_Tab.Screen name={trendingName} component={TrendingScreen}
                     options={{
-                        // header: () => <TopBar 
-                        //     // term={term} 
-                        //     // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
-                        //     // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
-                        //     openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
-                        // />
-                    }} 
+                        header: () => <TopBar 
+                            // term={term} 
+                            // onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
+                            // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
+                            openDrawer={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+                        />
+                    }}
                 />
 
                 <Bottom_Tab.Screen name={addPostName} component={AddPostScreen} 
                     options={{
-                        // headerShown: false,
+                        drawerIcon: ({color}) => (
+                            <Ionicons name="home-outline" size={22} color={color} />
+                        ),
+                        
                     }} 
                 />
 
                 <Bottom_Tab.Screen name={savedName} component={SavedScreen}
-                    options={{headerShown: false}} 
+                    options={{
+                        drawerIcon: ({color}) => (
+                            <Ionicons name="home-outline" size={22} color={color} />
+                        ),
+                        
+                    }} 
                 />
 
                 <Bottom_Tab.Screen name={profileName} component={MainProfileScreen} 
                     options={{
-                        // headerShown: false
-                        // header: () => <MainProfileTop/>
+                        drawerIcon: ({color}) => (
+                            <Ionicons name="home-outline" size={22} color={color} />
+                        ),
+                        
                     }} 
                 />
 
             </Bottom_Tab.Navigator>
-        // </NavigationContainer>
-        
-       //  </SafeAreaProvider>
 
     );
 }
@@ -198,4 +191,5 @@ const styles = StyleSheet.create({
       backgroundColor: 'transparent',
     },
   });
-  
+
+  export default BottomTabNavigator;

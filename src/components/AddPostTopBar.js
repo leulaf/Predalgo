@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: '#FEFEFE',
         borderWidth: 1.5,
-        borderColor: '#DFDFDF',
+        borderColor: '#DADADA',
     },
     darkBar: {
         height: 36,
@@ -86,9 +86,9 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#282828',
+        backgroundColor: '#1D1D1D',
         borderWidth: 1.5,
-        borderColor: '#393939',
+        borderColor: '#2D2D2D',
     },
     backButton: {
         marginTop: 55,
@@ -146,12 +146,12 @@ const styles = StyleSheet.create({
     },
     lightContainer: {
         backgroundColor: 'white',
-        height: 95,
+        height: 100,
         flexDirection: 'row',
     },
     darkContainer: {
-        backgroundColor: '#161616',
-        height: 95,
+        backgroundColor: '#0C0C0C',
+        height: 100,
         flexDirection: 'row',
     },
 });

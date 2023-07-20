@@ -22,8 +22,8 @@ import AddPostTopBar from '../components/AddPostTopBar';
 import Image from 'react-native-scalable-image';
 import { set } from 'react-native-reanimated';
 
-import DarkMemeCreate from '../../assets/post_meme_create_light.svg';
-import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
+import DarkMemeCreate from '../../assets/post_meme_create_dark.svg';
+import LightMemeCreate from '../../assets/post_meme_create_light.svg';
 
 const ImageContainer = (props) => {    
     return (
@@ -38,9 +38,10 @@ const ImageContainer = (props) => {
 const AddPostScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
 
+    const [newMemeName, setNewMemeName] = useState("");
     const [newTemplate, setNewTemplate] = useState(null);
     const [base64, setBase64] = useState(null);
-    const [newMemeName, setNewMemeName] = useState("");
+    
     const [overlayVisible, setOverlayVisible] = useState(false);
 
     const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
@@ -97,24 +98,14 @@ const AddPostScreen = ({navigation}) => {
         // compressedResult = await compressImage(result.assets[0].uri);
         // setNewTemplate(compressedResult);
         // const uri = await getUri(result.assets[0].uri);
-        const base64 = await getbase64(result.assets[0].uri);
+        const base64 = await getbase64Image(result.assets[0].uri);
         setBase64(base64);
 
         setOverlayVisible(true);
       }
     };
 
-    async function getUri(imageUrl){
-      const compressedImage = await manipulateAsync(
-        imageUrl,
-        [],
-        { compress: 1, format: SaveFormat.JPEG }
-      );
-    
-      return compressedImage.uri;
-    }
-
-    const getbase64 = async (image) => {
+    const getbase64Image = async (image) => {
       const manipResult = await manipulateAsync(image, [], {
         // compress: 0.2,
         // format: SaveFormat.PNG,
@@ -176,15 +167,23 @@ const AddPostScreen = ({navigation}) => {
       });
     }
 
+    const getHeightAndWidth = async (image) => {
+      const manipResult = await manipulateAsync(image, [], {});
+      return {height: manipResult.height, width: manipResult.width};
+    };
+    
     const addNewTemplate = async (newUrl, memeName) => {
         const userRef = doc(db, "users", firebase.auth().currentUser.uid);
         const userSnap = await getDoc(userRef);
         const username = userSnap.data().username;
+        const {height, width} = await getHeightAndWidth(newUrl);
         
         const addTemplateRef = await addDoc(collection(db, "imageTemplates"), {
             name: memeName,
             uploader: username,
             url: newUrl,
+            height: height,
+            width: width,
             useCount: 0,
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
         }).then(() => {
@@ -330,13 +329,13 @@ const AddPostScreen = ({navigation}) => {
         </Overlay>
 
         {/* For image compression */}
-        {base64 && (
-          <PinturaCompressImage
-            image={base64}
-            setImage={setNewTemplate}
-            setBase64={setBase64}
-          />
-        )}
+
+        <PinturaCompressImage
+          image={base64}
+          setImage={setNewTemplate}
+          setBase64={setBase64}
+        />
+
       </View>
     );
 }
@@ -362,7 +361,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#BBBBBB'
+    borderColor: '#C9C9C9'
   },
   darkMemeTemplateContainer: {
     flexDirection: 'column',
@@ -374,7 +373,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#555555'
+    borderColor: '#484848'
   },
   lightText: {
     fontSize: 22,

@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
         borderColor: '#DDDDDD'
     },
     darkTopContainer: {
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#0C0C0C',
         height: 90,
         flexDirection: 'row',
         borderBottomWidth: 1.5,

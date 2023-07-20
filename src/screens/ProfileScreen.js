@@ -19,15 +19,15 @@ export default function ProfileScreen ({route, navigation}) {
     const [byNewPosts, setByNewPosts] = useState(true);
     const [byPopularPosts, setByPopularPosts] = useState(false);
 
-    useEffect(() => {
-        navigation.setOptions({
-            header: () => <SimpleTopBar title={"@" + user.username}/>
-        });
-    }, [navigation]);
+    // useEffect(() => {
+    //     navigation.setOptions({
+    //         header: () => <SimpleTopBar title={"@" + user.username}/>
+    //     });
+    // }, [navigation]);
 
     // Check if current user is following the user
     useEffect(() => {
-        const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+        const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
         const docSnap = getDoc(docRef)
         .then((docSnap) => {
             if (docSnap.exists()) {
@@ -47,24 +47,24 @@ export default function ProfileScreen ({route, navigation}) {
     const handleNewPostsClick = async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
-        const posts = await fetchUserPostsByRecent(user.id);
+        const posts = await fetchUserPostsByRecent(user);
         setPostList(posts);
     };
     
     const handlePopularPostsClick = async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
-        const posts = await fetchUserPostsByPopular(user.id);
+        const posts = await fetchUserPostsByPopular(user);
         setPostList(posts);
     };
 
     // Follow current user
     const onFollow = () => {
         // add user to following collection
-        const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+        const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
         
         setDoc(followRef, {
-            id: user.id,
+            id: user,
         }).then(() => {
             setFollowing(true);
             Alert.alert('Followed');
@@ -73,7 +73,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // add user to followers collection
-        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
+        const followerRef = doc(db, 'followers', user, "userFollowers", firebase.auth().currentUser.uid);
 
         setDoc(followerRef, {
             id: firebase.auth().currentUser.uid,
@@ -84,7 +84,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // update followers count for user being followed
-        const userRef = doc(db, 'users', user.id);
+        const userRef = doc(db, 'users', user);
 
         updateDoc(userRef, {
             followers: increment(1)
@@ -101,7 +101,7 @@ export default function ProfileScreen ({route, navigation}) {
     // Unfollow current user
     const onUnfollow = () => {
         // remove user from following collection
-        const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+        const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
 
         deleteDoc(unfollowRef).then(() => {
             setFollowing(false);
@@ -111,7 +111,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // remove user from followers collection
-        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
+        const followerRef = doc(db, 'followers', user, "userFollowers", firebase.auth().currentUser.uid);
 
         deleteDoc(followerRef).then(() => {
             // console.log('Removed from followers collection');
@@ -120,7 +120,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // update followers count for user being unfollowed
-        const userRef = doc(db, 'users', user.id);
+        const userRef = doc(db, 'users', user);
 
         updateDoc(userRef, {
             followers: increment(-1)
@@ -180,7 +180,7 @@ export default function ProfileScreen ({route, navigation}) {
  
                          {/* Followers */}
                          <TouchableOpacity
-                                onPress={() => navigation.push('Followers', {profile: user.id})}
+                                onPress={() => navigation.push('Followers', {profile: user})}
                                  style={styles.countContainer}
                          >
                              <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.followers}</Text>
@@ -211,7 +211,7 @@ export default function ProfileScreen ({route, navigation}) {
             style= {theme == 'light' ?
                 { backgroundColor: 'white'}
             :
-                { backgroundColor: '#161616'}
+                { backgroundColor: '#161616', borderBottomWidth: 3, borderBottomColor: '#262626'}
             }
             labelStyle = {theme == 'light' ? styles.lightLabel : styles.darkLabel}
             activeColor = {theme == 'light' ? '#222222' : 'white'}
@@ -230,7 +230,7 @@ export default function ProfileScreen ({route, navigation}) {
         >
             <Tabs.Tab name="Posts">
                 <AllUserPosts
-                    userId={user.id}
+                    userId={user}
                     username={user.username}
                     profilePic={user.profilePic}
                     postList={postList}
@@ -244,7 +244,7 @@ export default function ProfileScreen ({route, navigation}) {
             </Tabs.Tab>
             <Tabs.Tab name="Media">
                 <AllUserMediaPosts
-                    userId={user.id}
+                    userId={user}
                     postList={postList}
                     profilePic={user.profilePic}
                 />

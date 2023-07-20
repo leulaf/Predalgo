@@ -7,11 +7,14 @@ import { Overlay } from 'react-native-elements';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker';
 import {ThemeContext} from '../../context-store/context';
-import {db, Firebase, firebase, auth, storage} from '../config/firebase';
+import {db, Firebase, firebase, storage} from '../config/firebase';
+import { getAuth, updateProfile } from "firebase/auth";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 
 import PinturaCompressImage from '../shared/PinturaCompress';
+
+import MainProfileTop from '../components/MainProfileTop';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -23,20 +26,28 @@ import AddIconDark from '../../assets/add_dark.svg';
 import AllUserPosts from '../components/postTypes/AllUserPosts';
 import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
 
+const auth = getAuth();
+
 function MainProfileScreen ({navigation, ...props}) {
     const {theme, setTheme} = useContext(ThemeContext);
-    const [user, setUser] = useState(null);
+    // const [user, setUser] = useState(null);
     const [followers, setFollowers] = useState(0);
     const [following, setFollowing] = useState(0);
     const [postCount, setPostCount] = useState(0);
-    const [username, setUsername] = useState('');
-    const [profilePic, setProfilePic] = useState('');
+    const [username, setUsername] = useState(auth.currentUser.displayName);
+    const [profilePic, setProfilePic] = useState(auth.currentUser.photoURL);
     const [bio, setBio] = useState('');
     const [overlayVisible, setOverlayVisible] = useState(false);
 
     const [postList, setPostList] = useState([]);
     const [byNewPosts, setByNewPosts] = useState(true);
     const [byPopularPosts, setByPopularPosts] = useState(false);
+
+    useEffect(() => {
+        navigation.setOptions({
+            header: () => <MainProfileTop />
+        });
+    }, [navigation]);
 
     async function uploadImage(imageUrl) {
         // Convert image to blob format(array of bytes)
@@ -45,12 +56,12 @@ function MainProfileScreen ({navigation, ...props}) {
      
      
         // const filename = imageUrl.substring(imageUrl.lastIndexOf('/')+1);
-        const childPath = `profilePics/${firebase.auth().currentUser.uid}`;
+        const childPath = `profilePics/${auth.currentUser.uid}`;
      
      
         const storageRef = ref(storage, childPath);
      
-     
+        
         const uploadTask =  uploadBytesResumable(storageRef, blob)
         .catch ((e) => {
             console.log(e);
@@ -101,13 +112,23 @@ function MainProfileScreen ({navigation, ...props}) {
      
      
      const addProfilePic = async (url) => {
+        updateProfile(auth.currentUser, {
+            photoURL: url
+        }).then(() => {
+            setProfilePic(url);
+        }).catch((error) => {
+            // An error occurred
+            // ...
+        });
+
         const profilePicRef = doc(db, "users", firebase.auth().currentUser.uid);
         await updateDoc(profilePicRef, {
             profilePic: url
         }).then(() => {
-            setProfilePic(url);
+            
             // Alert.alert('Profile picture updated successfully \n Refresh App to see changes');
         })
+
      };
      
      
@@ -128,12 +149,10 @@ function MainProfileScreen ({navigation, ...props}) {
         const { currentUser } = props;
         
         if(currentUser != null){
-            setUser(currentUser);
+            // setUser(currentUser);
             setFollowers(currentUser.followers);
             setFollowing(currentUser.following);
             setPostCount(currentUser.posts);
-            setUsername(currentUser.username);
-            setProfilePic(currentUser.profilePic);
             setBio(currentUser.bio);
         }
     }, [props.currentUser]);
@@ -287,7 +306,7 @@ function MainProfileScreen ({navigation, ...props}) {
            style= {theme == 'light' ?
                { backgroundColor: 'white'}
            :
-               { backgroundColor: '#161616' }
+               { backgroundColor: '#0C0C0C', borderBottomWidth: 3, borderBottomColor: '#262626' }
            }
            labelStyle = {theme == 'light' ? styles.lightLabel : styles.darkLabel}
            activeColor = {theme == 'light' ? '#222222' : 'white'}
@@ -318,7 +337,7 @@ function MainProfileScreen ({navigation, ...props}) {
            </Tabs.Tab>
            <Tabs.Tab name="Posts">
                 <AllUserPosts
-                    userId={firebase.auth().currentUser.uid}
+                    userId={auth.currentUser.uid}
                     username={username}
                     profilePic={profilePic}
                     postList={postList}
@@ -332,7 +351,7 @@ function MainProfileScreen ({navigation, ...props}) {
            </Tabs.Tab>
            <Tabs.Tab name="Media">
                 <AllUserMediaPosts
-                    userId={firebase.auth().currentUser.uid}
+                    userId={auth.currentUser.uid}
                     postList={postList}
                 />
            </Tabs.Tab>
@@ -351,7 +370,7 @@ const styles = StyleSheet.create({
    darkProfileContainer: {
        flex: 1,
        flexDirection: 'row',
-       backgroundColor: '#141414',
+       backgroundColor: '#0C0C0C',
    },
    lightLabel: {
        color: '#880808',
@@ -433,7 +452,8 @@ const styles = StyleSheet.create({
         height: 30,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#B8B8B8',
+        backgroundColor: '#FFFFFF',
+        borderColor: '#CCCCCC',
         marginLeft: 10,
         marginTop: 15,
         alignItems: 'center',
@@ -445,7 +465,8 @@ const styles = StyleSheet.create({
         height: 30,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#3D3D3D',
+        backgroundColor: '#181818',
+        borderColor: '#363636',
         marginLeft: 10,
         marginTop: 15,
         alignItems: 'center',

@@ -11,22 +11,14 @@ import SettingLight from '../../assets/setting_light.svg';
 // dark mode icons
 import SettingDark from '../../assets/setting_dark.svg';
 
+import { getAuth, updateProfile } from "firebase/auth";
 
+const auth = getAuth();
 const windowWidth = Dimensions.get('window').width;
 
 const MainProfileTop = (props) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [username, setUsername] = useState('');
-
-
-    useEffect( () => {
-        if(props.currentUser != null){
-            setUsername(props.currentUser.username);
-        }else{
-            props.fetchUser();
-        }
-    }, [props.currentUser]);
-
+    const [username, setUsername] = useState(auth.currentUser.displayName);
 
    return (
         <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
@@ -65,7 +57,7 @@ const styles = StyleSheet.create({
        flexDirection: 'row',
    },
    darkTopContainer: {
-       backgroundColor: '#161616',
+       backgroundColor: '#0C0C0C',
        height: 100,
        flexDirection: 'row',
    },

@@ -49,7 +49,6 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
             text: text,
             tags: tags,
             memeName: memeName,
-            user: profile,
             username: username,
             profile: profile,
             repostUsername: repostUsername,
@@ -122,18 +121,13 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
             >
                 {/* profile pic */}
                 <TouchableOpacity
-                    onPress={() => {
-                        {
-                            profile != firebase.auth().currentUser.uid &&
-                            
-                                navigation.push('Profile', {
-                                    user: profile,
-                                    username: username,
-                                    profilePic: profilePic,
-                                })
-                        }
-                        
-                    }}
+                    onPress={() => 
+                        navigation.push('Profile', {
+                            user: profile,
+                            username: username,
+                            profilePic: profilePic,
+                        })
+                    }
                 >
                     {profilePic != "" ? (
                         <Image source={{ uri: profilePic }} style={styles.profileImage}/>

@@ -18,11 +18,14 @@ const AuthenticatedUserContext = createContext({});
 
 const AuthenticatedUserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [imageForPost, setImageForPost] = useState(null);
 
     return (
         <AuthenticatedUserContext.Provider 
         value={{ 
-            user, 
+            user,
+            imageForPost,
+            setImageForPost,
             setUser,
             login: async (email, password) => {
                 try {

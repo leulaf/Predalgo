@@ -262,18 +262,18 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1,
-        borderColor: '#CCCCCC'
+        borderColor: '#BBBBBB'
     },
     darkPopularButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#161616',
+        backgroundColor: '#121212',
         borderRadius: 20,
         width: 95,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1,
-        borderColor: '#3F3F3F'
+        borderColor: '#393939'
     },
     lightPopularButtonInactive: {
         flexDirection: 'column',
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1,
-        borderColor: '#CCCCCC'
+        borderColor: '#BBBBBB'
     },
     darkPopularButtonInactive: {
         flexDirection: 'column',
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1,
-        borderColor: '#363636'
+        borderColor: '#393939'
     },
     // New button
     lightNewButtonActive: {
@@ -307,18 +307,18 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1,
-        borderColor: '#CCCCCC'
+        borderColor: '#BBBBBB'
     },
     darkNewButtonActive: {
         flexDirection: 'column',
-        backgroundColor: '#161616',
+        backgroundColor: '#121212',
         borderRadius: 20,
         width: 70,
         height: 35,
         marginLeft: 5,
         marginBottom: 5,
         borderWidth: 1,
-        borderColor: '#3D3D3D'
+        borderColor: '#393939'
     },
     lightNewButtonInactive: {
         flexDirection: 'column',

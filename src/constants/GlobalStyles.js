@@ -9,34 +9,34 @@ const GlobalStyles = StyleSheet.create({
         fontSize: 20
     },
     darkContainer: {
-        backgroundColor: "#1F1F1F"
+        backgroundColor: "#181818"
     },
     lightContainer: {
-        backgroundColor: "#FAFAFA"
+        backgroundColor: "#FCFCFC"
     },
     lightPostContainer: {
         backgroundColor: '#FFFFFF',
         borderStyle: "solid",
-        borderColor: "#EEEEEE",
+        borderColor: "#F2F2F2",
         borderWidth: 1.5,
         borderRadius: 15,
-        marginBottom: 8,
+        marginBottom: 10,
         // width: '100%',
         // height: 300,
         // maxHeight: 350,
         minHeight: 50,
     },
     darkPostContainer: {
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#121212',
         borderStyle: "solid",
-        borderColor: "#393939",
+        borderColor: "#212121",
         borderWidth: 1.5,
-        borderRadius: 8,
-        marginBottom: 107,
+        borderRadius: 10,
+        marginBottom: 10,
         // width: '100%',
         // height: 300,
         // maxHeight: 350,
-        minHeight: 50,
+        minHeight: 9,
     },
     lightTextContainer: {
         // minHeight: 353,
@@ -53,9 +53,9 @@ const GlobalStyles = StyleSheet.create({
         // minHeight: 353,
         // maxHeight: 353,
         width: "100%",
-        backgroundColor: "#1D1D1D",
+        backgroundColor: "#121212",
         borderRadius: 13,
-        borderColor: "#333333",
+        borderColor: "#202020",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'
@@ -103,7 +103,7 @@ const GlobalStyles = StyleSheet.create({
     darkPostBottomText: {
         fontSize: 20, 
         fontWeight: "400", 
-        color: '#6AA2FF', 
+        color: '#6BA3FF', 
         marginTop: 13, 
         marginBottom: 3,
         marginHorizontal: 5

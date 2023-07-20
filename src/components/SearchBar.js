@@ -73,9 +73,9 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#282828',
+        backgroundColor: '#1B1B1B',
         borderWidth: 1.5,
-        borderColor: '#3B3B3B',
+        borderColor: '#282828',
     },
     lightInputStyle: {
         flex: 1,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     darkContainer: {
         flexDirection: 'row',
         height: 105,
-        backgroundColor: '#161616',
+        backgroundColor: '#0C0C0C',
     },
 });
 

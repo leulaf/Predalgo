@@ -6,31 +6,38 @@ import { doc, setDoc, getDoc, collection, addDoc, updateDoc, increment } from "f
 import { firebase, db, storage } from '../config/firebase';
 
 import {ThemeContext} from '../../context-store/context';
-import { useNavigation } from '@react-navigation/native';
 
-import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 // light mode icons
 import UploadLight from '../../assets/upload_light.svg';
 import CreateMemeLight from '../../assets/meme_create_light.svg';
-import PostButtonLight from '../../assets/post_button_light.svg';
+import PostButtonLight from '../../assets/reply_light.svg';
 import LinkLight from '../../assets/link_light.svg';
 
 // dark mode icons
 import UploadDark from '../../assets/upload_dark.svg';
 import CreateMemeDark from '../../assets/meme_create_dark.svg';
-import PostButtonDark from '../../assets/post_button_dark.svg';
+import PostButtonDark from '../../assets/reply_dark.svg';
 import LinkDark from '../../assets/link_dark.svg';
 
-const commentTextOnPost = async (text, replyToProfile, postId, ) => {
+import { getAuth, updateProfile } from "firebase/auth";
+const auth = getAuth();
+
+// Comment text on a post
+const commentTextOnPost = async (text, replyToProfile, postId, replyToUsername ) => {
     // add text post to database
     await addDoc(collection(db, "mainComments", postId, "comments"), {
+        replyToPostId: postId,
+        replyToProfile: replyToProfile,
+        replyToUsername: replyToUsername,
         text: text,
-        postId: postId,
         likesCount: 0,
         commentsCount: 0,
         creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        profile: firebase.auth().currentUser.uid
+        profile: firebase.auth().currentUser.uid,
+        username: auth.currentUser.displayName,
+        profilePicture: auth.currentUser.photoURL,
     }).then(async (docRef) => {
         // navigate to comment screen with the new comment
 
@@ -39,9 +46,74 @@ const commentTextOnPost = async (text, replyToProfile, postId, ) => {
     });
 };
 
-const ReplyBottomSheet = ({replyToPost, setReplyToPost, mainComment, secondaryComment}) => {
+// Comment image on a post
+const commentImageOnPost = async (url, replyToProfile, postId, replyToUsername ) => {
+    // add text post to database
+    await addDoc(collection(db, "mainComments", postId, "comments"), {
+        replyToPostId: postId,
+        replyToProfile: replyToProfile,
+        replyToUsername: replyToUsername,
+        imageUrl: url,
+        likesCount: 0,
+        commentsCount: 0,
+        creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+        profile: firebase.auth().currentUser.uid,
+        username: auth.currentUser.displayName,
+        profilePicture: auth.currentUser.photoURL,
+    }).then(async (docRef) => {
+        // navigate to comment screen with the new comment
+
+    }).catch(function (error) {
+        console.log(error);
+    });
+};
+
+// Comment text on a comment
+const commentTextOnComment = async (text, replyToProfile, commentId, replyToUsername ) => {
+    // add text post to database
+    await addDoc(collection(db, "mainComments", postId, "comments"), {
+        replyToCommentId: commentId,
+        replyToProfile: replyToProfile,
+        replyToUsername: replyToUsername,
+        text: text,
+        likesCount: 0,
+        commentsCount: 0,
+        creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+        profile: firebase.auth().currentUser.uid,
+        username: auth.currentUser.displayName,
+        profilePicture: auth.currentUser.photoURL,
+    }).then(async (docRef) => {
+        // navigate to comment screen with the new comment
+
+    }).catch(function (error) {
+        console.log(error);
+    });
+};
+
+// Comment text on a comment
+const commentImageOnComment = async (url, replyToProfile, commentId, replyToUsername ) => {
+    // add text post to database
+    await addDoc(collection(db, "mainComments", postId, "comments"), {
+        replyToCommentId: commentId,
+        replyToProfile: replyToProfile,
+        replyToUsername: replyToUsername,
+        imageUrl: url,
+        likesCount: 0,
+        commentsCount: 0,
+        creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+        profile: firebase.auth().currentUser.uid,
+        username: auth.currentUser.displayName,
+        profilePicture: auth.currentUser.photoURL,
+    }).then(async (docRef) => {
+        // navigate to comment screen with the new comment
+
+    }).catch(function (error) {
+        console.log(error);
+    });
+};
+
+const CommentReplyBottomSheet = ({navigation, replyToPost, setReplyToPost, replyFocus}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const navigation = useNavigation();
 
     const inputAccessoryViewID = uuid.v4(); // maybe use uuid to generate this id
 
@@ -52,17 +124,17 @@ const ReplyBottomSheet = ({replyToPost, setReplyToPost, mainComment, secondaryCo
 
     // icons
     if(theme == 'light'){
-        link = <LinkLight width={25} height={25} marginLeft={10} marginRight={11} />;
+        link = <LinkLight width={31} height={31} marginLeft={8} marginRight={8} />;
         createMeme = <CreateMemeLight width={27} height={27} marginRight={7}/>;
         createMemeSmall = <CreateMemeLight width={23} height={23} marginRight={15} />;
         upload = <UploadLight width={28} height={28} marginRight={17}/>;
-        replyButton = <PostButtonLight width={100} height={40} marginRight={8}/>;
+        replyButton = <PostButtonLight width={90} height={30} marginRight={8}/>;
     }else{
-        link = <LinkDark width={25} height={25} marginLeft={10} marginRight={11} />;
+        link = <LinkDark width={31} height={31} marginLeft={8} marginRight={9} />;
         createMeme = <CreateMemeDark width={27} height={27} marginRight={7}/>;
         createMemeSmall = <CreateMemeDark width={23} height={23} marginRight={15} />;
         upload = <UploadDark width={28} height={28} marginRight={17} />;
-        replyButton = <PostButtonDark width={100} height={40} marginRight={8}/>;
+        replyButton = <PostButtonDark width={90} height={30} marginRight={8}/>;
     }
 
     // ref
@@ -105,7 +177,7 @@ const ReplyBottomSheet = ({replyToPost, setReplyToPost, mainComment, secondaryCo
         <View style={theme == 'light' ? styles.lightBottomContainer : styles.darkBottomContainer}>
         
         {/* Upload, Link, Create Meme Buttons */}
-        <View style={{ flex: 1, flexDirection: 'row', marginTop: 6, justifyContent: 'flex-start' }}>
+        <View style={{ flex: 1, flexDirection: 'row', marginTop: 10, justifyContent: 'flex-start' }}>
             
 
             
@@ -192,13 +264,14 @@ const ReplyBottomSheet = ({replyToPost, setReplyToPost, mainComment, secondaryCo
                         style={[
                             theme == 'light' ? styles.lightReplyToPostBar : styles.darkReplyToPostBar,
                             { height: textInputInFocus ? 
-                                textInputFullScreen ? 422 : 270 : 
+                                textInputFullScreen ? 425 : 272 : 
                                 40
                             }
                         ]}
                     >
                                 
                         <TextInput
+                            autoFocus={replyFocus ? true : false}
                             ref={(input) => { replyToPostRef.current = input; }}
                             inputAccessoryViewID={inputAccessoryViewID}
                             autoCapitalize="none"
@@ -210,7 +283,7 @@ const ReplyBottomSheet = ({replyToPost, setReplyToPost, mainComment, secondaryCo
                             style={[
                                 theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle, 
                                 { height: textInputInFocus ? 
-                                    textInputFullScreen ? 410 : 260 : 
+                                    textInputFullScreen ? 415 : 265 : 
                                     35
                                 }
                             ]} 
@@ -218,7 +291,7 @@ const ReplyBottomSheet = ({replyToPost, setReplyToPost, mainComment, secondaryCo
                             value={replyToPost}
                             placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
                             onChangeText={newTerm => setReplyToPost(newTerm)}
-                            onSubmitEditing={() => {}}
+                            // onSubmitEditing={() => {}}
                             // onEndEditing={(newTerm) => props.updateSeach(newTerm.nativeEvent.text)}
                         />
 
@@ -254,12 +327,12 @@ const ReplyBottomSheet = ({replyToPost, setReplyToPost, mainComment, secondaryCo
 
 const styles = StyleSheet.create({
     lightBottomSheet: {
-        marginBottom: 2,
+        marginBottom: 10,
         flexDirection: 'column',
         backgroundColor: '#FFFFFF',
     },
     darkBottomSheet: {
-        marginBottom: 2,
+        marginBottom: 10,
         flexDirection: 'column',
         backgroundColor: '#141414',
     },
@@ -281,7 +354,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FBFBFB',
+        backgroundColor: '#FAFAFA',
         borderWidth: 1,
         borderColor: '#EDEDED',
     },
@@ -346,7 +419,7 @@ const styles = StyleSheet.create({
         // marginTop: 10,
     },
     darkBottomText: {
-        color: '#F4F4F4',
+        color: '#EEEEEE',
         fontSize: 19,
         fontWeight: '500',
         // alignSelf: 'center',
@@ -356,4 +429,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ReplyBottomSheet;
+export default CommentReplyBottomSheet;

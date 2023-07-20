@@ -1,11 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView} from 'react-native';
 import PredalgoLogo from '../../assets/Predalogo_SignUp_logo.svg';
+import { getAuth, updateProfile } from "firebase/auth";
 import {firebase, auth} from '../config/firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 // import auth from '@react-native-firebase/auth';
 
 
+const currentUser = getAuth().currentUser;
 
 const AuthScreen = ({navigation}) => {
     const [username, setUsername] = useState('');
@@ -30,6 +32,18 @@ const AuthScreen = ({navigation}) => {
                         followers: 0,
                         following: 0,
                     })
+
+                    updateProfile(auth.currentUser, {
+                        displayName: username,
+                    }).then(() => {
+                        // Profile updated!
+                        // ...
+                    }
+                    ).catch((error) => {
+                        // An error occurred
+                        // ...
+                    }
+                    );
                 })
                 .catch((error) =>{
                     // alert(error);

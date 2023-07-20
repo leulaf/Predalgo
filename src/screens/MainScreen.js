@@ -3,7 +3,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import {ScrollView, Image, View, Text, StyleSheet, TextInput} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
-
+import { BlurView } from 'expo-blur';
 import TopBar from '../components/TopBar';
 
 import GamesScreen from '../screens/GamesScreen';
@@ -13,9 +13,18 @@ import SideBar from '../components/SideBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
 
-export default function MainScreen({navigation}){
+export default function MainScreen({navigation, openDrawer}){
     const {theme,setTheme} = useContext(ThemeContext);
     const [term, setTerm] = useState('');
+
+    // Sets the header to the SimpleTopBar component
+    // useEffect(() => {
+    //     navigation.setOptions({
+    //         header: () => <TopBar
+    //             // openDrawer={() => openDrawer()}
+    //         />
+    //     });
+    // }, [navigation]);
 
     return (
             <>
@@ -23,8 +32,14 @@ export default function MainScreen({navigation}){
                 initialRouteName="For You"
                 screenOptions={
                     {
+                        tabBarBackground: () => (
+                            <BlurView 
+                                tint = {theme == 'light' ?  "light" : "dark"}
+                                intensity={theme == 'light' ?  100 : 100}
+                                style={StyleSheet.absoluteFill}
+                            />
+                        ),
                         tabBarLabelStyle: {fontSize: 16, fontWeight: 'bold', marginBottom: 30},
-
                         tabBarStyle: theme == 'light' ? styles.lightTabBarStyle : styles.darkTabBarStyle,
                         tabBarIndicatorStyle: theme == 'light' ? styles.lightIndicatorStyle : styles.darkIndicatorStyle,
                         tabBarActiveTintColor: theme == 'light' ? '#2D2D2D' : '#F6F6F6',
@@ -61,7 +76,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 50,
     },
     darkTabBarStyle: {
-        backgroundColor: 'rgba(22, 22, 22, 0.9)', 
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', 
         position: 'absolute', 
         height: 40, 
         width: '100%',

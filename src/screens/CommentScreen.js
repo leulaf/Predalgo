@@ -11,7 +11,7 @@ import GlobalStyles from '../constants/GlobalStyles';
 
 import ContentBottom from '../components/postTypes/ContentBottom';
 import PostBottom from '../components/postTypes/PostBottom';
-import ReplyBottomSheet from '../components/PostReplyBottomSheet';
+import ReplyBottomSheet from '../components/CommentReplyBottomSheet';
 
 import MainComment from '../components/commentTypes/MainComment';
 
@@ -32,31 +32,19 @@ const ImageContainer = (props) => {
     );
 };
 
-const PostScreen = ({navigation, route}) => {
+const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const commentsList = ['Header', ...[...Array(5)].map((_, i) => `Item ${i}`)];
-    const {title, profile, likesCount, commentsCount, imageUrl, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
+    const commentsList = ['Header', ...[...Array(50)].map((_, i) => `Item ${i}`)];
+    const {profile, likesCount, commentsCount, imageUrl, text, username, profilePic, commentId, memeName} = route.params;
 
-    const [replyTextToPost, setReplyTextToPost] = useState("");
-    const [submittedText, setSubmittedText] = useState(null);
+    const [replyToPost, setReplyToPost] = useState("");
 
-    const contentBottom = <ContentBottom
-        memeName={memeName}
-        tags={tags}
-    />;
 
     const replyBottomSheet = <ReplyBottomSheet
-        navigation={navigation}
-        postId = {postId}
-        replyToProfile = {profile}
-        replyToUsername={username}
+        replyToPost={replyToPost}
+        setReplyToPost={setReplyToPost}
         mainComment={true}
     />;
-
-    // refreshes the comments list when a new comment is submitted
-    // useEffect(() => {
-
-    // }, commentsList);
 
     // Sets the header of component
     useEffect(() => {
@@ -77,7 +65,7 @@ const PostScreen = ({navigation, route}) => {
 
             await getDocs(q).then((snapshot) => {
                 snapshot.docs.map((doc) => {
-                    const commentsList = doc.data();
+                    const data = doc.data();
                     user = { ...data, id: doc.id }; // Add the id property to the user object
                 });
             });
@@ -96,25 +84,18 @@ const PostScreen = ({navigation, route}) => {
             
             if (imageUrl != null) {
                 content = (
-                    <View>
+                    // <View>
                         <ImageContainer imageSource={{ uri: imageUrl }} />
-                        <View style={{marginLeft: 5, marginBottom: 1}}>
-                            {contentBottom}
-                        </View>
-                    </View>
+                    // </View> 
                     
                 );
             }else if (text != null) {
                 content = (
-                    <View >
+                    // <View >
                             <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
                                 {text
                             }</Text>
-                            <View style={{marginLeft: 5, marginBottom: 1}}>
-                                {contentBottom}
-                            </View>
-                            
-                    </View>
+                    // </View>
                 );
             }
 
@@ -126,11 +107,11 @@ const PostScreen = ({navigation, route}) => {
                         {/* profile pic */}
                         <TouchableOpacity
                             onPress={() => 
-                                    navigation.push('Profile', {
-                                        user: profile,
-                                        username: username,
-                                        profilePic: profilePic,
-                                    })
+                                navigation.push('Profile', {
+                                    user: profile,
+                                    username: username,
+                                    profilePic: profilePic,
+                                })
                             }
                         >
                             {profilePic != "" ? (
@@ -145,14 +126,7 @@ const PostScreen = ({navigation, route}) => {
                             style={{flex: 1, flexDirection: 'column'}}
                         >
 
-                            {
-                                repostUsername ?
-                                    <Text style={theme == 'light' ? styles.lightRepostUsername: styles.darkRepostUsername}>
-                                        @{repostUsername} reposted
-                                    </Text>
-                                :
-                                    null
-                            }
+
 
                             <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
                                 @{username}
@@ -162,33 +136,35 @@ const PostScreen = ({navigation, route}) => {
                     </View>
 
                     {/* title */}
-                    {
+                    {/* {
                         title &&
                         <Text numberOfLines={2} 
                             style={theme == 'light' ? styles.lightPostTitle: styles.darkPostTitle}>
                             {title}
                         </Text>
-                    }
+                    } */}
 
                     {/* content */}
-                    {content}
+                    <View style={{marginBottom: 15}}>
+                        {content}
+                    </View>
+                    
                 </View>
             );
 
-        } 
-        else if (index === 1) {
+        } else if (index === 1) {
             return (
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
-                    <PostBottom
+                    {/* <PostBottom
                         postId={postId}
                         likesCount={likesCount}
                         commentsCount={commentsCount}
-                    />
+                    /> */}
                 </View>
                 
             );
         }
-
+        
         if (index === commentsList.length-1) {
             return (
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
@@ -201,7 +177,6 @@ const PostScreen = ({navigation, route}) => {
                         likesCount={item.likesCount}
                         commentsCount={item.commentsCount}
                     />
-                    
                     <View style={{height: 150}}/>
                 </View>
                 
@@ -209,15 +184,16 @@ const PostScreen = ({navigation, route}) => {
         }
 
         return (
-            <MainComment
-                profile={item.profile}
-                username={item.username}
-                profilePic={item.profilePic}
-                commentId={item.commentId}
-                text={item.text ? item.text : null}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
+            // <MainComment
+            //     profile={profile}
+            //     username={username}
+            //     profilePic={profilePic}
+            //     commentId={commentId}
+            //     text={text}
+            //     likesCount={likesCount}
+            //     commentsCount={commentsCount}
+            // />
+            null
         );
     };
 
@@ -274,9 +250,11 @@ const styles = StyleSheet.create({
     },
     lightContainer: {
         backgroundColor: 'white',
+        borderBottomLeftRadius: 10, borderBottomRightRadius: 15
     },
     darkContainer: {
         backgroundColor: '#151515',
+        borderBottomLeftRadius: 10, borderBottomRightRadius: 15
     },
     lightUsername: {
         fontSize: 16,
@@ -443,4 +421,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PostScreen;
+export default CommentScreen;

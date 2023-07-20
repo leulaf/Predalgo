@@ -22,10 +22,7 @@ import LikedDark from '../../../assets/liked_dark.svg';
 import ReplyDark from '../../../assets/reply_comment_dark.svg';
 import DownDark from '../../../assets/down_dark.svg';
 
-// SecondaryComment is a comment that is a reply to a comment
-import SecondaryComment from './SecondaryComment';
-
-const MainComment = ({ profile, username, profilePic, commentId, text, likesCount, commentsCount }) => {
+const SecondaryComment = ({ profile, username, profilePic, commentId, text, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -122,13 +119,13 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
     let threeDots, likes, alreadyLiked, reply, down
     
     if(theme == 'light'){
-        threeDots = <ThreeDotsLight width={33} height={33} style={{}}/>
+        threeDots = <ThreeDotsLight width={33} height={33} style={styles.threeDots}/>
         likes = <Likes width={20} height={20} style={{ marginRight: 5 }}/>;
         alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
         reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <Down width={24} height={24} style={{ marginRight: 5 }}/>;
+        down = <Down width={22} height={22} style={{ marginRight: 5 }}/>;
     }else{
-        threeDots = <ThreeDotsDark width={33} height={33} style={{}}/>
+        threeDots = <ThreeDotsDark width={33} height={33} style={styles.threeDots}/>
         likes = <LikesDark width={21} height={21} style={{ marginRight: 5 }}/>;
         alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
         reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
@@ -139,7 +136,7 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
         return null;
     }
 
-    const mainComment = <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
+    const secondaryComment = <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
             
             {/* Profile Picture and Username */}
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -159,7 +156,7 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
                         
                     }}
                 >
-                    <Image 
+                   <Image 
                         source={{uri: profilePic}} 
                         style={styles.profileImage} 
                         placeholder={require('../../../assets/profile_default.png')}
@@ -187,10 +184,10 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
             </TouchableOpacity>
 
             {/* Reply and Like */}
-            <View style={{ flexDirection: 'row', marginBottom: 10, marginRight: 0 }}>
+            <View style={{ flexDirection: 'row', marginBottom: 10, marginRight: 0,  alignItems: 'center', alignContent: 'center' }}>
                 
                 {/* View replies */}
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', alignContent: 'center', marginLeft: 13 }}>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', alignContent: 'center', marginLeft: 10 }}>
                     
                     {
                         commentCount > -1 &&
@@ -244,21 +241,10 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
                 </TouchableOpacity>
             </View>
 
-            
-            {/* Secondary comment */}
-            <SecondaryComment 
-                mainCommentId={commentId}
-                profilePic={profilePic}
-                username={username}
-                likesCount={likesCount}
-                commentsCount={commentsCount}
-                text={text}
-            />
-
         </View>
 
     return (
-        mainComment
+        secondaryComment
     );
 }
 
@@ -267,22 +253,28 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 50,
-        marginLeft: 11,
+        marginLeft: 8,
         marginRight: 5,
-        marginVertical: 8,
-        marginBottom: 4,
+        marginVertical: 0,
+        marginBottom: -3 // fix for bottom margin, change it later
     },
     lightCommentContainer: {
         backgroundColor: '#FFFFFF',
-        marginTop: 8,
+        marginLeft: 14.7,
+        // marginTop: 3,
+        borderLeftWidth: 2,
+        borderLeftColor: '#DDDDDD',
     },
     darkCommentContainer: {
         backgroundColor: '#151515',
-        marginTop: 8,
+        marginLeft: 14.7,
+        // marginTop: 3,
+        borderLeftWidth: 2,
+        borderLeftColor: '#363636',
     },
     lightUsername: {
         flex: 1,
-        fontSize: 14,
+        fontSize: 14.7,
         fontWeight: "600",
         color: '#5D5D5D',
         textAlign: "left",
@@ -300,8 +292,9 @@ const styles = StyleSheet.create({
         color: '#222222',
         letterSpacing: 0.3,
         textAlign: 'auto',
-        marginHorizontal: 13,
+        marginHorizontal: 10,
         marginBottom: 6,
+        marginTop: 6,
     },
     darkCommentText: {
         fontSize: 16,
@@ -309,8 +302,9 @@ const styles = StyleSheet.create({
         color: '#F2F2F2',
         letterSpacing: 0.3,
         textAlign: "left",
-        marginHorizontal: 13,
+        marginHorizontal: 10,
         marginBottom: 6,
+        marginTop: 6,
     },
     lightViewReplyLine: {
         backgroundColor: '#BBBBBB',
@@ -350,4 +344,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MainComment;
+export default SecondaryComment;

@@ -37,15 +37,23 @@ const CreatePostScreen = ({navigation, route}) => {
     const [correctTags, setCorrectTags] = React.useState([]);
     const [expandImage, setExpandImage] = React.useState(false);
 
+    const getHeightAndWidth = async (image) => {
+        const manipResult = await manipulateAsync(image, [], {});
+        return {height: manipResult.height, width: manipResult.width};
+    };
+
     const addNewTemplate = async (newUrl) => {
         const userRef = doc(db, "users", firebase.auth().currentUser.uid);
         const userSnap = await getDoc(userRef);
         const username = userSnap.data().username;
+        const {height, width} = await getHeightAndWidth(newUrl);
         
         const addTemplateRef = await addDoc(collection(db, "imageTemplates"), {
             name: memeName,
             uploader: username,
             url: newUrl,
+            height: height,
+            width: width,
             useCount: 1,
             creationDate: firebase.firestore.FieldValue.serverTimestamp(),
         });
@@ -134,10 +142,13 @@ const CreatePostScreen = ({navigation, route}) => {
     
 
     const saveImagePostData = async (url) => {
+        const {height, width} = await getHeightAndWidth(url);
         // add text post to database
         await addDoc(collection(db, "allPosts"), {
             title: title,
             imageUrl: url,
+            height: height,
+            width: width,
             tags: correctTags,
             likesCount: 0,
             commentsCount: 0,
@@ -160,10 +171,13 @@ const CreatePostScreen = ({navigation, route}) => {
     };
 
     const saveMemePostData = async (url) => {
+        const {height, width} = await getHeightAndWidth(url);
         // add text post to database
         await addDoc(collection(db, "allPosts"), {
             title: title,
             imageUrl: url,
+            height: height,
+            width: width,
             memeName: memeName,
             tags: correctTags,
             likesCount: 0,

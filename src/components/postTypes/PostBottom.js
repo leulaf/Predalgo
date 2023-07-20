@@ -48,8 +48,8 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
         repost = <Repost width={19} height={19} style={{ marginRight: 7 }}/>;
     }else{
         comments = <CommentsDark width={23} height={23} style={{ marginRight: 7 }}/>;
-        likes = <LikesDark width={23} height={23} style={{ marginRight: 7 }}/>;
-        alreadyLiked = <LikedDark width={23} height={23} style={{ marginRight: 7 }}/>;
+        likes = <LikesDark width={24} height={24} style={{ marginRight: 7 }}/>;
+        alreadyLiked = <LikedDark width={24} height={24} style={{ marginRight: 7 }}/>;
         share = <ShareDark width={21} height={21} style={{ marginRight: 7 }}/>;
         repost = <RepostDark width={19} height={19} style={{ marginRight: 7 }}/>;
     }
@@ -157,17 +157,6 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
                 </Text>
             </TouchableOpacity>
 
-            {/* Repost button */}
-            <TouchableOpacity
-                style={styles.bottomButtonContainer}
-                onPress={() => onRepost()}
-            >
-                {repost}
-
-                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    0
-                </Text>
-            </TouchableOpacity>
             
             {/* Likes button */}
             <TouchableOpacity
@@ -184,6 +173,21 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
                     {likeString}
                 </Text>
             </TouchableOpacity>
+            
+            
+            {/* Repost button */}
+            <TouchableOpacity
+                style={styles.bottomButtonContainer}
+                onPress={() => onRepost()}
+            >
+                {repost}
+
+                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                    0
+                </Text>
+            </TouchableOpacity>
+            
+            
             
             {/* Share button */}
             <TouchableOpacity

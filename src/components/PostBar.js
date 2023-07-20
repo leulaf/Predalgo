@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
        marginTop:  10,
        alignSelf: "center",
        alignItems: "center",
-       backgroundColor: "#FBFBFB",
+       backgroundColor: "#FDFDFD",
        borderWidth: 1,
        borderColor: "#DDDDDD",
        borderRadius: 30
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
        marginTop:  10,
        alignSelf: "center",
        alignItems: "center",
-       backgroundColor: "#161616",
+       backgroundColor: "#0C0C0C",
        borderWidth: 1,
        borderColor: "#2D2D2D",
        borderRadius: 30
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
        alignSelf: "center",
        alignItems: "center",
        marginLeft: 8,
-       backgroundColor: "#FFFFFF",
+       backgroundColor: "#FEFEFE",
        borderWidth: 1,
        borderColor: "#DDDDDD",
        borderRadius: 30
@@ -135,9 +135,9 @@ const styles = StyleSheet.create({
        alignSelf: "center",
        alignItems: "center",
        marginLeft: 8,
-       backgroundColor: "#222222",
+       backgroundColor: "#1F1F1F",
        borderWidth: 1,
-       borderColor: "#444444",
+       borderColor: "#393939",
        borderRadius: 30
    },
    lightText:{

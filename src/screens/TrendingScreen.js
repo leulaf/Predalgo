@@ -1,5 +1,6 @@
 import React, {useEffect, useContext} from 'react';
 import {View, Text, StyleSheet, TextInput} from 'react-native';
+import { BlurView } from 'expo-blur';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ThemeContext} from '../../context-store/context';
 import FunnyScreen from '../screens/TrendingScreens/FunnyScreen';
@@ -20,9 +21,17 @@ export default function TrendingScreen({navigation}){
             
             screenOptions={
                 {
+                    tabBarStyle: { position: 'absolute' },
+                    tabBarBackground: () => (
+                        <BlurView 
+                            tint = {theme == 'light' ?  "light" : "dark"}
+                            intensity={theme == 'light' ?  100 : 100}
+                            style={StyleSheet.absoluteFill}
+                        />
+                    ),
                     tabBarLabelStyle: {fontSize: 18, fontWeight: 'bold', marginTop: 0},
                     tabBarStyle: {
-                        backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.25)', 
+                        backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.5)', 
                         position: 'absolute', 
                         height: 40, 
                         width: '100%'
