@@ -222,6 +222,14 @@ export default function ProfileScreen ({route, navigation}) {
     return (
         <Tabs.Container
             renderHeader={header}
+            headerContainerStyle={{
+                shadowColor: theme == 'light' ? '#0C0C0C' : '#FFFFFF',
+                shadowOffset: {
+                    width: 0,
+                    height: theme == 'light' ? 2 : 4,
+                },
+                shadowOpacity: theme == 'light' ? 0.2 : 0.1,
+           }}
             lazy={true}
         //    revealHeaderOnScroll
             pointerEvents="box-none"

@@ -22,7 +22,7 @@ import LikedDark from '../../../assets/liked_dark.svg';
 import ReplyDark from '../../../assets/reply_comment_dark.svg';
 import DownDark from '../../../assets/down_dark.svg';
 
-const SecondaryComment = ({ profile, username, profilePic, commentId, text, likesCount, commentsCount }) => {
+const SubComment = ({ profile, username, profilePic, commentId, text, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -80,14 +80,14 @@ const SecondaryComment = ({ profile, username, profilePic, commentId, text, like
 
     // update like count and add post to liked collection
     const onLike = async () => {
-        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, postId, commentId);
+        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, commentId, commentId);
         const likedSnapshot = await getDoc(likedRef);
       
         if (!likedSnapshot.exists()) {
           // add post to likes collection
           await setDoc(likedRef, {});
           // update like count for Comment
-          const postRef = doc(db, 'allPosts', postId);
+          const postRef = doc(db, 'allPosts', commentId);
       
           updateDoc(postRef, {
             likesCount: increment(1)
@@ -103,10 +103,10 @@ const SecondaryComment = ({ profile, username, profilePic, commentId, text, like
     // update like count and add post to liked collection
     const onDisike = async () => {
         // delete comment from likedComments collection
-        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, postId, commentId))
+        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, commentId, commentId))
 
         // update like count for Comment
-        const postRef = doc(db, 'allPosts', postId);
+        const postRef = doc(db, 'allPosts', commentId);
 
         updateDoc(postRef, {
             likesCount: increment(-1)
@@ -344,4 +344,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SecondaryComment;
+export default SubComment;

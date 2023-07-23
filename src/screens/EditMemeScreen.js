@@ -3,14 +3,14 @@ import {View, Text, TextInput, StyleSheet, Button, Image, TouchableOpacity, Scro
 import { Overlay } from 'react-native-elements';
 import {ThemeContext} from '../../context-store/context';
 
-import EditMemeTopBar from '../components/EditMemeTopBar';
+import EditImageTopBar from '../components/EditImageTopBar';
 
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
 import firebase from 'firebase/compat/app';
 import { set } from 'react-native-reanimated';
 
-import PinturaEditor from "@pqina/react-native-pintura";
+import PinturaEditor from "@pqina/react-native-expo-pintura";
 import {
     createMarkupEditorToolStyle,
     createMarkupEditorToolStyles,
@@ -24,10 +24,6 @@ import {
 } from "@pqina/pintura";
 
 setPlugins(plugin_crop);
-
-const editorDefaults = {
-    imageWriter: { quality: 0.3 },
-};
 
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
@@ -43,7 +39,7 @@ const EditMemeScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         navigation.setOptions({
-            header: () => <EditMemeTopBar title={""} onSave={() => editorRef.current.editor.processImage()}/>,
+            header: () => <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()}/>,
         });
     }, [navigation]);
 
@@ -53,34 +49,38 @@ const EditMemeScreen = ({ navigation, route }) => {
             where("name", "==", memeName),
             limit(1)
         );
+
         
+
         await getDocs(q)
         .then((snapshot) => {
             if (snapshot.docs.length == 0) {
                 // console.log("no meme with that name");
                 setOverlayVisible(false);
+                editorRef.current.editor.close();
                 navigation.navigate('CreatePost', {imageUrl: imageResult, memeName: newMemeName, newTemplate: true, newTemplateImage: image});
             } else {
                 // console.log("meme with that name exists");
                 Alert.alert("Meme with that name already exists. Please choose a different name.");
             }
+
         });
+        
     }
+
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>
-                Tap and drag to add text
-            </Text>
 
             <PinturaEditor
                 ref={editorRef}
-                {...editorDefaults}
+
                 style={{
                     width: "100%",
-                    height: "90%",
+                    height: "95%",
                     borderWidth: 1,
                     borderColor: "#fff",
+                    marginTop: 5
                 }}
                 styleRules={`
                     .pintura-editor {
@@ -102,7 +102,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                 ]}
                 markupEditorToolStyles={createMarkupEditorToolStyles({
                     text: createMarkupEditorToolStyle("text", {
-                    fontSize: "10%",
+                        fontSize: "10%",
                     }),
                 })}
                 markupEditorToolbar={[
@@ -117,6 +117,10 @@ const EditMemeScreen = ({ navigation, route }) => {
                     ['preset', 'Preset', { disabled: false }],
                     
                 ]}
+                imageFrame={{
+                    // current style properties
+                    frameColor: [0, 0, 0],
+                }}
                 // imageCropAspectRatio={1}
                 src={image}
                 onLoaderror={(err) => {

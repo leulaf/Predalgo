@@ -23,7 +23,7 @@ import ReplyDark from '../../../assets/reply_comment_dark.svg';
 import DownDark from '../../../assets/down_dark.svg';
 
 // SecondaryComment is a comment that is a reply to a comment
-import SecondaryComment from './SecondaryComment';
+import SecondaryComment from './SubComment';
 
 const MainComment = ({ profile, username, profilePic, commentId, text, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -83,14 +83,14 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
 
     // update like count and add post to liked collection
     const onLike = async () => {
-        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, postId, commentId);
+        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, replyToPostId, commentId);
         const likedSnapshot = await getDoc(likedRef);
       
         if (!likedSnapshot.exists()) {
           // add post to likes collection
           await setDoc(likedRef, {});
           // update like count for Comment
-          const postRef = doc(db, 'allPosts', postId);
+          const postRef = doc(db, 'allPosts', replyToPostId);
       
           updateDoc(postRef, {
             likesCount: increment(1)
@@ -106,10 +106,10 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
     // update like count and add post to liked collection
     const onDisike = async () => {
         // delete comment from likedComments collection
-        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, postId, commentId))
+        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, replyToPostId, commentId))
 
         // update like count for Comment
-        const postRef = doc(db, 'allPosts', postId);
+        const postRef = doc(db, 'allPosts', replyToPostId);
 
         updateDoc(postRef, {
             likesCount: increment(-1)
@@ -274,11 +274,11 @@ const styles = StyleSheet.create({
     },
     lightCommentContainer: {
         backgroundColor: '#FFFFFF',
-        marginTop: 8,
+        marginTop: 7,
     },
     darkCommentContainer: {
         backgroundColor: '#151515',
-        marginTop: 8,
+        marginTop: 7,
     },
     lightUsername: {
         flex: 1,

@@ -20,7 +20,7 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const PostBottom = ({ postId, likesCount, commentsCount }) => {
+const MainCommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
     const [likeCount, setLikeCount] = useState(0);
@@ -86,21 +86,21 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
 
     // update like count and add post to liked collection
     const onLike = async () => {
-        const likedRef = doc(db, "likedPosts", firebase.auth().currentUser.uid, postId, postId);
+        
+        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
         const likedSnapshot = await getDoc(likedRef);
-      
+        
         if (!likedSnapshot.exists()) {
           // add post to likes collection
           await setDoc(likedRef, {});
           // update like count for post
-          const postRef = doc(db, 'allPosts', postId);
+          const commentRef = doc(db, 'mainComments', replyToPostId, "comments", commentId);
       
-          updateDoc(postRef, {
+          updateDoc(commentRef, {
             likesCount: increment(1)
           }).then(() => {
-            onUpdateLikeCount(likeCount + 1);
+            onUpdateLikeCount(likeCount + 1); // update like count string
             setLikeCount(likeCount + 1);
-             // update like count string
           });
         }
       
@@ -110,12 +110,12 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
     // update like count and add post to liked collection
     const onDisike = async () => {
         // delete post from likes collection
-        deleteDoc(doc(db, "likedPosts", firebase.auth().currentUser.uid, postId, postId))
+        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
         // update like count for post
-        const postRef = doc(db, 'allPosts', postId);
+        const commentRef = doc(db, 'mainComments', replyToPostId, "comments", commentId);
 
-        updateDoc(postRef, {
+        updateDoc(commentRef, {
             likesCount: increment(-1)
         }).then(() => {
             onUpdateLikeCount(likeCount - 1);
@@ -124,33 +124,13 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
         });
     }
 
-    // upload repost to database
-    const onRepost = async () => {
-        // add text post to database
-        await addDoc(collection(db, "allPosts"), {
-            repostPostId: postId,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            profile: firebase.auth().currentUser.uid
-        }).then(async (docRef) => {
-            // update posts count for current user
-            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
-
-            await updateDoc(currentUserRef, {
-                posts: increment(1)
-            });
-
-            Alert.alert("Reposted!");
-        }).catch(function (error) {
-            console.log(error);
-        });
-    };
 
     return (
         <View style={{flexDirection: 'row', height: 40, alignSelf: 'center', alignItems: 'center', alignContent: 'center'}}>     
             {/* Comments button */}
             <TouchableOpacity
                 style={styles.bottomButtonContainer}
-                // onPress={() => navigation.navigate('Comments', {postId: postId})}
+                // onPress={() => navigation.navigate('Comments', {commentId: commentId})}
             >
                 {comments}
 
@@ -180,7 +160,7 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
             {/* Repost button */}
             <TouchableOpacity
                 style={styles.bottomButtonContainer}
-                onPress={() => onRepost()}
+                // onPress={() => onRepost()}
             >
                 {repost}
 
@@ -234,4 +214,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PostBottom;
+export default MainCommentBottom;

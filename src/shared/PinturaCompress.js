@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import PinturaEditor from "@pqina/react-native-pintura";
+import PinturaEditor from "@pqina/react-native-expo-pintura";
 
 import {
     createDefaultImageReader,

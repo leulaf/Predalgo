@@ -1,9 +1,9 @@
 import React, {useEffect, useState, useContext, useMemo, useRef, useCallback} from 'react';
-import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions } from 'react-native';
+import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, setDoc, getDoc, collection, addDoc, updateDoc, increment } from "firebase/firestore";
-import { firebase, db, storage } from '../config/firebase';
+
+import { commentImageOnPost } from '../shared/comment/UploadImageComment';
+import { commentTextOnPost } from '../shared/comment/UploadTextComment';
 
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
@@ -23,116 +23,11 @@ import LinkDark from '../../assets/link_dark.svg';
 
 import { getAuth, updateProfile } from "firebase/auth";
 
+
 const auth = getAuth();
 
 const win = Dimensions.get('window');
 
-// Comment text on a post
-const commentTextOnPost = async (text, replyToProfile, postId, replyToUsername ) => {
-
-    let id
-    // add text post to database
-    await addDoc(collection(db, "mainComments", postId, "comments"), {
-        replyToPostId: postId,
-        replyToProfile: replyToProfile,
-        replyToUsername: replyToUsername,
-        text: text,
-        likesCount: 0,
-        commentsCount: 0,
-        creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        profile: auth.currentUser.uid,
-        username: auth.currentUser.displayName,
-        profilePic: auth.currentUser.photoURL,
-    }).then(async (docRef) => {
-        // navigate to comment screen with the new comment
-        id = docRef.id;
-    }).catch(function (error) {
-        // console.log(error);
-    });
-
-    return {
-        commentId: id,
-        replyToPostId: postId,
-        replyToProfile: replyToProfile,
-        replyToUsername: replyToUsername,
-        text: text,
-        likesCount: 0,
-        commentsCount: 0,
-        profile: auth.currentUser.uid,
-        username: auth.currentUser.displayName,
-        profilePic: auth.currentUser.photoURL,
-    }
-};
-
-// Comment image on a post
-const commentImageOnPost = async (url, replyToProfile, postId, replyToUsername ) => {
-    // add text post to database
-    await addDoc(collection(db, "mainComments", postId, "comments"), {
-        replyToPostId: postId,
-        replyToProfile: replyToProfile,
-        replyToUsername: replyToUsername,
-        imageUrl: url,
-        likesCount: 0,
-        commentsCount: 0,
-        creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        profile: auth.currentUser.uid,
-        username: auth.currentUser.displayName,
-        profilePic: auth.currentUser.photoURL,
-    }).then(async (docRef) => {
-        // navigate to comment screen with the new comment
-
-    }).catch(function (error) {
-        // console.log(error);
-    });
-};
-
-// Comment text on a comment
-const commentTextOnComment = async (text, replyToProfile, commentId, replyToUsername ) => {
-    // add text post to database
-    const {id} = await addDoc(collection(db, "mainComments", postId, "comments"), {
-        replyToCommentId: commentId,
-        replyToProfile: replyToProfile,
-        replyToUsername: replyToUsername,
-        text: text,
-        likesCount: 0,
-        commentsCount: 0,
-        creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        profile: auth.currentUser.uid,
-        username: auth.currentUser.displayName,
-        profilePic: auth.currentUser.photoURL,
-    }).then(async (docRef) => {
-        // navigate to comment screen with the new comment
-    }).catch(function (error) {
-        // console.log(error);
-    });
-
-    return {
-        commentId: id,
-        replyToCommentId: commentId,
-    }
-};
-
-// Comment text on a comment
-const commentImageOnComment = async (url, replyToProfile, commentId, replyToUsername ) => {
-    // add text post to database
-    await addDoc(collection(db, "mainComments", postId, "comments"), {
-        replyToCommentId: commentId,
-        replyToProfile: replyToProfile,
-        replyToUsername: replyToUsername,
-        imageUrl: url,
-        likesCount: 0,
-        commentsCount: 0,
-        creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        profile: auth.currentUser.uid,
-        username: auth.currentUser.displayName,
-        profilePic: auth.currentUser.photoURL,
-    }).then(async (docRef) => {
-        // navigate to comment screen with the new comment
-
-    }).catch(function (error) {
-        // console.log(error);
-    });
-};
 
 const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUsername}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -204,42 +99,80 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
         setTextInputInFocus(false);
     }
 
-    // Comment text on a post
-    const commentTextOnPost = async (text, replyToProfile, postId, replyToUsername ) => {
+    const onReplyWithText = async () => {
 
-        let id
-        // add text post to database
-        await addDoc(collection(db, "mainComments", postId, "comments"), {
-            replyToPostId: postId,
-            replyToProfile: replyToProfile,
-            replyToUsername: replyToUsername,
-            text: text,
-            likesCount: 0,
-            commentsCount: 0,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            profile: auth.currentUser.uid,
-            username: auth.currentUser.displayName,
-            profilePic: auth.currentUser.photoURL,
-        }).then(async (docRef) => {
-            // navigate to comment screen with the new comment
-            id = docRef.id;
-        }).catch(function (error) {
+        await commentTextOnPost(
+            replyTextToPost,
+            postId,
+            replyToProfile,
+            replyToUsername,
+        ).catch(function (error) {
             // console.log(error);
+        }).then(async (id) => {
+            
+            const text = replyTextToPost;
+
+            // clear reply text
+            setReplyTextToPost("");
+
+            // navigate to comment screen with the new comment
+            navigation.navigate("Comment", {
+                commentId: id,
+                replyToPostId: postId,
+                replyToProfile: replyToProfile,
+                replyToUsername: replyToUsername,
+                text: text,
+                likesCount: 0,
+                commentsCount: 0,
+                profile: auth.currentUser.uid,
+                username: auth.currentUser.displayName,
+                profilePic: auth.currentUser.photoURL,
+            });
+
         });
-        setReplyTextToPost("");
-        navigation.navigate("Comment", {
-            commentId: id,
-            replyToPostId: postId,
-            replyToProfile: replyToProfile,
-            replyToUsername: replyToUsername,
-            text: text,
-            likesCount: 0,
-            commentsCount: 0,
-            profile: auth.currentUser.uid,
-            username: auth.currentUser.displayName,
-            profilePic: auth.currentUser.photoURL,
-        })
-    };
+
+    }
+
+    const onReplyWithImage = async () => {
+
+        await commentImageOnPost(
+            replyImageToPost.uri,
+            replyTextToPost,
+            postId,
+            replyToProfile,
+            replyToUsername,
+            replyImageToPost.height,
+            replyImageToPost.width,
+        ).catch(function (error) {
+            // console.log(error);
+        }).then(async (result) => {
+            
+            const text = replyTextToPost;
+
+            // clear reply text and image
+            setReplyImageToPost(null);
+            setReplyTextToPost("");
+                                            
+            // navigate to comment screen with the new comment
+            navigation.navigate("Comment", {
+                commentId: result.id,
+                replyToPostId: postId,
+                replyToProfile: replyToProfile,
+                replyToUsername: replyToUsername,
+                imageUrl: result.url,
+                imageHeight: replyImageToPost.height,
+                imageWidth: replyImageToPost.width,
+                text: text,
+                likesCount: 0,
+                commentsCount: 0,
+                profile: auth.currentUser.uid,
+                username: auth.currentUser.displayName,
+                profilePic: auth.currentUser.photoURL,
+            });
+
+        });
+
+    }
 
 
     const bottomButtons = () => (
@@ -291,8 +224,6 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
 
             </TouchableOpacity>
 
-            
-
 
 
         </View>
@@ -301,22 +232,19 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
         {/* Reply Button */}
         <TouchableOpacity
             style={{marginBottom: 6}}
-            onPress={ () =>
+            onPress={ async () =>
                     {
                         Keyboard.dismiss();
                         bottomSheetRef.current.snapToIndex(0);
 
-                        if(replyTextToPost){
-                            commentTextOnPost(
-                                replyTextToPost,
-                                replyToProfile,
-                                postId,
-                                replyToUsername,
-                            ).catch(function (error) {
-                                // console.log(error);
-                            });
+                        if(replyImageToPost){
+                            
+                            await onReplyWithImage();
+
                         }else{
-                            uploadImageComment()
+
+                            await onReplyWithText();
+
                         }
                     }
                 }
@@ -335,6 +263,7 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
                 index={0}
                 snapPoints={snapPoints}
                 onChange={handleSheetChanges}
+                keyboardBehavior="interactive"
                 // style={{backgroundColor: theme == 'light' ? styles.lightContainer : styles.darkContainer}}
                 backgroundStyle={theme == 'light' ? styles.lightBottomSheet : styles.darkBottomSheet}
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#DDDDDD' : '#2D2D2D'}}
@@ -412,17 +341,41 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
                     
                     {
                         (replyImageToPost && currentIndex != 0) &&
-                        <Image 
-                            source={{uri : replyImageToPost.uri}}
-                            // resizeMode='contain'
-                            style={{
-                                height: (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.5,
-                                width: win.width * 0.5,
-                                alignSelf: 'center',
-                                borderRadius: 10,
-                                marginTop: 10,
-                            }}
-                        />
+                        <TouchableOpacity
+                            onPress={() => 
+                                navigation.navigate("EditImage", ('EditImage', {
+                                    imageUrl: replyImageToPost.undeditedUri,
+                                    height: replyImageToPost.height,
+                                    width: replyImageToPost.width,
+                                    imageState: replyImageToPost.imageState,
+                                    forComment: true,
+                                    cameraPic: false,
+                                    dontCompress: true,
+                                  }))
+                            }
+                        >
+                            <Image 
+                                source={{uri : replyImageToPost.uri}}
+                                // resizeMode='contain'
+                                style={{
+                                    height:
+                                    replyImageToPost.height < replyImageToPost.width ?
+                                        (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.5
+                                    :
+                                        (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.25,
+
+                                    width:
+                                    replyImageToPost.height < replyImageToPost.width ?
+                                        win.width * 0.5
+                                    :
+                                        win.width * 0.25,
+
+                                    alignSelf: 'center',
+                                    borderRadius: 10,
+                                    marginTop: 10,
+                                }}
+                            />
+                        </TouchableOpacity>
                     }
                     
 

@@ -9,16 +9,16 @@ const GlobalStyles = StyleSheet.create({
         fontSize: 20
     },
     darkContainer: {
-        backgroundColor: "#181818"
+        backgroundColor: "#0D0D0D"
     },
     lightContainer: {
-        backgroundColor: "#FCFCFC"
+        backgroundColor: "#FAFAFA"
     },
     lightPostContainer: {
         backgroundColor: '#FFFFFF',
         borderStyle: "solid",
         borderColor: "#F2F2F2",
-        borderWidth: 1.5,
+        borderWidth: 1,
         borderRadius: 15,
         marginBottom: 10,
         // width: '100%',
@@ -27,16 +27,16 @@ const GlobalStyles = StyleSheet.create({
         minHeight: 50,
     },
     darkPostContainer: {
-        backgroundColor: '#121212',
+        backgroundColor: '#151515',
         borderStyle: "solid",
-        borderColor: "#212121",
-        borderWidth: 1.5,
-        borderRadius: 10,
+        borderColor: "#202020",
+        borderWidth: 1,
+        borderRadius: 15,
         marginBottom: 10,
         // width: '100%',
         // height: 300,
         // maxHeight: 350,
-        minHeight: 9,
+        minHeight: 50,
     },
     lightTextContainer: {
         // minHeight: 353,
@@ -44,7 +44,7 @@ const GlobalStyles = StyleSheet.create({
         width: "100%",
         backgroundColor: "#FFFFFF",
         borderRadius: 13,
-        borderColor: "#f0f0f0",
+        borderColor: "#F4F4F4",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'
@@ -53,9 +53,9 @@ const GlobalStyles = StyleSheet.create({
         // minHeight: 353,
         // maxHeight: 353,
         width: "100%",
-        backgroundColor: "#121212",
+        backgroundColor: "#151515",
         borderRadius: 13,
-        borderColor: "#202020",
+        borderColor: "#1B1B1B",
         borderWidth: 1,
         flexDirection: 'row',
         alignItems: 'center'

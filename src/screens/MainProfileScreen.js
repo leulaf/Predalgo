@@ -306,7 +306,10 @@ function MainProfileScreen ({navigation, ...props}) {
            style= {theme == 'light' ?
                { backgroundColor: 'white'}
            :
-               { backgroundColor: '#0C0C0C', borderBottomWidth: 3, borderBottomColor: '#262626' }
+               { backgroundColor: '#0C0C0C', 
+            //    borderBottomWidth: 3, 
+            //    borderBottomColor: '#262626' 
+            }
            }
            labelStyle = {theme == 'light' ? styles.lightLabel : styles.darkLabel}
            activeColor = {theme == 'light' ? '#222222' : 'white'}
@@ -317,6 +320,14 @@ function MainProfileScreen ({navigation, ...props}) {
    return (
        <Tabs.Container
            renderHeader={header}
+           headerContainerStyle={{
+                shadowColor: theme == 'light' ? '#0C0C0C' : '#FFFFFF',
+                shadowOffset: {
+                    width: 0,
+                    height: theme == 'light' ? 2 : 4,
+                },
+                shadowOpacity: theme == 'light' ? 0.2 : 0.1,
+           }}
            lazy={true}
         //    revealHeaderOnScroll
            pointerEvents="box-none"

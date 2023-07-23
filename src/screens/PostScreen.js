@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Text, StyleSheet, FlatList, Dimensions } from '
 import {ThemeContext} from '../../context-store/context';
 
 import { Image } from 'expo-image';
-import ResizableImage from 'react-native-scalable-image';
+import ResizableImage from '../shared/ResizableImage';
 
 import { firebase, storage, db } from '../config/firebase';
 
@@ -17,25 +17,18 @@ import MainComment from '../components/commentTypes/MainComment';
 
 import SimpleTopBar from '../components/SimpleTopBar';
 
+
+
 const HEADER_HEIGHT = 200; 
 const STICKY_HEADER_HEIGHT = 50; 
 
 const windowWidth = Dimensions.get('window').width;
 
-const ImageContainer = (props) => {    
-    return (
-        <ResizableImage 
-            width={windowWidth} // this will make image take full width of the device
-            source={props.imageSource} // pass the image source via props
-            style={{ marginTop: 5, alignSelf: 'center' }}
-        />
-    );
-};
 
 const PostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const commentsList = ['Header', ...[...Array(5)].map((_, i) => `Item ${i}`)];
-    const {title, profile, likesCount, commentsCount, imageUrl, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
+    const {title, profile, likesCount, commentsCount, imageUrl, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
 
     const [replyTextToPost, setReplyTextToPost] = useState("");
     const [submittedText, setSubmittedText] = useState(null);
@@ -65,71 +58,50 @@ const PostScreen = ({navigation, route}) => {
         });
     }, [navigation]);
 
-    const navigateToTag = async(tag) => {
-        if(tag.charAt(0) == '#'){
-            navigation.push('Tag', {tag: tag});
-        }else if(tag.charAt(0) == '@'){
-            const username = tag.substring(1);
-
-            const q = query(collection(db, "users"), where("username", "==", username));
-
-            let user = null;
-
-            await getDocs(q).then((snapshot) => {
-                snapshot.docs.map((doc) => {
-                    const commentsList = doc.data();
-                    user = { ...data, id: doc.id }; // Add the id property to the user object
-                });
-            });
-
-            if(user){
-                navigation.push('Profile', { user: user });
-            }
-
-        }
-    }
 
     const renderItem = ({ item, index }) => {
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
-            let content
+
+            let topText, image
             
-            if (imageUrl != null) {
-                content = (
-                    <View>
-                        <ImageContainer imageSource={{ uri: imageUrl }} />
-                        <View style={{marginLeft: 5, marginBottom: 1}}>
-                            {contentBottom}
-                        </View>
-                    </View>
-                    
+            
+            if (text != null && text != "") {
+                topText = (
+                    <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
+                        {text
+                    }</Text>
                 );
-            }else if (text != null) {
-                content = (
-                    <View >
-                            <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
-                                {text
-                            }</Text>
-                            <View style={{marginLeft: 5, marginBottom: 1}}>
-                                {contentBottom}
-                            </View>
-                            
-                    </View>
-                );
+            }else{
+                topText = null;
             }
 
+
+            if (imageUrl != null) {
+                image = (
+                    <ResizableImage 
+                        image={imageUrl}
+                        height={imageHeight}
+                        width={imageWidth}
+                        maxWidth={windowWidth}
+                        style={{marginTop: 5, borderRadius: 0}}
+                    />
+                );
+            }else{
+                image = null;
+            }
+            
+            
             return (
                 <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
                     <View 
-                        style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { flexDirection: 'row'}]}
+                        style={theme == 'light' ? styles.lightUserContainer : styles.darkUserContainer}
                     >
                         {/* profile pic */}
                         <TouchableOpacity
                             onPress={() => 
                                     navigation.push('Profile', {
                                         user: profile,
-                                        username: username,
-                                        profilePic: profilePic,
                                     })
                             }
                         >
@@ -154,9 +126,17 @@ const PostScreen = ({navigation, route}) => {
                                     null
                             }
 
-                            <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
-                                @{username}
-                            </Text>
+                            <TouchableOpacity
+                                onPress={() => 
+                                        navigation.push('Profile', {
+                                            user: profile,
+                                        })
+                                }
+                            >
+                                <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                                    @{username}
+                                </Text>
+                            </TouchableOpacity>
 
                         </View>
                     </View>
@@ -171,13 +151,23 @@ const PostScreen = ({navigation, route}) => {
                     }
 
                     {/* content */}
-                    {content}
+                    
+                    {topText}
+
+                    {image}
+
+                    {/* Content bottom */}
+                    <View style={{marginLeft: 5, marginTop: 5, marginBottom: 5}}>
+                        {contentBottom}
+                    </View>
+
                 </View>
             );
 
         } 
         else if (index === 1) {
             return (
+
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
                     <PostBottom
                         postId={postId}
@@ -191,7 +181,8 @@ const PostScreen = ({navigation, route}) => {
 
         if (index === commentsList.length-1) {
             return (
-                <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
+
+                <View>
                     <MainComment
                         profile={item.profile}
                         username={item.username}
@@ -202,7 +193,7 @@ const PostScreen = ({navigation, route}) => {
                         commentsCount={item.commentsCount}
                     />
                     
-                    <View style={{height: 150}}/>
+                    <View style={{height: 120}}/>
                 </View>
                 
             );
@@ -259,10 +250,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 50,
-        marginLeft: 13,
         marginRight: 5,
-        marginVertical: 4,
-        marginTop: 9,
     },
     lightMainContainer: {
         flex: 1,
@@ -278,40 +266,58 @@ const styles = StyleSheet.create({
     darkContainer: {
         backgroundColor: '#151515',
     },
+    lightUserContainer: {
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        marginTop: 16.5,
+        marginLeft: 13,
+        marginBottom: 7,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+    },
+    darkUserContainer: {
+        backgroundColor: '#151515',
+        flexDirection: 'row',
+        marginTop: 16.5,
+        marginLeft: 13,
+        marginBottom: 7,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+    },
     lightUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#444444',
         textAlign: "left",
-        marginTop: 6,
+        marginBottom: 1,
     },
     darkUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
-        marginTop: 6,
+        marginBottom: 1,
     },
     lightRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#777777',
         textAlign: "left",
-        marginTop: 6,
     },
     darkRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#BBBBBB',
         textAlign: "left",
-        marginTop: 6,
     },
     lightPostTitle: {
         fontSize: 22,
         fontWeight: "600",
         color: '#333333',
-        textAlign: "left",
-        marginHorizontal: 12.5,
+        textAlign: 'auto',
+        marginHorizontal: 14,
         // marginTop: 1,
         // marginVertical: 2,
         // width: 290,
@@ -320,8 +326,8 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: "600",
         color: '#DDDDDD',
-        textAlign: "left",
-        marginHorizontal: 12.5,
+        textAlign: 'auto',
+        marginHorizontal: 14,
         // marginTop: 1,
         // marginVertical: 2,
         // width: 290,
@@ -377,16 +383,16 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#222222',
         textAlign: 'auto',
-        marginHorizontal: 13,
-        marginTop: 5,
+        marginHorizontal: 14,
+        marginTop: 6,
     },
     darkPostText: {
         fontSize: 18,
         fontWeight: "400",
         color: '#F4F4F4',
         textAlign: 'auto',
-        marginHorizontal: 13,
-        marginTop: 5,
+        marginHorizontal: 14,
+        marginTop: 6,
     },
     lightReplyToPostContainer: {
         flex: 1,

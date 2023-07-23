@@ -1,11 +1,12 @@
 import { Camera, CameraType } from 'expo-camera';
 import { useState, useContext, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from 'react-native';
-import {AuthenticatedUserContext} from '../../context-store/context';
 
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import PinturaCompressImage from '../shared/PinturaCompress';
+
+import { StackActions } from '@react-navigation/native';
 
 // Icons
 import FlipCameraIcon from '../../assets/flip_camera.svg';
@@ -20,28 +21,20 @@ import MakeMeme from '../../assets/make_meme.svg';
 
 
 export default function UploadScreen({navigation, route}) {
-  const {imageForPost, setImageForPost} = useContext(AuthenticatedUserContext);
   const [type, setType] = useState(CameraType.back);
   const [camera, setCamera] = useState(null);
   const [base64, setBase64] = useState(null);
   const [cameraPic, setCameraPic] = useState(false);
   const [image, setImage] = useState();
+
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
   const { forComment } = route.params;
 
-  const [height, setHeight] = useState(0);
-  const [width, setWidth] = useState(0);
-
   
-  useEffect(() => {
-    if(image && forComment){
-      setImageForPost({uri: image, height: height, width: width});
-      setImage(null);
-      navigation.goBack(null);
-    }
+  // useEffect(() => {
     
-  }, [image, navigation])
+  // }, [image, navigation])
 
 
   if (!permission) {
@@ -62,48 +55,60 @@ export default function UploadScreen({navigation, route}) {
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        base64: true,
+        quality: 1, // 1 is highest quality
         // allowsEditing: true,
     });
 
     if (!result.canceled) {
-      // const uri = await getUri(result.assets[0].uri);
-      
-      const base64 = await getbase64(result.assets[0].uri);
 
-      setBase64(base64);
+      if(forComment){
+        navigation.dispatch(
+          StackActions.replace('EditImage', {
+            imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
+            height: result.assets[0].height,
+            width: result.assets[0].width,
+            forComment: true,
+            cameraPic: false
+          })
+        );
+
+      }
+      
     }
   };
 
   const takePicture = async () => {
     if (camera) {
-      const picture = await camera.takePictureAsync();
 
-      // const uri = await getUri(picture.uri);
+      const options = {
+        quality: 1, // 1 is highest quality
+        base64: true
+      };
 
-      const base64 = await getbase64(picture.uri);
+      const picture = await camera.takePictureAsync(options);
 
-      setBase64(base64);
-      setCameraPic(true);
+
+      if(forComment){
+        navigation.dispatch(
+          StackActions.replace('EditImage', {
+            imageUrl: `data:image/jpeg;base64,${picture.base64}`,
+            height: picture.height,
+            width: picture.width,
+            forComment: true,
+            cameraPic: true
+          })
+        );
+      }
+      
+
     }
   };
 
   function toggleCameraType() {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
-
-  const getbase64 = async (image) => {
-    const manipResult = await manipulateAsync(image, [], {
-      // compress: 0.2,
-      // format: SaveFormat.PNG,
-      base64: true,
-    });
-
-    setHeight(manipResult.height);
-    setWidth(manipResult.width);
-
-    return `data:image/jpeg;base64,${manipResult.base64}`;
-  };
 
   const getbase64AndNav = async (image) => {
     const manipResult = await manipulateAsync(image, [], {
@@ -184,9 +189,9 @@ export default function UploadScreen({navigation, route}) {
                             style={{ marginRight: 10, marginTop: 70, flexDirection: 'row'}} 
                             onPress={() => navigation.navigate('CreatePost', {imageUrl: image})}
                         >
-                            <CorrectIcon height={30} width={30}/>
+                            <CorrectIcon height={30} width={35}/>
                             <Text style={styles.text} alignSelf={'center'}>
-                              Use Image
+                              Post Image
                             </Text>
                         </TouchableOpacity>
 
@@ -219,20 +224,8 @@ export default function UploadScreen({navigation, route}) {
             
             </View>
             
-            </Camera>
+          </Camera>
 
-            {/* {image && <Image source={{ uri: image }} style={{alignSelf: "center"}}  width={200} height={200}/>} */}
-            
-            {/* For image compression */}
-            {/* {base64 && ( */}
-              <PinturaCompressImage
-                image={base64}
-                setImage={setImage}
-                setBase64={setBase64}
-                cameraPic={cameraPic}
-                setCameraPic={setCameraPic}
-              />
-            {/* )} */}
     </View>
   );
 }
