@@ -2,26 +2,27 @@ import React, {useEffect, useState, useContext, useMemo, useRef, useCallback} fr
 import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
-import { commentImageOnPost } from '../shared/comment/UploadImageComment';
-import { commentTextOnPost } from '../shared/comment/UploadTextComment';
+import { commentImageOnPost } from '../../shared/comment/UploadImageComment';
+import { commentTextOnPost } from '../../shared/comment/UploadTextComment';
 
-import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/context';
 
 import BottomSheet, {BottomSheetScrollView, BottomSheetTextInput} from '@gorhom/bottom-sheet';
 
+
 // light mode icons
-import UploadLight from '../../assets/upload_light.svg';
-import CreateMemeLight from '../../assets/meme_create_light.svg';
-import PostButtonLight from '../../assets/reply_light.svg';
-import LinkLight from '../../assets/link_light.svg';
+import UploadLight from '../../../assets/upload_light.svg';
+import CreateMemeLight from '../../../assets/meme_create_light.svg';
+import PostButtonLight from '../../../assets/reply_light.svg';
+import LinkLight from '../../../assets/link_light.svg';
 
 // dark mode icons
-import UploadDark from '../../assets/upload_dark.svg';
-import CreateMemeDark from '../../assets/meme_create_dark.svg';
-import PostButtonDark from '../../assets/reply_dark.svg';
-import LinkDark from '../../assets/link_dark.svg';
+import UploadDark from '../../../assets/upload_dark.svg';
+import CreateMemeDark from '../../../assets/meme_create_dark.svg';
+import PostButtonDark from '../../../assets/reply_dark.svg';
+import LinkDark from '../../../assets/link_dark.svg';
 
-import { getAuth, updateProfile } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 
 const auth = getAuth();
@@ -29,7 +30,7 @@ const auth = getAuth();
 const win = Dimensions.get('window');
 
 
-const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUsername}) => {
+const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyToUsername}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const {imageForPost, setImageForPost} = useContext(AuthenticatedUserContext);
     const [replyTextToPost, setReplyTextToPost] = useState("");
@@ -41,6 +42,8 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
     const [textInputInFocus, setTextInputInFocus] = useState(false);
 
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    const [count, setCount] = useState(0);
 
     let upload, createMeme, createMemeSmall, replyButton, link
 
@@ -64,46 +67,104 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
     const replyTextToPostRef = useRef(null);
 
     // variables
-    const snapPoints = useMemo(() => ['15%', '99%'], []);
+    const snapPoints = useMemo(() => ['15%', '70%', '99%'], []);
 
     useEffect(() => {
         if(imageForPost){
             setReplyImageToPost(imageForPost);
             setImageForPost(null);
-            bottomSheetRef.current.snapToIndex(1);
+            // console.log("imageForPost");
+
+
+            // replyTextToPostRef.current.focus();
+            // setTextInputInFocus(true);
+            // setCurrentIndex(2);
+            bottomSheetRef.current.snapToIndex(2);
+            // handleSheetAnimate(0, 2);
+            // handleSheetChanges(2);
         }
     }, [imageForPost, setImageForPost])
 
     // callbacks
     const handleSheetChanges = useCallback((index) => {
         // console.log('handleSheetChanges', index);
-        if(index == 0){
+        // if(index == 0){
+        //     Keyboard.dismiss();
+        //     setCurrentIndex(0);
+        //     setTextInputInFocus(false);
+        // }else if(index == 1){
+        //     // Open keyboard when bottom sheet is expanded
+        //     replyTextToPostRef.current.focus();
+        //     setCurrentIndex(1);
+        //     setTextInputInFocus(true);
+        // }else if(index == 2){
+        //     replyTextToPostRef.current.focus();
+        //     setCurrentIndex(2);
+        //     setTextInputInFocus(true);
+        // }
+    }, []);
+
+    // Makes sure the keyboard is open when the bottom sheet is expanded
+    const handleSheetAnimate = useCallback((from, to) => {
+        // console.log('handleSheetAnimate', from, to);
+        
+        if(to == 0){
             Keyboard.dismiss();
             setCurrentIndex(0);
-        }else if(index == 1){
+            setTextInputInFocus(false);
+        }else if(to == 1){
             // Open keyboard when bottom sheet is expanded
+
             replyTextToPostRef.current.focus();
+
             setCurrentIndex(1);
+            setTextInputInFocus(true);
+        }else{
+            // replyTextToPostRef.current.focus();
+            setTextInputInFocus(true);
+            setCurrentIndex(2);
+
+            replyTextToPostRef.current.focus();
+            
+
         }
-    }, []);
+        
+    }, [snapPoints]);
 
     // Expand the bottom sheet when the text input is focused
     const handleFocus = () => {
-        bottomSheetRef.current.snapToIndex(1);
+
+        if(replyImageToPost){
+            bottomSheetRef.current.snapToIndex(2);
+
+        }else{
+            bottomSheetRef.current.snapToIndex(1);
+
+        }
         setTextInputInFocus(true);
     }
     
     // Collapse the bottom sheet when the text input is blurred (Not in focus)
     const handleBlur = () => {
+
+        // console.log("handleBlur + " + count);
+
+        // if(count == 1){
+        //     replyTextToPostRef.current.focus();
+        //     setCount(0);
+        //     return
+        // }
+
+
+        // Keyboard.dismiss();
         bottomSheetRef.current.snapToIndex(0);
-        setTextInputInFocus(false);
     }
 
     const onReplyWithText = async () => {
 
         await commentTextOnPost(
             replyTextToPost,
-            postId,
+            replyToPostId,
             replyToProfile,
             replyToUsername,
         ).catch(function (error) {
@@ -118,7 +179,7 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
             // navigate to comment screen with the new comment
             navigation.navigate("Comment", {
                 commentId: id,
-                replyToPostId: postId,
+                replyToPostId: replyToPostId,
                 replyToProfile: replyToProfile,
                 replyToUsername: replyToUsername,
                 text: text,
@@ -138,7 +199,7 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
         await commentImageOnPost(
             replyImageToPost.uri,
             replyTextToPost,
-            postId,
+            replyToPostId,
             replyToProfile,
             replyToUsername,
             replyImageToPost.height,
@@ -156,7 +217,7 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
             // navigate to comment screen with the new comment
             navigation.navigate("Comment", {
                 commentId: result.id,
-                replyToPostId: postId,
+                replyToPostId: replyToPostId,
                 replyToProfile: replyToProfile,
                 replyToUsername: replyToUsername,
                 imageUrl: result.url,
@@ -258,40 +319,64 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
     );
 
     return (
+        
             <BottomSheet
                 ref={bottomSheetRef}
                 index={0}
                 snapPoints={snapPoints}
-                onChange={handleSheetChanges}
+                onAnimate={handleSheetAnimate}
+                onChange={() => handleSheetChanges}
                 keyboardBehavior="interactive"
+                style={{
+                    backgroundColor: theme == 'light' ? 'white' : '#141414',  // <==== HERE
+                    borderRadius: 24,
+                    shadowColor: theme == 'light' ? '#005FFF' : '#DDDDDD',
+                    shadowOffset: {
+                      width: 0,
+                      height: theme == 'light' ? 4 : 6,
+                    },
+                    shadowOpacity: theme == 'light' ? 0.4 : 0.2,
+                    shadowRadius: 12,
+                    elevation: 5,
+                }}
                 // style={{backgroundColor: theme == 'light' ? styles.lightContainer : styles.darkContainer}}
                 backgroundStyle={theme == 'light' ? styles.lightBottomSheet : styles.darkBottomSheet}
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#DDDDDD' : '#2D2D2D'}}
             >
                 <View 
                     automaticallyAdjustKeyboardInsets={true}
-                    contentContainerStyle={theme == 'light' ? styles.lightReplyTextToPostContainer : styles.darkReplyTextToPostContainer}
+                    // contentContainerStyle={theme == 'light' ? styles.lightReplyTextToPostContainer : styles.darkReplyTextToPostContainer}
                 >
                     <View 
                         style={[
                             theme == 'light' ? 
-                                (currentIndex == 1 || textInputInFocus ? 
-                                    replyImageToPost ? styles.lightFocusReplyTextImagePostBar : styles.lightFocusReplyTextPostBar
+                                (textInputInFocus ? 
+                                        replyImageToPost ? 
+                                            styles.lightFocusReplyTextImagePostBar
+                                        :
+                                            currentIndex == 1 ? {...styles.lightFocusReplyTextPostBar, height: 235} : styles.lightFocusReplyTextPostBar
                                     : 
-                                    styles.lightReplyTextPostBar)
+                                        styles.lightReplyTextPostBar
+                                )
+
+
                                 :
 
 
-                                (currentIndex == 1 || textInputInFocus ? 
+                                (textInputInFocus ? 
                                     
                                     
-                                    replyImageToPost ? styles.darkFocusReplyTextImagePostBar : styles.darkFocusReplyTextPostBar
-                                    : 
-                                    styles.darkReplyTextPostBar),
+                                        replyImageToPost ? 
+                                                styles.darkFocusReplyTextImagePostBar
+                                            :
+                                                currentIndex == 1 ? {...styles.darkFocusReplyTextPostBar, height: 235} : styles.darkFocusReplyTextPostBar
+                                    :
+                                        styles.darkReplyTextPostBar
+                                ),
                         ]}
                     >
-                                
-                        <BottomSheetTextInput
+                        {/* <BottomSheetTextInput */}
+                        <TextInput
                             ref={(input) => { replyTextToPostRef.current = input; }}
                             inputAccessoryViewID={inputAccessoryViewID}
                             autoCapitalize="none"
@@ -304,7 +389,12 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
                                 theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle, 
                                 { height: !textInputInFocus ? 35 :
 
-                                    (replyImageToPost ? 225 : 415)
+                                    (replyImageToPost ? 225 
+
+                                        : 
+
+                                        currentIndex == 1 ? 225 : 415
+                                    )
                                     
                                 }
                             ]} 
@@ -316,7 +406,7 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
                             //     commentTextOnPost(
                             //         newTerm,
                             //         replyToProfile,
-                            //         postId,
+                            //         replyToPostId,
                             //         replyToUsername,
                             //     ).then((comment) => {
                             //         
@@ -330,7 +420,7 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
                                 null
                             :
                                 <TouchableOpacity
-                                    onPress = {() => replyTextToPostRef.current.focus()}
+                                    onPress = {() => handleFocus()}
                                 > 
                                     {createMemeSmall}
                                 </TouchableOpacity>
@@ -343,7 +433,9 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
                         (replyImageToPost && currentIndex != 0) &&
                         <TouchableOpacity
                             onPress={() => 
-                                navigation.navigate("EditImage", ('EditImage', {
+
+                                {
+                                    navigation.navigate("EditImage", ('EditImage', {
                                     imageUrl: replyImageToPost.undeditedUri,
                                     height: replyImageToPost.height,
                                     width: replyImageToPost.width,
@@ -351,7 +443,8 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
                                     forComment: true,
                                     cameraPic: false,
                                     dontCompress: true,
-                                  }))
+                                }))}
+
                             }
                         >
                             <Image 
@@ -394,7 +487,6 @@ const PostReplyBottomSheet = ({navigation, postId, replyToProfile, replyToUserna
             </BottomSheet>
     );
 };
-
 const styles = StyleSheet.create({
     lightBottomSheet: {
         marginBottom: 10,
@@ -417,7 +509,7 @@ const styles = StyleSheet.create({
     },
     lightReplyTextPostBar: {
         height: 40,
-        width: "95%",
+        width: "97%",
         borderRadius: 20,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -430,7 +522,7 @@ const styles = StyleSheet.create({
     },
     darkReplyTextPostBar: {
         height: 40,
-        width: "95%",
+        width: "97%",
         borderRadius: 20,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -443,7 +535,7 @@ const styles = StyleSheet.create({
     },
     lightFocusReplyTextPostBar: {
         height: 425,
-        width: "98%",
+        width: "97%",
         borderRadius: 20,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -453,7 +545,7 @@ const styles = StyleSheet.create({
     },
     darkFocusReplyTextPostBar: {
         height: 425,
-        width: "98%",
+        width: "97%",
         borderRadius: 20,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -463,7 +555,7 @@ const styles = StyleSheet.create({
     },
     lightFocusReplyTextImagePostBar: {
         height: 235,
-        width: "98%",
+        width: "97%",
         borderRadius: 20,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -473,7 +565,7 @@ const styles = StyleSheet.create({
     },
     darkFocusReplyTextImagePostBar: {
         height: 235,
-        width: "98%",
+        width: "97%",
         borderRadius: 20,
         flexDirection: 'row',
         alignSelf: 'center',

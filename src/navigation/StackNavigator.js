@@ -22,8 +22,8 @@ import SearchMemesScreen from '../screens/SearchMemesScreen';
 import FavoriteTemplatesScreen from '../screens/FavoriteTemplatesScreen';
 import PostScreen from '../screens/PostScreen';
 import CommentScreen from '../screens/CommentScreen';
-import PostReplyBottomSheet from '../components/PostReplyBottomSheet';
-import CommentReplyBottomSheet from '../components/CommentReplyBottomSheet';
+import PostReplyBottomSheet from '../components/replyBottom/PostReplyBottomSheet';
+import CommentReplyBottomSheet from '../components/replyBottom/CommentReplyBottomSheet';
 
 
 const Stack = createStackNavigator();

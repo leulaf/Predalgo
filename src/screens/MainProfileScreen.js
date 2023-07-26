@@ -12,8 +12,6 @@ import { getAuth, updateProfile } from "firebase/auth";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 
-import PinturaCompressImage from '../shared/PinturaCompress';
-
 import MainProfileTop from '../components/MainProfileTop';
 
 import { connect } from 'react-redux';
@@ -304,9 +302,9 @@ function MainProfileScreen ({navigation, ...props}) {
                { backgroundColor: '#BBBBBB' }
            }
            style= {theme == 'light' ?
-               { backgroundColor: 'white'}
+               { backgroundColor: 'white',}
            :
-               { backgroundColor: '#0C0C0C', 
+               { backgroundColor: '#0A0A0A', 
             //    borderBottomWidth: 3, 
             //    borderBottomColor: '#262626' 
             }
@@ -318,55 +316,57 @@ function MainProfileScreen ({navigation, ...props}) {
    );
   
    return (
-       <Tabs.Container
-           renderHeader={header}
-           headerContainerStyle={{
-                shadowColor: theme == 'light' ? '#0C0C0C' : '#FFFFFF',
-                shadowOffset: {
-                    width: 0,
-                    height: theme == 'light' ? 2 : 4,
-                },
-                shadowOpacity: theme == 'light' ? 0.2 : 0.1,
-           }}
-           lazy={true}
-        //    revealHeaderOnScroll
-           pointerEvents="box-none"
-           renderTabBar={tabBar}
-           initialTabName="Posts"
-       >
-           <Tabs.Tab name="Feedback">
-               <Tabs.ScrollView>
-                   <View style={[styles.box, styles.boxA]} />
-                   {/* <View style={[styles.box, styles.boxB]} />
-                   <View style={[styles.box, styles.boxA]} />
-                   <View style={[styles.box, styles.boxB]} />
-                   <View style={[styles.box, styles.boxA]} />
-                   <View style={[styles.box, styles.boxB]} />
-                   <View style={[styles.box, styles.boxA]} />
-                   <View style={[styles.box, styles.boxB]} /> */}
-               </Tabs.ScrollView>
-           </Tabs.Tab>
-           <Tabs.Tab name="Posts">
-                <AllUserPosts
-                    userId={auth.currentUser.uid}
-                    username={username}
-                    profilePic={profilePic}
-                    postList={postList}
-                    byNewPosts={byNewPosts}
-                    byPopularPosts={byPopularPosts}
-                    setByNewPosts={setByNewPosts}
-                    setByPopularPosts={setByPopularPosts}
-                    handleNewPostsClick={handleNewPostsClick}
-                    handlePopularPostsClick={handlePopularPostsClick}
-                />
-           </Tabs.Tab>
-           <Tabs.Tab name="Media">
-                <AllUserMediaPosts
-                    userId={auth.currentUser.uid}
-                    postList={postList}
-                />
-           </Tabs.Tab>
-       </Tabs.Container>
+        
+            <Tabs.Container
+                renderHeader={header}
+                headerContainerStyle={{
+                    shadowColor: theme == 'light' ? '#000000' : '#F4F4F4',
+                    shadowOffset: {
+                        width: 0,
+                        height: theme == 'light' ? 2 : 5,
+                    },
+                    shadowOpacity: theme == 'light' ? 0.17 : 0.12,
+                    shadowRadius: theme == 'light' ? 6 : 8,
+                }}
+                lazy={true}
+                //    revealHeaderOnScroll
+                pointerEvents="box-none"
+                renderTabBar={tabBar}
+                initialTabName="Posts"
+            >
+                <Tabs.Tab name="Feedback">
+                    <Tabs.ScrollView>
+                        <View style={[styles.box, styles.boxA]} />
+                        {/* <View style={[styles.box, styles.boxB]} />
+                        <View style={[styles.box, styles.boxA]} />
+                        <View style={[styles.box, styles.boxB]} />
+                        <View style={[styles.box, styles.boxA]} />
+                        <View style={[styles.box, styles.boxB]} />
+                        <View style={[styles.box, styles.boxA]} />
+                        <View style={[styles.box, styles.boxB]} /> */}
+                    </Tabs.ScrollView>
+                </Tabs.Tab>
+                <Tabs.Tab name="Posts">
+                        <AllUserPosts
+                            userId={auth.currentUser.uid}
+                            username={username}
+                            profilePic={profilePic}
+                            postList={postList}
+                            byNewPosts={byNewPosts}
+                            byPopularPosts={byPopularPosts}
+                            setByNewPosts={setByNewPosts}
+                            setByPopularPosts={setByPopularPosts}
+                            handleNewPostsClick={handleNewPostsClick}
+                            handlePopularPostsClick={handlePopularPostsClick}
+                        />
+                </Tabs.Tab>
+                <Tabs.Tab name="Media">
+                        <AllUserMediaPosts
+                            userId={auth.currentUser.uid}
+                            postList={postList}
+                        />
+                </Tabs.Tab>
+            </Tabs.Container>
    );
   
 }
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
    darkProfileContainer: {
        flex: 1,
        flexDirection: 'row',
-       backgroundColor: '#0C0C0C',
+       backgroundColor: '#0A0A0A',
    },
    lightLabel: {
        color: '#880808',

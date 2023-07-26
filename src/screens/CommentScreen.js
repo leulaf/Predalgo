@@ -7,10 +7,9 @@ import ResizableImage from '../shared/ResizableImage';
 
 import GlobalStyles from '../constants/GlobalStyles';
 
-import MainCommentBottom from '../components/commentTypes/MainCommentBottom';
-import SecondaryCommentBottom from '../components/commentTypes/SubCommentBottom';
+import CommentBottom from '../components/commentTypes/CommentBottom';
 
-import ReplyBottomSheet from '../components/CommentReplyBottomSheet';
+import ReplyBottomSheet from '../components/replyBottom/CommentReplyBottomSheet';
 
 import MainComment from '../components/commentTypes/MainComment';
 
@@ -24,37 +23,30 @@ const windowWidth = Dimensions.get('window').width;
 
 const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const commentsList = ['Header', ...[...Array(50)].map((_, i) => `Item ${i}`)];
-    const {profile, commentId, username, profilePic, likesCount, commentsCount, text, imageUrl, imageWidth, imageHeight, replyToPostId, replyToCommentId, memeName} = route.params;
+    const commentsList = ['Header', ...[...Array(3)].map((_, i) => `Item ${i}`)];
+    const {profile, commentId, onReply, replyToPostId, username, profilePic, text, imageUrl, imageWidth, imageHeight, memeName, likesCount, commentsCount} = route.params;
 
-    const [replyToPost, setReplyToPost] = useState("");
+    const [onReplying, setOnReplying] = useState(onReply ? onReply : false);
 
-    let commentBottom
+    let commentBottom = (
 
-    if(replyToPostId){
-        commentBottom = (
-            <MainCommentBottom
-                replyToPostId={replyToPostId}
-                commentId={commentId}
-                likesCount={likesCount}
-                commentsCount={commentsCount}
-            />
-        );
-    }else{
-        commentBottom = (
-            <SecondaryCommentBottom
-                replyToCommentId={replyToCommentId}
-                commentId={commentId}
-                likesCount={likesCount}
-                commentsCount={commentsCount}
-            />
-        );
-    }
+        <CommentBottom
+            commentId={commentId}
+            replyToPostId={replyToPostId}
+            likesCount={likesCount}
+            commentsCount={commentsCount}
+        />
+
+    );
 
     const replyBottomSheet = <ReplyBottomSheet
-        replyToPost={replyToPost}
-        setReplyToPost={setReplyToPost}
-        mainComment={true}
+        setOnReplying={() => setOnReplying}
+        onReplying={onReply ? onReplying : null}
+        navigation={navigation}
+        replyToPostId={replyToPostId}
+        replyToCommentId={commentId}
+        replyToProfile = {profile}
+        replyToUsername={username}
     />;
 
     // Sets the header of component
@@ -144,16 +136,15 @@ const CommentScreen = ({navigation, route}) => {
                 </View>
                 
             );
-        }
-        
-        if (index === commentsList.length-1) {
+        }else if (index === commentsList.length-1) {
             return (
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
                     <MainComment
+                        replyToPostId={replyToPostId}
                         profile={item.profile}
                         username={item.username}
                         profilePic={item.profilePic}
-                        commentId={item.commentId}
+                        commentId={item.id}
                         text={item.text ? item.text : null}
                         likesCount={item.likesCount}
                         commentsCount={item.commentsCount}
@@ -165,16 +156,16 @@ const CommentScreen = ({navigation, route}) => {
         }
 
         return (
-            // <MainComment
-            //     profile={profile}
-            //     username={username}
-            //     profilePic={profilePic}
-            //     commentId={commentId}
-            //     text={text}
-            //     likesCount={likesCount}
-            //     commentsCount={commentsCount}
-            // />
-            null
+            <MainComment
+                replyToPostId={replyToPostId}
+                profile={item.profile}
+                username={item.username}
+                profilePic={item.profilePic}
+                commentId={item.id}
+                text={item.text ? item.text : null}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
+            />
         );
     };
 
@@ -184,9 +175,13 @@ const CommentScreen = ({navigation, route}) => {
             
             <FlatList
                 data={commentsList}
-                renderItem={renderItem}
-                keyExtractor={item => item}
+                keyExtractor={(item, index) => item.id + '-' + index}
                 stickyHeaderIndices={[1]}
+                renderItem={({ item, index }) => {
+                    return (
+                        renderItem({ item, index })
+                    );
+                }}
             />
 
             {replyBottomSheet}
@@ -221,7 +216,7 @@ const styles = StyleSheet.create({
     },
     lightMainContainer: {
         flex: 1,
-        backgroundColor: 'FEFEFE',
+        backgroundColor: '#F4F4F4',
     },
     darkMainContainer: {
         flex: 1,

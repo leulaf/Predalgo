@@ -69,11 +69,7 @@ const TextPost = ({ navigation, title, username = "", profilePic = "", text, tag
             navigation={navigation}
 
             content={
-                <>
-                    <View style={theme == "light" ? GlobalStyles.lightTextContainer : GlobalStyles.darkTextContainer}>
-                            <Text numberOfLines={15} style={theme == "light" ? GlobalStyles.lightPostText : GlobalStyles.darkPostText}>{text}</Text>
-                    </View>
-                </>
+                <Text numberOfLines={15} style={theme == "light" ? GlobalStyles.lightPostText : GlobalStyles.darkPostText}>{text}</Text>
             }
         />
     );
@@ -88,7 +84,7 @@ const styles = StyleSheet.create({
         textAlign: "left",
         marginLeft: 10,
         marginRight: 65,
-        marginVertical: 20,
+        marginVertical: 10,
     },
     darkText: {
         fontSize: 20,
@@ -97,7 +93,7 @@ const styles = StyleSheet.create({
         textAlign: "left",
         marginLeft: 10,
         marginRight: 65,
-        marginVertical: 20,
+        marginVertical: 10,
     }
 });
 

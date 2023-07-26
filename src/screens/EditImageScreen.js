@@ -78,9 +78,9 @@ const EditImageScreen = ({ navigation, route }) => {
                 imageState: storedImageState
         });
 
-          setImage(null);
-          editorRef.current.editor.close();
-          navigation.goBack(null);
+        setImage(null);
+        editorRef.current.editor.close();
+        navigation.goBack(null);
         }
     }, [imageResult, navigation])
 

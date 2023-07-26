@@ -25,17 +25,20 @@ import DownDark from '../../../assets/down_dark.svg';
 // SecondaryComment is a comment that is a reply to a comment
 import SecondaryComment from './SubComment';
 
-const MainComment = ({ profile, username, profilePic, commentId, text, likesCount, commentsCount }) => {
+import { getAuth } from "firebase/auth";
+const auth = getAuth();
+
+const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const navigation = useNavigation();
+    const navigation = useNavigation();   
 
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [replyVisible, setReplyVisible] = useState(false);
 
-    const [likeCount, setLikeCount] = useState(0);
+    const [likeCount, setLikeCount] = useState(likesCount);
     const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(0);
+    const [commentCount, setCommentCount] = useState(commentsCount);
     const [commentString, setCommentString] = useState("");
     const [liked, setLiked] = useState(false);
 
@@ -45,10 +48,8 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
     const [replies, setReplies] = useState([]); // array of replies
 
     useEffect(() => {
-        setLikeCount(likesCount);
         onUpdateLikeCount(likesCount);
-        setCommentCount(commentsCount);
-        onUpdateCommentCount(commentsCount); // update comment count string
+        onUpdateCommentCount(commentCount); // update comment count string
     }, []);
 
     // if like count is above 999 then display it as count/1000k + k
@@ -87,17 +88,18 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
         const likedSnapshot = await getDoc(likedRef);
       
         if (!likedSnapshot.exists()) {
-          // add post to likes collection
-          await setDoc(likedRef, {});
-          // update like count for Comment
-          const postRef = doc(db, 'allPosts', replyToPostId);
-      
-          updateDoc(postRef, {
-            likesCount: increment(1)
-          }).then(() => {
-            setLikeCount(likeCount + 1);
-            onUpdateLikeCount(likeCount + 1); // update like count string
-          });
+            // add post to likes collection
+            await setDoc(likedRef, {});
+            
+            // update like count for Comment
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        
+            updateDoc(commentRef, {
+                likesCount: increment(1)
+            }).then(() => {
+                setLikeCount(likeCount + 1);
+                onUpdateLikeCount(likeCount + 1); // update like count string
+            });
         }
       
         setLiked(true);
@@ -106,12 +108,12 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
     // update like count and add post to liked collection
     const onDisike = async () => {
         // delete comment from likedComments collection
-        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, replyToPostId, commentId))
+        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, commentId))
 
         // update like count for Comment
-        const postRef = doc(db, 'allPosts', replyToPostId);
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-        updateDoc(postRef, {
+        await updateDoc(commentRef, {
             likesCount: increment(-1)
         }).then(() => {
             setLikeCount(likeCount - 1);
@@ -120,42 +122,78 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
     }
 
     let threeDots, likes, alreadyLiked, reply, down
+
+    const onNavToComment = () => {
+        navigation.push('Comment', {
+            commentId: commentId,
+            replyToPostId: replyToPostId,
+            replyToProfile: profile,
+            replyToUsername: username,
+            imageUrl: imageUrl,
+            imageHeight: imageHeight,
+            imageWidth: imageWidth,
+            text: text,
+            likesCount: 0,
+            commentsCount: 0,
+            onReply: false,
+            profile: auth.currentUser.uid,
+            username: auth.currentUser.displayName,
+            profilePic: auth.currentUser.photoURL,
+        });
+    }
+
+    const onReply = () => {
+        navigation.push('Comment', {
+            commentId: commentId,
+            replyToPostId: replyToPostId,
+            replyToProfile: profile,
+            replyToUsername: username,
+            imageUrl: imageUrl,
+            imageHeight: imageHeight,
+            imageWidth: imageWidth,
+            text: text,
+            likesCount: 0,
+            commentsCount: 0,
+            onReply: true,
+            profile: auth.currentUser.uid,
+            username: auth.currentUser.displayName,
+            profilePic: auth.currentUser.photoURL,
+        });
+    }
     
     if(theme == 'light'){
         threeDots = <ThreeDotsLight width={33} height={33} style={{}}/>
         likes = <Likes width={20} height={20} style={{ marginRight: 5 }}/>;
         alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
         reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <Down width={24} height={24} style={{ marginRight: 5 }}/>;
+        down = <Down width={25} height={25} style={{ marginRight: 5 }}/>;
     }else{
         threeDots = <ThreeDotsDark width={33} height={33} style={{}}/>
         likes = <LikesDark width={21} height={21} style={{ marginRight: 5 }}/>;
         alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
         reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <DownDark width={22} height={22} style={{ marginRight: 5 }}/>;
+        down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
     }
 
     if(deleted){
         return null;
     }
 
-    const mainComment = <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
+    return (
+        <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
             
             {/* Profile Picture and Username */}
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{marginTop: 8, flexDirection: 'row', alignItems: 'center'}}>
                 
                 {/* Profile Picture */}
                 <TouchableOpacity 
                     onPress={() => {
-                        {
-                            profile != firebase.auth().currentUser.uid &&
-
-                                navigation.push('Profile', {
-                                    user: profile,
-                                    username: username,
-                                    profilePic: profilePic,
-                                })
-                        }
+                        
+                        navigation.push('Profile', {
+                            user: profile,
+                            username: username,
+                            profilePic: profilePic,
+                        })
                         
                     }}
                 >
@@ -173,7 +211,7 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
 
                 {/* Three Dots */}
                 <TouchableOpacity 
-                    style={{flexDirection: 'row', marginRight: 10}}
+                    style={{flexDirection: 'row', marginTop: -15, marginRight: 10}}
                     onPress= {() => setOverlayVisible(true)}
                 >
                     {threeDots}
@@ -182,8 +220,15 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
             </View>
 
             {/* Comment Text */}
-            <TouchableOpacity style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
-                {text}
+            <TouchableOpacity 
+                onPress = {() => onNavToComment()}
+                style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
+            >
+                
+                <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                    {text}
+                </Text>
+
             </TouchableOpacity>
 
             {/* Reply and Like */}
@@ -193,22 +238,25 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', alignContent: 'center', marginLeft: 13 }}>
                     
                     {
-                        commentCount > -1 &&
-                        <TouchableOpacity
-                            style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
-                            onPress = {() => onViewRelies()}
-                        >
-                            {/* <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}>
-                            </View> */}
+                        commentCount > 0 ?
                             
+                            <TouchableOpacity
+                                style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
+                                onPress = {() => onViewRelies()}
+                            >
+                                {/* <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}>
+                                </View> */}
+                                
 
-                            <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
-                                View {commentString} replies
-                            </Text>
+                                <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
+                                    View {commentString} replies
+                                </Text>
 
-                            {down}
-                            
-                        </TouchableOpacity>
+                                {down}
+                                
+                            </TouchableOpacity>
+
+                        : null
                     }
 
                 </View>
@@ -216,7 +264,7 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
                 {/* Reply */}
                 <TouchableOpacity
                     style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={() => setReplyVisible(true)}
+                    onPress={() => onReply()}
                 >
                     {reply}
 
@@ -228,7 +276,7 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
                 {/* Like Button */}
                 <TouchableOpacity
                     style={{  flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={() => liked ? onDisike() : onLike()}
+                    onPress={async() => liked ? await onDisike() : await onLike()}
                 >
                     
                     {liked ?
@@ -244,21 +292,8 @@ const MainComment = ({ profile, username, profilePic, commentId, text, likesCoun
                 </TouchableOpacity>
             </View>
 
-            
-            {/* Secondary comment */}
-            <SecondaryComment 
-                mainCommentId={commentId}
-                profilePic={profilePic}
-                username={username}
-                likesCount={likesCount}
-                commentsCount={commentsCount}
-                text={text}
-            />
 
         </View>
-
-    return (
-        mainComment
     );
 }
 
@@ -267,18 +302,20 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         borderRadius: 50,
-        marginLeft: 11,
+        marginLeft: 10,
         marginRight: 5,
-        marginVertical: 8,
-        marginBottom: 4,
+        // marginVertical: 8,
+        // marginBottom: 4,
     },
     lightCommentContainer: {
         backgroundColor: '#FFFFFF',
-        marginTop: 7,
+        marginTop: 8,
+        borderRadius: 10,
     },
     darkCommentContainer: {
-        backgroundColor: '#151515',
-        marginTop: 7,
+        backgroundColor: '#161616',
+        marginTop: 8,
+        borderRadius: 10,
     },
     lightUsername: {
         flex: 1,
@@ -295,22 +332,20 @@ const styles = StyleSheet.create({
         textAlign: "left",
     },
     lightCommentText: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "400",
         color: '#222222',
-        letterSpacing: 0.3,
         textAlign: 'auto',
-        marginHorizontal: 13,
-        marginBottom: 6,
+        marginHorizontal: 14,
+        marginTop: 6,
     },
     darkCommentText: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: "400",
-        color: '#F2F2F2',
-        letterSpacing: 0.3,
-        textAlign: "left",
-        marginHorizontal: 13,
-        marginBottom: 6,
+        color: '#F4F4F4',
+        textAlign: 'auto',
+        marginHorizontal: 14,
+        marginTop: 6,
     },
     lightViewReplyLine: {
         backgroundColor: '#BBBBBB',
@@ -327,7 +362,7 @@ const styles = StyleSheet.create({
     lightViewText: {
         fontSize: 13,
         fontWeight: "500",
-        color: '#555555',
+        color: '#444444',
         marginRight: 2,
     },
     darkViewText: {

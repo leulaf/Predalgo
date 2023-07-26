@@ -5,17 +5,20 @@ import {ThemeContext} from '../../context-store/context';
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
 
+import { fetchFirstTenPostCommentsByRecent, fetchFirstTenPostCommentsByPopular } from '../shared/post/GetPostComments';
+
 import { firebase, storage, db } from '../config/firebase';
 
 import GlobalStyles from '../constants/GlobalStyles';
 
 import ContentBottom from '../components/postTypes/ContentBottom';
 import PostBottom from '../components/postTypes/PostBottom';
-import ReplyBottomSheet from '../components/PostReplyBottomSheet';
+import ReplyBottomSheet from '../components/replyBottom/PostReplyBottomSheet';
 
 import MainComment from '../components/commentTypes/MainComment';
 
 import SimpleTopBar from '../components/SimpleTopBar';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
 
 
@@ -27,12 +30,12 @@ const windowWidth = Dimensions.get('window').width;
 
 const PostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const commentsList = ['Header', ...[...Array(5)].map((_, i) => `Item ${i}`)];
+    const [commentsList, setCommentsList] = useState([]);
     const {title, profile, likesCount, commentsCount, imageUrl, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
 
     const [replyTextToPost, setReplyTextToPost] = useState("");
     const [submittedText, setSubmittedText] = useState(null);
-
+    
     const contentBottom = <ContentBottom
         memeName={memeName}
         tags={tags}
@@ -40,19 +43,25 @@ const PostScreen = ({navigation, route}) => {
 
     const replyBottomSheet = <ReplyBottomSheet
         navigation={navigation}
-        postId = {postId}
+        replyToPostId = {postId}
         replyToProfile = {profile}
         replyToUsername={username}
-        mainComment={true}
     />;
 
-    // refreshes the comments list when a new comment is submitted
-    // useEffect(() => {
+    useEffect(() => {
+        getFirstTenPostCommentsByRecent();
+    }, []);
 
-    // }, commentsList);
+    const getFirstTenPostCommentsByRecent = async () => {
+        await fetchFirstTenPostCommentsByRecent(postId).then((comments) => {
+            
+            setCommentsList(comments);
+            
+        });
+    }
 
     // Sets the header of component
-    useEffect(() => {
+    useEffect(() => { 
         navigation.setOptions({
             header: () => <SimpleTopBar title={"Back"}/>
         });
@@ -69,8 +78,8 @@ const PostScreen = ({navigation, route}) => {
             if (text != null && text != "") {
                 topText = (
                     <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
-                        {text
-                    }</Text>
+                        {text}
+                    </Text>
                 );
             }else{
                 topText = null;
@@ -177,17 +186,16 @@ const PostScreen = ({navigation, route}) => {
                 </View>
                 
             );
-        }
-
-        if (index === commentsList.length-1) {
+        }else if (index === commentsList.length-1) {
             return (
 
                 <View>
                     <MainComment
+                        replyToPostId={postId}
                         profile={item.profile}
                         username={item.username}
                         profilePic={item.profilePic}
-                        commentId={item.commentId}
+                        commentId={item.id}
                         text={item.text ? item.text : null}
                         likesCount={item.likesCount}
                         commentsCount={item.commentsCount}
@@ -201,10 +209,11 @@ const PostScreen = ({navigation, route}) => {
 
         return (
             <MainComment
+                replyToPostId={postId}
                 profile={item.profile}
                 username={item.username}
                 profilePic={item.profilePic}
-                commentId={item.commentId}
+                commentId={item.id}
                 text={item.text ? item.text : null}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
@@ -218,9 +227,13 @@ const PostScreen = ({navigation, route}) => {
             
             <FlatList
                 data={commentsList}
-                renderItem={renderItem}
-                keyExtractor={item => item}
+                keyExtractor={(item, index) => item.id + '-' + index}
                 stickyHeaderIndices={[1]}
+                renderItem={({ item, index }) => {
+                    return (
+                        renderItem({ item, index })
+                    );
+                }}
             />
 
             {replyBottomSheet}
@@ -254,7 +267,7 @@ const styles = StyleSheet.create({
     },
     lightMainContainer: {
         flex: 1,
-        backgroundColor: 'FEFEFE',
+        backgroundColor: '#F4F4F4',
     },
     darkMainContainer: {
         flex: 1,

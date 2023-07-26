@@ -73,9 +73,9 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#1B1B1B',
+        backgroundColor: '#141414',
         borderWidth: 1.5,
-        borderColor: '#282828',
+        borderColor: '#242424',
     },
     lightInputStyle: {
         flex: 1,

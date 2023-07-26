@@ -22,7 +22,10 @@ import LikedDark from '../../../assets/liked_dark.svg';
 import ReplyDark from '../../../assets/reply_comment_dark.svg';
 import DownDark from '../../../assets/down_dark.svg';
 
-const SubComment = ({ profile, username, profilePic, commentId, text, likesCount, commentsCount }) => {
+import { getAuth } from "firebase/auth";
+const auth = getAuth();
+
+const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -30,9 +33,9 @@ const SubComment = ({ profile, username, profilePic, commentId, text, likesCount
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [replyVisible, setReplyVisible] = useState(false);
 
-    const [likeCount, setLikeCount] = useState(0);
+    const [likeCount, setLikeCount] = useState(likesCount);
     const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(0);
+    const [commentCount, setCommentCount] = useState(commentsCount);
     const [commentString, setCommentString] = useState("");
     const [liked, setLiked] = useState(false);
 
@@ -42,10 +45,8 @@ const SubComment = ({ profile, username, profilePic, commentId, text, likesCount
     const [replies, setReplies] = useState([]); // array of replies
 
     useEffect(() => {
-        setLikeCount(likesCount);
-        onUpdateLikeCount(likesCount);
-        setCommentCount(commentsCount);
-        onUpdateCommentCount(commentsCount); // update comment count string
+        setCommentCount(commentCount);
+        onUpdateCommentCount(commentCount); // update comment count string
     }, []);
 
     // if like count is above 999 then display it as count/1000k + k
@@ -80,16 +81,16 @@ const SubComment = ({ profile, username, profilePic, commentId, text, likesCount
 
     // update like count and add post to liked collection
     const onLike = async () => {
-        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, commentId, commentId);
+        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, commentId);
         const likedSnapshot = await getDoc(likedRef);
       
         if (!likedSnapshot.exists()) {
           // add post to likes collection
           await setDoc(likedRef, {});
           // update like count for Comment
-          const postRef = doc(db, 'allPosts', commentId);
+          const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
       
-          updateDoc(postRef, {
+          updateDoc(commentRef, {
             likesCount: increment(1)
           }).then(() => {
             setLikeCount(likeCount + 1);
@@ -103,12 +104,12 @@ const SubComment = ({ profile, username, profilePic, commentId, text, likesCount
     // update like count and add post to liked collection
     const onDisike = async () => {
         // delete comment from likedComments collection
-        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, commentId, commentId))
+        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, commentId))
 
         // update like count for Comment
-        const postRef = doc(db, 'allPosts', commentId);
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-        updateDoc(postRef, {
+        await updateDoc(commentRef, {
             likesCount: increment(-1)
         }).then(() => {
             setLikeCount(likeCount - 1);
@@ -123,13 +124,13 @@ const SubComment = ({ profile, username, profilePic, commentId, text, likesCount
         likes = <Likes width={20} height={20} style={{ marginRight: 5 }}/>;
         alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
         reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <Down width={22} height={22} style={{ marginRight: 5 }}/>;
+        down = <Down width={25} height={25} style={{ marginRight: 5 }}/>;
     }else{
         threeDots = <ThreeDotsDark width={33} height={33} style={styles.threeDots}/>
         likes = <LikesDark width={21} height={21} style={{ marginRight: 5 }}/>;
         alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
         reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <DownDark width={22} height={22} style={{ marginRight: 5 }}/>;
+        down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
     }
 
     if(deleted){
@@ -170,7 +171,7 @@ const SubComment = ({ profile, username, profilePic, commentId, text, likesCount
 
                 {/* Three Dots */}
                 <TouchableOpacity 
-                    style={{flexDirection: 'row', marginRight: 10}}
+                    style={{flexDirection: 'row', marginTop: -15, marginRight: 10}}
                     onPress= {() => setOverlayVisible(true)}
                 >
                     {threeDots}
@@ -225,7 +226,7 @@ const SubComment = ({ profile, username, profilePic, commentId, text, likesCount
                 {/* Like Button */}
                 <TouchableOpacity
                     style={{  flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={() => liked ? onDisike() : onLike()}
+                    onPress={async() => liked ? await onDisike() : await onLike()}
                 >
                     
                     {liked ?
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
     lightViewText: {
         fontSize: 13,
         fontWeight: "500",
-        color: '#555555',
+        color: '#444444',
         marginRight: 2,
     },
     darkViewText: {

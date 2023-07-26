@@ -72,7 +72,7 @@ async function commentImageOnPost(imageUrl, text, replyToPostId, replyToProfile,
 
 
 // Comment image on a post
-const saveCommentToPost = async (url, text, replyToPostId, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth ) => {
+const saveCommentToPost = async (url, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth ) => {
    
     let id
 
@@ -81,6 +81,7 @@ const saveCommentToPost = async (url, text, replyToPostId, replyToPostId, replyT
         replyToPostId: replyToPostId,
         replyToProfile: replyToProfile,
         replyToUsername: replyToUsername,
+        isMainComment: true,
         imageUrl: url,
         imageHeight: imageHeight,
         imageWidth: imageWidth,
@@ -167,8 +168,10 @@ const saveCommentToComment = async (url, text, replyToCommentId, replyToPostId, 
     // add text post to database
     const docRef = await addDoc(collection(db, "comments", replyToPostId, "comments"), {
         replyToCommentId: replyToCommentId,
+        replyToPostId: replyToPostId,
         replyToProfile: replyToProfile,
         replyToUsername: replyToUsername,
+        isMainComment: false,
         imageUrl: url,
         imageHeight: imageHeight,
         imageWidth: imageWidth,

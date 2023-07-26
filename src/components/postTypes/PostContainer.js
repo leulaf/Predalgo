@@ -118,7 +118,7 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
             
             {/* profile pic, username and title*/}
             <View 
-                style={{flexDirection: 'row'}}
+                style={{flexDirection: 'row', marginLeft: 10, marginTop: 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
             >
                 {/* profile pic */}
                 <TouchableOpacity
@@ -137,11 +137,17 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                     )}
                 </TouchableOpacity>
                 
-                {/* username and title */}
+                {/* username */}
                 <TouchableOpacity
-                    onPress={navigateToPost}
+                    onPress={() => 
+                        navigation.push('Profile', {
+                            user: profile,
+                            username: username,
+                            profilePic: profilePic,
+                        })
+                    }
 
-                    style={{flex: 1, flexDirection: 'column'}}
+                    style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
                 >
 
                     {
@@ -159,17 +165,14 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                     </Text>
 
 
-                    {/* title */}
-                    <Text numberOfLines={2} 
-                        style={theme == 'light' ? styles.lightPostTitle: styles.darkPostTitle}>
-                            {title ?
-                                title
-                            :
-                                ""
-                            }
-                    </Text>
-
                 </TouchableOpacity>
+                
+                <TouchableOpacity
+                    onPress={navigateToPost}
+                    style={{flex: 1, height: 40}}
+                />
+
+
                 
                 {/* three dots */}
                 <TouchableOpacity 
@@ -185,10 +188,33 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                 </TouchableOpacity>
                 
             </View>
+
+            {/* title */}
+            <TouchableOpacity
+                    onPress={navigateToPost}
+            >
+
+                <Text numberOfLines={2} 
+                    style={theme == 'light' ? styles.lightPostTitle: styles.darkPostTitle}>
+                        {title ?
+                            title
+                        :
+                            ""
+                        }
+                </Text>
+
+            </TouchableOpacity>
+                
             
             
             {/* Post content. Image, Text etc. */}
-            {content}
+            <TouchableOpacity
+                    onPress={navigateToPost}
+            >
+
+                {content}
+
+            </TouchableOpacity>
 
             {/* tags and meme name */}
             {contentBottom}
@@ -236,15 +262,18 @@ const styles = StyleSheet.create({
     threeDots: {
         // marginLeft: 365,
         padding: 10,
-        marginTop: -3,
-        marginHorizontal: 10,
+        marginTop: -20,
+        marginLeft: 5,
+        marginRight: 10,
+        // marginHorizontal: 10,
     },
     profileImage: {
         width: 40,
         height: 40,
         borderRadius: 50,
-        marginHorizontal: 5,
-        marginVertical: 8,
+        // marginLeft: 10,
+        // marginRight: 6,
+        // marginVertical: 10,
     },
     memeName: {
         width: 170,
@@ -257,36 +286,37 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: '#444444',
         textAlign: "left",
-        marginTop: 6,
+        // marginTop: 6,
     },
     darkUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
-        marginTop: 6,
+        // marginTop: 6,
     },
     lightRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#777777',
         textAlign: "left",
-        marginTop: 6,
+        marginBottom: 4,
     },
     darkRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#BBBBBB',
         textAlign: "left",
-        marginTop: 6,
+        marginBottom: 4,
     },
     lightPostTitle: {
         fontSize: 22,
         fontWeight: "600",
         color: '#333333',
         textAlign: "left",
-        marginRight: 10,
-        marginBottom: 10,
+        marginHorizontal: 12,
+        marginTop: 3,
+        // marginBottom: 1,
         // width: 290,
     },
     darkPostTitle: {
@@ -294,8 +324,9 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
-        marginRight: 10,
-        marginBottom: 10,
+        marginHorizontal: 12,
+        marginTop: 3,
+        // marginBottom: 10,
         // width: 290,
     },
     overlayText: {

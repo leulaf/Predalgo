@@ -86,9 +86,9 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#1D1D1D',
+        backgroundColor: '#141414',
         borderWidth: 1.5,
-        borderColor: '#2D2D2D',
+        borderColor: '#282828',
     },
     backButton: {
         marginTop: 55,

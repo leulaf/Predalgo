@@ -24,6 +24,7 @@ const commentTextOnPost = async (text, replyToPostId, replyToProfile, replyToUse
             replyToPostId: replyToPostId,
             replyToProfile: replyToProfile,
             replyToUsername: replyToUsername,
+            isMainComment: true,
             text: text,
             likesCount: 0,
             commentsCount: 0,
@@ -54,7 +55,7 @@ const commentTextOnPost = async (text, replyToPostId, replyToProfile, replyToUse
 
 
 // Comment image on a post
-const commentTextOnSubComment = async (text, replyToCommentId, replyToPostId, replyToProfile, replyToUsername ) => {
+const commentTextOnComment = async (text, replyToCommentId, replyToPostId, replyToProfile, replyToUsername ) => {
    
     return new Promise(async (resolve, reject) => {
         if(text == ""){
@@ -64,9 +65,11 @@ const commentTextOnSubComment = async (text, replyToCommentId, replyToPostId, re
         
         // add text post to database
         await addDoc(collection(db, "comments", replyToPostId, "comments"), {
+            replyToPostId: replyToPostId,
             replyToCommentId: replyToCommentId,
             replyToProfile: replyToProfile,
             replyToUsername: replyToUsername,
+            isMainComment: false,
             text: text,
             likesCount: 0,
             commentsCount: 0,
@@ -95,4 +98,4 @@ const commentTextOnSubComment = async (text, replyToCommentId, replyToPostId, re
 
 };
 
-export { commentTextOnPost, commentTextOnSubComment };
+export { commentTextOnPost, commentTextOnComment };

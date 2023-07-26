@@ -211,7 +211,7 @@ export default function ProfileScreen ({route, navigation}) {
             style= {theme == 'light' ?
                 { backgroundColor: 'white'}
             :
-                { backgroundColor: '#161616', borderBottomWidth: 3, borderBottomColor: '#262626'}
+                { backgroundColor: '#0A0A0A', borderBottomWidth: 3, borderBottomColor: '#262626'}
             }
             labelStyle = {theme == 'light' ? styles.lightLabel : styles.darkLabel}
             activeColor = {theme == 'light' ? '#222222' : 'white'}
@@ -223,13 +223,14 @@ export default function ProfileScreen ({route, navigation}) {
         <Tabs.Container
             renderHeader={header}
             headerContainerStyle={{
-                shadowColor: theme == 'light' ? '#0C0C0C' : '#FFFFFF',
+                shadowColor: theme == 'light' ? '#000000' : '#F4F4F4',
                 shadowOffset: {
                     width: 0,
-                    height: theme == 'light' ? 2 : 4,
+                    height: theme == 'light' ? 2 : 5,
                 },
-                shadowOpacity: theme == 'light' ? 0.2 : 0.1,
-           }}
+                shadowOpacity: theme == 'light' ? 0.2 : 0.12,
+                shadowRadius: theme == 'light' ? 6 : 8,
+            }}
             lazy={true}
         //    revealHeaderOnScroll
             pointerEvents="box-none"
@@ -271,7 +272,7 @@ export default function ProfileScreen ({route, navigation}) {
     darkProfileContainer: {
         flex: 1,
         flexDirection: 'row',
-        backgroundColor: '#161616',
+        backgroundColor: '#0A0A0A',
     },
     lightLabel: {
         color: '#880808',

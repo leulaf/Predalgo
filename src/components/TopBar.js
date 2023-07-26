@@ -71,9 +71,9 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#1D1D1D',
+        backgroundColor: '#141414',
         borderWidth: 1.5,
-        borderColor: '#303030',
+        borderColor: '#282828',
     },
     darkTextStyle: {
         flex: 1,

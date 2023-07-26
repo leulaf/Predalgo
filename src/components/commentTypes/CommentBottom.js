@@ -20,7 +20,7 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const MainCommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) => {
+const CommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
     const [likeCount, setLikeCount] = useState(0);
@@ -94,7 +94,7 @@ const MainCommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount
           // add post to likes collection
           await setDoc(likedRef, {});
           // update like count for post
-          const commentRef = doc(db, 'mainComments', replyToPostId, "comments", commentId);
+          const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
       
           updateDoc(commentRef, {
             likesCount: increment(1)
@@ -113,7 +113,7 @@ const MainCommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount
         deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
         // update like count for post
-        const commentRef = doc(db, 'mainComments', replyToPostId, "comments", commentId);
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
         updateDoc(commentRef, {
             likesCount: increment(-1)
@@ -214,4 +214,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MainCommentBottom;
+export default CommentBottom;
