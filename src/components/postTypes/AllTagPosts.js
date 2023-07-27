@@ -8,11 +8,13 @@ import MultiImagePost from './MultiImagePost';
 import TextPost from './TextPost';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AllTagPosts({ tag }){
     if(tag === "" || tag === null){
         return null;
     }
+    const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
     const [postList, setPostList] = useState([]);
     const [newPosts, setNewPosts] = useState(true);
@@ -229,6 +231,12 @@ export default function AllTagPosts({ tag }){
     return (
         <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
             <FlatList
+                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+                onTouchEnd={e => {
+                if (e.nativeEvent.pageX - this.touchX > 150)
+                    // console.log('Swiped Right')
+                    navigation.goBack()
+                }}
                 data={postList}
                 keyExtractor={(item, index) => item.id + '-' + index}
                 ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top

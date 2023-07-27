@@ -1,21 +1,6 @@
 import { firebase, db, storage } from '../../config/firebase';
-import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment, limit } from "firebase/firestore";
+import { collection, query, getDocs, orderBy, where, limit } from "firebase/firestore";
 
-// const getRepost = async(repostPostId, profile) => {
-//     const repostRef = doc(db, 'allPosts', repostPostId);
-//     const repostSnapshot = await getDoc(repostRef);
-
-//     if(repostSnapshot.exists){
-//         const repostData = repostSnapshot.data();
-//         const id = repostSnapshot.id;
-//         const repostProfile = profile;
-
-//         // Return the reposted post data along with the original post data
-//         return { id, repostProfile, ...repostData }
-//     }else{
-//         return;
-//     }
-// }
 
 const fetchFirstTenPostCommentsByRecent = async (replyToPostId) => {
     return new Promise(async (resolve, reject) => {
@@ -50,7 +35,7 @@ const fetchFirstTenPostCommentsByRecent = async (replyToPostId) => {
     });
 }
 
-const fetchFirstTenPostCommentsByPopular = async (userId) => {
+const fetchFirstTenPostCommentsByPopular = async (replyToPostId) => {
 
     return new Promise(async (resolve, reject) => {
         const q = query(

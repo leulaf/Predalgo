@@ -325,7 +325,7 @@ function MainProfileScreen ({navigation, ...props}) {
                         width: 0,
                         height: theme == 'light' ? 2 : 5,
                     },
-                    shadowOpacity: theme == 'light' ? 0.17 : 0.12,
+                    shadowOpacity: theme == 'light' ? 0.18 : 0.16,
                     shadowRadius: theme == 'light' ? 6 : 8,
                 }}
                 lazy={true}

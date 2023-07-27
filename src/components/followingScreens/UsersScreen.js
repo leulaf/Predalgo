@@ -85,6 +85,12 @@ const UsersScreen = ({ route }) => {
 
             <View style={{flex: 1, marginTop: 50}}>
                 <FlatList
+                    onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+                    onTouchEnd={e => {
+                    if (e.nativeEvent.pageX - this.touchX > 150)
+                        // console.log('Swiped Right')
+                        navigation.goBack()
+                    }}  
                     numColumns={1}
                     horizontal={false}
                     data={users}

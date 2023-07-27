@@ -113,15 +113,17 @@ const CommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) 
         deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
         // update like count for post
-        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        if(likeCount - 1 >= 0){
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-        updateDoc(commentRef, {
-            likesCount: increment(-1)
-        }).then(() => {
-            onUpdateLikeCount(likeCount - 1);
-            setLikeCount(likeCount - 1);
-            setLiked(false);
-        });
+            updateDoc(commentRef, {
+                likesCount: increment(-1)
+            }).then(() => {
+                onUpdateLikeCount(likeCount - 1);
+                setLikeCount(likeCount - 1);
+                setLiked(false);
+            });
+        }
     }
 
 

@@ -70,7 +70,9 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     const snapPoints = useMemo(() => ['15%', '70%', '99%'], []);
 
     useEffect(() => {
-        if(imageForPost){
+        if(imageForPost && imageForPost.forCommentOnPost){
+            // console.log("imageForPost");
+            // console.log(imageForPost);
             setReplyImageToPost(imageForPost);
             setImageForPost(null);
             // console.log("imageForPost");
@@ -261,7 +263,8 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                     // style={{flexDirection: 'row',}}
                     onPress={() => 
                         navigation.navigate("Upload", {
-                            forComment: true,
+                            forCommentOnComment: false,
+                            forCommentOnPost: true,
                         })
                     }
                 >
@@ -333,9 +336,9 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                     shadowColor: theme == 'light' ? '#005FFF' : '#DDDDDD',
                     shadowOffset: {
                       width: 0,
-                      height: theme == 'light' ? 4 : 6,
+                      height: theme == 'light' ? 6 : 6,
                     },
-                    shadowOpacity: theme == 'light' ? 0.4 : 0.2,
+                    shadowOpacity: theme == 'light' ? 0.6 : 0.33,
                     shadowRadius: 12,
                     elevation: 5,
                 }}
@@ -440,7 +443,8 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                     height: replyImageToPost.height,
                                     width: replyImageToPost.width,
                                     imageState: replyImageToPost.imageState,
-                                    forComment: true,
+                                    forCommentOnComment: false,
+                                    forCommentOnPost: true,
                                     cameraPic: false,
                                     dontCompress: true,
                                 }))}

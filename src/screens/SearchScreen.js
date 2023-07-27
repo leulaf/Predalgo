@@ -14,7 +14,9 @@ export default function SearchScreen({navigation}){
     const [term, setTerm] = useState('');
 
     return (
-        <View style={{ flex: 1 }}>
+        <View
+            style={{ flex: 1 }}
+        >
             <SearchBar 
                 term={term}
                 onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work

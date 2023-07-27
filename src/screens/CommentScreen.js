@@ -5,6 +5,8 @@ import {ThemeContext} from '../../context-store/context';
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
 
+import { fetchFirstTenCommentsByRecent, fetchFirstTenCommentsByPopular } from '../shared/comment/GetComments';
+
 import GlobalStyles from '../constants/GlobalStyles';
 
 import CommentBottom from '../components/commentTypes/CommentBottom';
@@ -23,7 +25,7 @@ const windowWidth = Dimensions.get('window').width;
 
 const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const commentsList = ['Header', ...[...Array(3)].map((_, i) => `Item ${i}`)];
+    const [commentsList, setCommentsList] = useState([]);
     const {profile, commentId, onReply, replyToPostId, username, profilePic, text, imageUrl, imageWidth, imageHeight, memeName, likesCount, commentsCount} = route.params;
 
     const [onReplying, setOnReplying] = useState(onReply ? onReply : false);
@@ -48,6 +50,18 @@ const CommentScreen = ({navigation, route}) => {
         replyToProfile = {profile}
         replyToUsername={username}
     />;
+
+    useEffect(() => {
+        getFirstTenCommentsByPopular();
+    }, []);
+
+    const getFirstTenCommentsByPopular = async () => {
+        await fetchFirstTenCommentsByPopular(replyToPostId, commentId).then((comments) => {
+            
+            setCommentsList(comments);
+            
+        });
+    }
 
     // Sets the header of component
     useEffect(() => {
@@ -82,7 +96,7 @@ const CommentScreen = ({navigation, route}) => {
                         height={imageHeight}
                         width={imageWidth}
                         maxWidth={windowWidth}
-                        style={{marginTop: 13, borderRadius: 0, alignSelf: 'center'}}
+                        style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
                     />
                 );
             }else{
@@ -97,11 +111,9 @@ const CommentScreen = ({navigation, route}) => {
                         {/* profile pic */}
                         <TouchableOpacity
                             onPress={() => 
-                                navigation.push('Profile', {
-                                    user: profile,
-                                    username: username,
-                                    profilePic: profilePic,
-                                })
+                                    navigation.push('Profile', {
+                                        user: profile,
+                                    })
                             }
                         >
                             {profilePic != "" ? (
@@ -112,9 +124,19 @@ const CommentScreen = ({navigation, route}) => {
                         </TouchableOpacity>
                         
                         {/* username */}
-                        <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
-                            @{username}
-                        </Text>
+                        <TouchableOpacity
+                            style={{flex: 1, flexDirection: 'column'}}
+                            onPress={() => 
+                                    navigation.push('Profile', {
+                                        user: profile,
+                                    })
+                            }
+                        >
+                            <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                                @{username}
+                            </Text>
+                        </TouchableOpacity>
+
                     </View>
 
 
@@ -129,16 +151,23 @@ const CommentScreen = ({navigation, route}) => {
                 </View>
             );
 
-        } else if (index === 1) {
+        }else if (index === 1) {
             return (
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
                     {commentBottom}
+
+                    {index === commentsList.length-1 &&
+
+                        <View style={{height: 600}}/>
+
+                    }
+
                 </View>
                 
             );
         }else if (index === commentsList.length-1) {
             return (
-                <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
+                <View>
                     <MainComment
                         replyToPostId={replyToPostId}
                         profile={item.profile}
@@ -163,6 +192,9 @@ const CommentScreen = ({navigation, route}) => {
                 profilePic={item.profilePic}
                 commentId={item.id}
                 text={item.text ? item.text : null}
+                imageUrl={item.imageUrl ? item.imageUrl : null}
+                imageWidth={item.imageWidth ? item.imageWidth : null}
+                imageHeight={item.imageHeight ? item.imageHeight : null}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
             />
@@ -174,6 +206,12 @@ const CommentScreen = ({navigation, route}) => {
             
             
             <FlatList
+                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+                onTouchEnd={e => {
+                if (e.nativeEvent.pageX - this.touchX > 150)
+                    // console.log('Swiped Right')
+                    navigation.goBack()
+                }}
                 data={commentsList}
                 keyExtractor={(item, index) => item.id + '-' + index}
                 stickyHeaderIndices={[1]}
@@ -211,7 +249,6 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 50,
-        // marginLeft: 12.5,
         marginRight: 5,
     },
     lightMainContainer: {
@@ -231,8 +268,9 @@ const styles = StyleSheet.create({
     lightUserContainer: {
         backgroundColor: 'white',
         flexDirection: 'row',
-        marginTop: 11.5,
+        marginTop: 16.5,
         marginLeft: 13,
+        // marginBottom: 7,
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
@@ -240,46 +278,45 @@ const styles = StyleSheet.create({
     darkUserContainer: {
         backgroundColor: '#151515',
         flexDirection: 'row',
-        marginTop: 11.5,
+        marginTop: 16.5,
         marginLeft: 13,
+        // marginBottom: 7,
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
     },
     lightUsername: {
-        flex: 1,
         fontSize: 16,
         fontWeight: "600",
         color: '#444444',
         textAlign: "left",
+        marginBottom: 1,
     },
     darkUsername: {
-        flex: 1,
         fontSize: 16,
         fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
+        marginBottom: 1,
     },
     lightRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#777777',
         textAlign: "left",
-        marginTop: 6,
     },
     darkRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
         color: '#BBBBBB',
         textAlign: "left",
-        marginTop: 6,
     },
     lightPostTitle: {
         fontSize: 22,
         fontWeight: "600",
         color: '#333333',
-        textAlign: "left",
-        marginHorizontal: 12.5,
+        textAlign: 'auto',
+        marginHorizontal: 14,
         // marginTop: 1,
         // marginVertical: 2,
         // width: 290,
@@ -288,19 +325,11 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: "600",
         color: '#DDDDDD',
-        textAlign: "left",
-        marginHorizontal: 12.5,
+        textAlign: 'auto',
+        marginHorizontal: 14,
         // marginTop: 1,
         // marginVertical: 2,
         // width: 290,
-    },
-    lightBottomSheet: {
-        backgroundColor: '#FFFFFF',
-        height: "100%",
-    },
-    darkBottomSheet: {
-        backgroundColor: '#141414',
-        height: "100%",
     },
     lightFollowButton: {
         flexDirection: 'column',
@@ -345,71 +374,16 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#222222',
         textAlign: 'auto',
-        marginHorizontal: 14,
-        marginTop: 9,
-        marginBottom: 5
+        marginHorizontal: 13.5,
+        marginTop: 10,
     },
     darkPostText: {
         fontSize: 18,
         fontWeight: "400",
         color: '#F4F4F4',
         textAlign: 'auto',
-        marginHorizontal: 14,
-        marginTop: 9,
-        marginBottom: 5
-    },
-    lightReplyToPostContainer: {
-        flex: 1,
-        // flexDirection: 'column',
-        backgroundColor: '#FFFFFF',
-    },
-    darkReplyToPostContainer: {
-        flex: 1,
-        backgroundColor: '#141414',
-    },
-    lightReplyToPostBar: {
-        height: 40,
-        width: "96%",
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#FBFBFB',
-        borderWidth: 1,
-        borderColor: '#EDEDED',
-    },
-    darkReplyToPostBar: {
-        height: 40,
-        width: "96%",
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center',
-        backgroundColor: '#202020',
-        borderWidth: 1,
-        borderColor: '#262626',
-    },
-    lightInputStyle: {
-        flex: 1,
-        // height: 40,
-        fontSize: 18,
-        fontWeight: "400",
-        marginHorizontal: 10,
-        // alignSelf: 'center',
-        color: '#222222',
-    },
-    darkInputStyle: {
-        flex: 1,
-        // height: 40,
-        fontSize: 18,
-        fontWeight: "400",
-        marginHorizontal: 10,
-        // alignSelf: 'center',
-        // marginTop: 5,
-        color: '#F4F4F4',
+        marginHorizontal: 13.5,
+        marginTop: 10,
     },
 });
 

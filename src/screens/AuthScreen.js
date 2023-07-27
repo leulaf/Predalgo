@@ -151,6 +151,7 @@ const AuthScreen = ({navigation}) => {
                         <View automaticallyAdjustKeyboardInsets={true} style={{ width: '100%' }}>
                            {/* Username input */}
                            {/* <TextInput
+                                textContentType="username"
                                 secureTextEntry={false}
                                 style={styles.input}
                                 maxLength={15}
@@ -165,6 +166,7 @@ const AuthScreen = ({navigation}) => {
 
                             {/* Emain input */}
                             <TextInput
+                                textContentType="emailAddress"
                                 secureTextEntry={false}
                                 style={styles.input}
                                 autoCapitalize="none"
@@ -178,6 +180,7 @@ const AuthScreen = ({navigation}) => {
                             
                             {/* Confirm Emain input */}
                             {/* <TextInput
+                                textContentType="emailAddress"
                                 secureTextEntry={false}
                                 style={styles.input}
                                 autoCapitalize="none"
@@ -191,6 +194,7 @@ const AuthScreen = ({navigation}) => {
 
                             {/* Password input */}
                             <TextInput
+                                textContentType="newPassword"
                                 secureTextEntry={true}
                                 style={styles.input}
                                 autoCapitalize="none"
@@ -207,6 +211,7 @@ const AuthScreen = ({navigation}) => {
                         <View automaticallyAdjustKeyboardInsets={true} style={{ width: '100%' }}>
                             {/* Emain input */}
                             <TextInput
+                                textContentType="emailAddress"
                                 secureTextEntry={false}
                                 style={styles.input}
                                 autoCapitalize="none"
@@ -220,6 +225,7 @@ const AuthScreen = ({navigation}) => {
 
                             {/* Password input */}
                             <TextInput
+                                textContentType="password"
                                 secureTextEntry={true}
                                 style={styles.input}
                                 autoCapitalize="none"

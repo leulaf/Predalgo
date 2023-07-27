@@ -228,7 +228,7 @@ export default function ProfileScreen ({route, navigation}) {
                     width: 0,
                     height: theme == 'light' ? 2 : 5,
                 },
-                shadowOpacity: theme == 'light' ? 0.2 : 0.12,
+                shadowOpacity: theme == 'light' ? 0.14 : 0.16,
                 shadowRadius: theme == 'light' ? 6 : 8,
             }}
             lazy={true}

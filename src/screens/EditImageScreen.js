@@ -26,7 +26,7 @@ const EditImageScreen = ({ navigation, route }) => {
 
     const { imageForPost, setImageForPost } = useContext(AuthenticatedUserContext);
 
-    const { imageUrl, forComment, cameraPic, dontCompress, width, height, imageState } = route.params;
+    const { imageUrl, forCommentOnComment, forCommentOnPost, cameraPic, dontCompress, width, height, imageState } = route.params;
 
     const [image, setImage] = useState(imageUrl);
 
@@ -69,20 +69,23 @@ const EditImageScreen = ({ navigation, route }) => {
 
 
     useEffect(() => {
-        if(imageResult && forComment){
-          setImageForPost({
+        
+        if(imageResult != null && (forCommentOnComment || forCommentOnPost)){
+            setImageForPost({
                 uri: imageResult,
                 undeditedUri: imageUrl,
                 height: height,
                 width: width,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
                 imageState: storedImageState
-        });
+            });
 
-        setImage(null);
-        editorRef.current.editor.close();
-        navigation.goBack(null);
+            setImage(null);
+            editorRef.current.editor.close();
+            navigation.goBack(null);
         }
-    }, [imageResult, navigation])
+    }, [imageResult])
 
 
     useEffect(() => {

@@ -1,10 +1,14 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Image } from 'expo-image';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
+
+import { Overlay } from 'react-native-elements';
+
+import ResizableImage from '../../shared/ResizableImage';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,8 +26,13 @@ import LikedDark from '../../../assets/liked_dark.svg';
 import ReplyDark from '../../../assets/reply_comment_dark.svg';
 import DownDark from '../../../assets/down_dark.svg';
 
+import DeleteIcon from '../../../assets/trash_delete.svg';
+import ReportIcon from '../../../assets/danger.svg';
+
 import { getAuth } from "firebase/auth";
 const auth = getAuth();
+
+const windowWidth = Dimensions.get('window').width - 50;
 
 const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -45,8 +54,8 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
     const [replies, setReplies] = useState([]); // array of replies
 
     useEffect(() => {
-        setCommentCount(commentCount);
-        onUpdateCommentCount(commentCount); // update comment count string
+        onUpdateLikeCount(likesCount);
+        onUpdateCommentCount(commentsCount); // update comment count string
     }, []);
 
     // if like count is above 999 then display it as count/1000k + k
@@ -81,7 +90,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
 
     // update like count and add post to liked collection
     const onLike = async () => {
-        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, commentId);
+        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
         const likedSnapshot = await getDoc(likedRef);
       
         if (!likedSnapshot.exists()) {
@@ -93,6 +102,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
           updateDoc(commentRef, {
             likesCount: increment(1)
           }).then(() => {
+            onUpdateLikeCount(likeCount + 1);
             setLikeCount(likeCount + 1);
             onUpdateLikeCount(likeCount + 1); // update like count string
           });
@@ -104,16 +114,110 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
     // update like count and add post to liked collection
     const onDisike = async () => {
         // delete comment from likedComments collection
-        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, commentId))
+        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
         // update like count for Comment
-        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        if(likeCount - 1 >= 0){
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-        await updateDoc(commentRef, {
-            likesCount: increment(-1)
-        }).then(() => {
-            setLikeCount(likeCount - 1);
-            setLiked(false);
+            await updateDoc(commentRef, {
+                likesCount: increment(-1)
+            }).then(() => {
+                onUpdateLikeCount(likeCount - 1);
+                setLikeCount(likeCount - 1);
+                setLiked(false);
+            });
+        }
+        
+    }
+
+    const deleteComment = () => {
+        if(deleted){
+            return;
+        }
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        const commentSnapshot =  getDoc(commentRef);
+        
+        commentSnapshot.then(async (snapshot) => {
+            if (snapshot.exists) {
+                await deleteDoc(commentRef).then(async () => {
+                    Alert.alert('Comment deleted!');
+
+                    setDeleted(true);
+                    
+                    const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+                    await updateDoc(commentRef, {
+                        commentsCount: increment(-1)
+                    }).then(() => {
+                        onUpdateLikeCount(likeCount - 1);
+                        setLikeCount(likeCount - 1);
+                        setLiked(false);
+                    });
+                }).catch((error) => {
+                    console.log(error);
+                })
+
+                
+
+                data = snapshot.data();
+                // console.log(data.imageUrl);
+
+                // if (data.imageUrl) {
+                //     const imageRef = ref(storage, "gs://predalgo-backend.appspot.com/profilePics/adaptive-icon.png");
+  
+                //     // Delete the file
+                //     deleteObject(imageRef).then(() => {
+                //         // File deleted successfully
+                //         console.log('Image deleted!');
+                //     }).catch((error) => {
+                //         // Uh-oh, an error occurred!
+                //         console.log(error);
+                //     });
+                // }
+            }
+
+            
+        })
+    
+        
+    }
+
+    const onNavToComment = () => {
+        navigation.push('Comment', {
+            commentId: commentId,
+            replyToPostId: replyToPostId,
+            replyToProfile: profile,
+            replyToUsername: username,
+            imageUrl: imageUrl,
+            imageHeight: imageHeight,
+            imageWidth: imageWidth,
+            text: text,
+            likesCount: 0,
+            commentsCount: 0,
+            onReply: false,
+            profile: auth.currentUser.uid,
+            username: auth.currentUser.displayName,
+            profilePic: auth.currentUser.photoURL,
+        });
+    }
+
+    const onReply = () => {
+        navigation.push('Comment', {
+            commentId: commentId,
+            replyToPostId: replyToPostId,
+            replyToProfile: profile,
+            replyToUsername: username,
+            imageUrl: imageUrl,
+            imageHeight: imageHeight,
+            imageWidth: imageWidth,
+            text: text,
+            likesCount: 0,
+            commentsCount: 0,
+            onReply: true,
+            profile: auth.currentUser.uid,
+            username: auth.currentUser.displayName,
+            profilePic: auth.currentUser.photoURL,
         });
     }
 
@@ -140,7 +244,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
     const secondaryComment = <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
             
             {/* Profile Picture and Username */}
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{marginTop: 7, flexDirection: 'row', alignItems: 'center'}}>
                 
                 {/* Profile Picture */}
                 <TouchableOpacity 
@@ -165,9 +269,29 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
                 </TouchableOpacity>
 
                 {/* Username */}
-                <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
-                    @{username}
-                </Text>
+                <TouchableOpacity 
+                    onPress={() => {
+                        
+                        navigation.push('Profile', {
+                            user: profile,
+                            username: username,
+                            profilePic: profilePic,
+                        })
+                        
+                    }}
+                >
+                    <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
+                        @{username}
+                    </Text>
+                </TouchableOpacity>
+                
+
+                {/* Spacer */}
+                <TouchableOpacity
+                    style={{flex: 1, height: 30}}
+                    onPress={() => onNavToComment()}
+                ></TouchableOpacity>
+
 
                 {/* Three Dots */}
                 <TouchableOpacity 
@@ -180,41 +304,69 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
             </View>
 
             {/* Comment Text */}
-            <TouchableOpacity style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
-                {text}
-            </TouchableOpacity>
+            {(text != null && text != "" && text != undefined) &&
+                <TouchableOpacity 
+                    onPress = {() => onNavToComment()}
+                    style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
+                >
+                    
+                    <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                        {text}
+                    </Text>
+
+                </TouchableOpacity>
+            }
+            
+            {/* Comment Image */}
+            {(imageUrl != null && imageUrl != "" && imageUrl != undefined) &&
+                <TouchableOpacity
+                    style={{backgroundColor: 'black', marginTop: 2, marginBottom: 12}}
+                    onPress = {() => onNavToComment()}
+                >
+                    <ResizableImage 
+                        image={imageUrl}
+                        height={imageHeight}
+                        width={imageWidth}
+                        maxHeight={600}
+                        maxWidth={windowWidth}
+                        style={{borderRadius: 0}}
+                    />
+                </TouchableOpacity>
+            }
 
             {/* Reply and Like */}
             <View style={{ flexDirection: 'row', marginBottom: 10, marginRight: 0,  alignItems: 'center', alignContent: 'center' }}>
                 
                 {/* View replies */}
-                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', alignContent: 'center', marginLeft: 10 }}>
-                    
                     {
-                        commentCount > -1 &&
+                        commentCount > 0 &&
+
+
                         <TouchableOpacity
-                            style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
-                            onPress = {() => onViewRelies()}
-                        >
-                            {/* <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}>
-                            </View> */}
-                            
+                            style={{ margin: 2, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 10 }}
+                            onPress = {() => onNavToComment()}
+                        > 
+                        
+                            <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}/>
 
                             <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
                                 View {commentString} replies
                             </Text>
-
-                            {down}
                             
                         </TouchableOpacity>
                     }
 
-                </View>
+
+                {/* Spacer */}
+                <TouchableOpacity
+                    style={{flex: 1, height: 20}}
+                    onPress={() => onNavToComment()}
+                ></TouchableOpacity>
 
                 {/* Reply */}
                 <TouchableOpacity
                     style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={() => setReplyVisible(true)}
+                    onPress={() => onReply(true)}
                 >
                     {reply}
 
@@ -242,6 +394,37 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
                 </TouchableOpacity>
             </View>
 
+            {/* 
+                an overlay popup that appears when you click on the three dots.
+                if the post is from the current users, user can delete it.
+                if the post is not from the current users, user can report it.
+            */}
+            <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 100}}>
+                
+                {profile === firebase.auth().currentUser.uid ?
+                    <TouchableOpacity
+                        style={{flexDirection: 'row'}}
+                        onPress={async() => {
+                            setOverlayVisible(false);
+                            await deleteComment();
+                        }
+                    }>
+                        <DeleteIcon width={40} height={40} style={{marginLeft: 2}}/>
+                        <Text style={styles.overlayText}>Delete Post</Text>
+                    </TouchableOpacity>
+                :
+                    <TouchableOpacity
+                        style={{flexDirection: 'row'}}
+                        onPress={() => {
+                            setOverlayVisible(false);
+                        }
+                    }>
+                        <ReportIcon width={35} height={35} style={{marginLeft: 2}}/>
+                        <Text style={styles.overlayText}>Report Post</Text>
+                    </TouchableOpacity>
+                }
+            </Overlay>
+
         </View>
 
     return (
@@ -260,28 +443,32 @@ const styles = StyleSheet.create({
         marginBottom: -3 // fix for bottom margin, change it later
     },
     lightCommentContainer: {
+        marginTop: 5,
         backgroundColor: '#FFFFFF',
-        marginLeft: 14.7,
+        marginLeft: 10,
         // marginTop: 3,
-        borderLeftWidth: 2,
+        borderLeftWidth: 1,
         borderLeftColor: '#DDDDDD',
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#DDDDDD',
+        borderRadius: 10,
     },
     darkCommentContainer: {
+        marginTop: 5,
         backgroundColor: '#151515',
-        marginLeft: 14.7,
+        marginLeft: 10,
         // marginTop: 3,
-        borderLeftWidth: 2,
-        borderLeftColor: '#363636',
+        borderLeftWidth: 1,
+        borderLeftColor: '#282828',
+        borderRadius: 10,
     },
     lightUsername: {
-        flex: 1,
         fontSize: 14.7,
         fontWeight: "600",
         color: '#5D5D5D',
         textAlign: "left",
     },
     darkUsername: {
-        flex: 1,
         fontSize: 14,
         fontWeight: "600",
         color: '#DADADA',
@@ -293,9 +480,9 @@ const styles = StyleSheet.create({
         color: '#222222',
         letterSpacing: 0.3,
         textAlign: 'auto',
-        marginHorizontal: 10,
+        marginHorizontal: 6,
         marginBottom: 6,
-        marginTop: 6,
+        marginTop: 5,
     },
     darkCommentText: {
         fontSize: 16,
@@ -303,21 +490,21 @@ const styles = StyleSheet.create({
         color: '#F2F2F2',
         letterSpacing: 0.3,
         textAlign: "left",
-        marginHorizontal: 10,
+        marginHorizontal: 6,
         marginBottom: 6,
-        marginTop: 6,
+        marginTop: 5,
     },
     lightViewReplyLine: {
         backgroundColor: '#BBBBBB',
         height: 1.5,
-        width: 33,
-        marginRight: 10,
+        width: 20,
+        marginRight: 7,
     },
     darkViewReplyLine: {
         backgroundColor: '#BBBBBB',
         height: 1.5,
-        width: 35,
-        marginRight: 10,
+        width: 20,
+        marginRight: 7,
     },
     lightViewText: {
         fontSize: 13,
@@ -342,6 +529,13 @@ const styles = StyleSheet.create({
         fontWeight: "500",
         color: '#DDDDDD',
         marginRight: 20,
+    },
+    overlayText: {
+        fontSize: 22,
+        fontWeight: "500",
+        color: '#000000',
+        alignSelf: 'center',
+        marginHorizontal: 10,
     },
 });
 

@@ -212,7 +212,15 @@ const AddPostScreen = ({navigation}) => {
     }, [navigation]);
 
     return (
-      <View style={styles.container}>
+      <View
+        onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+        onTouchEnd={e => {
+        if (e.nativeEvent.pageX - this.touchX > 150)
+            // console.log('Swiped Right')
+            navigation.goBack()
+        }}
+        style={styles.container}
+      >
         <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
           
           <PostBar/>

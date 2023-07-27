@@ -23,16 +23,14 @@ import RepostDark from '../../../assets/repost_dark.svg';
 const PostBottom = ({ postId, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
-    const [likeCount, setLikeCount] = useState(0);
+    const [likeCount, setLikeCount] = useState(likesCount);
     const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(0);
+    const [commentCount, setCommentCount] = useState(commentsCount);
     const [commentString, setCommentString] = useState("");
     const [liked, setLiked] = useState(false);
 
     useEffect(() => {
-        setLikeCount(likesCount);
-        onUpdateLikeCount(likesCount);
-        setCommentCount(commentsCount);
+        onUpdateLikeCount(likesCount); // update like count string
         onUpdateCommentCount(commentsCount); // update comment count string
     }, []);
 
@@ -115,13 +113,17 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
         // update like count for post
         const postRef = doc(db, 'allPosts', postId);
 
-        updateDoc(postRef, {
-            likesCount: increment(-1)
-        }).then(() => {
-            onUpdateLikeCount(likeCount - 1);
-            setLikeCount(likeCount - 1);
-            setLiked(false);
-        });
+        if(likeCount - 1 >= 0){
+            updateDoc(postRef, {
+                likesCount: increment(-1)
+            }).then(() => {
+                onUpdateLikeCount(likeCount - 1);
+                setLikeCount(likeCount - 1);
+                setLiked(false);
+            });
+        }
+
+        
     }
 
     // upload repost to database

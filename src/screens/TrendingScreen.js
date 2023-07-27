@@ -31,7 +31,7 @@ export default function TrendingScreen({navigation}){
                     ),
                     tabBarLabelStyle: {fontSize: 18, fontWeight: 'bold', marginTop: 0},
                     tabBarStyle: {
-                        backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.5)', 
+                        backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.7)', 
                         position: 'absolute', 
                         height: 40, 
                         width: '100%'

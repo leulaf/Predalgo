@@ -29,7 +29,7 @@ export default function UploadScreen({navigation, route}) {
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
-  const { forComment } = route.params;
+  const { forCommentOnComment, forCommentOnPost} = route.params;
 
   
   // useEffect(() => {
@@ -63,13 +63,14 @@ export default function UploadScreen({navigation, route}) {
 
     if (!result.canceled) {
 
-      if(forComment){
+      if(forCommentOnComment || forCommentOnPost){
         navigation.dispatch(
           StackActions.replace('EditImage', {
             imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
             height: result.assets[0].height,
             width: result.assets[0].width,
-            forComment: true,
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
             cameraPic: false
           })
         );
@@ -90,13 +91,14 @@ export default function UploadScreen({navigation, route}) {
       const picture = await camera.takePictureAsync(options);
 
 
-      if(forComment){
+      if(forCommentOnComment || forCommentOnPost){
         navigation.dispatch(
           StackActions.replace('EditImage', {
             imageUrl: `data:image/jpeg;base64,${picture.base64}`,
             height: picture.height,
             width: picture.width,
-            forComment: true,
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
             cameraPic: true
           })
         );
@@ -148,7 +150,7 @@ export default function UploadScreen({navigation, route}) {
             ref={ref => setCamera(ref)}
             flashMode={flashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off}
         >
-            {(image && !forComment) &&
+            {(image && !forCommentOnComment && !forCommentOnPost) &&
                 <View style={{flexDirection: 'row'}}>
 
                   <TouchableOpacity

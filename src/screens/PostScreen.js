@@ -42,18 +42,25 @@ const PostScreen = ({navigation, route}) => {
     />;
 
     const replyBottomSheet = <ReplyBottomSheet
+        commentList={commentsList}
+        setCommentList={setCommentsList}
         navigation={navigation}
         replyToPostId = {postId}
         replyToProfile = {profile}
         replyToUsername={username}
     />;
 
+    // useEffect(() => {
+    //     console.log("commentsList: ");
+    //     console.log(commentsList);
+    // }, [commentsList]);
+
     useEffect(() => {
-        getFirstTenPostCommentsByRecent();
+        getFirstTenPostCommentsByPopular();
     }, []);
 
-    const getFirstTenPostCommentsByRecent = async () => {
-        await fetchFirstTenPostCommentsByRecent(postId).then((comments) => {
+    const getFirstTenPostCommentsByPopular = async () => {
+        await fetchFirstTenPostCommentsByPopular(postId).then((comments) => {
             
             setCommentsList(comments);
             
@@ -173,8 +180,7 @@ const PostScreen = ({navigation, route}) => {
                 </View>
             );
 
-        } 
-        else if (index === 1) {
+        } else if (index === 1) {
             return (
 
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
@@ -183,6 +189,12 @@ const PostScreen = ({navigation, route}) => {
                         likesCount={likesCount}
                         commentsCount={commentsCount}
                     />
+
+                    {index === commentsList.length-1 &&
+
+                        <View style={{height: 600}}/>
+
+                    }
                 </View>
                 
             );
@@ -201,7 +213,7 @@ const PostScreen = ({navigation, route}) => {
                         commentsCount={item.commentsCount}
                     />
                     
-                    <View style={{height: 120}}/>
+                    <View style={{height: 150}}/>
                 </View>
                 
             );
@@ -215,6 +227,9 @@ const PostScreen = ({navigation, route}) => {
                 profilePic={item.profilePic}
                 commentId={item.id}
                 text={item.text ? item.text : null}
+                imageUrl={item.imageUrl ? item.imageUrl : null}
+                imageWidth={item.imageWidth ? item.imageWidth : null}
+                imageHeight={item.imageHeight ? item.imageHeight : null}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
             />
@@ -226,6 +241,12 @@ const PostScreen = ({navigation, route}) => {
             
             
             <FlatList
+                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+                onTouchEnd={e => {
+                if (e.nativeEvent.pageX - this.touchX > 150)
+                    // console.log('Swiped Right')
+                    navigation.goBack()
+                }}
                 data={commentsList}
                 keyExtractor={(item, index) => item.id + '-' + index}
                 stickyHeaderIndices={[1]}
@@ -345,14 +366,6 @@ const styles = StyleSheet.create({
         // marginVertical: 2,
         // width: 290,
     },
-    lightBottomSheet: {
-        backgroundColor: '#FFFFFF',
-        height: "100%",
-    },
-    darkBottomSheet: {
-        backgroundColor: '#141414',
-        height: "100%",
-    },
     lightFollowButton: {
         flexDirection: 'column',
         backgroundColor: '#ffffff',
@@ -407,59 +420,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 14,
         marginTop: 6,
     },
-    lightReplyToPostContainer: {
-        flex: 1,
-        // flexDirection: 'column',
-        backgroundColor: '#FFFFFF',
-    },
-    darkReplyToPostContainer: {
-        flex: 1,
-        backgroundColor: '#141414',
-    },
-    lightReplyToPostBar: {
-        height: 40,
-        width: "96%",
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#FBFBFB',
-        borderWidth: 1,
-        borderColor: '#EDEDED',
-    },
-    darkReplyToPostBar: {
-        height: 40,
-        width: "96%",
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignSelf: 'center',
-        alignItems: 'center',
-        alignContent: 'center',
-        backgroundColor: '#202020',
-        borderWidth: 1,
-        borderColor: '#262626',
-    },
-    lightInputStyle: {
-        flex: 1,
-        // height: 40,
-        fontSize: 18,
-        fontWeight: "400",
-        marginHorizontal: 10,
-        // alignSelf: 'center',
-        color: '#222222',
-    },
-    darkInputStyle: {
-        flex: 1,
-        // height: 40,
-        fontSize: 18,
-        fontWeight: "400",
-        marginHorizontal: 10,
-        // alignSelf: 'center',
-        // marginTop: 5,
-        color: '#F4F4F4',
-    },
+    
 });
 
 export default PostScreen;

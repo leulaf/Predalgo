@@ -31,512 +31,7 @@ const auth = getAuth();
 const win = Dimensions.get('window');
 
 
-// const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, replyToProfile, replyToUsername, onReplying}) => {
-//     const {theme,setTheme} = useContext(ThemeContext);
-//     const {imageForPost, setImageForPost} = useContext(AuthenticatedUserContext);
-//     const [replyTextToPost, setReplyTextToPost] = useState("");
-//     const [replyImageToPost, setReplyImageToPost] = useState("");
-//     const [replyMemeToPost, setReplyMemeToPost] = useState("");
-
-//     const inputAccessoryViewID = uuid.v4(); // maybe use uuid to generate this id
-
-//     const [textInputInFocus, setTextInputInFocus] = useState(false);
-
-//     const [currentIndex, setCurrentIndex] = useState(0);
-
-//     const [once, setOnce] = useState(false);
-
-//     let upload, createMeme, createMemeSmall, replyButton, link
-
-//     // icons
-//     if(theme == 'light'){
-//         link = <LinkLight width={30.5} height={30.5} marginLeft={8} marginRight={7} />;
-//         createMeme = <CreateMemeLight width={27} height={27} marginRight={7}/>;
-//         createMemeSmall = <CreateMemeLight width={23} height={23} marginRight={15} />;
-//         upload = <UploadLight width={28} height={28} marginRight={17}/>;
-//         replyButton = <PostButtonLight width={95} height={35} marginRight={8}/>;
-//     }else{
-//         link = <LinkDark width={30.5} height={30.5} marginLeft={8} marginRight={8.5} />;
-//         createMeme = <CreateMemeDark width={27} height={27} marginRight={7}/>;
-//         createMemeSmall = <CreateMemeDark width={23} height={23} marginRight={15} />;
-//         upload = <UploadDark width={28} height={28} marginRight={17} />;
-//         replyButton = <PostButtonDark width={95} height={35} marginRight={8}/>;
-//     }
-
-//     // ref
-//     const bottomSheetRef = useRef(null);
-//     const replyTextToPostRef = useRef(null);
-
-//     // variables
-//     const snapPoints = useMemo(() => ['15%', '70%', '99%'], []);
-
-//     useEffect(() => {
-//         if(imageForPost){
-//             setReplyImageToPost(imageForPost);
-//             setImageForPost(null);
-
-//             replyTextToPostRef.current.focus();
-//             setTextInputInFocus(true);
-//             setCurrentIndex(2);
-//             // handleSheetChanges(2);
-//             // bottomSheetRef.current.snapToIndex(2);
-//         }
-//     }, [imageForPost, setImageForPost])
-
-//     useEffect(() => {
-//         if(onReplying){
-//             replyTextToPostRef.current.focus();
-//             setTextInputInFocus(true);
-//             bottomSheetRef.current.snapToIndex(1);
-//             handleSheetChanges(1);
-//         }
-//     }, [onReplying])
-
-    
-
-//     // callbacks
-//     const handleSheetChanges = useCallback((index) => {
-//         console.log('handleSheetChanges', index);
-//         // if(index == 0){
-//         //     Keyboard.dismiss();
-//         //     setCurrentIndex(0);
-//         //     setTextInputInFocus(false);
-//         // }else if(index == 1){
-//         //     // Open keyboard when bottom sheet is expanded
-//         //     replyTextToPostRef.current.focus();
-//         //     setCurrentIndex(1);
-//         //     setTextInputInFocus(true);
-//         // }else if(index == 2){
-//         //     replyTextToPostRef.current.focus();
-//         //     setCurrentIndex(2);
-//         //     setTextInputInFocus(true);
-//         // }
-//     }, []);
-
-//     // Makes sure the keyboard is open when the bottom sheet is expanded
-//     const handleSheetAnimate = useCallback((from, to) => {
-//         console.log('handleSheetAnimate', from, to);
-        
-//         if(to == 0 && from == 1){
-//             Keyboard.dismiss();
-//             setCurrentIndex(0);
-//             setTextInputInFocus(false);
-//         }else if(to == 0 && from == 2 && once){
-//             // bottomSheetRef.current.snapToIndex(1);
-//             handleSheetChanges(1);
-//         }else if(to == 0 && from == 2 && !once){
-//             // bottomSheetRef.current.snapToIndex(1);
-//             replyTextToPostRef.current.focus();
-//             setCurrentIndex(2);
-//             setTextInputInFocus(true);
-//         }else if(to == 1){
-//             // Open keyboard when bottom sheet is expanded
-            
-//             replyTextToPostRef.current.focus();
-//             setCurrentIndex(1);
-//             setTextInputInFocus(true);
-//         }else{
-//             // bottomSheetRef.current.snapToIndex(2);
-//             replyTextToPostRef.current.focus();
-//             setCurrentIndex(2);
-//             setTextInputInFocus(true);
-//         }
-
-//     }, [snapPoints]);
-
-//     // Expand the bottom sheet when the text input is focused
-//     const handleFocus = () => {
-//         if(replyImageToPost){
-//             bottomSheetRef.current.snapToIndex(2);
-//         }else{
-//             bottomSheetRef.current.snapToIndex(1);
-//         }
-//         // replyTextToPostRef.current.focus();
-//         setTextInputInFocus(true);
-//     }
-    
-//     // Collapse the bottom sheet when the text input is blurred (Not in focus)
-//     const handleBlur = () => {
-
-//         if(!once && replyImageToPost != ""){
-//             console.log("handl------eBlur");
-//             setOnce(true);
-//             replyTextToPostRef.current.focus();
-//             bottomSheetRef.current.snapToIndex(2);
-//             // setCurrentIndex(2);
-//             // setTextInputInFocus(true);
-//             // handleSheetChanges(2);
-            
-//         }
-        
-//         else{
-//             console.log("handleBlur");
-//             console.log(imageForPost);
-//             // Keyboard.dismiss();
-//             // setTextInputInFocus(false);
-//             // bottomSheetRef.current.snapToIndex(0);
-//             handleSheetChanges(0);
-//             // setCurrentIndex(0);
-//         }
-
-
-
-//         // if(!once){
-//         //     console.log("handleBlur");
-//         //     console.log(imageForPost);
-//         //     setOnce(true);
-//         //     console.log("handlesBlur");
-//         //     Keyboard.dismiss();
-//         //     bottomSheetRef.current.snapToIndex(0);
-//         //     setCurrentIndex(0);
-//         //     setTextInputInFocus(false);
-//         // }else if(once && replyImageToPost == ""){
-//         //     // setTextInputInFocus(true);
-//         //     replyTextToPostRef.current.focus();
-//         //     setTextInputInFocus(true);
-//         // }
-//         // else if(once && replyImageToPost == ""){
-//         //     // setTextInputInFocus(true);
-//         //     replyTextToPostRef.current.focus();
-//         //     setTextInputInFocus(true);
-//         // }
-//         // Keyboard.dismiss();
-//         // bottomSheetRef.current.snapToIndex(0);
-//         // setCurrentIndex(0);
-//         // setTextInputInFocus(false);
-//     }
-
-//     const onReplyWithText = async () => {
-
-//         await commentTextOnComment(
-//             replyTextToPost,
-//             replyToCommentId,
-//             replyToPostId,
-//             replyToProfile,
-//             replyToUsername,
-//         ).catch(function (error) {
-//             // console.log(error);
-//         }).then(async (id) => {
-            
-//             const text = replyTextToPost;
-
-//             // clear reply text
-//             setReplyTextToPost("");
-
-//             // navigate to comment screen with the new comment
-//             navigation.push("Comment", {
-//                 commentId: id,
-//                 replyToPostId: replyToPostId,
-//                 replyToProfile: replyToProfile,
-//                 replyToUsername: replyToUsername,
-//                 text: text,
-//                 likesCount: 0,
-//                 commentsCount: 0,
-//                 profile: auth.currentUser.uid,
-//                 username: auth.currentUser.displayName,
-//                 profilePic: auth.currentUser.photoURL,
-//             });
-
-//         });
-
-//     }
-
-//     const onReplyWithImage = async () => {
-
-//         await commentImageOnComment(
-//             replyImageToPost.uri,
-//             replyTextToPost,
-//             replyToCommentId,
-//             replyToPostId,
-//             replyToProfile,
-//             replyToUsername,
-//             replyImageToPost.height,
-//             replyImageToPost.width,
-//         ).catch(function (error) {
-//             // console.log(error);
-//         }).then(async (result) => {
-            
-//             const text = replyTextToPost;
-
-//             // clear reply text and image
-//             setReplyImageToPost(null);
-//             setReplyTextToPost("");
-                                            
-//             // navigate to comment screen with the new comment
-//             navigation.push("Comment", {
-//                 commentId: result.id,
-//                 replyToPostId: replyToPostId,
-//                 replyToProfile: replyToProfile,
-//                 replyToUsername: replyToUsername,
-//                 imageUrl: result.url,
-//                 imageHeight: replyImageToPost.height,
-//                 imageWidth: replyImageToPost.width,
-//                 text: text,
-//                 likesCount: 0,
-//                 commentsCount: 0,
-//                 profile: auth.currentUser.uid,
-//                 username: auth.currentUser.displayName,
-//                 profilePic: auth.currentUser.photoURL,
-//             });
-
-//         });
-
-//     }
-
-
-//     const bottomButtons = () => (
-//         <View style={theme == 'light' ? styles.lightBottomContainer : styles.darkBottomContainer}>
-        
-//         {/* Upload, Link, Create Meme Buttons */}
-//         <View style={{ flex: 1, flexDirection: 'row', marginBottom: 1}}>
-            
-
-            
-            
-//             {/* Link Button */}
-//             <TouchableOpacity
-//                     // style={{flexDirection: 'row',}}
-//                     onPress={() => navigation.navigate("Upload")}
-//                 >
-//                 {link}
-//             </TouchableOpacity>
-
-
-
-
-//             {/* Upload Button */}
-//             <TouchableOpacity
-//                     // style={{flexDirection: 'row',}}
-//                     onPress={() => 
-//                         navigation.navigate("Upload", {
-//                             forComment: true,
-//                         })
-//                     }
-//                 >
-//                 {upload}
-//             </TouchableOpacity>   
-            
-            
-
-
-
-//             {/* Create Meme Button */}
-//             <TouchableOpacity
-//                 style={{flexDirection: 'row',  flex: 1 }}
-//                 // onPress={onPress}
-//             >
-//                 {createMeme}
-                
-//                 <Text marginBottom={0} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
-//                     Memes
-//                 </Text>
-
-//             </TouchableOpacity>
-
-
-
-//         </View>
-
-
-//         {/* Reply Button */}
-//         <TouchableOpacity
-//             style={{marginBottom: 6}}
-//             onPress={ async () =>
-//                     {
-//                         Keyboard.dismiss();
-//                         bottomSheetRef.current.snapToIndex(0);
-
-//                         if(replyImageToPost){
-                            
-//                             await onReplyWithImage();
-
-//                         }else{
-
-//                             await onReplyWithText();
-
-//                         }
-//                     }
-//                 }
-//         >
-//             {replyButton}
-//         </TouchableOpacity>
-        
-
-
-//         </View>
-//     );
-
-//     return (
-        
-//             <BottomSheet
-//                 ref={bottomSheetRef}
-//                 index={onReplying ? 1 : 0}
-//                 onAnimate={() => handleSheetAnimate}
-//                 snapPoints={snapPoints}
-//                 onChange={() => handleSheetChanges}
-//                 keyboardBehavior="interactive"
-//                 style={{
-//                     backgroundColor: theme == 'light' ? 'white' : '#141414',  // <==== HERE
-//                     borderRadius: 24,
-//                     shadowColor: theme == 'light' ? '#005FFF' : '#DDDDDD',
-//                     shadowOffset: {
-//                       width: 0,
-//                       height: theme == 'light' ? 4 : 6,
-//                     },
-//                     shadowOpacity: theme == 'light' ? 0.4 : 0.2,
-//                     shadowRadius: 12,
-//                     elevation: 5,
-//                 }}
-//                 // style={{backgroundColor: theme == 'light' ? styles.lightContainer : styles.darkContainer}}
-//                 backgroundStyle={theme == 'light' ? styles.lightBottomSheet : styles.darkBottomSheet}
-//                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#DDDDDD' : '#2D2D2D'}}
-//             >
-//                 <View 
-//                     automaticallyAdjustKeyboardInsets={true}
-//                     // contentContainerStyle={theme == 'light' ? styles.lightReplyTextToPostContainer : styles.darkReplyTextToPostContainer}
-//                 >
-
-//                     <View 
-//                         style={[
-//                             theme == 'light' ? 
-//                                 (currentIndex == 1 || currentIndex == 2 || textInputInFocus ? 
-//                                         replyImageToPost ? 
-//                                             styles.lightFocusReplyTextImagePostBar
-//                                         :
-//                                             currentIndex == 1 ? {...styles.lightFocusReplyTextPostBar, height: 235} : styles.lightFocusReplyTextPostBar
-//                                     : 
-//                                         styles.lightReplyTextPostBar
-//                                 )
-
-
-//                                 :
-
-
-//                                 (currentIndex == 1 || currentIndex == 2 || textInputInFocus ? 
-                                    
-                                    
-//                                         replyImageToPost ? 
-//                                                 styles.darkFocusReplyTextImagePostBar
-//                                             :
-//                                                 currentIndex == 1 ? {...styles.darkFocusReplyTextPostBar, height: 235} : styles.darkFocusReplyTextPostBar
-//                                     :
-//                                         styles.darkReplyTextPostBar
-//                                 ),
-//                         ]}
-//                     >
-//                         {/* <BottomSheetTextInput */}
-//                         <TextInput
-//                             ref={(input) => { replyTextToPostRef.current = input; }}
-//                             inputAccessoryViewID={inputAccessoryViewID}
-//                             autoCapitalize="none"
-//                             autoCorrect={false}
-//                             onFocus={() => handleFocus() }   //focus received
-//                             onBlur={() =>  handleBlur() }     //focus lost
-//                             maxLength={2000}
-//                             multiline={true}
-//                             style={[
-//                                 theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle, 
-//                                 { height: !textInputInFocus ? 35 :
-
-//                                     (replyImageToPost ? 225 
-
-//                                         : 
-
-//                                         currentIndex == 1 ? 225 : 415
-//                                     )
-                                    
-//                                 }
-//                             ]} 
-//                             placeholder="Reply to post"
-//                             value={replyTextToPost}
-//                             placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
-//                             onChangeText={newTerm => setReplyTextToPost(newTerm)}
-//                             // onEndEditing={(newTerm) => 
-//                             //     commentTextOnPost(
-//                             //         newTerm,
-//                             //         replyToProfile,
-//                             //         replyToPostId,
-//                             //         replyToUsername,
-//                             //     ).then((comment) => {
-//                             //         
-//                             //         bottomSheetRef.current.snapToIndex(0);
-//                             //     })
-//                             // }
-//                         />
-
-//                         {
-//                             textInputInFocus ?
-//                                 null
-//                             :
-//                                 <TouchableOpacity
-//                                     onPress = {() => handleFocus()}
-//                                 > 
-//                                     {createMemeSmall}
-//                                 </TouchableOpacity>
-//                         }
-                            
-
-//                     </View>
-
-                    
-//                     {
-//                         (replyImageToPost && currentIndex != 0) &&
-//                         <TouchableOpacity
-//                             onPress={() => 
-//                                 navigation.navigate("EditImage", ('EditImage', {
-//                                     imageUrl: replyImageToPost.undeditedUri,
-//                                     height: replyImageToPost.height,
-//                                     width: replyImageToPost.width,
-//                                     imageState: replyImageToPost.imageState,
-//                                     forComment: true,
-//                                     cameraPic: false,
-//                                     dontCompress: true,
-//                                   }))
-//                             }
-//                         >
-//                             <Image 
-//                                 source={{uri : replyImageToPost.uri}}
-//                                 // resizeMode='contain'
-//                                 style={{
-//                                     height:
-//                                     replyImageToPost.height < replyImageToPost.width ?
-//                                         (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.5
-//                                     :
-//                                         (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.25,
-
-//                                     width:
-//                                     replyImageToPost.height < replyImageToPost.width ?
-//                                         win.width * 0.5
-//                                     :
-//                                         win.width * 0.25,
-
-//                                     alignSelf: 'center',
-//                                     borderRadius: 10,
-//                                     marginTop: 10,
-//                                 }}
-//                             />
-//                         </TouchableOpacity>
-//                     }
-                    
-
-//                 </View>
-
-//                 {/* Show bottom buttons only when text input is clicked */}
-//                 {
-//                     textInputInFocus ?
-//                         <InputAccessoryView nativeID={inputAccessoryViewID}>
-//                             {bottomButtons()}
-//                         </InputAccessoryView>
-//                     :
-//                         null
-//                 }
-
-//             </BottomSheet>
-
-//     );
-// };
-
-const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyToUsername}) => {
+const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, replyToProfile, replyToUsername, onReplying}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const {imageForPost, setImageForPost} = useContext(AuthenticatedUserContext);
     const [replyTextToPost, setReplyTextToPost] = useState("");
@@ -548,6 +43,8 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
     const [textInputInFocus, setTextInputInFocus] = useState(false);
 
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    const [delayKeyBoard, setDelayKeyBoard] = useState(700);
 
     const [count, setCount] = useState(0);
 
@@ -576,7 +73,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
     const snapPoints = useMemo(() => ['15%', '70%', '99%'], []);
 
     useEffect(() => {
-        if(imageForPost){
+        if(imageForPost && imageForPost.forCommentOnComment){
             setReplyImageToPost(imageForPost);
             setImageForPost(null);
             // console.log("imageForPost");
@@ -629,12 +126,15 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
             // replyTextToPostRef.current.focus();
             setTextInputInFocus(true);
             setCurrentIndex(2);
-
+            // console.log(imageForPost)
+            // console.log(replyImageToPost)
+            // console.log(count)
             // Need to wait for the keyboard to open before focusing on the text input
             // FIX LATER
             setTimeout(() => {
                 replyTextToPostRef.current.focus();
-            }, 700);
+                setDelayKeyBoard(0);
+            }, delayKeyBoard);
             
 
         }
@@ -665,15 +165,16 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
             return
         }
 
-
+        setDelayKeyBoard(0);
         // Keyboard.dismiss();
         bottomSheetRef.current.snapToIndex(0);
     }
 
     const onReplyWithText = async () => {
 
-        await commentTextOnPost(
+        await commentTextOnComment(
             replyTextToPost,
+            replyToCommentId,
             replyToPostId,
             replyToProfile,
             replyToUsername,
@@ -687,7 +188,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
             setReplyTextToPost("");
 
             // navigate to comment screen with the new comment
-            navigation.navigate("Comment", {
+            navigation.push("Comment", {
                 commentId: id,
                 replyToPostId: replyToPostId,
                 replyToProfile: replyToProfile,
@@ -706,9 +207,10 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
 
     const onReplyWithImage = async () => {
 
-        await commentImageOnPost(
+        await commentImageOnComment(
             replyImageToPost.uri,
             replyTextToPost,
+            replyToCommentId,
             replyToPostId,
             replyToProfile,
             replyToUsername,
@@ -725,7 +227,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
             setReplyTextToPost("");
                                             
             // navigate to comment screen with the new comment
-            navigation.navigate("Comment", {
+            navigation.push("Comment", {
                 commentId: result.id,
                 replyToPostId: replyToPostId,
                 replyToProfile: replyToProfile,
@@ -771,7 +273,8 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
                     // style={{flexDirection: 'row',}}
                     onPress={() => 
                         navigation.navigate("Upload", {
-                            forComment: true,
+                            forCommentOnComment: true,
+                            forCommentOnPost: false,
                         })
                     }
                 >
@@ -832,10 +335,10 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
         
             <BottomSheet
                 ref={bottomSheetRef}
-                index={0}
+                index={onReplying ? 1 : 0}
                 snapPoints={snapPoints}
                 onAnimate={handleSheetAnimate}
-                onChange={() => handleSheetChanges}
+                // onChange={() => handleSheetChanges}
                 keyboardBehavior="interactive"
                 style={{
                     backgroundColor: theme == 'light' ? 'white' : '#141414',  // <==== HERE
@@ -843,9 +346,9 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
                     shadowColor: theme == 'light' ? '#005FFF' : '#DDDDDD',
                     shadowOffset: {
                       width: 0,
-                      height: theme == 'light' ? 4 : 6,
+                      height: theme == 'light' ? 6 : 6,
                     },
-                    shadowOpacity: theme == 'light' ? 0.4 : 0.2,
+                    shadowOpacity: theme == 'light' ? 0.6 : 0.33,
                     shadowRadius: 12,
                     elevation: 5,
                 }}
@@ -950,7 +453,8 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, rep
                                     height: replyImageToPost.height,
                                     width: replyImageToPost.width,
                                     imageState: replyImageToPost.imageState,
-                                    forComment: true,
+                                    forCommentOnComment: true,
+                                    forCommentOnPost: false,
                                     cameraPic: false,
                                     dontCompress: true,
                                 }))}
