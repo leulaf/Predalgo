@@ -17,7 +17,7 @@ export default function SearchScreen({navigation}){
         <View
             style={{ flex: 1 }}
         >
-            <SearchBar 
+            <SearchBar
                 term={term}
                 onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
                 // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
@@ -41,7 +41,7 @@ export default function SearchScreen({navigation}){
                 tabBarVisible: false,
                 lazy: true, // only renders the screen when the tab is pressed
                 }}>
-                <Top_Tab.Screen name="Users" component={SearchUsers} />
+                <Top_Tab.Screen name="Users" component={SearchUsers}/>
                 <Top_Tab.Screen name="#Tag" component={SearchTagScreen} />
             </Top_Tab.Navigator>
         </View>

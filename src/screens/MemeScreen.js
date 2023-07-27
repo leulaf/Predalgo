@@ -117,7 +117,15 @@ const MemeScreen = ({ navigation, route }) => {
 
     return (
 
-            <ScrollView style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+            <ScrollView
+                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+                onTouchEnd={e => {
+                if (e.nativeEvent.pageX - this.touchX > 150)
+                    // console.log('Swiped Right')
+                    navigation.goBack()
+                }}
+                style={theme == 'light' ? styles.lightContainer : styles.darkContainer}
+            >
                 
                 {/* template image, meme name, uploader, use count */}
                 <View style={theme == 'light' ? styles.lightMemeInfoContainer: styles.darkMemeInfoContainer}>

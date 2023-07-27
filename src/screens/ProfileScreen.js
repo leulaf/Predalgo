@@ -221,6 +221,12 @@ export default function ProfileScreen ({route, navigation}) {
    
     return (
         <Tabs.Container
+            onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+            onTouchEnd={e => {
+            if (e.nativeEvent.pageX - this.touchX > 150)
+                // console.log('Swiped Right')
+                navigation.goBack()
+            }}
             renderHeader={header}
             headerContainerStyle={{
                 shadowColor: theme == 'light' ? '#000000' : '#F4F4F4',
