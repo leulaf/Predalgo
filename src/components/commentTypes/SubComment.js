@@ -34,7 +34,7 @@ const auth = getAuth();
 
 const windowWidth = Dimensions.get('window').width - 50;
 
-const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -96,8 +96,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
         if (!likedSnapshot.exists()) {
           // add post to likes collection
           await setDoc(likedRef, {});
+
           // update like count for Comment
-          const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+          const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
       
           updateDoc(commentRef, {
             likesCount: increment(1)
@@ -117,17 +118,16 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
         await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
         // update like count for Comment
-        if(likeCount - 1 >= 0){
-            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
 
-            await updateDoc(commentRef, {
-                likesCount: increment(-1)
-            }).then(() => {
-                onUpdateLikeCount(likeCount - 1);
-                setLikeCount(likeCount - 1);
-                setLiked(false);
-            });
-        }
+        await updateDoc(commentRef, {
+            likesCount: increment(-1)
+        }).then(() => {
+            onUpdateLikeCount(likeCount - 1);
+            setLikeCount(likeCount - 1);
+            setLiked(false);
+        });
+
         
     }
 
@@ -145,7 +145,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
 
                     setDeleted(true);
                     
-                    const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+                    const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
 
                     await updateDoc(commentRef, {
                         commentsCount: increment(-1)
@@ -187,14 +187,15 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
         navigation.push('Comment', {
             commentId: commentId,
             replyToPostId: replyToPostId,
+            replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
-            likesCount: 0,
-            commentsCount: 0,
+            likesCount: likesCount,
+            commentsCount: commentsCount,
             onReply: false,
             profile: auth.currentUser.uid,
             username: auth.currentUser.displayName,
@@ -206,14 +207,15 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
         navigation.push('Comment', {
             commentId: commentId,
             replyToPostId: replyToPostId,
+            replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
-            likesCount: 0,
-            commentsCount: 0,
+            likesCount: likesCount,
+            commentsCount: commentsCount,
             onReply: true,
             profile: auth.currentUser.uid,
             username: auth.currentUser.displayName,
@@ -335,7 +337,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
             }
 
             {/* Reply and Like */}
-            <View style={{ flexDirection: 'row', marginBottom: 10, marginRight: 0,  alignItems: 'center', alignContent: 'center' }}>
+            <View style={{ height: 40, flexDirection: 'row', marginRight: 0,  alignItems: 'center', alignContent: 'center' }}>
                 
                 {/* View replies */}
                     {
@@ -343,7 +345,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
 
 
                         <TouchableOpacity
-                            style={{ margin: 2, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 10 }}
+                            style={{ margin: 2, width: 150, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 5 }}
                             onPress = {() => onNavToComment()}
                         > 
                         
@@ -359,13 +361,13 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
 
                 {/* Spacer */}
                 <TouchableOpacity
-                    style={{flex: 1, height: 20}}
+                    style={{flex: 1, height: 40, }}
                     onPress={() => onNavToComment()}
                 ></TouchableOpacity>
 
                 {/* Reply */}
                 <TouchableOpacity
-                    style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                    style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                     onPress={() => onReply(true)}
                 >
                     {reply}
@@ -377,7 +379,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
                 
                 {/* Like Button */}
                 <TouchableOpacity
-                    style={{  flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                    style={{  flexDirection: 'row', paddingLeft: 10, width: 110, height: 40, alignItems: 'center', alignContent: 'center' }}
                     onPress={async() => liked ? await onDisike() : await onLike()}
                 >
                     
@@ -406,7 +408,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToPostId, t
                         style={{flexDirection: 'row'}}
                         onPress={async() => {
                             setOverlayVisible(false);
-                            await deleteComment();
+                            deleteComment();
                         }
                     }>
                         <DeleteIcon width={40} height={40} style={{marginLeft: 2}}/>
@@ -455,7 +457,7 @@ const styles = StyleSheet.create({
     },
     darkCommentContainer: {
         marginTop: 5,
-        backgroundColor: '#151515',
+        backgroundColor: '#121212',
         marginLeft: 10,
         // marginTop: 3,
         borderLeftWidth: 1,

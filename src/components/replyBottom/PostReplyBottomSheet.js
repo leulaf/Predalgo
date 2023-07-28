@@ -30,7 +30,7 @@ const auth = getAuth();
 const win = Dimensions.get('window');
 
 
-const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyToUsername}) => {
+const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyToUsername, addNewComment}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const {imageForPost, setImageForPost} = useContext(AuthenticatedUserContext);
     const [replyTextToPost, setReplyTextToPost] = useState("");
@@ -45,19 +45,21 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
     const [count, setCount] = useState(0);
 
-    let upload, createMeme, createMemeSmall, replyButton, link
+    let upload, uploadSmall, createMeme, createMemeSmall, link, linkSmall, replyButton
 
     // icons
     if(theme == 'light'){
         link = <LinkLight width={30.5} height={30.5} marginLeft={8} marginRight={7} />;
+        linkSmall = <LinkLight width={26.5} height={26.5} marginRight={5} marginTop={5}/>;
         createMeme = <CreateMemeLight width={27} height={27} marginRight={7}/>;
-        createMemeSmall = <CreateMemeLight width={23} height={23} marginRight={15} />;
+        createMemeSmall = <CreateMemeLight width={23.5} height={23.5} marginRight={15} />;
         upload = <UploadLight width={28} height={28} marginRight={17}/>;
         replyButton = <PostButtonLight width={95} height={35} marginRight={8}/>;
     }else{
         link = <LinkDark width={30.5} height={30.5} marginLeft={8} marginRight={8.5} />;
+        linkSmall = <LinkDark width={26.5} height={26.5} marginRight={5} marginTop={5}/>;
         createMeme = <CreateMemeDark width={27} height={27} marginRight={7}/>;
-        createMemeSmall = <CreateMemeDark width={23} height={23} marginRight={15} />;
+        createMemeSmall = <CreateMemeDark width={23.5} height={23.5} marginRight={15} />;
         upload = <UploadDark width={28} height={28} marginRight={17} />;
         replyButton = <PostButtonDark width={95} height={35} marginRight={8}/>;
     }
@@ -390,15 +392,16 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                             multiline={true}
                             style={[
                                 theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle, 
-                                { height: !textInputInFocus ? 35 :
+                                {   
+                                    height: !textInputInFocus ? 35 :
 
                                     (replyImageToPost ? 225 
 
                                         : 
 
                                         currentIndex == 1 ? 225 : 415
-                                    )
-                                    
+                                    ),
+                                    marginTop: 1,
                                 }
                             ]} 
                             placeholder="Reply to post"
@@ -423,8 +426,10 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                 null
                             :
                                 <TouchableOpacity
+                                    style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center',}}
                                     onPress = {() => handleFocus()}
-                                > 
+                                >
+                                    {linkSmall}
                                     {createMemeSmall}
                                 </TouchableOpacity>
                         }

@@ -148,18 +148,17 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
     };
 
     return (
-        <View style={{flexDirection: 'row', height: 40, alignSelf: 'center', alignItems: 'center', alignContent: 'center'}}>     
+        <View style={{flex: 1, width: '100%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
             {/* Comments button */}
-            <TouchableOpacity
-                style={styles.bottomButtonContainer}
-                // onPress={() => navigation.navigate('Comments', {postId: postId})}
+            <View
+                style= {styles.commentsContainer}
             >
-                {comments}
+                    {comments}
 
-                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    {commentString}
-                </Text>
-            </TouchableOpacity>
+                    <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                        {commentString}
+                    </Text>
+            </View>
 
             
             {/* Likes button */}
@@ -182,7 +181,7 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
             {/* Repost button */}
             <TouchableOpacity
                 style={styles.bottomButtonContainer}
-                onPress={() => onRepost()}
+                // onPress={() => onRepost()}
             >
                 {repost}
 
@@ -213,16 +212,30 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     bottomButtonContainer: {
-        flexDirection: 'row',
-        marginRight: 60,
-        alignItems: 'center',
-        alignContent: 'center'
-    },
-    shareButtonContainer: {
+        height: 45,
+        width: 100,  
         flexDirection: 'row',
         alignItems: 'center',
         alignContent: 'center',
-        marginRight: 5
+        justifyContent: 'center',
+    },
+    commentsContainer: {
+        height: 45,
+        flexDirection:"row",
+        alignSelf: 'flex-start',
+        marginLeft: 5,
+        paddingHorizontal: 10,
+        alignItems: "center",
+        alignContent: "center", 
+        justifyContent: "center",
+    },
+    shareButtonContainer: {
+        height: 45,
+        width: 100,
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
     },
     lightBottomText: {
         fontSize: 16,

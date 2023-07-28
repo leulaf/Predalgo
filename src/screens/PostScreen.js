@@ -43,7 +43,7 @@ const PostScreen = ({navigation, route}) => {
 
     const replyBottomSheet = <ReplyBottomSheet
         commentList={commentsList}
-        setCommentList={setCommentsList}
+        addNewComment={() => addNewComment()}
         navigation={navigation}
         replyToPostId = {postId}
         replyToProfile = {profile}
@@ -65,6 +65,16 @@ const PostScreen = ({navigation, route}) => {
             setCommentsList(comments);
             
         });
+    }
+
+    const addNewComment = (newComment) => {
+
+        setTimeout(() => {
+            setCommentsList([newComment, ...commentsList]).then(() => {
+                console.log("commentsList: ");
+                console.log(commentsList);
+            })
+        }, 3000);
     }
 
     // Sets the header of component
@@ -198,7 +208,7 @@ const PostScreen = ({navigation, route}) => {
                 </View>
                 
             );
-        }else if (index === commentsList.length-1) {
+        }else if (index === commentsList.length-1 && commentsList.length > 1) {
             return (
 
                 <View>
@@ -209,6 +219,9 @@ const PostScreen = ({navigation, route}) => {
                         profilePic={item.profilePic}
                         commentId={item.id}
                         text={item.text ? item.text : null}
+                        imageUrl={item.imageUrl ? item.imageUrl : null}
+                        imageWidth={item.imageWidth ? item.imageWidth : null}
+                        imageHeight={item.imageHeight ? item.imageHeight : null}
                         likesCount={item.likesCount}
                         commentsCount={item.commentsCount}
                     />

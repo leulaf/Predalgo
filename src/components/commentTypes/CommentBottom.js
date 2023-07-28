@@ -20,19 +20,17 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const CommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) => {
+const CommentBottom = ({ commentId, replyToCommentId, replyToPostId,likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
-    const [likeCount, setLikeCount] = useState(0);
+    const [likeCount, setLikeCount] = useState(likesCount);
     const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(0);
+    const [commentCount, setCommentCount] = useState(commentsCount);
     const [commentString, setCommentString] = useState("");
     const [liked, setLiked] = useState(false);
 
     useEffect(() => {
-        setLikeCount(likesCount);
-        onUpdateLikeCount(likesCount);
-        setCommentCount(commentsCount);
+        onUpdateLikeCount(likesCount); // update like count string
         onUpdateCommentCount(commentsCount); // update comment count string
     }, []);
 
@@ -41,13 +39,13 @@ const CommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) 
     let likes, alreadyLiked, comments, share, repost;
 
     if(theme == 'light'){
-        comments = <Comments width={23} height={23} style={{ marginRight: 7 }}/>;
+        comments = <Comments width={24} height={24} style={{ marginRight: 7 }}/>;
         likes = <Likes width={23} height={23} style={{ marginRight: 7 }}/>;
         alreadyLiked = <Liked width={23} height={23} style={{ marginRight: 7 }}/>;
         share = <Share width={21} height={21} style={{ marginRight: 7 }}/>;
         repost = <Repost width={19} height={19} style={{ marginRight: 7 }}/>;
     }else{
-        comments = <CommentsDark width={23} height={23} style={{ marginRight: 7 }}/>;
+        comments = <CommentsDark width={24} height={24} style={{ marginRight: 7 }}/>;
         likes = <LikesDark width={24} height={24} style={{ marginRight: 7 }}/>;
         alreadyLiked = <LikedDark width={24} height={24} style={{ marginRight: 7 }}/>;
         share = <ShareDark width={21} height={21} style={{ marginRight: 7 }}/>;
@@ -91,17 +89,19 @@ const CommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) 
         const likedSnapshot = await getDoc(likedRef);
         
         if (!likedSnapshot.exists()) {
-          // add post to likes collection
-          await setDoc(likedRef, {});
-          // update like count for post
-          const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-      
-          updateDoc(commentRef, {
-            likesCount: increment(1)
-          }).then(() => {
-            onUpdateLikeCount(likeCount + 1); // update like count string
-            setLikeCount(likeCount + 1);
-          });
+            // add post to likes collection
+            await setDoc(likedRef, {});
+          
+            // update like count for Comment
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        
+            updateDoc(commentRef, {
+                likesCount: increment(1)
+            }).then(() => {
+                onUpdateLikeCount(likeCount + 1);
+                setLikeCount(likeCount + 1);
+                onUpdateLikeCount(likeCount + 1); // update like count string
+            });
         }
       
         setLiked(true);
@@ -109,14 +109,14 @@ const CommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) 
 
     // update like count and add post to liked collection
     const onDisike = async () => {
-        // delete post from likes collection
-        deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
+        // delete comment from likedComments collection
+        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
-        // update like count for post
+        // update like count for Comment
         if(likeCount - 1 >= 0){
             const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-            updateDoc(commentRef, {
+            await updateDoc(commentRef, {
                 likesCount: increment(-1)
             }).then(() => {
                 onUpdateLikeCount(likeCount - 1);
@@ -128,18 +128,17 @@ const CommentBottom = ({ replyToPostId, commentId, likesCount, commentsCount }) 
 
 
     return (
-        <View style={{flexDirection: 'row', height: 40, alignSelf: 'center', alignItems: 'center', alignContent: 'center'}}>     
+        <View style={{flex: 1, width: '100%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
             {/* Comments button */}
-            <TouchableOpacity
-                style={styles.bottomButtonContainer}
-                // onPress={() => navigation.navigate('Comments', {commentId: commentId})}
+            <View
+                style= {styles.commentsContainer}
             >
-                {comments}
+                    {comments}
 
-                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    {commentString}
-                </Text>
-            </TouchableOpacity>
+                    <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                        {commentString}
+                    </Text>
+            </View>
 
             
             {/* Likes button */}
@@ -193,16 +192,30 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     bottomButtonContainer: {
-        flexDirection: 'row',
-        marginRight: 60,
-        alignItems: 'center',
-        alignContent: 'center'
-    },
-    shareButtonContainer: {
+        height: 45,
+        width: 100,  
         flexDirection: 'row',
         alignItems: 'center',
         alignContent: 'center',
-        marginRight: 5
+        justifyContent: 'center',
+    },
+    commentsContainer: {
+        height: 45,
+        flexDirection:"row",
+        alignSelf: 'flex-start',
+        marginLeft: 5,
+        paddingHorizontal: 10,
+        alignItems: "center",
+        alignContent: "center", 
+        justifyContent: "center",
+    },
+    shareButtonContainer: {
+        height: 45,
+        width: 100,
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
     },
     lightBottomText: {
         fontSize: 16,

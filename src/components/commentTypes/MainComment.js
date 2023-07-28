@@ -41,7 +41,7 @@ const auth = getAuth();
 
 const windowWidth = Dimensions.get('window').width;
 
-const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -108,16 +108,28 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
             // add post to likes collection
             await setDoc(likedRef, {});
             
-            // update like count for Comment
-            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-        
-            updateDoc(commentRef, {
-                likesCount: increment(1)
-            }).then(() => {
-                onUpdateLikeCount(likeCount + 1);
-                setLikeCount(likeCount + 1);
-                onUpdateLikeCount(likeCount + 1); // update like count string
-            });
+            // update likes count for Comment or Post
+            if(replyToCommentId){
+                const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+
+                await updateDoc(commentRef, {
+                    likesCount: increment(1)
+                }).then(() => {
+                    onUpdateLikeCount(likeCount + 1);
+                    setLikeCount(likeCount + 1);
+                    setLiked(false);
+                });
+            }else{
+                const postRef = doc(db, 'allPosts', replyToPostId);
+
+                await updateDoc(postRef, {
+                    likesCount: increment(1)
+                }).then(() => {
+                    onUpdateLikeCount(likeCount + 1);
+                    setLikeCount(likeCount + 1);
+                    setLiked(false);
+                });
+            }
         }
       
         setLiked(true);
@@ -129,8 +141,19 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
         await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
         // update like count for Comment
-        if(likeCount - 1 >= 0){
-            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+        await updateDoc(commentRef, {
+            likesCount: increment(-1)
+        }).then(() => {
+            onUpdateLikeCount(likeCount - 1);
+            setLikeCount(likeCount - 1);
+            setLiked(false);
+        });
+
+        // update likes count for Comment or Post
+        if(replyToCommentId){
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
 
             await updateDoc(commentRef, {
                 likesCount: increment(-1)
@@ -139,7 +162,18 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
                 setLikeCount(likeCount - 1);
                 setLiked(false);
             });
+        }else{
+            const postRef = doc(db, 'allPosts', replyToPostId);
+
+            await updateDoc(postRef, {
+                likesCount: increment(-1)
+            }).then(() => {
+                onUpdateLikeCount(likeCount - 1);
+                setLikeCount(likeCount - 1);
+                setLiked(false);
+            });
         }
+
     }
 
     const deleteComment = () => {
@@ -156,15 +190,29 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
 
                     setDeleted(true);
                     
-                    const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+                    // update comment count for Comment or Post
+                    if(replyToCommentId){
+                        const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
 
-                    await updateDoc(commentRef, {
-                        commentsCount: increment(-1)
-                    }).then(() => {
-                        onUpdateLikeCount(likeCount - 1);
-                        setLikeCount(likeCount - 1);
-                        setLiked(false);
-                    });
+                        await updateDoc(commentRef, {
+                            commentsCount: increment(-1)
+                        }).then(() => {
+                            onUpdateLikeCount(likeCount - 1);
+                            setLikeCount(likeCount - 1);
+                            setLiked(false);
+                        });
+                    }else{
+                        const postRef = doc(db, 'allPosts', replyToPostId);
+
+                        await updateDoc(postRef, {
+                            commentsCount: increment(-1)
+                        }).then(() => {
+                            onUpdateLikeCount(likeCount - 1);
+                            setLikeCount(likeCount - 1);
+                            setLiked(false);
+                        });
+                    }
+
                 }).catch((error) => {
                     console.log(error);
                 })
@@ -200,14 +248,15 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
         navigation.push('Comment', {
             commentId: commentId,
             replyToPostId: replyToPostId,
+            replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
-            likesCount: 0,
-            commentsCount: 0,
+            likesCount: likesCount,
+            commentsCount: commentsCount,
             onReply: false,
             profile: auth.currentUser.uid,
             username: auth.currentUser.displayName,
@@ -219,14 +268,15 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
         navigation.push('Comment', {
             commentId: commentId,
             replyToPostId: replyToPostId,
+            replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
-            likesCount: 0,
-            commentsCount: 0,
+            likesCount: likesCount,
+            commentsCount: commentsCount,
             onReply: true,
             profile: auth.currentUser.uid,
             username: auth.currentUser.displayName,
@@ -356,14 +406,14 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
             }
 
             {/* Reply and Like */}
-            <View style={{ flexDirection: 'row', marginBottom: 10, marginRight: 0 }}>
+            <View style={{ flexDirection: 'row', marginRight: 0,  alignItems: 'center', alignContent: 'center'  }}>
                 
                 {/* View replies */}
                 {/* {
                     commentCount > 0 && !viewMoreClicked?
                         
                     <TouchableOpacity
-                        style={{ marginLeft: 12,  margin: 2, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
+                        style={{ marginLeft: 12, height: 40, margin: 2, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
                         onPress = {() => {
                             !viewMoreClicked ? 
                                 onFirstViewMoreClicked()
@@ -386,13 +436,13 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
 
                 {/* Spacer */}
                 <TouchableOpacity
-                    style={{flex: 1, height:20}}
+                    style={{flex: 1, height: 40, }}
                     onPress={() => onNavToComment()}
                 ></TouchableOpacity>
 
                 {/* Reply */}
                 <TouchableOpacity
-                    style={{ flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                    style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                     onPress={() => onReply()}
                 >
                     {reply}
@@ -404,7 +454,7 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
                 
                 {/* Like Button */}
                 <TouchableOpacity
-                    style={{  flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                    style={{  width: 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                     onPress={async() => liked ? await onDisike() : await onLike()}
                 >
                     
@@ -435,6 +485,25 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
 
                                     <SubComment
                                         replyToPostId={replyToPostId}
+                                        replyToCommentId={commentId}
+                                        profile={item.profile}
+                                        username={item.username}
+                                        profilePic={item.profilePic}
+                                        commentId={item.id}
+                                        text={item.text ? item.text : null}
+                                        likesCount={item.likesCount}
+                                        commentsCount={item.commentsCount}
+                                    />
+                                </View>
+                            );
+                        }else if(index == commentsList.length - 1){
+                            return (
+
+                                <View style={{marginTop: 2, marginBottom: 6}}>
+
+                                    <SubComment
+                                        replyToPostId={replyToPostId}
+                                        replyToCommentId={commentId}
                                         profile={item.profile}
                                         username={item.username}
                                         profilePic={item.profilePic}
@@ -450,6 +519,7 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
                         return (
                             <SubComment
                                 replyToPostId={replyToPostId}
+                                replyToCommentId={commentId}
                                 profile={item.profile}
                                 username={item.username}
                                 profilePic={item.profilePic}
@@ -470,7 +540,7 @@ const MainComment = ({ profile, username, profilePic, replyToPostId, commentId, 
                 ?
                     
                 <TouchableOpacity
-                    style={{ backgroundColor: theme == 'light' ? '#ECECEC' : '#1D1D1D', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
                     onPress = {() => {
                         !viewMoreClicked ? 
                             onFirstViewMoreClicked()
@@ -543,7 +613,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     darkCommentContainer: {
-        backgroundColor: '#161616',
+        backgroundColor: '#121212',
         marginTop: 8,
         borderRadius: 10,
     },

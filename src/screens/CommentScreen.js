@@ -26,7 +26,7 @@ const windowWidth = Dimensions.get('window').width;
 const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [commentsList, setCommentsList] = useState([]);
-    const {profile, commentId, onReply, replyToPostId, username, profilePic, text, imageUrl, imageWidth, imageHeight, memeName, likesCount, commentsCount} = route.params;
+    const {profile, commentId, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, imageWidth, imageHeight, memeName, likesCount, commentsCount} = route.params;
 
     const [onReplying, setOnReplying] = useState(onReply ? onReply : false);
 
@@ -35,6 +35,7 @@ const CommentScreen = ({navigation, route}) => {
         <CommentBottom
             commentId={commentId}
             replyToPostId={replyToPostId}
+            replyToCommentId={replyToCommentId}
             likesCount={likesCount}
             commentsCount={commentsCount}
         />
@@ -170,11 +171,15 @@ const CommentScreen = ({navigation, route}) => {
                 <View>
                     <MainComment
                         replyToPostId={replyToPostId}
+                        replyToCommentId={commentId}
                         profile={item.profile}
                         username={item.username}
                         profilePic={item.profilePic}
                         commentId={item.id}
                         text={item.text ? item.text : null}
+                        imageUrl={item.imageUrl ? item.imageUrl : null}
+                        imageWidth={item.imageWidth ? item.imageWidth : null}
+                        imageHeight={item.imageHeight ? item.imageHeight : null}
                         likesCount={item.likesCount}
                         commentsCount={item.commentsCount}
                     />
@@ -187,6 +192,7 @@ const CommentScreen = ({navigation, route}) => {
         return (
             <MainComment
                 replyToPostId={replyToPostId}
+                replyToCommentId={commentId}
                 profile={item.profile}
                 username={item.username}
                 profilePic={item.profilePic}
