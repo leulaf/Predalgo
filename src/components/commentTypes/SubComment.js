@@ -457,11 +457,11 @@ const styles = StyleSheet.create({
     },
     darkCommentContainer: {
         marginTop: 5,
-        backgroundColor: '#121212',
+        backgroundColor: '#131313',
         marginLeft: 10,
         // marginTop: 3,
         borderLeftWidth: 1,
-        borderLeftColor: '#282828',
+        borderLeftColor: '#242424',
         borderRadius: 10,
     },
     lightUsername: {

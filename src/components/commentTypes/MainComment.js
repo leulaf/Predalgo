@@ -478,10 +478,10 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                     data={commentsList}
                     keyExtractor={(item, index) => item.id + '-' + index}
                     renderItem={({ item, index }) => {
-                        if(index == 0){
+                        if(index == commentsList.length - 1){
                             return (
 
-                                <View style={{marginTop: 2}}>
+                                <View style={{marginTop: 2, marginBottom: 6}}>
 
                                     <SubComment
                                         replyToPostId={replyToPostId}
@@ -496,10 +496,10 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                                     />
                                 </View>
                             );
-                        }else if(index == commentsList.length - 1){
+                        }else if(index == 0){
                             return (
 
-                                <View style={{marginTop: 2, marginBottom: 6}}>
+                                <View style={{marginTop: 2}}>
 
                                     <SubComment
                                         replyToPostId={replyToPostId}
