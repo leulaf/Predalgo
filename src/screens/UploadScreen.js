@@ -2,9 +2,7 @@ import { Camera, CameraType } from 'expo-camera';
 import { useState, useContext, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from 'react-native';
 
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import PinturaCompressImage from '../shared/PinturaCompress';
 
 import { StackActions } from '@react-navigation/native';
 
@@ -29,7 +27,7 @@ export default function UploadScreen({navigation, route}) {
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
-  const { forCommentOnComment, forCommentOnPost} = route.params;
+  const { forCommentOnComment, forCommentOnPost, forMemeComment} = route.params;
 
   
   // useEffect(() => {
@@ -65,12 +63,13 @@ export default function UploadScreen({navigation, route}) {
 
       if(forCommentOnComment || forCommentOnPost){
         navigation.dispatch(
-          StackActions.replace('EditImage', {
+          StackActions.replace(forMemeComment ? 'EditMeme' : 'EditImage', {
             imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
             height: result.assets[0].height,
             width: result.assets[0].width,
             forCommentOnComment: forCommentOnComment,
             forCommentOnPost: forCommentOnPost,
+            forMemeComment: forMemeComment ? forMemeComment : false,
             cameraPic: false
           })
         );
@@ -89,16 +88,17 @@ export default function UploadScreen({navigation, route}) {
       };
 
       const picture = await camera.takePictureAsync(options);
-
+      console.log(picture.height, picture.width);
 
       if(forCommentOnComment || forCommentOnPost){
         navigation.dispatch(
-          StackActions.replace('EditImage', {
+          StackActions.replace(forMemeComment ? 'EditMeme' : 'EditImage', {
             imageUrl: `data:image/jpeg;base64,${picture.base64}`,
             height: picture.height,
             width: picture.width,
             forCommentOnComment: forCommentOnComment,
             forCommentOnPost: forCommentOnPost,
+            forMemeComment: forMemeComment ? forMemeComment : false,
             cameraPic: true
           })
         );
@@ -112,15 +112,19 @@ export default function UploadScreen({navigation, route}) {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
 
-  const getbase64AndNav = async (image) => {
-    const manipResult = await manipulateAsync(image, [], {
-      // compress: 0.2,
-      // format: SaveFormat.PNG,
-      base64: true,
-    });
-
-    await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`});
-  };
+  const onGoBack = () => {
+    if(forMemeComment){
+      navigation.dispatch(
+        StackActions.replace('AddPost', {
+          forCommentOnComment: forCommentOnComment,
+          forCommentOnPost: forCommentOnPost,
+        })
+      );
+      // navigation.goBack(null);
+    }else{
+      navigation.goBack(null);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -128,7 +132,7 @@ export default function UploadScreen({navigation, route}) {
 
           {/* back button */}
           <TouchableOpacity style={styles.backButton} 
-              onPress={() => navigation.goBack(null)}
+              onPress={() => onGoBack()}
           >
               <BackIcon height={25} width={25}/>
               <Text style={styles.text}>Back</Text>
@@ -178,7 +182,7 @@ export default function UploadScreen({navigation, route}) {
                         {/* Make meme */}
                         <TouchableOpacity 
                             style={{ marginRight: 10, marginTop: 120, flexDirection: 'row'}} 
-                            onPress={() => getbase64AndNav(image)}
+                            onPress={() => {}}
                         >
                             <MakeMeme height={35} width={35}/>
                             <Text style={styles.text} alignSelf={'center'}>

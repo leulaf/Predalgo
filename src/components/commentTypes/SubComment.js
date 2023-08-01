@@ -34,7 +34,7 @@ const auth = getAuth();
 
 const windowWidth = Dimensions.get('window').width - 50;
 
-const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -52,6 +52,8 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
 
     const [repliesVisible, setRepliesVisible] = useState(false);
     const [replies, setReplies] = useState([]); // array of replies
+
+    const [viewWidth, setViewWidth] = useState(0);
 
     useEffect(() => {
         onUpdateLikeCount(likesCount);
@@ -94,19 +96,19 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         const likedSnapshot = await getDoc(likedRef);
       
         if (!likedSnapshot.exists()) {
-          // add post to likes collection
-          await setDoc(likedRef, {});
+            // add post to likes collection
+            await setDoc(likedRef, {});
 
-          // update like count for Comment
-          const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+            // update like count for Comment
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
       
-          updateDoc(commentRef, {
-            likesCount: increment(1)
-          }).then(() => {
-            onUpdateLikeCount(likeCount + 1);
-            setLikeCount(likeCount + 1);
-            onUpdateLikeCount(likeCount + 1); // update like count string
-          });
+            updateDoc(commentRef, {
+                likesCount: increment(1)
+            }).then(() => {
+                onUpdateLikeCount(likeCount + 1);
+                setLikeCount(likeCount + 1);
+                onUpdateLikeCount(likeCount + 1); // update like count string
+            });
         }
       
         setLiked(true);
@@ -118,7 +120,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
         // update like count for Comment
-        const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
         await updateDoc(commentRef, {
             likesCount: increment(-1)
@@ -191,6 +193,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
+            memeName: memeName,
+            template: template,
+            templateState: templateState,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -211,6 +216,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
+            memeName: memeName,
+            template: template,
+            templateState: templateState,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -243,10 +251,10 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         return null;
     }
 
-    const secondaryComment = <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
+    const secondaryComment = <View onLayout={(event) => setViewWidth(event.nativeEvent.layout.width)} style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
             
             {/* Profile Picture and Username */}
-            <View style={{marginTop: 7, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{marginTop: 7, flexDirection: 'row', alignItems: 'center'}} >
                 
                 {/* Profile Picture */}
                 <TouchableOpacity 
@@ -309,7 +317,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             {(text != null && text != "" && text != undefined) &&
                 <TouchableOpacity 
                     onPress = {() => onNavToComment()}
-                    style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
+                    // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
                     
                     <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
@@ -322,22 +330,22 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             {/* Comment Image */}
             {(imageUrl != null && imageUrl != "" && imageUrl != undefined) &&
                 <TouchableOpacity
-                    style={{backgroundColor: 'black', marginTop: 2, marginBottom: 12}}
+                    style={{backgroundColor: 'black', marginTop: 11, borderRadius: 0}}
                     onPress = {() => onNavToComment()}
                 >
                     <ResizableImage 
                         image={imageUrl}
                         height={imageHeight}
                         width={imageWidth}
-                        maxHeight={600}
-                        maxWidth={windowWidth}
+                        maxHeight={500}
+                        maxWidth={viewWidth}
                         style={{borderRadius: 0}}
                     />
                 </TouchableOpacity>
             }
 
             {/* Reply and Like */}
-            <View style={{ height: 40, flexDirection: 'row', marginRight: 0,  alignItems: 'center', alignContent: 'center' }}>
+            <View style={{ height: 40, flexDirection: 'row', marginTop: 2,  alignItems: 'center', alignContent: 'center' }}>
                 
                 {/* View replies */}
                     {
@@ -345,7 +353,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
 
 
                         <TouchableOpacity
-                            style={{ margin: 2, width: 150, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 5 }}
+                            style={{ margin: 2, width: 150, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 0 }}
                             onPress = {() => onNavToComment()}
                         > 
                         
@@ -482,9 +490,9 @@ const styles = StyleSheet.create({
         color: '#222222',
         letterSpacing: 0.3,
         textAlign: 'auto',
-        marginHorizontal: 6,
-        marginBottom: 6,
-        marginTop: 5,
+        marginHorizontal: 8,
+        // marginBottom: 6,
+        marginTop: 8,
     },
     darkCommentText: {
         fontSize: 16,
@@ -492,9 +500,9 @@ const styles = StyleSheet.create({
         color: '#F2F2F2',
         letterSpacing: 0.3,
         textAlign: "left",
-        marginHorizontal: 6,
-        marginBottom: 6,
-        marginTop: 5,
+        marginHorizontal: 8,
+        // marginBottom: 6,
+        marginTop: 8,
     },
     lightViewReplyLine: {
         backgroundColor: '#BBBBBB',

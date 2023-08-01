@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
-import {ThemeContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
@@ -31,10 +31,12 @@ const windowWidth = Dimensions.get('window').width;
 const PostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [commentsList, setCommentsList] = useState([]);
-    const {title, profile, likesCount, commentsCount, imageUrl, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
+    const {title, profile, likesCount, commentsCount, imageUrl, template, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
 
     const [replyTextToPost, setReplyTextToPost] = useState("");
     const [submittedText, setSubmittedText] = useState(null);
+
+    const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
     
     const contentBottom = <ContentBottom
         memeName={memeName}
@@ -76,6 +78,13 @@ const PostScreen = ({navigation, route}) => {
             })
         }, 3000);
     }
+
+    const onGoBack = () => {
+        if(imageReply && imageReply.forCommentOnPost){
+            setImageReply(null)
+        }
+        navigation.goBack(null);
+    };
 
     // Sets the header of component
     useEffect(() => { 
@@ -218,10 +227,13 @@ const PostScreen = ({navigation, route}) => {
                         username={item.username}
                         profilePic={item.profilePic}
                         commentId={item.id}
-                        text={item.text ? item.text : null}
-                        imageUrl={item.imageUrl ? item.imageUrl : null}
-                        imageWidth={item.imageWidth ? item.imageWidth : null}
-                        imageHeight={item.imageHeight ? item.imageHeight : null}
+                        text={item.text}
+                        imageUrl={item.imageUrl}
+                        memeName={item.memeName}
+                        template={item.template}
+                        templateState={item.templateState}
+                        imageWidth={item.imageWidth}
+                        imageHeight={item.imageHeight}
                         likesCount={item.likesCount}
                         commentsCount={item.commentsCount}
                     />
@@ -239,10 +251,13 @@ const PostScreen = ({navigation, route}) => {
                 username={item.username}
                 profilePic={item.profilePic}
                 commentId={item.id}
-                text={item.text ? item.text : null}
-                imageUrl={item.imageUrl ? item.imageUrl : null}
-                imageWidth={item.imageWidth ? item.imageWidth : null}
-                imageHeight={item.imageHeight ? item.imageHeight : null}
+                text={item.text}
+                imageUrl={item.imageUrl}
+                memeName={item.memeName}
+                template={item.template}
+                templateState={item.templateState}
+                imageWidth={item.imageWidth}
+                imageHeight={item.imageHeight}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
             />
@@ -258,7 +273,7 @@ const PostScreen = ({navigation, route}) => {
                 onTouchEnd={e => {
                 if (e.nativeEvent.pageX - this.touchX > 150)
                     // console.log('Swiped Right')
-                    navigation.goBack()
+                    onGoBack();
                 }}
                 data={commentsList}
                 keyExtractor={(item, index) => item.id + '-' + index}

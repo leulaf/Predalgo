@@ -1,13 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
-import {ThemeContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
 
+import { manipulateAsync } from 'expo-image-manipulator';
+
 import { fetchFirstTenCommentsByRecent, fetchFirstTenCommentsByPopular } from '../shared/comment/GetComments';
 
 import GlobalStyles from '../constants/GlobalStyles';
+
+import PinturaLoadImage from '../shared/PinturaLoadImage';
 
 import CommentBottom from '../components/commentTypes/CommentBottom';
 
@@ -26,9 +30,71 @@ const windowWidth = Dimensions.get('window').width;
 const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [commentsList, setCommentsList] = useState([]);
-    const {profile, commentId, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, imageWidth, imageHeight, memeName, likesCount, commentsCount} = route.params;
+    const {profile, commentId, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, template, templateState, imageWidth, imageHeight, memeName, likesCount, commentsCount} = route.params;
+
+    const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
 
     const [onReplying, setOnReplying] = useState(onReply ? onReply : false);
+
+    const [checkingTemplate, setCheckingTemplate] = useState(true);
+    const [image, setImage] = useState(imageUrl ? imageUrl : null);
+    const [base64, setBase64] = useState(null);
+
+    const blobToBase64 = (blob) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        return new Promise(resolve => {
+          reader.onloadend = () => {
+            resolve(reader.result);
+          };
+        });
+    };
+
+    const checkAndGetMeme = async () => {
+
+        if(template){
+
+            let response 
+            
+            await fetch(template)
+                .then(async(response) => {
+                    return await response.blob();
+                })
+                .then(blobToBase64)
+                .then((base64data) => {
+                    response = base64data;
+                })
+
+            const temp = await getbase64(response);
+            setBase64(temp);
+
+
+            while(image == null){
+                await new Promise(resolve => setTimeout(resolve, 250));
+                // console.log("waiting");
+            }
+
+            setCheckingTemplate(false);
+        }else{
+            setCheckingTemplate(false);
+        }
+    }
+
+    const getbase64 = async (image) => {
+        const manipResult = await manipulateAsync(image, [], {
+          // compress: 0.2,
+          // format: SaveFormat.PNG,
+          base64: true,
+        });
+    
+         return `data:image/jpeg;base64,${manipResult.base64}`;
+    }
+
+    // check and set meme using template and template state
+    useEffect(() => {
+        checkAndGetMeme();
+    }, []);
+
 
     let commentBottom = (
 
@@ -64,6 +130,13 @@ const CommentScreen = ({navigation, route}) => {
         });
     }
 
+    const onGoBack = () => {
+        if(imageReply && imageReply.forCommentOnComment){
+            setImageReply(null)
+        }
+        navigation.goBack(null);
+    };
+
     // Sets the header of component
     useEffect(() => {
         navigation.setOptions({
@@ -76,7 +149,7 @@ const CommentScreen = ({navigation, route}) => {
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
             
-            let topText, image
+            let topText, topImage
 
 
             if (text != null && text != "") {
@@ -90,10 +163,10 @@ const CommentScreen = ({navigation, route}) => {
             }
 
 
-            if (imageUrl != null) {
-                image = (
+            if (image != null) {
+                topImage = (
                     <ResizableImage 
-                        image={imageUrl}
+                        image={image}
                         height={imageHeight}
                         width={imageWidth}
                         maxWidth={windowWidth}
@@ -101,7 +174,7 @@ const CommentScreen = ({navigation, route}) => {
                     />
                 );
             }else{
-                image = null;
+                topImage = null;
             }
 
             return (
@@ -145,7 +218,7 @@ const CommentScreen = ({navigation, route}) => {
 
                         {topText}
 
-                        {image}
+                        {topImage}
 
                     </View>
                     
@@ -176,10 +249,13 @@ const CommentScreen = ({navigation, route}) => {
                         username={item.username}
                         profilePic={item.profilePic}
                         commentId={item.id}
-                        text={item.text ? item.text : null}
-                        imageUrl={item.imageUrl ? item.imageUrl : null}
-                        imageWidth={item.imageWidth ? item.imageWidth : null}
-                        imageHeight={item.imageHeight ? item.imageHeight : null}
+                        text={item.text}
+                        imageUrl={item.imageUrl}
+                        memeName={item.memeName}
+                        template={item.template}
+                        templateState={item.templateState}
+                        imageWidth={item.imageWidth}
+                        imageHeight={item.imageHeight}
                         likesCount={item.likesCount}
                         commentsCount={item.commentsCount}
                     />
@@ -197,42 +273,67 @@ const CommentScreen = ({navigation, route}) => {
                 username={item.username}
                 profilePic={item.profilePic}
                 commentId={item.id}
-                text={item.text ? item.text : null}
-                imageUrl={item.imageUrl ? item.imageUrl : null}
-                imageWidth={item.imageWidth ? item.imageWidth : null}
-                imageHeight={item.imageHeight ? item.imageHeight : null}
+                text={item.text}
+                imageUrl={item.imageUrl}
+                memeName={item.memeName}
+                template={item.template}
+                templateState={item.templateState}
+                imageWidth={item.imageWidth}
+                imageHeight={item.imageHeight}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
             />
         );
     };
 
-    return (
-        <View style={[theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer, { flex: 1}]}>
-            
-            
-            <FlatList
-                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-                onTouchEnd={e => {
-                if (e.nativeEvent.pageX - this.touchX > 150)
-                    // console.log('Swiped Right')
-                    navigation.goBack()
-                }}
-                data={commentsList}
-                keyExtractor={(item, index) => item.id + '-' + index}
-                stickyHeaderIndices={[1]}
-                renderItem={({ item, index }) => {
-                    return (
-                        renderItem({ item, index })
-                    );
-                }}
-            />
 
-            {replyBottomSheet}
+    // needed to make sure image is loaded before rendering
+    // needed to make sure multiple instance of PinturaLoadImage are not created
 
-        </View>
 
-    );
+
+        return (
+            <View style={[theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer, { flex: 1}]}>
+                
+                
+
+                <FlatList
+                    onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+                    onTouchEnd={e => {
+                    if (e.nativeEvent.pageX - this.touchX > 150)
+                        // console.log('Swiped Right')
+                        onGoBack();
+                    }}
+                    data={commentsList}
+                    keyExtractor={(item, index) => item.id + '-' + index}
+                    stickyHeaderIndices={[1]}
+                    renderItem={({ item, index }) => {
+                        return (
+                            renderItem({ item, index })
+                        );
+                    }}
+                />
+
+
+                {replyBottomSheet}
+
+                {/* Load Meme with template and template state */}
+                {
+                    base64 &&
+                        
+                        <PinturaLoadImage
+                            image={base64}
+                            imageState={templateState}
+                            setImage={setImage}
+                            setBase64={setBase64}
+                        />
+                }
+                
+
+                </View>
+
+        );
+
 };
 
 const styles = StyleSheet.create({

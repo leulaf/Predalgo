@@ -4,15 +4,8 @@ import { ScrollView } from 'react-native-virtualized-view';
 import { Overlay } from 'react-native-elements';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, getDoc, doc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import PinturaCompressImage from '../shared/PinturaCompress';
 
-import firebase from 'firebase/compat/app';
-
-import uuid from 'react-native-uuid';
-
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import * as ImagePicker from 'expo-image-picker';
+import { StackActions } from '@react-navigation/native';
 
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
@@ -35,7 +28,7 @@ const ImageContainer = (props) => {
     );
 };
 
-const AddPostScreen = ({navigation}) => {
+const AddPostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
 
     const [newMemeName, setNewMemeName] = useState("");
@@ -46,6 +39,8 @@ const AddPostScreen = ({navigation}) => {
 
     const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
     const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
+
+    const { forCommentOnComment, forCommentOnPost} = route.params;
 
     useEffect(() => {
       getFirstTenTemplates();
@@ -87,110 +82,6 @@ const AddPostScreen = ({navigation}) => {
         setRightMemeTemplates(right);
     };
 
-    const pickImage = async () => {
-      // No permissions request is necessary for launching the image library
-      let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.All,
-          // allowsEditing: true,
-      });
-    
-      if (!result.canceled) {
-        // compressedResult = await compressImage(result.assets[0].uri);
-        // setNewTemplate(compressedResult);
-        // const uri = await getUri(result.assets[0].uri);
-        const base64 = await getbase64Image(result.assets[0].uri);
-        setBase64(base64);
-
-        setOverlayVisible(true);
-      }
-    };
-
-    const getbase64Image = async (image) => {
-      const manipResult = await manipulateAsync(image, [], {
-        // compress: 0.2,
-        // format: SaveFormat.PNG,
-        base64: true,
-      });
-  
-      return `data:image/jpeg;base64,${manipResult.base64}`;
-    };
-
-    const uploadNewTemplate = async (newTemplateImage, memeName) => {
-      // check if the meme name is unique
-      const q = query(
-          collection(db, "imageTemplates"),
-          where("name", "==", memeName),
-          limit(1)
-      );
-      
-      const snapshot = await getDocs(q);
-
-      if (snapshot.docs.length !== 0) {
-        Alert.alert("Meme with that name already exists. Please choose a different name.");
-        return; // Exit the function immediately
-      }
-
-      setOverlayVisible(false);
-
-      // upload the new template to firebase storage
-      const newResponse = await fetch(newTemplateImage);
-      const newBlob = await newResponse.blob();
-
-      const newFilename = uuid.v4();
-      const newChildPath = `imageTemplates/${newFilename}`;
-      
-      const newStorageRef = ref(storage, newChildPath);
-      
-      const newUploadTask = uploadBytesResumable(newStorageRef, newBlob)
-      .catch ((e) => {
-          console.log(e);
-      });
-
-      await newUploadTask.then(async(snapshot) => {
-          // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
-          // console.log('File metadata:', snapshot.metadata);
-          
-          // Let's get a download URL for the file.
-          getDownloadURL(snapshot.ref).then(async (newUrl) => {
-              // console.log(imageUrl);
-              // console.log('File available at', url);
-              await addNewTemplate(newUrl, memeName);
-          }).catch((error) => {
-              console.error('Upload failed', error);
-              // ...
-          });
-
-
-      }).catch((error) => {
-          console.error('Upload failed', error);
-          // ...
-      });
-    }
-
-    const getHeightAndWidth = async (image) => {
-      const manipResult = await manipulateAsync(image, [], {});
-      return {height: manipResult.height, width: manipResult.width};
-    };
-    
-    const addNewTemplate = async (newUrl, memeName) => {
-        const userRef = doc(db, "users", firebase.auth().currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        const username = userSnap.data().username;
-        const {height, width} = await getHeightAndWidth(newUrl);
-        
-        const addTemplateRef = await addDoc(collection(db, "imageTemplates"), {
-            name: memeName,
-            uploader: username,
-            url: newUrl,
-            height: height,
-            width: width,
-            useCount: 0,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        }).then(() => {
-          navigation.navigate('Meme', {memeName: memeName})
-        });
-
-    }
     
     // Sets the header to the AddPostTop component
     useEffect(() => {
@@ -223,7 +114,9 @@ const AddPostScreen = ({navigation}) => {
       >
         <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
           
-          <PostBar/>
+          {!(forCommentOnComment || forCommentOnPost) &&
+            <PostBar/>
+          }
 
           <View style={{width: '100%', flexDirection: 'row', alignContent: 'center', justifyContent: 'center'}}>
               <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
@@ -244,7 +137,21 @@ const AddPostScreen = ({navigation}) => {
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
+                      onPress={() => 
+                          {
+                            forCommentOnComment || forCommentOnPost ?
+                              navigation.navigate('EditMeme', {
+                                replyMemeName: item.name,
+                                templateExists: true,
+                                forCommentOnComment: forCommentOnComment,
+                                forCommentOnPost: forCommentOnPost,
+                              })
+                            :
+                              navigation.navigate('Meme', {
+                                memeName: item.name,
+                              })
+                          }
+                      }
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -265,7 +172,21 @@ const AddPostScreen = ({navigation}) => {
                 renderItem={({ item }) => {
                   return (
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
+                      onPress={() => 
+                        {
+                          forCommentOnComment || forCommentOnPost ?
+                            navigation.navigate('EditMeme', {
+                              replyMemeName: item.name,
+                              templateExists: true,
+                              forCommentOnComment: forCommentOnComment,
+                              forCommentOnPost: forCommentOnPost,
+                            })
+                          :
+                            navigation.navigate('Meme', {
+                              memeName: item.name,
+                            })
+                        }
+                      }
                     >
                       <ImageContainer
                         imageSource={{ uri: item.url }}
@@ -283,7 +204,16 @@ const AddPostScreen = ({navigation}) => {
         {/* Add template button */}
         <TouchableOpacity
               style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
-              onPress={() => pickImage()}
+              onPress={() => 
+
+                navigation.dispatch(
+                  StackActions.replace("Upload", {
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
+                    forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
+                  })
+                )
+              }
           >
             {theme == "light" ?
                 <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
@@ -296,53 +226,6 @@ const AddPostScreen = ({navigation}) => {
             </Text>
         </TouchableOpacity>
 
-        <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
-              
-            <View>
-              <Text style={styles.askText}>What do you want to name the template?</Text>
-
-              {/* Meme Template Name */}
-              <TextInput
-                  secureTextEntry={false}
-                  multiline
-                  blurOnSubmit
-                  maxLength={15}
-                  style={{fontSize: 20, width: 350, height: 50, alignSelf: 'center', marginBottom: 15, borderColor: 'gray', borderWidth: 1.5, marginTop: 10, borderRadius: 15}}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  placeholder="  Meme Template Name"
-                  placeholderTextColor= "#888888"
-                  value={newMemeName}
-                  onChangeText={(newValue) => setNewMemeName(newValue)}
-                  // onEndEditing={( ) => console.log('submitted')}
-              />
-
-              {/* Done */}
-              <TouchableOpacity
-                  onPress={() =>
-                    {
-                      uploadNewTemplate(newTemplate, newMemeName);
-                    }
-                    
-                  }
-                  style={styles.answerButton}
-              >
-                  <Text style={styles.answerText}>
-                    Done
-                  </Text>
-              </TouchableOpacity>
-
-            </View>
-
-        </Overlay>
-
-        {/* For image compression */}
-
-        <PinturaCompressImage
-          image={base64}
-          setImage={setNewTemplate}
-          setBase64={setBase64}
-        />
 
       </View>
     );

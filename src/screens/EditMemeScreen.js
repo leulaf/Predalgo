@@ -1,14 +1,13 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
 import {View, Text, TextInput, StyleSheet, Button, Image, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import { Overlay } from 'react-native-elements';
-import {ThemeContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
 import EditImageTopBar from '../components/EditImageTopBar';
 
-import { db, storage } from '../config/firebase';
-import { collection, addDoc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
-import firebase from 'firebase/compat/app';
-import { set } from 'react-native-reanimated';
+import { StackActions } from '@react-navigation/native';
+
+import {uploadNewTemplate, addNewTemplate} from '../shared/AddNewTemplate';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
 import {
@@ -27,45 +26,168 @@ setPlugins(plugin_crop);
 
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
-    const { imageUrl, memeName } = route.params;
+    const { imageUrl, memeName, replyMemeName, imageState, height, width, cameraPic, dontCompress, forMemeComment, forCommentOnPost, forCommentOnComment, templateExists} = route.params;
     const [image, setImage] = useState(imageUrl);
     const [imageResult, setImageResult] = useState(null);
 
+    const [template, setTemplate] = useState(imageReply ? imageReply.undeditedUri : null);
+
+    const { imageReply, setImageReply } = useContext(AuthenticatedUserContext);
+    const [storedImageState, setStoredImageState] = useState(null);
+
+    const [compressTemplate, setCompressTemplate] = useState(imageReply ? false : true);
+
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [newTemplate, setNewTemplate] = useState(false);
-    const [newMemeName, setNewMemeName] = useState("");
+    const [newMemeName, setNewMemeName] = useState(replyMemeName && replyMemeName != true ? replyMemeName : "");
 
     const editorRef = useRef(null);
+    const templateRef = useRef(null);
+
+    const editorDefaults = {
+        imageWriter: { 
+            quality: dontCompress ? 
+                1 
+            : 
+                cameraPic ? .8 : 0.6,
+
+            targetSize: {
+                height: height < width ? height : 500,
+                width: width < height ? width : 500,
+            },
+         }, 
+    };
+
+    // console.log(imageReply.undeditedUri, imageUrl);
 
     useEffect(() => {
         navigation.setOptions({
-            header: () => <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()}/>,
+            header: () => <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} navigation={navigation}/>,
         });
     }, [navigation]);
 
+    const stringifyImageState = (imageState) => {
+        return JSON.stringify(imageState, (k, v) => (v === undefined ? null : v));
+    };
+    
+    const parseImageState = (str) => {
+        return JSON.parse(str);
+    };
+
+    const handleEditorLoad = () => {
+        // Add image state to history stack if it exists
+        if(imageState){
+            editorRef.current.editor.history.write(
+                parseImageState(imageState)
+            )
+        }
+    };
+
+    const onGoBack = () => {
+
+        if(imageState){
+            // console.log(imageState);
+            // console.log(imageReply);
+            // console.log("**************************************");
+            setImageReply({
+                memeName: replyMemeName,
+                uri: imageReply.uri,
+                undeditedUri: imageReply.undeditedUri,
+                template: imageReply.template,
+                height: height,
+                width: width,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
+                imageState: imageState
+            });
+            editorRef.current.editor.close();
+            navigation.goBack(null);
+        }else if(forMemeComment){
+            navigation.dispatch(
+                StackActions.replace('Upload', {
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
+                    forMemeComment: true,
+                })
+            );
+        }else{
+            editorRef.current.editor.close();
+            navigation.goBack(null);
+        }
+        
+    };
+
+    // *** if user changes the name of template, 
+    // there will be two templates with the same image ***
     const checkNameAndNav = async (memeName) => {
-        const q = query(
-            collection(db, "imageTemplates"),
-            where("name", "==", memeName),
-            limit(1)
-        );
+
+        if(memeName == ""){
+            Alert.alert("Please enter a name for the template.");
+            return;
+        }else if(replyMemeName && replyMemeName != true){
+            addNewTemplate(template, memeName, height, width).then(() => {
+                if(forCommentOnPost || forCommentOnComment){
+                    setImageReply({
+                        memeName: memeName,
+                        uri: imageResult,
+                        undeditedUri: imageReply.undeditedUri,
+                        template: imageState.template,
+                        height: height,
+                        width: width,
+                        forCommentOnComment: forCommentOnComment,
+                        forCommentOnPost: forCommentOnPost,
+                        imageState: storedImageState
+                    });
+        
+                    editorRef.current.editor.close();
+                    navigation.goBack(null);
+                    setOverlayVisible(false);
+                }
+            })
+        }else{
+            uploadNewTemplate(template, memeName, height, width)
+                .then(async(newUrl) => {
+
+                    if(forCommentOnPost || forCommentOnComment){
+                        setImageReply({
+                            memeName: memeName,
+                            uri: imageResult,
+                            undeditedUri: imageUrl,
+                            template: newUrl,
+                            height: height,
+                            width: width,
+                            forCommentOnComment: forCommentOnComment,
+                            forCommentOnPost: forCommentOnPost,
+                            imageState: storedImageState
+                        });
+            
+                        
+                        navigation.goBack(null);
+                        setOverlayVisible(false);
+                        editorRef.current.editor.close();
+                    }
+                });
+        }
+
 
         
+    }
 
-        await getDocs(q)
-        .then((snapshot) => {
-            if (snapshot.docs.length == 0) {
-                // console.log("no meme with that name");
-                setOverlayVisible(false);
-                editorRef.current.editor.close();
-                navigation.navigate('CreatePost', {imageUrl: imageResult, memeName: newMemeName, newTemplate: true, newTemplateImage: image});
-            } else {
-                // console.log("meme with that name exists");
-                Alert.alert("Meme with that name already exists. Please choose a different name.");
-            }
-
+    const navToReply = async (memeName, dest, imageState) => {
+        setImageReply({
+            memeName: memeName,
+            uri: dest,
+            undeditedUri: templateExists ? templateExists : image,
+            template: templateExists ? templateExists : null,
+            height: height,
+            width: width,
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
+            imageState: imageState
         });
-        
+
+        editorRef.current.editor.close();
+        navigation.goBack(null);
     }
 
 
@@ -74,7 +196,7 @@ const EditMemeScreen = ({ navigation, route }) => {
 
             <PinturaEditor
                 ref={editorRef}
-
+                {...editorDefaults}
                 style={{
                     width: "100%",
                     height: "95%",
@@ -126,72 +248,78 @@ const EditMemeScreen = ({ navigation, route }) => {
                 onLoaderror={(err) => {
                     // console.log("onLoaderror", err);
                 }}
-                onLoad={({ size }) => {
-                    // console.log("onLoad", size);
-                }}
+                onLoad={handleEditorLoad}
                 onProcess={({ dest, imageState }) => {
                     // dest is output file in dataURI format
                     // console.log("onProcess", imageState, "size", dest.length);
-
-                    if(memeName){
-                        navigation.navigate('CreatePost', {imageUrl: dest, memeName: memeName});
-                    }else{
-                        console.log(memeName);
+                    if(templateExists){
+                        navToReply(replyMemeName, dest, imageState);
+                    }else if(forCommentOnComment || forCommentOnPost){
                         setImageResult(dest);
+                        setStoredImageState(stringifyImageState(imageState));
                         setOverlayVisible(true);
+                    }else if(memeName){
+                        // navigation.navigate('CreatePost', {imageUrl: dest, memeName: memeName});
                     }
                     
                 }}
             />
 
+                
+
             {/* Ask user to upload template */}
             {/* Edit profile bio */}
             <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
-                
-                <Text style={styles.askText}>Can other users use the original image to create memes?</Text>
-                
-                <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                    
-                    {/* No */}
-                    <TouchableOpacity
-                        onPress={() =>
-                            {
-                                setOverlayVisible(false);
-                                navigation.navigate('CreatePost', {imageUrl: imageResult});
-                            }
-                        }
-                        style={styles.answerButton}
-                    >
-                        <Text style={styles.answerText}>No</Text>
-                    </TouchableOpacity>
 
-                    {/* Yes */}
-                    <TouchableOpacity
-                        onPress={() =>
-                           setNewTemplate(true)
-                        }
-                        style={styles.answerButton}
-                    >
-                        <Text style={styles.answerText}>Yes</Text>
-                    </TouchableOpacity>
-                </View>
+               
+                    { !(replyMemeName && replyMemeName != true) &&
+                        <View>
+                            <Text style={styles.askText}>Can other users use the original image to create memes?</Text>
+                            
+                            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+                                
+                                {/* No */}
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        {
+                                            navToReply(true, imageResult, storedImageState);
+                                            setOverlayVisible(false);
+                                        }
+                                    }
+                                    style={styles.answerButton}
+                                >
+                                    <Text style={styles.answerText}>No</Text>
+                                </TouchableOpacity>
+
+                                {/* Yes */}
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        setNewTemplate(true)
+                                    }
+                                    style={styles.answerButton}
+                                >
+                                    <Text style={styles.answerText}>Yes</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    }
+
 
                 {/* Ask user to enter meme name */}
                 {
-                    newTemplate &&
+                    (newTemplate || (replyMemeName && replyMemeName != true)) &&
+
                         <View>
                             <Text style={styles.askText}>What do you want to name the template?</Text>
 
                             {/* Meme Template Name */}
                             <TextInput
-                                secureTextEntry={false}
-                                multiline
                                 blurOnSubmit
                                 maxLength={15}
                                 style={{fontSize: 20, width: 350, height: 50, alignSelf: 'center', marginBottom: 15, borderColor: 'gray', borderWidth: 1.5, marginTop: 10, borderRadius: 15}}
                                 autoCapitalize="none"
                                 autoCorrect={false}
-                                placeholder="  Meme Template Name"
+                                placeholder= "  Meme Template Name"
                                 placeholderTextColor= "#888888"
                                 value={newMemeName}
                                 onChangeText={(newValue) => setNewMemeName(newValue)}
@@ -201,7 +329,12 @@ const EditMemeScreen = ({ navigation, route }) => {
                             {/* Done */}
                             <TouchableOpacity
                                 onPress={() =>
-                                    checkNameAndNav(newMemeName)
+                                    { 
+                                        imageReply && storedImageState == imageReply.imageState && replyMemeName == newMemeName ?
+                                            onGoBack()
+                                        :
+                                            checkNameAndNav(newMemeName)
+                                    }
                                 }
                                 style={styles.answerButton}
                             >
@@ -213,6 +346,32 @@ const EditMemeScreen = ({ navigation, route }) => {
                 }
 
             </Overlay>
+
+            {/* Compresses the original template */}
+            {
+                compressTemplate &&
+                    <PinturaEditor
+                        ref={templateRef}
+                        
+                        src={image}
+                        onLoaderror={(err) => {
+                        // console.log("onLoaderror", err);
+                        }}
+                        onLoad={({ size }) => {
+                            templateRef.current.editor.processImage();
+                        }}
+            
+                        {...editorDefaults}
+            
+                        onProcess={({ dest, imageState }) => {
+                            // dest is output file in dataURI format
+                            setTemplate(dest);
+                            setCompressTemplate(false);
+                            // templateRef.current.editor.close();
+                        }}
+                    />
+
+            }
         </View>
   );
 };

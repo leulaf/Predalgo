@@ -2,8 +2,9 @@ import React, {useEffect, useState, useContext, useMemo, useRef, useCallback} fr
 import { Pressable, View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
-import { commentImageOnComment } from '../../shared/comment/UploadImageComment';
-import { commentTextOnComment } from '../../shared/comment/UploadTextComment';
+import { commentImageOnComment } from '../../shared/comment/forComment/UploadImage';
+import { commentMemeOnComment, saveMemeToComment} from '../../shared/comment/forComment/UploadMeme';
+import { commentTextOnComment } from '../../shared/comment/forComment/UploadText';
 
 import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/context';
 
@@ -33,7 +34,7 @@ const win = Dimensions.get('window');
 
 const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, replyToProfile, replyToUsername, onReplying}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const {imageForPost, setImageForPost} = useContext(AuthenticatedUserContext);
+    const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
     const [replyTextToPost, setReplyTextToPost] = useState("");
     const [replyImageToPost, setReplyImageToPost] = useState("");
     const [replyMemeToPost, setReplyMemeToPost] = useState("");
@@ -44,9 +45,6 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const [delayKeyBoard, setDelayKeyBoard] = useState(0);
-
-    const [count, setCount] = useState(0);
 
     let upload, uploadSmall, createMeme, createMemeSmall, link, linkSmall, replyButton
 
@@ -72,15 +70,13 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
     const replyTextToPostRef = useRef(null);
 
     // variables
-    const snapPoints = useMemo(() => ['15%', '70%', '99%'], []);
+    const snapPoints = useMemo(() => ['13%', '70%', '99%'], []);
 
     useEffect(() => {
-        if(imageForPost && imageForPost.forCommentOnComment){
-            setDelayKeyBoard(700);
-            setReplyImageToPost(imageForPost);
-            setImageForPost(null);
-            // console.log("imageForPost");
-            setCount(1);
+        if(imageReply && imageReply.forCommentOnComment){
+            setReplyImageToPost(imageReply);
+            // setImageReply(null);
+            // console.log("imageReply");
 
             // replyTextToPostRef.current.focus();
             // setTextInputInFocus(true);
@@ -89,7 +85,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             // handleSheetAnimate(0, 2);
             // handleSheetChanges(2);
         }
-    }, [imageForPost, setImageForPost])
+    }, [imageReply])
 
     // callbacks
     const handleSheetChanges = useCallback((index) => {
@@ -129,17 +125,9 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             // replyTextToPostRef.current.focus();
             setTextInputInFocus(true);
             setCurrentIndex(2);
-            // console.log(imageForPost)
-            // console.log(replyImageToPost)
-            // console.log(count)
-            // Need to wait for the keyboard to open before focusing on the text input
-            // FIX LATER
-            setTimeout(() => {
-                replyTextToPostRef.current.focus();
-                setDelayKeyBoard(0);
-            }, delayKeyBoard);
-            
 
+            
+            replyTextToPostRef.current.focus();
         }
         
     }, [snapPoints]);
@@ -160,17 +148,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
     // Collapse the bottom sheet when the text input is blurred (Not in focus)
     const handleBlur = () => {
 
-        // console.log("handleBlur + " + count);
-
-        if(count == 1){
-            replyTextToPostRef.current.focus();
-            setCount(0);
-            setDelayKeyBoard(0);
-            return
-        }
-
-        setDelayKeyBoard(0);
-        // Keyboard.dismiss();
+        Keyboard.dismiss();
         bottomSheetRef.current.snapToIndex(0);
     }
 
@@ -228,9 +206,10 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             const text = replyTextToPost;
 
             // clear reply text and image
+            setImageReply(null);
             setReplyImageToPost(null);
             setReplyTextToPost("");
-                                            
+                
             // navigate to comment screen with the new comment
             navigation.push("Comment", {
                 commentId: result.id,
@@ -239,6 +218,52 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                 replyToProfile: replyToProfile,
                 replyToUsername: replyToUsername,
                 imageUrl: result.url,
+                imageHeight: replyImageToPost.height,
+                imageWidth: replyImageToPost.width,
+                text: text,
+                likesCount: 0,
+                commentsCount: 0,
+                profile: auth.currentUser.uid,
+                username: auth.currentUser.displayName,
+                profilePic: auth.currentUser.photoURL,
+            });
+
+        });
+
+    }
+
+    const onReplyWithMeme = async () => {
+
+        await saveMemeToComment(
+            replyImageToPost.memeName,
+            replyImageToPost.template,
+            replyImageToPost.imageState,
+            replyTextToPost,
+            replyToPostId,
+            replyToProfile,
+            replyToUsername,
+            replyImageToPost.height,
+            replyImageToPost.width,
+        ).catch(function (error) {
+            // console.log(error);
+        }).then(async (id) => {
+            
+            const text = replyTextToPost;
+
+            // clear reply text and image
+            setImageReply(null);
+            setReplyImageToPost(null);
+            setReplyTextToPost("");
+                                            
+            // navigate to comment screen with the new comment
+            navigation.navigate("Comment", {
+                commentId: id,
+                replyToPostId: replyToPostId,
+                replyToProfile: replyToProfile,
+                replyToUsername: replyToUsername,
+                memeName: replyImageToPost.memeName,
+                template: replyImageToPost.template,
+                imageState: replyImageToPost.imageState,
                 imageHeight: replyImageToPost.height,
                 imageWidth: replyImageToPost.width,
                 text: text,
@@ -278,10 +303,13 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             <TouchableOpacity
                     // style={{flexDirection: 'row',}}
                     onPress={() => 
-                        navigation.navigate("Upload", {
-                            forCommentOnComment: true,
-                            forCommentOnPost: false,
-                        })
+                        {
+                            setImageReply(null)
+                            navigation.navigate("Upload", {
+                                forCommentOnComment: false,
+                                forCommentOnPost: true,
+                            })
+                        }
                     }
                 >
                 {upload}
@@ -294,7 +322,15 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             {/* Create Meme Button */}
             <TouchableOpacity
                 style={{flexDirection: 'row',  flex: 1 }}
-                // onPress={onPress}
+                onPress={() => 
+                    {
+                        setImageReply(null)
+                        navigation.navigate("AddPost", {
+                            forCommentOnComment: false,
+                            forCommentOnPost: true,
+                        })
+                    }
+                }
             >
                 {createMeme}
                 
@@ -317,7 +353,11 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                         Keyboard.dismiss();
                         bottomSheetRef.current.snapToIndex(0);
 
-                        if(replyImageToPost){
+                        if(replyImageToPost && replyImageToPost.template){
+                            
+                            await onReplyWithMeme();
+
+                        }else if(replyImageToPost){
                             
                             await onReplyWithImage();
 
@@ -435,9 +475,11 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                             // }
                         />
 
-                        {
-                            textInputInFocus ?
-                                null
+                        {textInputInFocus ?
+                                // {/* Show bottom buttons only when text input is clicked */}
+                                <InputAccessoryView nativeID={inputAccessoryViewID}>
+                                    {bottomButtons()}
+                                </InputAccessoryView>
                             :
                                 <TouchableOpacity
                                     style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center',}}
@@ -456,17 +498,20 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                         <TouchableOpacity
                             onPress={() => 
 
-                                {setCount(0)
-                                    navigation.navigate("EditImage", ('EditImage', {
-                                    imageUrl: replyImageToPost.undeditedUri,
-                                    height: replyImageToPost.height,
-                                    width: replyImageToPost.width,
-                                    imageState: replyImageToPost.imageState,
-                                    forCommentOnComment: true,
-                                    forCommentOnPost: false,
-                                    cameraPic: false,
-                                    dontCompress: true,
-                                }))}
+                                {
+                                    navigation.navigate(replyImageToPost.memeName ? 'EditMeme' : "EditImage", {
+                                        imageUrl: replyImageToPost.undeditedUri,
+                                        height: replyImageToPost.height,
+                                        width: replyImageToPost.width,
+                                        imageState: replyImageToPost.imageState,
+                                        forCommentOnComment: true,
+                                        forCommentOnPost: false,
+                                        forComment: true,
+                                        cameraPic: false,
+                                        dontCompress: true,
+                                        replyMemeName: replyImageToPost.memeName ? replyImageToPost.memeName : null,
+                                    })
+                                }
 
                             }
                         >

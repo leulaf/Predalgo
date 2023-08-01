@@ -8,6 +8,7 @@ import AuthScreen from '../screens/AuthScreen';
 import DrawerNavigator from "./DrawerNavigator";
 
 import UploadScreen from '../screens/UploadScreen';
+import AddPostScreen from '../screens/AddPostScreen';
 import CreatePostScreen from '../screens/CreatePostScreen';
 import SearchScreen from '../screens/SearchScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -45,6 +46,11 @@ const MainStackNavigator = ({}) => {
             options={{
                 headerShown: false,
             }} 
+        />
+        <Stack.Screen name="AddPost" component={AddPostScreen}
+            options={{
+                // headerShown: false,
+            }}
         />
         <Stack.Screen name="CreatePost" component={CreatePostScreen}
             options={{

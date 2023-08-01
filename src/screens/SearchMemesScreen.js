@@ -9,7 +9,6 @@ import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 
 import MemesSearchBar from '../components/MemesSearchBar';
-import { set } from 'react-native-reanimated';
 
 import Image from 'react-native-scalable-image';
 
@@ -81,9 +80,6 @@ export default function SearchMemesScreen({navigation, route}){
         // format: SaveFormat.PNG,
         base64: true,
       });
-
-      console.log(memeName);
-      console.log(`data:image/jpeg;base64,${manipResult.base64}`);
   
       await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`, memeName: memeName});
     };

@@ -41,7 +41,7 @@ const auth = getAuth();
 
 const windowWidth = Dimensions.get('window').width;
 
-const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -108,28 +108,15 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             // add post to likes collection
             await setDoc(likedRef, {});
             
-            // update likes count for Comment or Post
-            if(replyToCommentId){
-                const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+            // update like count for Comment
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-                await updateDoc(commentRef, {
-                    likesCount: increment(1)
-                }).then(() => {
-                    onUpdateLikeCount(likeCount + 1);
-                    setLikeCount(likeCount + 1);
-                    setLiked(false);
-                });
-            }else{
-                const postRef = doc(db, 'allPosts', replyToPostId);
-
-                await updateDoc(postRef, {
-                    likesCount: increment(1)
-                }).then(() => {
-                    onUpdateLikeCount(likeCount + 1);
-                    setLikeCount(likeCount + 1);
-                    setLiked(false);
-                });
-            }
+            await updateDoc(commentRef, {
+                likesCount: increment(1)
+            }).then(() => {
+                onUpdateLikeCount(likeCount + 1);
+                setLikeCount(likeCount + 1);
+            });
         }
       
         setLiked(true);
@@ -151,28 +138,6 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             setLiked(false);
         });
 
-        // update likes count for Comment or Post
-        if(replyToCommentId){
-            const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
-
-            await updateDoc(commentRef, {
-                likesCount: increment(-1)
-            }).then(() => {
-                onUpdateLikeCount(likeCount - 1);
-                setLikeCount(likeCount - 1);
-                setLiked(false);
-            });
-        }else{
-            const postRef = doc(db, 'allPosts', replyToPostId);
-
-            await updateDoc(postRef, {
-                likesCount: increment(-1)
-            }).then(() => {
-                onUpdateLikeCount(likeCount - 1);
-                setLikeCount(likeCount - 1);
-                setLiked(false);
-            });
-        }
 
     }
 
@@ -214,7 +179,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                     }
 
                 }).catch((error) => {
-                    console.log(error);
+                    // console.log(error);
                 })
 
                 
@@ -252,6 +217,9 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
+            memeName: memeName,
+            template: template,
+            templateState: templateState,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -272,6 +240,9 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             replyToProfile: profile,
             replyToUsername: username,
             imageUrl: imageUrl,
+            memeName: memeName,
+            template: template,
+            templateState: templateState,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -378,7 +349,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             {(text != null && text != "" && text != undefined) &&
                 <TouchableOpacity 
                     onPress = {() => onNavToComment()}
-                    style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
+                    // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
                     
                     <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
@@ -391,14 +362,14 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             {/* Comment Image */}
             {(imageUrl != null && imageUrl != "" && imageUrl != undefined) &&
                 <TouchableOpacity
-                    style={{backgroundColor: 'black', marginTop: 2, marginBottom: 12}}
+                    style={{backgroundColor: 'black', marginTop: 9, marginBottom: 2}}
                     onPress = {() => onNavToComment()}
                 >
                     <ResizableImage 
                         image={imageUrl}
                         height={imageHeight}
                         width={imageWidth}
-                        maxHeight={600}
+                        maxHeight={500}
                         maxWidth={windowWidth}
                         style={{borderRadius: 0}}
                     />
@@ -406,7 +377,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             }
 
             {/* Reply and Like */}
-            <View style={{ flexDirection: 'row', marginRight: 0,  alignItems: 'center', alignContent: 'center'  }}>
+            <View style={{ flexDirection: 'row', marginTop: 1,  alignItems: 'center', alignContent: 'center'  }}>
                 
                 {/* View replies */}
                 {/* {
@@ -490,7 +461,13 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                                         username={item.username}
                                         profilePic={item.profilePic}
                                         commentId={item.id}
-                                        text={item.text ? item.text : null}
+                                        text={item.text}
+                                        imageUrl={item.imageUrl}
+                                        memeName={item.memeName}
+                                        template={item.template}
+                                        templateState={item.templateState}
+                                        imageWidth={item.imageWidth}
+                                        imageHeight={item.imageHeight}
                                         likesCount={item.likesCount}
                                         commentsCount={item.commentsCount}
                                     />
@@ -508,7 +485,13 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                                         username={item.username}
                                         profilePic={item.profilePic}
                                         commentId={item.id}
-                                        text={item.text ? item.text : null}
+                                        text={item.text}
+                                        imageUrl={item.imageUrl}
+                                        memeName={item.memeName}
+                                        template={item.template}
+                                        templateState={item.templateState}
+                                        imageWidth={item.imageWidth}
+                                        imageHeight={item.imageHeight}
                                         likesCount={item.likesCount}
                                         commentsCount={item.commentsCount}
                                     />
@@ -524,7 +507,13 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                                 username={item.username}
                                 profilePic={item.profilePic}
                                 commentId={item.id}
-                                text={item.text ? item.text : null}
+                                text={item.text}
+                                imageUrl={item.imageUrl}
+                                memeName={item.memeName}
+                                template={item.template}
+                                templateState={item.templateState}
+                                imageWidth={item.imageWidth}
+                                imageHeight={item.imageHeight}
                                 likesCount={item.likesCount}
                                 commentsCount={item.commentsCount}
                             />
@@ -540,7 +529,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                 ?
                     
                 <TouchableOpacity
-                    style={{ backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717', borderBottomLeftRadius: 15, borderBottomRightRadius: 15, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
+                    style={{ backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717', borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
                     onPress = {() => {
                         !viewMoreClicked ? 
                             onFirstViewMoreClicked()
@@ -610,12 +599,12 @@ const styles = StyleSheet.create({
     lightCommentContainer: {
         backgroundColor: '#FFFFFF',
         marginTop: 8,
-        borderRadius: 10,
+        borderRadius: 12.5,
     },
     darkCommentContainer: {
         backgroundColor: '#121212',
         marginTop: 8,
-        borderRadius: 10,
+        borderRadius: 12.5,
     },
     lightUsername: {
         fontSize: 14,
@@ -634,18 +623,18 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#222222',
         textAlign: 'auto',
-        marginHorizontal: 6,
-        marginTop: 5,
-        marginBottom: 6,
+        marginHorizontal: 10,
+        marginTop: 7,
+        // marginBottom: 6,
     },
     darkCommentText: {
         fontSize: 18,
         fontWeight: "400",
         color: '#F4F4F4',
         textAlign: 'auto',
-        marginHorizontal: 6,
-        marginTop: 5,
-        marginBottom: 6,
+        marginHorizontal: 10,
+        marginTop: 8,
+        // marginBottom: 6,
     },
     lightViewText: {
         fontSize: 13,

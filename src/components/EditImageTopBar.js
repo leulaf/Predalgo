@@ -11,8 +11,8 @@ import BackDark from '../../assets/back_light.svg';
 
 const windowWidth = Dimensions.get('window').width;
 
-const EditMemeTopBar = ({ forMeme, onSave }) => {
-    const navigation = useNavigation();
+const EditMemeTopBar = ({ forMeme, onSave, onGoBack, navigation}) => {
+
     const {theme,setTheme} = useContext(ThemeContext);
 
     return (
@@ -22,7 +22,7 @@ const EditMemeTopBar = ({ forMeme, onSave }) => {
                     {/* back button */}
                     <TouchableOpacity 
                                 style={{flexDirection: 'row'}}
-                                onPress={() => {navigation.goBack()}}
+                                onPress={() => {onGoBack()}}
                     >
                         <BackLight style={styles.backIcon} width={22} height={22}/>
                         

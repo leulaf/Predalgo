@@ -24,7 +24,7 @@ setPlugins(plugin_crop);
 const EditImageScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
 
-    const { imageForPost, setImageForPost } = useContext(AuthenticatedUserContext);
+    const { imageReply, setImageReply } = useContext(AuthenticatedUserContext);
 
     const { imageUrl, forCommentOnComment, forCommentOnPost, cameraPic, dontCompress, width, height, imageState } = route.params;
 
@@ -67,11 +67,31 @@ const EditImageScreen = ({ navigation, route }) => {
         setStoredImageState(res.imageState);
     };
 
+    const onGoBack = () => {
+        if(imageState){
+            setImageReply({
+                uri: imageReply.uri,
+                undeditedUri: imageReply.undeditedUri,
+                height: height,
+                width: width,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
+                imageState: imageState
+            });
+            editorRef.current.editor.close();
+            navigation.goBack(null);
+        }else{
+            editorRef.current.editor.close();
+            navigation.goBack(null);
+        }
+        
+    };
+
 
     useEffect(() => {
         
         if(imageResult != null && (forCommentOnComment || forCommentOnPost)){
-            setImageForPost({
+            setImageReply({
                 uri: imageResult,
                 undeditedUri: imageUrl,
                 height: height,
@@ -81,7 +101,7 @@ const EditImageScreen = ({ navigation, route }) => {
                 imageState: storedImageState
             });
 
-            setImage(null);
+            setImageResult(null);
             editorRef.current.editor.close();
             navigation.goBack(null);
         }
@@ -90,7 +110,7 @@ const EditImageScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         navigation.setOptions({
-            header: () => <EditImageTopBar forMeme={false} onSave={() => editorRef.current.editor.processImage()}/>,
+            header: () => <EditImageTopBar forMeme={false} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} navigation={navigation}/>,
         });
     }, [navigation]);
 
