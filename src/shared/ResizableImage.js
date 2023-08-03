@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Image } from 'react-native';
-
+import React from 'react';
+import { Image } from 'expo-image';
 
 const ResizableImage = ({ image, height, width, maxHeight, maxWidth, borderRadius, style }) => {
-
+    if(image === null || image === undefined || image === ''){
+        return null;
+    }
     let imageHeight, imageWidth
 
     if(maxWidth && maxHeight){
@@ -60,6 +61,7 @@ const ResizableImage = ({ image, height, width, maxHeight, maxWidth, borderRadiu
             width={imageWidth}
 
             style={style ? style : {}}
+            cachePolicy={'disk'}
 
         />
 

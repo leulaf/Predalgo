@@ -23,7 +23,7 @@ export default function UploadScreen({navigation, route}) {
   const [camera, setCamera] = useState(null);
   const [base64, setBase64] = useState(null);
   const [cameraPic, setCameraPic] = useState(false);
-  const [image, setImage] = useState();
+  const [image, setImage] = useState(null);
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
@@ -88,7 +88,6 @@ export default function UploadScreen({navigation, route}) {
       };
 
       const picture = await camera.takePictureAsync(options);
-      console.log(picture.height, picture.width);
 
       if(forCommentOnComment || forCommentOnPost){
         navigation.dispatch(

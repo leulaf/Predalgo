@@ -70,7 +70,7 @@ async function commentMemeOnComment(imageUrl, memeName, text, replyToCommentId, 
 // Comment image on a post
 const saveMemeToComment = async (memeName, templateUrl, imageState, text, replyToCommentId, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth,) => {
     return new Promise(async (resolve, reject) => {
-        let id
+        // let id
 
         // add text post to database
         const docRef = await addDoc(collection(db, "comments", replyToPostId, "comments"), {

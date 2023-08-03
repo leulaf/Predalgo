@@ -1,46 +1,39 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef} from 'react';
 import PinturaEditor from "@pqina/react-native-expo-pintura";
 
+import { manipulateAsync } from 'expo-image-manipulator';
 
 
-const PinturaLoadImage = ({ image, imageState, setImage, setBase64, }) => {
 
+const PinturaLoadImage = ({ image, imageState, setImage, }) => {
+
+    
     const editorRef = useRef(null);
 
-    // console.log("image--", image);
+
 
     return (
-        <PinturaEditor
-          ref={editorRef}
-          
-
-          src={image}
-
-
-          onLoaderror={(err) => {
-            // console.log("onLoaderror", err);
-          }}
-
-
-          onLoad={({ size }) => {
-            editorRef.current.editor.processImage();
-          }}
-
-
-          onProcess={({ dest, imageState }) => {
-            // dest is output file in dataURI format
-            // console.log("dest", dest);
-            if(image){
-                // console.log(dest);
-                // console.log("dest");
-                setImage(dest);
-                setBase64(null);
-            }
-            
-
-          }}
-        />
-    );
-}
+      <PinturaEditor
+        ref={editorRef}
+        
+        // src={image}
+        // onClose={() => console.log('closed')}
+        // onDestroy={() => console.log('destroyed')}
+        // onLoad={() => 
+        //     editorRef.current.editor.processImage(templateState)
+        // }
+        onInit={() => 
+            editorRef.current.editor.processImage(image, imageState)
+        }
+        onProcess={async({ dest }) => {
+            manipulateAsync(dest, [], ).then((res) => {
+                setFinished(true);
+                setImage(res.uri);
+                // console.log(res.uri)
+            })
+        }}
+    />      
+  );
+};
 
 export default PinturaLoadImage;

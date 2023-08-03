@@ -261,7 +261,8 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                 replyToUsername: replyToUsername,
                 memeName: replyImageToPost.memeName,
                 template: replyImageToPost.template,
-                imageState: replyImageToPost.imageState,
+                templateState: replyImageToPost.imageState,
+                imageUrl: replyImageToPost.uri,
                 imageHeight: replyImageToPost.height,
                 imageWidth: replyImageToPost.width,
                 text: text,
@@ -350,7 +351,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                     {
                         Keyboard.dismiss();
                         bottomSheetRef.current.snapToIndex(0);
-
+                        console.log(replyImageToPost ? replyImageToPost.imageState : null);
                         if(replyImageToPost && replyImageToPost.template){
                             
                             await onReplyWithMeme();

@@ -1,9 +1,13 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
+import React, { useEffect, useRef, useState, useContext } from 'react';
+import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
+import { FlashList } from '@shopify/flash-list';
+
 
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
+
+
 
 import { fetchFirstTenPostCommentsByRecent, fetchFirstTenPostCommentsByPopular } from '../shared/post/GetPostComments';
 
@@ -37,7 +41,13 @@ const PostScreen = ({navigation, route}) => {
     const [submittedText, setSubmittedText] = useState(null);
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
-    
+
+    const [image, setImage] = useState(imageUrl ? imageUrl : template);
+    const [finished, setFinished] = useState(template ? false : true);
+
+    const flashListRef = useRef(null);
+
+
     const contentBottom = <ContentBottom
         memeName={memeName}
         tags={tags}
@@ -52,10 +62,10 @@ const PostScreen = ({navigation, route}) => {
         replyToUsername={username}
     />;
 
-    // useEffect(() => {
-    //     console.log("commentsList: ");
-    //     console.log(commentsList);
-    // }, [commentsList]);
+    
+    useEffect(() => {
+        LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    }, []);
 
     useEffect(() => {
         getFirstTenPostCommentsByPopular();
@@ -69,15 +79,14 @@ const PostScreen = ({navigation, route}) => {
         });
     }
 
-    const addNewComment = (newComment) => {
+    // const addNewComment = (newComment) => {
 
-        setTimeout(() => {
-            setCommentsList([newComment, ...commentsList]).then(() => {
-                console.log("commentsList: ");
-                console.log(commentsList);
-            })
-        }, 3000);
-    }
+    //     setTimeout(() => {
+    //         setCommentsList([newComment, ...commentsList]).then(() => {
+
+    //         })
+    //     }, 3000);
+    // }
 
     const onGoBack = () => {
         if(imageReply && imageReply.forCommentOnPost){
@@ -97,35 +106,6 @@ const PostScreen = ({navigation, route}) => {
     const renderItem = ({ item, index }) => {
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
-
-            let topText, image
-            
-            
-            if (text != null && text != "") {
-                topText = (
-                    <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
-                        {text}
-                    </Text>
-                );
-            }else{
-                topText = null;
-            }
-
-
-            if (imageUrl != null) {
-                image = (
-                    <ResizableImage 
-                        image={imageUrl}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxWidth={windowWidth}
-                        style={{marginTop: 5, borderRadius: 0}}
-                    />
-                );
-            }else{
-                image = null;
-            }
-            
             
             return (
                 <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
@@ -187,9 +167,19 @@ const PostScreen = ({navigation, route}) => {
 
                     {/* content */}
                     
-                    {topText}
+                    {text &&
+                        <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
+                            {text}
+                        </Text>
+                    }
 
-                    {image}
+                        <ResizableImage 
+                        image={imageUrl}
+                        height={imageHeight}
+                        width={imageWidth}
+                        maxWidth={windowWidth}
+                        style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
+                    />
 
                     {/* Content bottom */}
                     <View style={{marginLeft: 5, marginTop: 5, marginBottom: 5}}>
@@ -217,7 +207,7 @@ const PostScreen = ({navigation, route}) => {
                 </View>
                 
             );
-        }else if (index === commentsList.length-1 && commentsList.length > 1) {
+        }else if (index === commentsList.length-1) {
             return (
 
                 <View>
@@ -238,7 +228,7 @@ const PostScreen = ({navigation, route}) => {
                         commentsCount={item.commentsCount}
                     />
                     
-                    <View style={{height: 150}}/>
+                    <View style={{height: 200}}/>
                 </View>
                 
             );
@@ -264,25 +254,46 @@ const PostScreen = ({navigation, route}) => {
         );
     };
 
+    // const keyExtractor = useCallback((item, index) => item.id, []);
+
     return (
-        <View style={[theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer, { flex: 1}]}>
+        <View
+            onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+            onTouchEnd={e => {
+            if (e.nativeEvent.pageX - this.touchX > 150)
+                // console.log('Swiped Right')
+                onGoBack();
+            }}
+            style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
+        >
             
             
-            <FlatList
-                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-                onTouchEnd={e => {
-                if (e.nativeEvent.pageX - this.touchX > 150)
-                    // console.log('Swiped Right')
-                    onGoBack();
-                }}
+            <FlashList
+                ref={flashListRef}
                 data={commentsList}
-                keyExtractor={(item, index) => item.id + '-' + index}
+                // onEndReachedThreshold={0.2}
+                // onEndReached={() => }
+                estimatedItemSize={400}
+                // keyExtractor={(item, index) => item.id}
+                // keyExtractor={keyExtractor}
+                extraData={[finished]}
                 stickyHeaderIndices={[1]}
-                renderItem={({ item, index }) => {
-                    return (
-                        renderItem({ item, index })
-                    );
-                }}
+                renderItem={renderItem}
+
+                removeClippedSubviews={true}
+
+                // maxToRenderPerBatch={5}
+                // updateCellsBatchingPeriod={100}
+                // windowSizeprop={5}
+
+                //optimization
+                // removeClippedSubviews={true}
+                // initialNumToRender={10}
+                // maxToRenderPerBatch={10}
+                // windowSize={10}
+                // updateCellsBatchingPeriod={100}
+                // onEndReachedThreshold={0.5}
+                // onEndReached={() => {}} //need to implement infinite scroll
             />
 
             {replyBottomSheet}

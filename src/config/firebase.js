@@ -11,7 +11,7 @@ import {
     getReactNativePersistence
 } from 'firebase/auth/react-native';
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, initializeFirestore } from "firebase/firestore";
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID, FIREBASE_MEASUREMENT_ID } from "@env";
 
 
@@ -44,6 +44,10 @@ if (firebase.apps.length == 0) {
 // initialize auth
 const auth = initializeAuth(Firebase, {
     persistence: getReactNativePersistence(AsyncStorage)
+});
+
+initializeFirestore(Firebase, {
+    ignoreUndefinedProperties: true
 });
 
 const db = getFirestore(Firebase);

@@ -1,5 +1,5 @@
-import React, {useContext, useState, useEffect} from 'react';
-import {View, FlatList, Text, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
+import React, {useContext, useRef, useState, useEffect} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Image } from 'expo-image';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { firebase, storage, db } from '../../config/firebase';
@@ -7,6 +7,7 @@ import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } fr
 import {ThemeContext} from '../../../context-store/context';
 
 import { fetchFirstFiveCommentsByRecent, fetchFirstFiveCommentsByPopular } from '../../shared/comment/GetComments';
+import { FlashList } from '@shopify/flash-list';
 
 import ResizableImage from '../../shared/ResizableImage';
 
@@ -47,9 +48,10 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
 
     const [commentsList, setCommentsList] = useState([]); // array of comments - replies to this comment
 
+    const flashListRef = useRef(null);
+
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
-    const [replyVisible, setReplyVisible] = useState(false);
 
     const [likeCount, setLikeCount] = useState(likesCount);
     const [likeString, setLikeString] = useState("");
@@ -59,10 +61,6 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
 
     const [viewMoreClicked, setViewMoreClicked] = useState(false);
 
-    const [replyToComment, setReplyToComment] = useState("");
-
-    const [repliesVisible, setRepliesVisible] = useState(false);
-    const [replies, setReplies] = useState([]); // array of replies
 
     useEffect(() => {
         onUpdateLikeCount(likesCount);
@@ -286,6 +284,81 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
         return null;
     }
 
+    const renderItem = ({ item, index }) => {
+        if(index == commentsList.length - 1){
+            return (
+
+                <View style={{marginTop: 2, marginBottom: 6}}>
+
+                    <SubComment
+                        replyToPostId={replyToPostId}
+                        replyToCommentId={commentId}
+                        profile={item.profile}
+                        username={item.username}
+                        profilePic={item.profilePic}
+                        commentId={item.id}
+                        text={item.text}
+                        imageUrl={item.imageUrl}
+                        memeName={item.memeName}
+                        template={item.template}
+                        templateState={item.templateState}
+                        imageWidth={item.imageWidth}
+                        imageHeight={item.imageHeight}
+                        likesCount={item.likesCount}
+                        commentsCount={item.commentsCount}
+                    />
+                </View>
+            );
+        }else if(index == 0){
+            return (
+
+                <View style={{marginTop: 2}}>
+
+                    <SubComment
+                        replyToPostId={replyToPostId}
+                        replyToCommentId={commentId}
+                        profile={item.profile}
+                        username={item.username}
+                        profilePic={item.profilePic}
+                        commentId={item.id}
+                        text={item.text}
+                        imageUrl={item.imageUrl}
+                        memeName={item.memeName}
+                        template={item.template}
+                        templateState={item.templateState}
+                        imageWidth={item.imageWidth}
+                        imageHeight={item.imageHeight}
+                        likesCount={item.likesCount}
+                        commentsCount={item.commentsCount}
+                    />
+                </View>
+            );
+        }
+
+        return (
+            <SubComment
+                replyToPostId={replyToPostId}
+                replyToCommentId={commentId}
+                profile={item.profile}
+                username={item.username}
+                profilePic={item.profilePic}
+                commentId={item.id}
+                text={item.text}
+                imageUrl={item.imageUrl}
+                memeName={item.memeName}
+                template={item.template}
+                templateState={item.templateState}
+                imageWidth={item.imageWidth}
+                imageHeight={item.imageHeight}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
+            />
+        );
+        
+    };
+
+    // const keyExtractor = useCallback((item, index) => item.id, []);
+
     return (
         <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
             
@@ -444,82 +517,34 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
 
 
             {/* Replies - SubComments */}
-            <View style={{backgroundColor: theme == 'light' ? '#F2F2F2' : '#0A0A0A' }}>
-                <FlatList
-                    data={commentsList}
-                    keyExtractor={(item, index) => item.id + '-' + index}
-                    renderItem={({ item, index }) => {
-                        if(index == commentsList.length - 1){
-                            return (
+            <View style={{backgroundColor: theme == 'light' ? '#F2F2F2' : '#0A0A0A', minHeight: 2 }}>
 
-                                <View style={{marginTop: 2, marginBottom: 6}}>
+                    <FlashList
+                        ref={flashListRef}
+                        data={commentsList}
+                        // onEndReachedThreshold={0.2}
+                        // onEndReached={() => }
+                        estimatedItemSize={400}
+                        // keyExtractor={(item, index) => item.id}
+                        // keyExtractor={keyExtractor}
+                        extraData={[]}
+                        renderItem={renderItem}
+                        
+                        removeClippedSubviews={true}
 
-                                    <SubComment
-                                        replyToPostId={replyToPostId}
-                                        replyToCommentId={commentId}
-                                        profile={item.profile}
-                                        username={item.username}
-                                        profilePic={item.profilePic}
-                                        commentId={item.id}
-                                        text={item.text}
-                                        imageUrl={item.imageUrl}
-                                        memeName={item.memeName}
-                                        template={item.template}
-                                        templateState={item.templateState}
-                                        imageWidth={item.imageWidth}
-                                        imageHeight={item.imageHeight}
-                                        likesCount={item.likesCount}
-                                        commentsCount={item.commentsCount}
-                                    />
-                                </View>
-                            );
-                        }else if(index == 0){
-                            return (
+                        // maxToRenderPerBatch={5}
+                        // updateCellsBatchingPeriod={100}
+                        // windowSizeprop={5}
 
-                                <View style={{marginTop: 2}}>
-
-                                    <SubComment
-                                        replyToPostId={replyToPostId}
-                                        replyToCommentId={commentId}
-                                        profile={item.profile}
-                                        username={item.username}
-                                        profilePic={item.profilePic}
-                                        commentId={item.id}
-                                        text={item.text}
-                                        imageUrl={item.imageUrl}
-                                        memeName={item.memeName}
-                                        template={item.template}
-                                        templateState={item.templateState}
-                                        imageWidth={item.imageWidth}
-                                        imageHeight={item.imageHeight}
-                                        likesCount={item.likesCount}
-                                        commentsCount={item.commentsCount}
-                                    />
-                                </View>
-                            );
-                        }
-
-                        return (
-                            <SubComment
-                                replyToPostId={replyToPostId}
-                                replyToCommentId={commentId}
-                                profile={item.profile}
-                                username={item.username}
-                                profilePic={item.profilePic}
-                                commentId={item.id}
-                                text={item.text}
-                                imageUrl={item.imageUrl}
-                                memeName={item.memeName}
-                                template={item.template}
-                                templateState={item.templateState}
-                                imageWidth={item.imageWidth}
-                                imageHeight={item.imageHeight}
-                                likesCount={item.likesCount}
-                                commentsCount={item.commentsCount}
-                            />
-                        );
-                    }}
-                />
+                        //optimization
+                        
+                        // initialNumToRender={10}
+                        // maxToRenderPerBatch={10}
+                        // windowSize={10}
+                        // updateCellsBatchingPeriod={100}
+                        // onEndReachedThreshold={0.5}
+                        // onEndReached={() => {}} //need to implement infinite scroll
+                    />
             </View>
             
             {/* View replies */}

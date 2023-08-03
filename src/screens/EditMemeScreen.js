@@ -30,9 +30,9 @@ const EditMemeScreen = ({ navigation, route }) => {
     const [image, setImage] = useState(imageUrl);
     const [imageResult, setImageResult] = useState(null);
 
-    const [template, setTemplate] = useState(imageReply ? imageReply.undeditedUri : null);
-
     const { imageReply, setImageReply } = useContext(AuthenticatedUserContext);
+    const [template, setTemplate] = useState( null);
+
     const [storedImageState, setStoredImageState] = useState(null);
 
     const [compressTemplate, setCompressTemplate] = useState(imageReply ? false : true);
@@ -78,7 +78,8 @@ const EditMemeScreen = ({ navigation, route }) => {
         // Add image state to history stack if it exists
         if(imageState){
             editorRef.current.editor.history.write(
-                parseImageState(imageState)
+                // parseImageState(imageState)
+                imageState
             )
         }
     };
@@ -98,9 +99,10 @@ const EditMemeScreen = ({ navigation, route }) => {
                 width: width,
                 forCommentOnComment: forCommentOnComment,
                 forCommentOnPost: forCommentOnPost,
-                imageState: imageState
+                imageState: imageReply.imageState
             });
             editorRef.current.editor.close();
+            setOverlayVisible(false);
             navigation.goBack(null);
         }else if(forMemeComment){
             navigation.dispatch(
@@ -112,6 +114,7 @@ const EditMemeScreen = ({ navigation, route }) => {
             );
         }else{
             editorRef.current.editor.close();
+            setOverlayVisible(false);
             navigation.goBack(null);
         }
         
@@ -187,6 +190,7 @@ const EditMemeScreen = ({ navigation, route }) => {
         });
 
         editorRef.current.editor.close();
+        setOverlayVisible(false);
         navigation.goBack(null);
     }
 
@@ -256,7 +260,8 @@ const EditMemeScreen = ({ navigation, route }) => {
                         navToReply(replyMemeName, dest, imageState);
                     }else if(forCommentOnComment || forCommentOnPost){
                         setImageResult(dest);
-                        setStoredImageState(stringifyImageState(imageState));
+                        // setStoredImageState(stringifyImageState(imageState));
+                        setStoredImageState(imageState);
                         setOverlayVisible(true);
                     }else if(memeName){
                         // navigation.navigate('CreatePost', {imageUrl: dest, memeName: memeName});
@@ -330,7 +335,8 @@ const EditMemeScreen = ({ navigation, route }) => {
                             <TouchableOpacity
                                 onPress={() =>
                                     { 
-                                        imageReply && storedImageState == imageReply.imageState && replyMemeName == newMemeName ?
+                                        imageReply && JSON.stringify(storedImageState[0]) == JSON.stringify(imageReply.imageState[0]) && replyMemeName == newMemeName ?
+                                            
                                             onGoBack()
                                         :
                                             checkNameAndNav(newMemeName)

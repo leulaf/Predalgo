@@ -1,5 +1,5 @@
 {
-  "name": "Predalgo",
+  "name": "Picalgo",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -62,8 +62,10 @@
     "react-native-virtualized-view": "^1.0.0",
     "react-native-webview": "11.26.0",
     "react-redux": "^8.0.5",
+    "recyclerlistview": "^4.2.0",
     "redux": "^4.2.1",
-    "redux-thunk": "^2.4.2"
+    "redux-thunk": "^2.4.2",
+    "@shopify/flash-list": "1.4.0"
   },
   "devDependencies": {
     "@types/react-native-snap-carousel": "^3.8.5",

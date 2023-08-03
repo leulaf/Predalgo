@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ThemeProvider } from './context-store/context';
 import { AuthenticatedUserProvider } from './context-store/context';
-import { AuthenticatedUserContext } from './context-store/context';
+import { ContentProvider } from './context-store/context';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import 'react-native-gesture-handler';
@@ -57,15 +57,17 @@ const App = () => {
   } else {
     return (
       <Provider store={store}>
-        <AuthenticatedUserProvider>
-          <ThemeProvider>
-            <NavigationContainer>
+        <ContentProvider>
+          <AuthenticatedUserProvider>
+            <ThemeProvider>
+              <NavigationContainer>
 
-              <MainStackNavigator />
+                <MainStackNavigator />
 
-            </NavigationContainer>
-          </ThemeProvider>
-        </AuthenticatedUserProvider>
+              </NavigationContainer>
+            </ThemeProvider>
+          </AuthenticatedUserProvider>
+        </ContentProvider>
       </Provider>
     );
   }

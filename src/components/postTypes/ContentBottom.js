@@ -7,8 +7,8 @@ import { doc, getDoc, getDocs, where, collection, query } from "firebase/firesto
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../../constants/GlobalStyles';
 
-import DarkMemeCreate from '../../../assets/post_meme_create_light.svg';
-import LightMemeCreate from '../../../assets/post_meme_create_dark.svg';
+import DarkMemeCreate from '../../../assets/post_meme_create_dark.svg';
+import LightMemeCreate from '../../../assets/post_meme_create_light.svg';
 
 const ContentBottom = ({ tags, memeName }) => {
     const navigation = useNavigation();
@@ -89,8 +89,14 @@ const ContentBottom = ({ tags, memeName }) => {
                     {bottomTags}
                 </ScrollView>;
     } else {
-        contentBottom = <View marginVertical={hideBottom ? 0 : 10}></View>;
+        contentBottom = null;
     }
+
+    // if post is deleted or content is null, don't show post
+    if (contentBottom == null) {  
+        return null;
+    }
+
 
     const navigateToTag = async(tag) => {
         if(tag.charAt(0) == '#'){
@@ -116,10 +122,7 @@ const ContentBottom = ({ tags, memeName }) => {
         }
     }
 
-    // if post is deleted or content is null, don't show post
-    if (contentBottom == null) {  
-        return null;
-    }
+    
 
     return contentBottom;
 }

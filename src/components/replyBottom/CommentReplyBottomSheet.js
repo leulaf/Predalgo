@@ -239,15 +239,15 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             replyImageToPost.template,
             replyImageToPost.imageState,
             replyTextToPost,
+            replyToCommentId,
             replyToPostId,
             replyToProfile,
             replyToUsername,
             replyImageToPost.height,
             replyImageToPost.width,
         ).catch(function (error) {
-            // console.log(error);
+            console.log(error);
         }).then(async (id) => {
-            
             const text = replyTextToPost;
 
             // clear reply text and image
@@ -256,14 +256,16 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             setReplyTextToPost("");
                                             
             // navigate to comment screen with the new comment
-            navigation.navigate("Comment", {
+            navigation.push("Comment", {
                 commentId: id,
+                replyToCommentId: replyToCommentId,
                 replyToPostId: replyToPostId,
                 replyToProfile: replyToProfile,
                 replyToUsername: replyToUsername,
                 memeName: replyImageToPost.memeName,
                 template: replyImageToPost.template,
-                imageState: replyImageToPost.imageState,
+                templateState: replyImageToPost.imageState,
+                imageUrl: replyImageToPost.uri,
                 imageHeight: replyImageToPost.height,
                 imageWidth: replyImageToPost.width,
                 text: text,
@@ -306,8 +308,8 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                         {
                             setImageReply(null)
                             navigation.navigate("Upload", {
-                                forCommentOnComment: false,
-                                forCommentOnPost: true,
+                                forCommentOnComment: true,
+                                forCommentOnPost: false,
                             })
                         }
                     }
@@ -326,8 +328,8 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                     {
                         setImageReply(null)
                         navigation.navigate("AddPost", {
-                            forCommentOnComment: false,
-                            forCommentOnPost: true,
+                            forCommentOnComment: true,
+                            forCommentOnPost: false,
                         })
                     }
                 }

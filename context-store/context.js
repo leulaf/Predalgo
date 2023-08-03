@@ -14,6 +14,43 @@ const ThemeProvider = ({ children }) => {
     )
 }
 
+const ContentContext = createContext();
+
+const ContentProvider = ({ children }) => {
+    // Manage theme state
+    const [content, setContent] = useState(
+        // {
+        //     postId:"",
+        //     commentId:"",
+        //     replyToPostId:"",
+        //     replyToCommentId:"",
+        //     replyToProfile:"",
+        //     replyToUsername:"",
+        //     imageUrl:"",
+        //     memeName:"",
+        //     template:"",
+        //     templateState:"",
+        //     imageHeight:"",
+        //     imageWidth:"",
+        //     text:"",
+        //     likesCount:"",
+        //     commentsCount:"",
+        //     onReply:"",
+        //     profile:"",
+        //     username:"",
+        //     profilePic:"",
+        // }
+        []
+        
+    );
+    return (
+        <ContentContext.Provider
+            value={{ content, setContent }}>
+            {children}
+        </ContentContext.Provider>
+    )
+}
+
 const AuthenticatedUserContext = createContext({});
 
 const AuthenticatedUserProvider = ({ children }) => {
@@ -89,5 +126,7 @@ export {
     ThemeContext,
     ThemeProvider,
     AuthenticatedUserContext,
-    AuthenticatedUserProvider
+    AuthenticatedUserProvider,
+    ContentContext,
+    ContentProvider
 }
