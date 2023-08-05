@@ -25,10 +25,10 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, 
                     setRepostUsername(snapshot.data().username);
                     setRepostProfilePic(snapshot.data().profilePic);
                 } else {
-                    console.log("No such document!");
+                    // console.log("No such document!");
                 }
             }).catch((error) => {
-                console.log("Error getting document:", error);
+                // console.log("Error getting document:", error);
             });
         }
         
@@ -41,10 +41,10 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, 
                     setProfilePicState(snapshot.data().profilePic);
                     setUsernameState(snapshot.data().username);
                 } else {
-                    console.log("No such document!");
+                    // console.log("No such document!");
                 }
             }).catch((error) => {
-                console.log("Error getting document:", error);
+                // console.log("Error getting document:", error);
             });
         }
     }, []);

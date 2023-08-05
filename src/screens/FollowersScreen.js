@@ -59,7 +59,7 @@ export default function FollowersScreen({navigation, route}){
         navigation.setOptions({
             header: () => <SimpleTopBar title={"Followers"}/>
         });
-    }, [navigation]);
+    }, []);
 
     const renderItem = (item) => {
         return (

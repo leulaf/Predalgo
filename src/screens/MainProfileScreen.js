@@ -45,7 +45,7 @@ function MainProfileScreen ({navigation, ...props}) {
         navigation.setOptions({
             header: () => <MainProfileTop />
         });
-    }, [navigation]);
+    }, []);
 
     async function uploadImage(imageUrl) {
         // Convert image to blob format(array of bytes)
@@ -62,7 +62,7 @@ function MainProfileScreen ({navigation, ...props}) {
         
         const uploadTask =  uploadBytesResumable(storageRef, blob)
         .catch ((e) => {
-            console.log(e);
+            // console.log(e);
         })
      
      
@@ -76,7 +76,7 @@ function MainProfileScreen ({navigation, ...props}) {
                 await addProfilePic(url);
             });
         }).catch((error) => {
-            console.error('Upload failed', error);
+            // console.error('Upload failed', error);
             // ...
         });
      };
@@ -94,7 +94,7 @@ function MainProfileScreen ({navigation, ...props}) {
              const compressedImage = await compressImage(result.assets[0].uri);
              await uploadImage(compressedImage);
         }else{
-             console.log('cancelled');
+            //  console.log('cancelled');
         }
      };
      

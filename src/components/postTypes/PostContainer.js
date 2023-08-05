@@ -34,6 +34,17 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
     const contentBottom = <ContentBottom
         memeName={memeName}
         tags={tags}
+        // title={title}
+        // imageUrl={imageUrl}
+        // text={text}
+        // user={profile}
+        // username={username}
+        // profile={profile}
+        // repostUsername={repostUsername}
+        // profilePic={profilePic}
+        // postId={postId}
+        // likesCount={likesCount}
+        // commentsCount={commentsCount}
     />
 
     const postBottom = <PostBottom
@@ -46,9 +57,9 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
         navigation.push('Post', {
             title: title,
             imageUrl: imageUrl,
+            memeName: memeName,
             text: text,
             tags: tags,
-            memeName: memeName,
             user: profile,
             username: username,
             profile: profile,
@@ -82,7 +93,7 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                     });
 
                 }).catch((error) => {
-                    console.log(error);
+                    // console.log(error);
                 });
 
                 data = snapshot.data();

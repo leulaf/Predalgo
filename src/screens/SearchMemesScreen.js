@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {View, Text, Image,StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view';
 import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
@@ -10,18 +10,6 @@ import GlobalStyles from '../constants/GlobalStyles';
 
 import MemesSearchBar from '../components/MemesSearchBar';
 
-import Image from 'react-native-scalable-image';
-
-const ImageContainer = (props) => {    
-
-    return (
-        <Image 
-            width={200} // this will make image take full width of the device
-            source={props.imageSource} // pass the image source via props
-            style={{borderRadius: 10, marginHorizontal: 3, marginVertical: 6}}
-        />
-    );
-};
 
 export default function SearchMemesScreen({navigation, route}){
     const {theme,setTheme} = useContext(ThemeContext);
@@ -72,7 +60,7 @@ export default function SearchMemesScreen({navigation, route}){
         navigation.setOptions({
             header: () => <MemesSearchBar title={"Back"} term={term} setTerm={setTerm}/>
         });
-    }, [navigation]);
+    }, []);
 
     const getbase64AndNav = async (image, memeName) => {
       const manipResult = await manipulateAsync(image, [], {
@@ -110,7 +98,7 @@ export default function SearchMemesScreen({navigation, route}){
                     <TouchableOpacity
                       onPress={() => navigation.navigate('Meme', {memeName: item.name})}
                     >
-                      <ImageContainer
+                      <Image
                         imageSource={{ uri: item.url }}
                       />
                     </TouchableOpacity>
@@ -131,7 +119,7 @@ export default function SearchMemesScreen({navigation, route}){
                     <TouchableOpacity
                       onPress={() => navigation.navigate('Meme', {memeName: item.name})}
                     >
-                      <ImageContainer
+                      <Image
                         imageSource={{ uri: item.url }}
                       />
                     </TouchableOpacity>

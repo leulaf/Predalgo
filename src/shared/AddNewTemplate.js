@@ -34,10 +34,14 @@ const uploadNewTemplate = async (newTemplateImage, memeName, height, width) => {
 
         const newFilename = uuid.v4();
         const newChildPath = `imageTemplates/${newFilename}`;
-        
+
+        const metadata = {
+            cacheControl: 'public,max-age=31536000',
+        };
+
         const newStorageRef = ref(storage, newChildPath);
         
-        const newUploadTask = uploadBytesResumable(newStorageRef, newBlob)
+        const newUploadTask = uploadBytesResumable(newStorageRef, newBlob, metadata)
         .catch ((e) => {
             console.log(e);
         });

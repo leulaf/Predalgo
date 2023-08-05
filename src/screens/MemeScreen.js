@@ -14,17 +14,6 @@ import MemeTopBar from '../components/MemeTopBar';
 import DarkMemeCreate from '../../assets/post_meme_create_light.svg';
 import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
 
-import ScalableImage from 'react-native-scalable-image';
-
-const ImageContainer = (props) => {    
-    return (
-        <ScalableImage 
-            width={200} // this will make image take full width of the device
-            source={props.imageSource} // pass the image source via props
-            style={{borderRadius: 10, marginHorizontal: 3, marginVertical: 6}}
-        />
-    );
-};
 
 const MemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
@@ -113,7 +102,7 @@ const MemeScreen = ({ navigation, route }) => {
         navigation.setOptions({
             header: () => <MemeTopBar name={memeName} url={imageUrl}/>,
         });
-    }, [navigation, imageUrl, memeName]);
+    }, [imageUrl]);
 
     return (
 
@@ -181,7 +170,7 @@ const MemeScreen = ({ navigation, route }) => {
                                 <TouchableOpacity
                                     // onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
                                 >
-                                    <ImageContainer
+                                    <Image
                                         imageSource={{ uri: item.imageUrl }}
                                     />
                                 </TouchableOpacity>
@@ -202,7 +191,7 @@ const MemeScreen = ({ navigation, route }) => {
                                 <TouchableOpacity
                                     // onPress={() => navigation.navigate('Meme', {imageUrl: item.url, memeName: item.name, uploader: item.uploader, useCount: item.useCount})}
                                 >
-                                    <ImageContainer
+                                    <Image
                                         imageSource={{ uri: item.imageUrl }}
                                     />
                                 </TouchableOpacity>

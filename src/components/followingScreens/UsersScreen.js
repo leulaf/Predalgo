@@ -58,7 +58,7 @@ const UsersScreen = ({ route }) => {
         navigation.setOptions({
             header: () => <SimpleTopBar title={""}/>
         });
-    }, [navigation]);
+    }, []);
 
     const renderItem = (item) => {
 

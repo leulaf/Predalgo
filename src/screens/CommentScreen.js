@@ -1,4 +1,4 @@
-import React, { useEffect, useRef,  useState, useContext } from 'react';
+import React, { useEffect, useCallback, useRef,  useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
@@ -11,7 +11,6 @@ import { fetchFirstTenCommentsByRecent, fetchFirstTenCommentsByPopular } from '.
 
 import GlobalStyles from '../constants/GlobalStyles';
 
-import PinturaLoadImage from '../shared/PinturaLoadImage';
 
 import ContentBottom from '../components/postTypes/ContentBottom';
 
@@ -23,21 +22,22 @@ import MainComment from '../components/commentTypes/MainComment';
 
 import SimpleTopBar from '../components/SimpleTopBar';
 
-import PinturaEditor, {} from "@pqina/react-native-expo-pintura";
+import PinturaEditor from "@pqina/react-native-expo-pintura";
 
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { manipulateAsync } from 'expo-image-manipulator';
 
 
 const HEADER_HEIGHT = 200; 
 const STICKY_HEADER_HEIGHT = 50; 
 
-const windowWidth = Dimensions.get('window').width;
-
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
 
 
 const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [commentsList, setCommentsList] = useState([]);
+    const [commentsList, setCommentsList] = useState(["one", "two"]);
+    // const [commentsList, setCommentsList] = useState([]);
     const {profile, commentId, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, template, templateState, imageWidth, imageHeight, memeName, tags, likesCount, commentsCount} = route.params;
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
@@ -45,31 +45,50 @@ const CommentScreen = ({navigation, route}) => {
     const [onReplying, setOnReplying] = useState(onReply ? onReply : false);
 
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
+
+    const [updating, setUpdating] = useState(false);
+
     const [finished, setFinished] = useState(template ? false : true);
 
-    const editorRef = useRef(null);
     const flashListRef = useRef(null);
-
-    const contentBottom = <ContentBottom
-        memeName={memeName}
-        tags={tags}
-    />;
-
+    const editorRef = useRef(null);
+    
     useEffect(() => {
+        getFirstTenCommentsByPopular();
+
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+        
+        navigation.setOptions({
+            header: () => <SimpleTopBar title={"Back"}/>
+        });
     }, []);
 
 
-    let commentBottom = (
+    const getFirstTenCommentsByPopular = async () => {
+        await fetchFirstTenCommentsByPopular(replyToPostId, commentId).then((comments) => {
+            
+            setCommentsList(comments);
+            
+        });
+    }
 
+
+    const contentBottom = (
+        <ContentBottom
+            memeName={memeName}
+            tags={tags}
+        />
+    );
+
+
+    let commentBottom = (
         <CommentBottom
             commentId={commentId}
-            replyToPostId={replyToPostId}
             replyToCommentId={replyToCommentId}
+            replyToPostId={replyToPostId}
             likesCount={likesCount}
             commentsCount={commentsCount}
         />
-
     );
 
     const replyBottomSheet = <ReplyBottomSheet
@@ -82,17 +101,9 @@ const CommentScreen = ({navigation, route}) => {
         replyToUsername={username}
     />;
 
-    useEffect(() => {
-        getFirstTenCommentsByPopular();
-    }, []);
 
-    const getFirstTenCommentsByPopular = async () => {
-        await fetchFirstTenCommentsByPopular(replyToPostId, commentId).then((comments) => {
-            
-            setCommentsList(comments);
-            
-        });
-    }
+    
+
 
     const onGoBack = () => {
         if(imageReply && imageReply.forCommentOnComment){
@@ -101,18 +112,37 @@ const CommentScreen = ({navigation, route}) => {
         navigation.goBack(null);
     };
 
-    // Sets the header of component
-    useEffect(() => {
-        navigation.setOptions({
-            header: () => <SimpleTopBar title={"Back"}/>
-        });
-    }, [navigation]);
+    //  Load Meme with template and template state
+    const createMeme = (
+        <PinturaEditor
+            ref={editorRef}
+            
+            // src={image}
+            // onClose={() => console.log('closed')}
+            // onDestroy={() => console.log('destroyed')}
+            // onLoad={() => 
+            //     editorRef.current.editor.processImage(templateState)
+            // }
+            onInit={() => 
+                editorRef.current.editor.processImage(image, templateState)
+            }
+            onProcess={async({ dest }) => {
+                manipulateAsync(dest, [], ).then((res) => {
+                    setFinished(true);
+                    setImage(res.uri);
+                    // console.log(res.uri)
+                })
+            }}
+        />     
+    )
 
-
-    const renderItem =({ item, index }) => {
+    
+    const renderItem = useCallback(({ item, index }) => {
 
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
+            
+
             return (
                 <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
                     <View 
@@ -167,7 +197,7 @@ const CommentScreen = ({navigation, route}) => {
                         />
                         
                         {/* Content bottom */}
-                        <View style={{marginLeft: 5, marginTop: 5, marginBottom: 5}}>
+                        <View style={{marginLeft: 5, marginTop: 5, marginBottom: 0}}>
                             {contentBottom}
                         </View>
 
@@ -180,39 +210,7 @@ const CommentScreen = ({navigation, route}) => {
             return (
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
                     {commentBottom}
-
-                    {index === commentsList.length-1 &&
-
-                        <View style={{height: 600}}/>
-
-                    }
-
                 </View>
-                
-            );
-        }else if (index === commentsList.length-1) {
-            return (
-                <View>
-                    <MainComment
-                        replyToPostId={replyToPostId}
-                        replyToCommentId={commentId}
-                        profile={item.profile}
-                        username={item.username}
-                        profilePic={item.profilePic}
-                        commentId={item.id}
-                        text={item.text}
-                        imageUrl={item.imageUrl}
-                        memeName={item.memeName}
-                        template={item.template}
-                        templateState={item.templateState}
-                        imageWidth={item.imageWidth}
-                        imageHeight={item.imageHeight}
-                        likesCount={item.likesCount}
-                        commentsCount={item.commentsCount}
-                    />
-                    <View style={{height: 200}}/>
-                </View>
-                
             );
         }
 
@@ -233,11 +231,13 @@ const CommentScreen = ({navigation, route}) => {
                 imageHeight={item.imageHeight}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
+                updating={updating}
+                setUpdating={setUpdating}
             />
         );
 
         
-    };
+    }, [updating, finished]);
 
     
     // List key extractor.
@@ -257,66 +257,33 @@ const CommentScreen = ({navigation, route}) => {
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
             
-            
+            {/* Load Meme with template and template state */}
+            {!finished && createMeme}
 
 
             <FlashList
                 ref={flashListRef}
                 data={commentsList}
-                // onEndReachedThreshold={0.2}
+                
+                // onEndReachedThreshold={0.2} //need to implement infinite scroll
                 // onEndReached={() => }
-                estimatedItemSize={400}
-                keyExtractor={(item, index) => item.id}
-                // keyExtractor={keyExtractor}
-                extraData={[finished]}
+
+                extraData={[finished, updating]}
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
                 removeClippedSubviews={true}
 
-                // maxToRenderPerBatch={5}
-                // updateCellsBatchingPeriod={100}
-                // windowSizeprop={5}
+                // keyExtractor={(item, index) => item.id}
+                // keyExtractor={keyExtractor}
 
-                //optimization
-                // removeClippedSubviews={true}
-                // initialNumToRender={10}
-                // maxToRenderPerBatch={10}
-                // windowSize={10}
-                // updateCellsBatchingPeriod={100}
-                // onEndReachedThreshold={0.5}
-                // onEndReached={() => {}} //need to implement infinite scroll
+                estimatedItemSize={400}
+                estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+                ListFooterComponent={
+                    <View style={{height: 200}}/>
+                }
             />
-
-
-            
-
-            {/* Load Meme with template and template state */}
-            {
-                finished == false &&
-                    
-                    <PinturaEditor
-                        ref={editorRef}
-                        
-                        // src={image}
-                        // onClose={() => console.log('closed')}
-                        // onDestroy={() => console.log('destroyed')}
-                        // onLoad={() => 
-                        //     editorRef.current.editor.processImage(templateState)
-                        // }
-                        onInit={() => 
-                            editorRef.current.editor.processImage(image, templateState)
-                        }
-                        onProcess={async({ dest }) => {
-                            manipulateAsync(dest, [], ).then((res) => {
-                                setFinished(true);
-                                setImage(res.uri);
-                                // console.log(res.uri)
-                            })
-                        }}
-                    />     
-            }
-
 
             {replyBottomSheet}
             
@@ -354,7 +321,8 @@ const styles = StyleSheet.create({
     },
     darkMainContainer: {
         flex: 1,
-        backgroundColor: '#0C0C0C',
+        // backgroundColor: '#0C0C0C',
+        backgroundColor: '#000000',
     },
     lightContainer: {
         backgroundColor: 'white',

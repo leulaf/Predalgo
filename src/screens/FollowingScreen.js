@@ -16,7 +16,7 @@ export default function FollowingScreen({navigation, route}){
         navigation.setOptions({
             header: () => <SimpleTopBar title={"Following"}/>
         });
-    }, [navigation]);
+    }, []);
 
     return (
         <View style={{ flex: 1 }}>

@@ -24,7 +24,7 @@ export default function MainScreen({navigation, openDrawer}){
     //             // openDrawer={() => openDrawer()}
     //         />
     //     });
-    // }, [navigation]);
+    // }, []);
 
     return (
             <>

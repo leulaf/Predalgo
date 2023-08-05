@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
         height: 45,
         flexDirection:"row",
         alignSelf: 'flex-start',
-        marginLeft: 5,
+        // marginLeft: 5,
         paddingHorizontal: 10,
         alignItems: "center",
         alignContent: "center", 

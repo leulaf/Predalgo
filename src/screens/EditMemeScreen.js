@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
-import {View, Text, TextInput, StyleSheet, Button, Image, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import {View, Text, TextInput, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import { Overlay } from 'react-native-elements';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
@@ -13,16 +13,7 @@ import PinturaEditor from "@pqina/react-native-expo-pintura";
 import {
     createMarkupEditorToolStyle,
     createMarkupEditorToolStyles,
-    createDefaultImageReader,
-    createDefaultImageWriter,
-    createDefaultImageOrienter,
-    setPlugins,
-    plugin_crop,
-    locale_en_gb,
-    plugin_crop_locale_en_gb,
 } from "@pqina/pintura";
-
-setPlugins(plugin_crop);
 
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
@@ -45,18 +36,16 @@ const EditMemeScreen = ({ navigation, route }) => {
     const templateRef = useRef(null);
 
     const editorDefaults = {
-        imageWriter: { 
-            quality: dontCompress ? 
-                1 
-            : 
-                cameraPic ? .8 : 0.6,
+        imageWriter: {
+            quality: cameraPic ? .8 : 0.6,
 
             targetSize: {
                 height: height < width ? height : 500,
                 width: width < height ? width : 500,
             },
-         }, 
+        },
     };
+
 
     // console.log(imageReply.undeditedUri, imageUrl);
 
@@ -64,7 +53,7 @@ const EditMemeScreen = ({ navigation, route }) => {
         navigation.setOptions({
             header: () => <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} navigation={navigation}/>,
         });
-    }, [navigation]);
+    }, []);
 
     const stringifyImageState = (imageState) => {
         return JSON.stringify(imageState, (k, v) => (v === undefined ? null : v));

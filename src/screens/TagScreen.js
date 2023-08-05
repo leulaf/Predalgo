@@ -23,7 +23,7 @@ export default function TagScreen({navigation, route}){
         navigation.setOptions({
             header: () => <SimpleTopBar title={tag}/>
         });
-    }, [navigation]);
+    }, []);
 
     
     return (

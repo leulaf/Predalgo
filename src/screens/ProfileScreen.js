@@ -23,7 +23,7 @@ export default function ProfileScreen ({route, navigation}) {
     //     navigation.setOptions({
     //         header: () => <SimpleTopBar title={"@" + user.username}/>
     //     });
-    // }, [navigation]);
+    // }, []);
 
     // Check if current user is following the user
     useEffect(() => {

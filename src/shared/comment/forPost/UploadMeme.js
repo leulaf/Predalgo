@@ -20,9 +20,13 @@ async function commentMemeOnPost(imageUrl, memeName, text, replyToPostId, replyT
 
         const filename = uuid.v4();
         const childPath = `comments/users/${firebase.auth().currentUser.uid}/${filename}`;
+
+        const metadata = {
+            cacheControl: 'public,max-age=31536000',
+        };
         
         const storageRef = ref(storage, childPath);
-        const uploadTask = uploadBytesResumable(storageRef, blob)
+        const uploadTask = uploadBytesResumable(storageRef, blob, metadata)
         .catch ((e) => {
             // console.log(e);
         });
@@ -74,7 +78,7 @@ async function commentMemeOnPost(imageUrl, memeName, text, replyToPostId, replyT
 const saveMemeToPost = async (memeName, templateUrl, imageState, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth ) => {
     return new Promise(async (resolve, reject) => {
         // let id
-        
+
         // add text post to database
         const docRef = await addDoc(collection(db, "comments", replyToPostId, "comments"), {
             replyToPostId: replyToPostId,

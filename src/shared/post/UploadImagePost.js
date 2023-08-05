@@ -17,9 +17,11 @@ async function uploadImagePost(imageUrl, memeName, newTemplate, newTemplateImage
 
     const filename = uuid.v4();
     const childPath = `posts/users/${firebase.auth().currentUser.uid}/${filename}`;
-    
+    const metadata = {
+        cacheControl: 'public,max-age=31536000',
+    };
     const storageRef = ref(storage, childPath);
-    const uploadTask = uploadBytesResumable(storageRef, blob)
+    const uploadTask = uploadBytesResumable(storageRef, blob, metadata)
     .catch ((e) => {
         console.log(e);
     });
@@ -48,8 +50,12 @@ async function uploadImagePost(imageUrl, memeName, newTemplate, newTemplateImage
                     const newChildPath = `imageTemplates/${newFilename}`;
                     
                     const newStorageRef = ref(storage, newChildPath);
+
+                    const metadata = {
+                        cacheControl: 'public,max-age=31536000',
+                    };
                     
-                    const newUploadTask = uploadBytesResumable(newStorageRef, newBlob)
+                    const newUploadTask = uploadBytesResumable(newStorageRef, newBlob, metadata)
                     .catch ((e) => {
                         console.log(e);
                     });

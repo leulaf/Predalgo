@@ -3,7 +3,7 @@ import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, I
 import uuid from 'react-native-uuid';
 
 import { commentImageOnPost } from '../../shared/comment/forPost/UploadImage';
-import { commentMemeOnPost, saveMemeToPost } from '../../shared/comment/forPost/UploadMeme';
+import { saveMemeToPost } from '../../shared/comment/forPost/UploadMeme';
 import { commentTextOnPost } from '../../shared/comment/forPost/UploadText';
 
 import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/context';
@@ -72,10 +72,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
     useEffect(() => {
         if(imageReply && imageReply.forCommentOnPost){
-            // console.log(imageReply);
-            // console.log(imageReply.template && imageReply.template);
-            // console.log(imageReply.memeName && imageReply.memeName);
-            // console.log(imageReply.imageState && imageReply.imageState);
+
             setReplyImageToPost(imageReply);
             // setImageReply(null);
             // console.log("imageReply");
@@ -90,24 +87,6 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
         }
     }, [imageReply])
 
-    // callbacks
-    const handleSheetChanges = useCallback((index) => {
-        // console.log('handleSheetChanges', index);
-        // if(index == 0){
-        //     Keyboard.dismiss();
-        //     setCurrentIndex(0);
-        //     setTextInputInFocus(false);
-        // }else if(index == 1){
-        //     // Open keyboard when bottom sheet is expanded
-        //     replyTextToPostRef.current.focus();
-        //     setCurrentIndex(1);
-        //     setTextInputInFocus(true);
-        // }else if(index == 2){
-        //     replyTextToPostRef.current.focus();
-        //     setCurrentIndex(2);
-        //     setTextInputInFocus(true);
-        // }
-    }, []);
 
     // Makes sure the keyboard is open when the bottom sheet is expanded
     const handleSheetAnimate = useCallback((from, to) => {
@@ -351,7 +330,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                     {
                         Keyboard.dismiss();
                         bottomSheetRef.current.snapToIndex(0);
-                        console.log(replyImageToPost ? replyImageToPost.imageState : null);
+
                         if(replyImageToPost && replyImageToPost.template){
                             
                             await onReplyWithMeme();
@@ -383,7 +362,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                 index={0}
                 snapPoints={snapPoints}
                 onAnimate={handleSheetAnimate}
-                onChange={() => handleSheetChanges}
+                // onChange={() => handleSheetChanges}
                 keyboardBehavior="interactive"
                 style={{
                     backgroundColor: theme == 'light' ? 'white' : '#141414',  // <==== HERE

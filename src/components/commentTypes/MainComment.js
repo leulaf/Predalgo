@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState, useEffect} from 'react';
+import React, {useContext, useCallback, useRef, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Image } from 'expo-image';
 import GlobalStyles from '../../constants/GlobalStyles';
@@ -8,6 +8,10 @@ import {ThemeContext} from '../../../context-store/context';
 
 import { fetchFirstFiveCommentsByRecent, fetchFirstFiveCommentsByPopular } from '../../shared/comment/GetComments';
 import { FlashList } from '@shopify/flash-list';
+
+import { manipulateAsync } from 'expo-image-manipulator';
+
+import PinturaEditor from "@pqina/react-native-expo-pintura";
 
 import ResizableImage from '../../shared/ResizableImage';
 
@@ -36,17 +40,19 @@ import ReportIcon from '../../../assets/danger.svg';
 import SubComment from './SubComment';
 
 import { getAuth } from "firebase/auth";
-import { set } from 'react-native-reanimated';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
 const auth = getAuth();
 
-const windowWidth = Dimensions.get('window').width;
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
 
-const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount, updating, setUpdating }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
-    const [commentsList, setCommentsList] = useState([]); // array of comments - replies to this comment
+    const [commentsList, setCommentsList] = useState(["fir"]); // array of comments - replies to this comment
+
+    const [image, setImage] = useState(imageUrl ? imageUrl :  template);
 
     const flashListRef = useRef(null);
 
@@ -61,6 +67,9 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
 
     const [viewMoreClicked, setViewMoreClicked] = useState(false);
 
+    const editorRef = useRef(null);
+
+    const [finished, setFinished] = useState(false);
 
     useEffect(() => {
         onUpdateLikeCount(likesCount);
@@ -214,10 +223,9 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
-            imageUrl: imageUrl,
+            imageUrl: image,
             memeName: memeName,
-            template: template,
-            templateState: templateState,
+            template: false,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -237,10 +245,9 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
-            imageUrl: imageUrl,
+            imageUrl: image,
             memeName: memeName,
-            template: template,
-            templateState: templateState,
+            template: false,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -261,9 +268,10 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
         });
     }
 
-    const onFirstViewMoreClicked = () => {
+    const onFirstViewMoreClicked = async () => {
         setViewMoreClicked(true);
-        getFirstFiveCommentsByPopular();
+        await getFirstFiveCommentsByPopular();
+        // setUpdating(!updating);
     }
     
     if(theme == 'light'){
@@ -284,12 +292,38 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
         return null;
     }
 
-    const renderItem = ({ item, index }) => {
-        if(index == commentsList.length - 1){
+    // Load Meme with template and template state
+    const createMeme = (
+        <PinturaEditor
+            ref={editorRef}
+            
+            // src={image}
+            // onClose={() => console.log('closed')}
+            // onDestroy={() => console.log('destroyed')}
+            // onLoad={() => 
+            //     editorRef.current.editor.processImage(templateState)
+            // }
+            onInit={() => 
+                editorRef.current.editor.processImage(image, templateState)
+            }
+            onProcess={async({ dest }) => {
+                manipulateAsync(dest, [], ).then((res) => {
+                    setFinished(true);
+                    setImage(res.uri);
+                    // console.log(res.uri)
+                })
+            }}
+        />     
+    )
+
+    const renderItem = useCallback(({ item, index }) => {
+        if(index == 0){
             return (
-
+                null
+            );
+        }else if(index == commentsList.length - 1){
+            return (
                 <View style={{marginTop: 2, marginBottom: 6}}>
-
                     <SubComment
                         replyToPostId={replyToPostId}
                         replyToCommentId={commentId}
@@ -309,7 +343,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                     />
                 </View>
             );
-        }else if(index == 0){
+        }else if(index == 1){
             return (
 
                 <View style={{marginTop: 2}}>
@@ -333,34 +367,38 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                     />
                 </View>
             );
+        }else if(index > 1){
+            return (
+                <SubComment
+                    replyToPostId={replyToPostId}
+                    replyToCommentId={commentId}
+                    profile={item.profile}
+                    username={item.username}
+                    profilePic={item.profilePic}
+                    commentId={item.id}
+                    text={item.text}
+                    imageUrl={item.imageUrl}
+                    memeName={item.memeName}
+                    template={item.template}
+                    templateState={item.templateState}
+                    imageWidth={item.imageWidth}
+                    imageHeight={item.imageHeight}
+                    likesCount={item.likesCount}
+                    commentsCount={item.commentsCount}
+                />
+            );
         }
-
-        return (
-            <SubComment
-                replyToPostId={replyToPostId}
-                replyToCommentId={commentId}
-                profile={item.profile}
-                username={item.username}
-                profilePic={item.profilePic}
-                commentId={item.id}
-                text={item.text}
-                imageUrl={item.imageUrl}
-                memeName={item.memeName}
-                template={item.template}
-                templateState={item.templateState}
-                imageWidth={item.imageWidth}
-                imageHeight={item.imageHeight}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
-        );
         
-    };
+    }, []);
 
     // const keyExtractor = useCallback((item, index) => item.id, []);
 
     return (
         <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
+
+            {/* Load Meme with template and template state */}
+            {!finished && createMeme}
+
             
             {/* Profile Picture and Username */}
             <View style={{marginTop: 8, flexDirection: 'row', alignItems: 'center'}}>
@@ -433,50 +471,24 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             }
             
             {/* Comment Image */}
-            {(imageUrl != null && imageUrl != "" && imageUrl != undefined) &&
-                <TouchableOpacity
-                    style={{backgroundColor: 'black', marginTop: 9, marginBottom: 2}}
-                    onPress = {() => onNavToComment()}
-                >
-                    <ResizableImage 
-                        image={imageUrl}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxHeight={500}
-                        maxWidth={windowWidth}
-                        style={{borderRadius: 0}}
-                    />
-                </TouchableOpacity>
-            }
+            <TouchableOpacity
+                style={{backgroundColor: 'black', marginTop: 9, marginBottom: 2}}
+                onPress = {() => onNavToComment()}
+            >
+                <ResizableImage 
+                    image={image}
+                    height={imageHeight}
+                    width={imageWidth}
+                    maxHeight={500}
+                    maxWidth={windowWidth}
+                    style={{borderRadius: 0}}
+                />
+                
+            </TouchableOpacity>
+
 
             {/* Reply and Like */}
             <View style={{ flexDirection: 'row', marginTop: 1,  alignItems: 'center', alignContent: 'center'  }}>
-                
-                {/* View replies */}
-                {/* {
-                    commentCount > 0 && !viewMoreClicked?
-                        
-                    <TouchableOpacity
-                        style={{ marginLeft: 12, height: 40, margin: 2, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
-                        onPress = {() => {
-                            !viewMoreClicked ? 
-                                onFirstViewMoreClicked()
-                            : 
-                                null;
-                        }}
-                    >
-
-                        <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
-                            View {commentString} replies
-                        </Text>
-
-                        {down}
-                        
-                    </TouchableOpacity>
-
-                    : null
-                } */}
-
 
                 {/* Spacer */}
                 <TouchableOpacity
@@ -517,63 +529,71 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
 
 
             {/* Replies - SubComments */}
-            <View style={{backgroundColor: theme == 'light' ? '#F2F2F2' : '#0A0A0A', minHeight: 2 }}>
+            <View style={{backgroundColor: 
+                    theme == 'light' ? 
+                        commentCount > 0 ? '#F2F2F2' : '#FFFFFF'
+                    : 
+                        commentCount > 0 ? '#000000' : '#151515', 
+                    minHeight: 3
+            }}>
 
-                    <FlashList
-                        ref={flashListRef}
-                        data={commentsList}
-                        // onEndReachedThreshold={0.2}
-                        // onEndReached={() => }
-                        estimatedItemSize={400}
-                        // keyExtractor={(item, index) => item.id}
-                        // keyExtractor={keyExtractor}
-                        extraData={[]}
-                        renderItem={renderItem}
-                        
-                        removeClippedSubviews={true}
+                <FlashList
+                    ref={flashListRef}
+                    data={commentsList}
+                    // onEndReachedThreshold={0.2}
+                    // onEndReached={() => }
+                    estimatedItemSize={400}
+                    // keyExtractor={(item, index) => item.id}
+                    // keyExtractor={keyExtractor}
+                    extraData={[finished, commentsList]}
+                    renderItem={renderItem}
+                    
+                    removeClippedSubviews={true}
 
-                        // maxToRenderPerBatch={5}
-                        // updateCellsBatchingPeriod={100}
-                        // windowSizeprop={5}
+                    estimatedListSize={{height: windowHeight, width: windowWidth-10 }}
 
-                        //optimization
-                        
-                        // initialNumToRender={10}
-                        // maxToRenderPerBatch={10}
-                        // windowSize={10}
-                        // updateCellsBatchingPeriod={100}
-                        // onEndReachedThreshold={0.5}
-                        // onEndReached={() => {}} //need to implement infinite scroll
-                    />
+                    // maxToRenderPerBatch={5}
+                    // updateCellsBatchingPeriod={100}
+                    // windowSizeprop={5}
+
+                    //optimization
+                    
+                    // initialNumToRender={10}
+                    // maxToRenderPerBatch={10}
+                    // windowSize={10}
+                    // updateCellsBatchingPeriod={100}
+                    // onEndReachedThreshold={0.5}
+                    // onEndReached={() => {}} //need to implement infinite scroll
+                />
             </View>
+
             
             {/* View replies */}
             {
-                commentCount > 0 
-                // && viewMoreClicked
-                ?
-                    
-                <TouchableOpacity
-                    style={{ backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717', borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' }}
-                    onPress = {() => {
-                        !viewMoreClicked ? 
-                            onFirstViewMoreClicked()
-                        : 
-                            null;
-                    }}
-                >
+                commentCount > 0 &&
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
+                            // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
+                            borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
+                        }}
+                        onPress = {() => {
+                            !viewMoreClicked ? 
+                                onFirstViewMoreClicked()
+                            : 
+                                null;
+                        }}
+                    >
 
-                    <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
-                        margin: 10,
-                    }]}>
-                        View {commentString} replies
-                    </Text>
+                        <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
+                            margin: 10,
+                        }]}>
+                            View {commentString} replies
+                        </Text>
 
-                    {down}
-                    
-                </TouchableOpacity>
-
-                : null
+                        {down}
+                        
+                    </TouchableOpacity>
             }
 
 
@@ -622,12 +642,22 @@ const styles = StyleSheet.create({
         // marginBottom: 4,
     },
     lightCommentContainer: {
+        width: '100%',
         backgroundColor: '#FFFFFF',
+        borderColor: "#EBEBEB",
+        // borderWidth: 1,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
         marginTop: 8,
         borderRadius: 12.5,
     },
     darkCommentContainer: {
-        backgroundColor: '#121212',
+        width: '100%',
+        backgroundColor: '#151515',
+        borderColor: "#242424",
+        // borderWidth: 1,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
         marginTop: 8,
         borderRadius: 12.5,
     },

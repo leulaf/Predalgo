@@ -71,11 +71,15 @@ const CreatePostScreen = ({navigation, route}) => {
 
         const filename = uuid.v4();
         const childPath = `posts/users/${firebase.auth().currentUser.uid}/${filename}`;
+
+        const metadata = {
+            cacheControl: 'public,max-age=31536000',
+        };
         
         const storageRef = ref(storage, childPath);
-        const uploadTask = uploadBytesResumable(storageRef, blob)
+        const uploadTask = uploadBytesResumable(storageRef, blob, metadata)
         .catch ((e) => {
-            console.log(e);
+            // console.log(e);
         });
         
         await uploadTask.then(async(snapshot) => {
@@ -100,12 +104,16 @@ const CreatePostScreen = ({navigation, route}) => {
 
                         const newFilename = uuid.v4();
                         const newChildPath = `imageTemplates/${newFilename}`;
+
+                        const metadata = {
+                            cacheControl: 'public,max-age=31536000',
+                        };
                         
                         const newStorageRef = ref(storage, newChildPath);
                         
-                        const newUploadTask = uploadBytesResumable(newStorageRef, newBlob)
+                        const newUploadTask = uploadBytesResumable(newStorageRef, newBlob, metadata)
                         .catch ((e) => {
-                            console.log(e);
+                            // console.log(e);
                         });
 
                         await newUploadTask.then(async(snapshot) => {
@@ -120,13 +128,13 @@ const CreatePostScreen = ({navigation, route}) => {
                                     await saveMemePostData(url);
                                 })
                             }).catch((error) => {
-                                console.error('Upload failed', error);
+                                // console.error('Upload failed', error);
                                 // ...
                             });
 
 
                         }).catch((error) => {
-                            console.error('Upload failed', error);
+                            // console.error('Upload failed', error);
                             // ...
                         });
                     }else{
@@ -135,7 +143,7 @@ const CreatePostScreen = ({navigation, route}) => {
                 }
             });
         }).catch((error) => {
-            console.error('Upload failed', error);
+            // console.error('Upload failed', error);
             // ...
         });
     };
@@ -166,7 +174,7 @@ const CreatePostScreen = ({navigation, route}) => {
             Alert.alert("Post uploaded successfully!");
             navigation.goBack();
         }).catch(function (error) {
-                console.log(error);
+                // console.log(error);
         });
     };
 
@@ -196,7 +204,7 @@ const CreatePostScreen = ({navigation, route}) => {
             Alert.alert("Post uploaded successfully!");
             navigation.goBack();
         }).catch(function (error) {
-                console.log(error);
+                // console.log(error);
         });
     };
 
@@ -223,7 +231,7 @@ const CreatePostScreen = ({navigation, route}) => {
             Alert.alert("Post uploaded successfully!");
             navigation.goBack();
         }).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         });
     };
 

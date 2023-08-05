@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, ScrollView, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions} from 'react-native';
+import {View, Image, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ThemeContext} from '../../context-store/context';
 import firebase from 'firebase/compat/app';
@@ -7,19 +7,8 @@ import { db, storage } from '../config/firebase';
 import { collection, query, where, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
 import SimpleTopBar from '../components/SimpleTopBar';
-import Image from 'react-native-scalable-image';
 
 const windowWidth = Dimensions.get('window').width;
-
-const ImageContainer = (props) => {    
-    return (
-        <Image 
-            width={windowWidth -15} // this will make image take full width of the device
-            source={props.imageSource} // pass the image source via props
-            style={{borderRadius: 10, marginHorizontal: 3, marginVertical: 6, alignSelf: 'center'}}
-        />
-    );
-};
 
 const Top_Tab = createMaterialTopTabNavigator();
 
@@ -56,7 +45,7 @@ export default function FavoriteTemplatesScreen({navigation}){
         navigation.setOptions({
             header: () => <SimpleTopBar title={"Favorite Templates"}/>
         });
-    }, [navigation]);
+    }, []);
     
     return (
         <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
@@ -83,7 +72,7 @@ export default function FavoriteTemplatesScreen({navigation}){
                         </Text>
 
                         {/* Meme template image */}
-                        <ImageContainer
+                        <Image
                             imageSource={{ uri: item.url }}
                         />
                     </TouchableOpacity>

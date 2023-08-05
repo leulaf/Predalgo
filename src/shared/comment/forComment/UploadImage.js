@@ -5,6 +5,7 @@ import { doc, setDoc, getDoc, collection, addDoc, updateDoc, increment } from "f
 import uuid from 'react-native-uuid';
 
 import firebase from 'firebase/compat/app';
+
 require('firebase/firestore');
 
 import { getAuth, updateProfile } from "firebase/auth";
@@ -21,9 +22,13 @@ async function commentImageOnComment(imageUrl, text, replyToCommentId, replyToPo
 
         const filename = uuid.v4();
         const childPath = `comments/users/${firebase.auth().currentUser.uid}/${filename}`;
+
+        const metadata = {
+            cacheControl: 'public,max-age=31536000',
+        };
         
         const storageRef = ref(storage, childPath);
-        const uploadTask = uploadBytesResumable(storageRef, blob)
+        const uploadTask = uploadBytesResumable(storageRef, blob, metadata)
         .catch ((e) => {
             // console.log(e);
         });

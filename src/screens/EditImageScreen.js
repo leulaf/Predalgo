@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
-import {View, Text, TextInput, StyleSheet, Button, Image, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import {View, StyleSheet,} from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
 import EditImageTopBar from '../components/EditImageTopBar';
@@ -8,17 +8,7 @@ import PinturaEditor from "@pqina/react-native-expo-pintura";
 import {
     createMarkupEditorToolStyle,
     createMarkupEditorToolStyles,
-    createDefaultImageReader,
-    createDefaultImageWriter,
-    createDefaultImageOrienter,
-    setPlugins,
-    plugin_crop,
-    locale_en_gb,
-    plugin_crop_locale_en_gb,
 } from "@pqina/pintura";
-import { set } from 'react-native-reanimated';
-
-setPlugins(plugin_crop);
 
 
 const EditImageScreen = ({ navigation, route }) => {
@@ -26,7 +16,7 @@ const EditImageScreen = ({ navigation, route }) => {
 
     const { imageReply, setImageReply } = useContext(AuthenticatedUserContext);
 
-    const { imageUrl, forCommentOnComment, forCommentOnPost, cameraPic, dontCompress, width, height, imageState } = route.params;
+    const { imageUrl, forCommentOnComment, forCommentOnPost, cameraPic, width, height, imageState } = route.params;
 
     const [image, setImage] = useState(imageUrl);
 
@@ -36,17 +26,14 @@ const EditImageScreen = ({ navigation, route }) => {
     const editorRef = useRef(null);
 
     const editorDefaults = {
-        imageWriter: { 
-            quality: dontCompress ? 
-                1 
-            : 
-                cameraPic ? .8 : 0.6,
+        imageWriter: {
+            quality: cameraPic ? .8 : 0.6,
 
             targetSize: {
-                height: dontCompress || height < width ? height : 500,
-                width: dontCompress || width < height ? width : 500,
+                height: height < width ? height : 500,
+                width: width < height ? width : 500,
             },
-         }, 
+        },
     };
 
     const handleEditorLoad = () => {
@@ -58,9 +45,10 @@ const EditImageScreen = ({ navigation, route }) => {
         }
     };
 
-    const handleEditorProcess = (res) => {
+    const handleEditorProcess = async (res) => {
         // Turn imageState into string, replaces undefined values with null
         // const imageStateStr = stringifyImageState(res.imageState);
+
         setImageResult(res.dest);
         
         // Store imageStateStr for later usage
@@ -112,7 +100,7 @@ const EditImageScreen = ({ navigation, route }) => {
         navigation.setOptions({
             header: () => <EditImageTopBar forMeme={false} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} navigation={navigation}/>,
         });
-    }, [navigation]);
+    }, []);
 
 
     return (

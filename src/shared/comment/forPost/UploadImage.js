@@ -11,7 +11,7 @@ import { getAuth, updateProfile } from "firebase/auth";
 
 const auth = getAuth();
 
-    
+
 async function commentImageOnPost(imageUrl, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth) {
 
     return new Promise(async (resolve, reject) => {
@@ -21,12 +21,17 @@ async function commentImageOnPost(imageUrl, text, replyToPostId, replyToProfile,
 
         const filename = uuid.v4();
         const childPath = `comments/users/${firebase.auth().currentUser.uid}/${filename}`;
+
+        const metadata = {
+            cacheControl: 'public,max-age=31536000',
+        };
         
         const storageRef = ref(storage, childPath);
-        const uploadTask = uploadBytesResumable(storageRef, blob)
+        const uploadTask = uploadBytesResumable(storageRef, blob, metadata)
         .catch ((e) => {
             // console.log(e);
         });
+        // console.log(imageUrl, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth)
 
         await uploadTask.then(async(snapshot) => {
             // console.log('Uploaded', snapshot.totalBytes, 'bytes.');

@@ -42,7 +42,7 @@ const fetchFirstTenPostCommentsByPopular = async (replyToPostId) => {
             collection(db, "comments", replyToPostId, "comments"), 
             where("isMainComment", "==", true), 
             orderBy("likesCount", "desc"), 
-            limit(10)
+            limit(100)
         );
 
         const snapshot = await getDocs(q);

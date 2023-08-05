@@ -1,9 +1,9 @@
 import React, {useEffect, useState, useContext, useMemo, useRef, useCallback} from 'react';
-import { Pressable, View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
+import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
 import { commentImageOnComment } from '../../shared/comment/forComment/UploadImage';
-import { commentMemeOnComment, saveMemeToComment} from '../../shared/comment/forComment/UploadMeme';
+import { saveMemeToComment} from '../../shared/comment/forComment/UploadMeme';
 import { commentTextOnComment } from '../../shared/comment/forComment/UploadText';
 
 import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/context';
@@ -75,8 +75,6 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
     useEffect(() => {
         if(imageReply && imageReply.forCommentOnComment){
             setReplyImageToPost(imageReply);
-            // setImageReply(null);
-            // console.log("imageReply");
 
             // replyTextToPostRef.current.focus();
             // setTextInputInFocus(true);
@@ -86,25 +84,6 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             // handleSheetChanges(2);
         }
     }, [imageReply])
-
-    // callbacks
-    const handleSheetChanges = useCallback((index) => {
-        // console.log('handleSheetChanges', index);
-        // if(index == 0){
-        //     Keyboard.dismiss();
-        //     setCurrentIndex(0);
-        //     setTextInputInFocus(false);
-        // }else if(index == 1){
-        //     // Open keyboard when bottom sheet is expanded
-        //     replyTextToPostRef.current.focus();
-        //     setCurrentIndex(1);
-        //     setTextInputInFocus(true);
-        // }else if(index == 2){
-        //     replyTextToPostRef.current.focus();
-        //     setCurrentIndex(2);
-        //     setTextInputInFocus(true);
-        // }
-    }, []);
 
     // Makes sure the keyboard is open when the bottom sheet is expanded
     const handleSheetAnimate = useCallback((from, to) => {
@@ -246,7 +225,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             replyImageToPost.height,
             replyImageToPost.width,
         ).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).then(async (id) => {
             const text = replyTextToPost;
 

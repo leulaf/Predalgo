@@ -32,7 +32,7 @@ export default function UploadScreen({navigation, route}) {
   
   // useEffect(() => {
     
-  // }, [image, navigation])
+  // }, [image])
 
 
   if (!permission) {

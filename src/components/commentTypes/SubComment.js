@@ -1,10 +1,14 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useContext, useRef, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Image } from 'expo-image';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
+
+import PinturaEditor from "@pqina/react-native-expo-pintura";
+
+import { manipulateAsync } from 'expo-image-manipulator';
 
 import { Overlay } from 'react-native-elements';
 
@@ -32,7 +36,8 @@ import ReportIcon from '../../../assets/danger.svg';
 import { getAuth } from "firebase/auth";
 const auth = getAuth();
 
-const windowWidth = Dimensions.get('window').width - 50;
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
 
 const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -40,20 +45,20 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
 
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
-    const [replyVisible, setReplyVisible] = useState(false);
 
+    const [image, setImage] = useState(imageUrl ? imageUrl :  template);
+    
     const [likeCount, setLikeCount] = useState(likesCount);
     const [likeString, setLikeString] = useState("");
     const [commentCount, setCommentCount] = useState(commentsCount);
     const [commentString, setCommentString] = useState("");
     const [liked, setLiked] = useState(false);
 
-    const [replyToComment, setReplyToComment] = useState("");
-
-    const [repliesVisible, setRepliesVisible] = useState(false);
-    const [replies, setReplies] = useState([]); // array of replies
-
     const [viewWidth, setViewWidth] = useState(0);
+
+    const editorRef = useRef(null);
+
+    const [finished, setFinished] = useState(template ? false : true);
 
     useEffect(() => {
         onUpdateLikeCount(likesCount);
@@ -157,7 +162,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                         setLiked(false);
                     });
                 }).catch((error) => {
-                    console.log(error);
+                    // console.log(error);
                 })
 
                 
@@ -192,10 +197,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
-            imageUrl: imageUrl,
+            imageUrl: image,
             memeName: memeName,
-            template: template,
-            templateState: templateState,
+            template: false,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -215,10 +219,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             replyToCommentId: replyToCommentId,
             replyToProfile: profile,
             replyToUsername: username,
-            imageUrl: imageUrl,
+            imageUrl: image,
             memeName: memeName,
-            template: template,
-            templateState: templateState,
+            template: false,
             imageHeight: imageHeight,
             imageWidth: imageWidth,
             text: text,
@@ -251,11 +254,43 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         return null;
     }
 
-    const secondaryComment = <View onLayout={(event) => setViewWidth(event.nativeEvent.layout.width)} style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
+    // Load Meme with template and template state
+    const createMeme = (
+        <PinturaEditor
+            ref={editorRef}
+            
+            // src={image}
+            // onClose={() => console.log('closed')}
+            // onDestroy={() => console.log('destroyed')}
+            // onLoad={() => 
+            //     editorRef.current.editor.processImage(templateState)
+            // }
+            onInit={() => 
+                editorRef.current.editor.processImage(image, templateState)
+            }
+            onProcess={async({ dest }) => {
+                manipulateAsync(dest, [], ).then((res) => {
+                    setFinished(true);
+                    setImage(res.uri);
+                    // console.log(res.uri)
+                })
+            }}
+        />     
+    )
+
+
+    return (
+        <View 
+            // onLayout={(event) => setViewWidth(event.nativeEvent.layout.width)} 
+            style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}
+        >
             
             {/* Profile Picture and Username */}
             <View style={{marginTop: 7, flexDirection: 'row', alignItems: 'center'}} >
                 
+                {/* Load Meme with template and template state */}
+                {!finished && createMeme}
+
                 {/* Profile Picture */}
                 <TouchableOpacity 
                     onPress={() => {
@@ -328,21 +363,20 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             }
             
             {/* Comment Image */}
-            {(imageUrl != null && imageUrl != "" && imageUrl != undefined) &&
-                <TouchableOpacity
-                    style={{backgroundColor: 'black', marginTop: 11, borderRadius: 0}}
-                    onPress = {() => onNavToComment()}
-                >
-                    <ResizableImage 
-                        image={imageUrl}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxHeight={500}
-                        maxWidth={viewWidth}
-                        style={{borderRadius: 0}}
-                    />
-                </TouchableOpacity>
-            }
+            <TouchableOpacity
+                style={{backgroundColor: 'black', marginTop: 11, borderRadius: 0}}
+                onPress = {() => onNavToComment()}
+            >
+                <ResizableImage 
+                    image={image}
+                    height={imageHeight}
+                    width={imageWidth}
+                    maxHeight={500}
+                    maxWidth={windowWidth - 10}
+                    style={{borderRadius: 0}}
+                />
+            </TouchableOpacity>
+
 
             {/* Reply and Like */}
             <View style={{ height: 40, flexDirection: 'row', marginTop: 2,  alignItems: 'center', alignContent: 'center' }}>
@@ -436,9 +470,6 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             </Overlay>
 
         </View>
-
-    return (
-        secondaryComment
     );
 }
 
@@ -459,17 +490,24 @@ const styles = StyleSheet.create({
         // marginTop: 3,
         borderLeftWidth: 1,
         borderLeftColor: '#DDDDDD',
+        borderTopWidth: 1,
+        borderTopColor: "#EBEBEB",
         borderBottomWidth: 0.5,
-        borderBottomColor: '#DDDDDD',
+        borderBottomColor: "#DDDDDD",
+
         borderRadius: 10,
     },
     darkCommentContainer: {
         marginTop: 5,
-        backgroundColor: '#131313',
+        backgroundColor: '#141414',
         marginLeft: 10,
         // marginTop: 3,
         borderLeftWidth: 1,
         borderLeftColor: '#242424',
+        borderTopWidth: 1,
+        borderTopColor: "#222222",
+        borderBottomWidth: 0.5,
+        borderBottomColor: "#242424",
         borderRadius: 10,
     },
     lightUsername: {

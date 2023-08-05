@@ -1,4 +1,3 @@
-import React from 'react';
 import { Image } from 'expo-image';
 
 const ResizableImage = ({ image, height, width, maxHeight, maxWidth, borderRadius, style }) => {

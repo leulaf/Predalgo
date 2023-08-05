@@ -22,8 +22,13 @@ async function commentMemeOnComment(imageUrl, memeName, text, replyToCommentId, 
         const filename = uuid.v4();
         const childPath = `comments/users/${firebase.auth().currentUser.uid}/${filename}`;
         
+        const metadata = {
+            cacheControl: 'public,max-age=31536000',
+        };
+        
         const storageRef = ref(storage, childPath);
-        const uploadTask = uploadBytesResumable(storageRef, blob)
+
+        const uploadTask = uploadBytesResumable(storageRef, blob, metadata)
         .catch ((e) => {
             // console.log(e);
         });

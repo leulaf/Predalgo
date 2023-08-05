@@ -130,9 +130,9 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
         return post;
     };
 
-    useEffect(() => {
-        // This effect will re-render the component when the postList prop changes
-    }, [postList]);
+    // useEffect(() => {
+    //     // This effect will re-render the component when the postList prop changes
+    // }, [postList]);
 
     return (
         <View 

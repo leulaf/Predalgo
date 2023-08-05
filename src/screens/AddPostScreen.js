@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, FlatList, TextInput, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, StyleSheet, FlatList, Image, TextInput, TouchableOpacity, Alert} from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view';
 import { Overlay } from 'react-native-elements';
 import { db, storage } from '../config/firebase';
@@ -12,21 +12,10 @@ import GlobalStyles from '../constants/GlobalStyles';
 import imgflip from '../api/imgflip';
 import PostBar from '../components/PostBar';
 import AddPostTopBar from '../components/AddPostTopBar';
-import Image from 'react-native-scalable-image';
-import { set } from 'react-native-reanimated';
 
 import DarkMemeCreate from '../../assets/post_meme_create_dark.svg';
 import LightMemeCreate from '../../assets/post_meme_create_light.svg';
 
-const ImageContainer = (props) => {    
-    return (
-        <Image 
-            width={200} // this will make image take full width of the device
-            source={props.imageSource} // pass the image source via props
-            style={{borderRadius: 10, marginHorizontal: 3, marginVertical: 6}}
-        />
-    );
-};
 
 const AddPostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -88,7 +77,7 @@ const AddPostScreen = ({navigation, route}) => {
         navigation.setOptions({
             header: () => <AddPostTopBar />
         });
-    }, [navigation]);
+    }, []);
     
     // Removes the bottom navigation
     useEffect(() => {

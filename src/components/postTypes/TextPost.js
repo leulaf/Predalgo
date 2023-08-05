@@ -24,10 +24,10 @@ const TextPost = ({ navigation, title, username = "", profilePic = "", text, tag
                 if (snapshot.exists) {
                     setRepostUsername(snapshot.data().username);
                 } else {
-                    console.log("No such document!");
+                    // console.log("No such document!");
                 }
             }).catch((error) => {
-                console.log("Error getting document:", error);
+                // console.log("Error getting document:", error);
             });
         }
 
@@ -40,10 +40,10 @@ const TextPost = ({ navigation, title, username = "", profilePic = "", text, tag
                     setProfilePicState(snapshot.data().profilePic);
                     setUsernameState(snapshot.data().username);
                 } else {
-                    console.log("No such document!");
+                    // console.log("No such document!");
                 }
             }).catch((error) => {
-                console.log("Error getting document:", error);
+                // console.log("Error getting document:", error);
             });
         }
     }, []);
