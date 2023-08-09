@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef,  useState, useContext } from 'react';
+import React, { useEffect, useRef,  useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
@@ -33,22 +33,43 @@ const STICKY_HEADER_HEIGHT = 50;
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
+const contentBottom = (memeName, tags) => (
+    <ContentBottom
+        memeName={memeName}
+        tags={tags}
+    />
+);
+
+const replyBottomSheet = (onReply, navigation, replyToPostId, commentId, profile, username) => (
+    <ReplyBottomSheet
+        onReplying={onReply}
+        navigation={navigation}
+        replyToPostId={replyToPostId}
+        replyToCommentId={commentId}
+        replyToProfile = {profile}
+        replyToUsername={username}
+    />
+);
+
+const goToProfile = (navigation, profile, username, profilePic) => () => {
+    navigation.push('Profile', {
+        user: profile,
+        username: username,
+        profilePic: profilePic,
+    })
+}
 
 const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [commentsList, setCommentsList] = useState(["one", "two"]);
-    // const [commentsList, setCommentsList] = useState([]);
+    // const [commentsList, setCommentsList] = useState([{id: "one"}, {id: "two"}]);
+    const [commentsList, setCommentsList] = useState([]);
     const {profile, commentId, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, template, templateState, imageWidth, imageHeight, memeName, tags, likesCount, commentsCount} = route.params;
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
 
-    const [onReplying, setOnReplying] = useState(onReply ? onReply : false);
-
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
-
-    const [updating, setUpdating] = useState(false);
-
     const [finished, setFinished] = useState(template ? false : true);
+    const [updating, setUpdating] = useState(false);
 
     const flashListRef = useRef(null);
     const editorRef = useRef(null);
@@ -64,160 +85,117 @@ const CommentScreen = ({navigation, route}) => {
     }, []);
 
 
-    const getFirstTenCommentsByPopular = async () => {
+    const getFirstTenCommentsByPopular = React.useCallback(async() => {
         await fetchFirstTenCommentsByPopular(replyToPostId, commentId).then((comments) => {
             
             setCommentsList(comments);
             
         });
-    }
+    }, []);
 
 
-    const contentBottom = (
-        <ContentBottom
-            memeName={memeName}
-            tags={tags}
-        />
-    );
-
-
-    let commentBottom = (
-        <CommentBottom
-            commentId={commentId}
-            replyToCommentId={replyToCommentId}
-            replyToPostId={replyToPostId}
-            likesCount={likesCount}
-            commentsCount={commentsCount}
-        />
-    );
-
-    const replyBottomSheet = <ReplyBottomSheet
-        setOnReplying={() => setOnReplying}
-        onReplying={onReply ? onReplying : null}
-        navigation={navigation}
-        replyToPostId={replyToPostId}
-        replyToCommentId={commentId}
-        replyToProfile = {profile}
-        replyToUsername={username}
-    />;
-
-
-    
-
-
-    const onGoBack = () => {
+    const onGoBack = React.useCallback(() => {
         if(imageReply && imageReply.forCommentOnComment){
             setImageReply(null)
         }
         navigation.goBack(null);
-    };
+    }, [imageReply]);
 
-    //  Load Meme with template and template state
-    const createMeme = (
-        <PinturaEditor
-            ref={editorRef}
-            
-            // src={image}
-            // onClose={() => console.log('closed')}
-            // onDestroy={() => console.log('destroyed')}
-            // onLoad={() => 
-            //     editorRef.current.editor.processImage(templateState)
-            // }
-            onInit={() => 
-                editorRef.current.editor.processImage(image, templateState)
-            }
-            onProcess={async({ dest }) => {
-                manipulateAsync(dest, [], ).then((res) => {
-                    setFinished(true);
-                    setImage(res.uri);
-                    // console.log(res.uri)
-                })
-            }}
-        />     
-    )
+    // Load Meme with template and template state
+    // Load Meme with template and template state
+    const CreateMeme = React.memo(({image}) => {
+        return (
+            <PinturaEditor
+                ref={editorRef}
+                
+                // src={image}
+                // onClose={() => console.log('closed')}
+                // onDestroy={() => console.log('destroyed')}
+                // onLoad={() => 
+                //     editorRef.current.editor.processImage(templateState)
+                // }
+                onInit={() => 
+                    editorRef.current.editor.processImage(image, templateState)
+                }
+                onProcess={async({ dest }) => {
+                    manipulateAsync(dest, [], ).then((res) => {
+                        setFinished(true);
+                        setImage(res.uri);
+                        // console.log(res.uri)
+                    })
+                }}
+            />    
+        )
+    }, imageEquals)
 
-    
-    const renderItem = useCallback(({ item, index }) => {
+    const imageEquals = React.useCallback((prev, next) => {
+        return prev.image === next.image
+    }, [])
 
-        // index 0 is the header continng the profile pic, username, title and post content
-        if (index === 0) {
-            
-
-            return (
-                <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-                    <View 
-                        style={theme == 'light' ? styles.lightUserContainer : styles.darkUserContainer}
+    const Header = React.memo(({image}) => {
+        return (
+            <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+                <View 
+                    style={theme == 'light' ? styles.lightUserContainer : styles.darkUserContainer}
+                >
+                    {/* profile pic */}
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={goToProfile(navigation, profile, username, profilePic)}
                     >
-                        {/* profile pic */}
-                        <TouchableOpacity
-                            onPress={() => 
-                                    navigation.push('Profile', {
-                                        user: profile,
-                                    })
-                            }
-                        >
-                            {profilePic != "" ? (
-                                <Image source={{ uri: profilePic }} style={styles.profileImage} cachePolicy={'disk'}/>
-                            ) : (
-                                <Image source={require('../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
-                            )}
-                        </TouchableOpacity>
-                        
-                        {/* username */}
-                        <TouchableOpacity
-                            style={{flex: 1, flexDirection: 'column'}}
-                            onPress={() => 
-                                    navigation.push('Profile', {
-                                        user: profile,
-                                    })
-                            }
-                        >
-                            <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
-                                @{username}
-                            </Text>
-                        </TouchableOpacity>
-
-                    </View>
-
-
-                    <View style={{marginBottom: 8}}>
-
-                        {text &&
-                            <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
-                                {text}
-                            </Text>
-                        }
-
-                         <ResizableImage 
-                            image={image}
-                            height={imageHeight}
-                            width={imageWidth}
-                            maxWidth={windowWidth}
-                            style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
-                        />
-                        
-                        {/* Content bottom */}
-                        <View style={{marginLeft: 5, marginTop: 5, marginBottom: 0}}>
-                            {contentBottom}
-                        </View>
-
-                    </View>
+                        {profilePic != "" ? (
+                            <Image source={{ uri: profilePic }} style={styles.profileImage} cachePolicy={'disk'}/>
+                        ) : (
+                            <Image source={require('../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
+                        )}
+                    </TouchableOpacity>
                     
-                </View>
-            );
+                    {/* username */}
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        style={{flex: 1, flexDirection: 'column'}}
+                        onPress={goToProfile(navigation, profile, username, profilePic)}
+                    >
+                        <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                            @{username}
+                        </Text>
+                    </TouchableOpacity>
 
-        }else if (index === 1) {
-            return (
-                <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
-                    {commentBottom}
                 </View>
-            );
-        }
 
+
+                <View style={{marginBottom: 8}}>
+
+                    {text &&
+                        <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
+                            {text}
+                        </Text>
+                    }
+
+                     <ResizableImage 
+                        image={image}
+                        height={imageHeight}
+                        width={imageWidth}
+                        maxWidth={windowWidth}
+                        style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
+                    />
+                    
+                    {/* Content bottom */}
+                    <View style={{marginLeft: 5, marginTop: 5, marginBottom: 0}}>
+                        {contentBottom(memeName, tags)}
+                    </View>
+
+                </View>
+                
+            </View>
+        );
+    }, imageEquals);
+
+    const Item = React.memo(({item}) => {
         return (
             <MainComment
+                replyToCommentId={replyToCommentId}
                 replyToPostId={replyToPostId}
-                replyToCommentId={commentId}
                 profile={item.profile}
                 username={item.username}
                 profilePic={item.profilePic}
@@ -231,19 +209,42 @@ const CommentScreen = ({navigation, route}) => {
                 imageHeight={item.imageHeight}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
-                updating={updating}
-                setUpdating={setUpdating}
             />
         );
+    }, itemEquals);
 
-        
-    }, [updating, finished]);
-
+    const itemEquals = React.useCallback((prev, next) => {
+        return prev.item.id === next.item.id
+    }, [])
     
-    // List key extractor.
-    // const keyExtractor = useCallback((item, index) => item.id, []);
+    const renderItem = React.useCallback(({ item, index }) => {
+        // index 0 is the header continng the profile pic, username, title and post content
+        if (index === 0) {
+            return (
+                <Header image={image}/>
+            );
+        }else if (index === 1) {
+            return (
+                <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
+                    <CommentBottom
+                        commentId={commentId}
+                        replyToCommentId={replyToCommentId}
+                        replyToPostId={replyToPostId}
+                        likesCount={likesCount}
+                        commentsCount={commentsCount}
+                    />
+                </View>
+            );
+        }
 
+        return (
+            <Item item={item}/>
+        );
+    }, []);
 
+    if(commentsList.length < 2){
+        return null
+    }
 
     //NEED***NEED to make sure multiple instance of PinturaLoadImage are not created***
     return (
@@ -258,7 +259,7 @@ const CommentScreen = ({navigation, route}) => {
         >
             
             {/* Load Meme with template and template state */}
-            {!finished && createMeme}
+            {!finished && <CreateMeme image={image}/>}
 
 
             <FlashList
@@ -268,14 +269,13 @@ const CommentScreen = ({navigation, route}) => {
                 // onEndReachedThreshold={0.2} //need to implement infinite scroll
                 // onEndReached={() => }
 
-                extraData={[finished, updating]}
+                extraData={[commentsList]}
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
-                removeClippedSubviews={true}
+                showsVerticalScrollIndicator={false}
 
-                // keyExtractor={(item, index) => item.id}
-                // keyExtractor={keyExtractor}
+                removeClippedSubviews={true}
 
                 estimatedItemSize={400}
                 estimatedListSize={{height: windowHeight, width: windowWidth}}
@@ -283,12 +283,12 @@ const CommentScreen = ({navigation, route}) => {
                 ListFooterComponent={
                     <View style={{height: 200}}/>
                 }
+                keyExtractor={(item, index) => item.id.toString}
             />
 
-            {replyBottomSheet}
+            {replyBottomSheet(onReply, navigation, replyToPostId, commentId, profile, username)}
             
         </View>
-
     );
 
 };

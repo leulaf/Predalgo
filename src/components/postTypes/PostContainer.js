@@ -17,12 +17,53 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags, memeName, content, profile, postId, profilePic, username, repostUsername }) => {
+const onNavToComment =  (navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+    navigation.push('Post', {
+        postId: postId,
+        title: title,
+        tags: tags,
+        imageUrl: image,
+        memeName: memeName,
+        template: false,
+        imageHeight: imageHeight,
+        imageWidth: imageWidth,
+        text: text,
+        likesCount: likesCount,
+        commentsCount: commentsCount,
+        profile: profile,
+        username: username,
+        profilePic: profilePic,
+    });
+}
+
+const goToProfile = (navigation, profile, username, profilePic) => () => {
+    navigation.push('Profile', {
+        user: profile,
+        username: username,
+        profilePic: profilePic,
+    })
+}
+const contentBottom = (memeName, tags) => (
+    <ContentBottom
+        memeName={memeName}
+        tags={tags}
+    />
+)
+const postBottom = (postId, likesCount, commentsCount) => (
+    <PostBottom
+        postId={postId}
+        likesCount={likesCount}
+        commentsCount={commentsCount}
+    />
+)
+const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateState, likesCount, commentsCount, tags, content, profile, postId, profilePic, username, repostUsername }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
 
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
+
+    const [image, setImage] = useState(template ? template : imageUrl);
     // let threeDots
     
     // if(theme == 'light'){
@@ -31,50 +72,14 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
     //     threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
     // }
 
-    const contentBottom = <ContentBottom
-        memeName={memeName}
-        tags={tags}
-        // title={title}
-        // imageUrl={imageUrl}
-        // text={text}
-        // user={profile}
-        // username={username}
-        // profile={profile}
-        // repostUsername={repostUsername}
-        // profilePic={profilePic}
-        // postId={postId}
-        // likesCount={likesCount}
-        // commentsCount={commentsCount}
-    />
+    
 
-    const postBottom = <PostBottom
-        postId={postId}
-        likesCount={likesCount}
-        commentsCount={commentsCount}
-    />
+    const toggleOverlay = React.useCallback(() => () => {
+        setOverlayVisible(!overlayVisible);
+    }, [overlayVisible]);
 
-    const navigateToPost = () => {
-        navigation.push('Post', {
-            title: title,
-            imageUrl: imageUrl,
-            memeName: memeName,
-            text: text,
-            tags: tags,
-            user: profile,
-            username: username,
-            profile: profile,
-            repostUsername: repostUsername,
-            profilePic: profilePic,
-            postId: postId,
-            likesCount: likesCount,
-            commentsCount: commentsCount,
-        });
-    };
-
-    const deletePost = () => {
-        if(deleted){
-            return;
-        }
+    const deletePost = React.useCallback(() => () => {
+        setOverlayVisible(false);
         const postRef = doc(db, 'allPosts', postId);
         const postSnapshot = getDoc(postRef);
         
@@ -115,9 +120,7 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
 
             
         })
-    
-        
-    }
+    }, []);
 
     // if post is deleted or content is null, don't show post
     if (deleted || content == null) {  
@@ -133,13 +136,8 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
             >
                 {/* profile pic */}
                 <TouchableOpacity
-                    onPress={() => 
-                        navigation.push('Profile', {
-                            user: profile,
-                            username: username,
-                            profilePic: profilePic,
-                        })
-                    }
+                    activeOpacity={1}
+                    onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                     {profilePic != "" ? (
                         <Image source={{ uri: profilePic }} style={styles.profileImage}/>
@@ -150,13 +148,8 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                 
                 {/* username */}
                 <TouchableOpacity
-                    onPress={() => 
-                        navigation.push('Profile', {
-                            user: profile,
-                            username: username,
-                            profilePic: profilePic,
-                        })
-                    }
+                    activeOpacity={1}
+                    onPress={goToProfile(navigation, profile, username, profilePic)}
 
                     style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
                 >
@@ -179,7 +172,8 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                 </TouchableOpacity>
                 
                 <TouchableOpacity
-                    onPress={navigateToPost}
+                    activeOpacity={1}
+                    onPress={onNavToComment(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     style={{flex: 1, height: 40}}
                 />
 
@@ -187,8 +181,9 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                 
                 {/* three dots */}
                 <TouchableOpacity 
+                    activeOpacity={1}
                     style={{flexDirection: 'row'}}
-                    onPress= {() => setOverlayVisible(true)}
+                    onPress= {toggleOverlay()}
                 >
                     {
                         theme == 'light' ?
@@ -202,7 +197,8 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
 
             {/* title */}
             <TouchableOpacity
-                    onPress={navigateToPost}
+                activeOpacity={1}
+                onPress={onNavToComment(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 <Text numberOfLines={2} 
@@ -220,7 +216,8 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
             
             {/* Post content. Image, Text etc. */}
             <TouchableOpacity
-                    onPress={navigateToPost}
+                activeOpacity={1}
+                onPress={onNavToComment(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 {content}
@@ -228,10 +225,10 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
             </TouchableOpacity>
 
             {/* tags and meme name */}
-            {contentBottom}
+            {contentBottom(memeName, tags)}
 
             {/* likes, comments, repost, share */}
-            {postBottom}
+            {postBottom(postId, likesCount, commentsCount)}
 
             {/* 
                 an overlay popup that appears when you click on the three dots.
@@ -239,26 +236,23 @@ const PostContainer = ({ title, imageUrl, text, likesCount, commentsCount, tags,
                 if the post is not from the current users, user can report it.
             */}
 
-            <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 100}}>
+            <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay()}>
                 
                 {profile === firebase.auth().currentUser.uid ?
                     <TouchableOpacity
+                        activeOpacity={1}
                         style={{flexDirection: 'row'}}
-                        onPress={() => {
-                            setOverlayVisible(false);
-                            deletePost();
-                        }
-                    }>
+                        onPress={deletePost()}
+                    >
                         <DeleteIcon width={40} height={40} style={{marginLeft: 2}}/>
                         <Text style={styles.overlayText}>Delete Post</Text>
                     </TouchableOpacity>
                 :
                     <TouchableOpacity
+                        activeOpacity={1}
                         style={{flexDirection: 'row'}}
-                        onPress={() => {
-                            setOverlayVisible(false);
-                        }
-                    }>
+                        onPress={toggleOverlay()}
+                    >
                         <ReportIcon width={35} height={35} style={{marginLeft: 2}}/>
                         <Text style={styles.overlayText}>Report Post</Text>
                     </TouchableOpacity>

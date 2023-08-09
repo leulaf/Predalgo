@@ -39,7 +39,59 @@ const auth = getAuth();
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
-const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const onNavToComment =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+    navigation.push('Comment', {
+        commentId: commentId,
+        replyToPostId: replyToPostId,
+        replyToCommentId: replyToCommentId,
+        replyToProfile: profile,
+        replyToUsername: username,
+        imageUrl: image,
+        memeName: memeName,
+        template: false,
+        imageHeight: imageHeight,
+        imageWidth: imageWidth,
+        text: text,
+        likesCount: likesCount,
+        commentsCount: commentsCount,
+        onReply: false,
+        profile: profile,
+        username: username,
+        profilePic: profilePic,
+    });
+}
+
+const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+    navigation.push('Comment', {
+        commentId: commentId,
+        replyToPostId: replyToPostId,
+        replyToCommentId: replyToCommentId,
+        replyToProfile: profile,
+        replyToUsername: username,
+        imageUrl: image,
+        memeName: memeName,
+        template: false,
+        imageHeight: imageHeight,
+        imageWidth: imageWidth,
+        text: text,
+        likesCount: likesCount,
+        commentsCount: commentsCount,
+        onReply: true,
+        profile: profile,
+        username: username,
+        profilePic: profilePic,
+    });
+}
+
+const goToProfile = (navigation, profile, username, profilePic) => () => {
+    navigation.push('Profile', {
+        user: profile,
+        username: username,
+        profilePic: profilePic,
+    })
+}
+
+const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount,}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -68,7 +120,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
     // if like count is above 999 then display it as count/1000k + k
     // if like count is above 999999 then display it as count/1000000 + m
     // round down to whole number
-    const onUpdateLikeCount = (likeCount) => {
+    const onUpdateLikeCount = React.useCallback((likeCount) => {
         if (likeCount === 0) {
           setLikeString("0");
         } else if (likeCount > 999 && likeCount < 1000000) {
@@ -78,12 +130,12 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         } else {
           setLikeString(likeCount);
         }
-    };
+    }, []);
 
     // if comment count is above 999 then display it as count/1000k + k
     // if comment count is above 999999 then display it as count/1000000 + m
     // round down to whole number
-    const onUpdateCommentCount = (commentCount) => {
+    const onUpdateCommentCount = React.useCallback((commentCount) => {
         if (commentCount === 0) {
           setCommentString("0");
         } else if (commentCount > 999 && commentCount < 1000000) {
@@ -93,10 +145,10 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         } else {
           setCommentString(commentCount);
         }
-    };
+    }, []);
 
     // update like count and add post to liked collection
-    const onLike = async () => {
+    const onLike = React.useCallback(async () => {
         const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
         const likedSnapshot = await getDoc(likedRef);
       
@@ -117,10 +169,10 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         }
       
         setLiked(true);
-    };
+    }, [likeCount])
 
     // update like count and add post to liked collection
-    const onDisike = async () => {
+    const onDisike = React.useCallback(async () => {
         // delete comment from likedComments collection
         await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
@@ -134,14 +186,10 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             setLikeCount(likeCount - 1);
             setLiked(false);
         });
+    }, [likeCount])
 
-        
-    }
-
-    const deleteComment = () => {
-        if(deleted){
-            return;
-        }
+    const deleteComment = React.useCallback(() => () => {
+        setOverlayVisible(false);
         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
         const commentSnapshot =  getDoc(commentRef);
         
@@ -157,9 +205,8 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                     await updateDoc(commentRef, {
                         commentsCount: increment(-1)
                     }).then(() => {
-                        onUpdateLikeCount(likeCount - 1);
-                        setLikeCount(likeCount - 1);
-                        setLiked(false);
+                        // setUpdateCommentString(updateCommentCount - 1);
+                        // setUpdateCommentCount(updateCommentCount - 1);
                     });
                 }).catch((error) => {
                     // console.log(error);
@@ -188,51 +235,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         })
     
         
-    }
-
-    const onNavToComment = () => {
-        navigation.push('Comment', {
-            commentId: commentId,
-            replyToPostId: replyToPostId,
-            replyToCommentId: replyToCommentId,
-            replyToProfile: profile,
-            replyToUsername: username,
-            imageUrl: image,
-            memeName: memeName,
-            template: false,
-            imageHeight: imageHeight,
-            imageWidth: imageWidth,
-            text: text,
-            likesCount: likesCount,
-            commentsCount: commentsCount,
-            onReply: false,
-            profile: auth.currentUser.uid,
-            username: auth.currentUser.displayName,
-            profilePic: auth.currentUser.photoURL,
-        });
-    }
-
-    const onReply = () => {
-        navigation.push('Comment', {
-            commentId: commentId,
-            replyToPostId: replyToPostId,
-            replyToCommentId: replyToCommentId,
-            replyToProfile: profile,
-            replyToUsername: username,
-            imageUrl: image,
-            memeName: memeName,
-            template: false,
-            imageHeight: imageHeight,
-            imageWidth: imageWidth,
-            text: text,
-            likesCount: likesCount,
-            commentsCount: commentsCount,
-            onReply: true,
-            profile: auth.currentUser.uid,
-            username: auth.currentUser.displayName,
-            profilePic: auth.currentUser.photoURL,
-        });
-    }
+    }, []);
 
     let threeDots, likes, alreadyLiked, reply, down
     
@@ -250,34 +253,48 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
     }
 
+    const toggleLike = React.useCallback(() => async() => {
+        liked ? await onDisike() : await onLike()
+    }, [liked]);
+
+    const toggleOverlay = React.useCallback(() => () => {
+        setOverlayVisible(!overlayVisible);
+    }, [overlayVisible]);
+
+    // Load Meme with template and template state
+    // Load Meme with template and template state
+    const CreateMeme = React.memo(({image}) => {
+        return (
+            <PinturaEditor
+                ref={editorRef}
+                
+                // src={image}
+                // onClose={() => console.log('closed')}
+                // onDestroy={() => console.log('destroyed')}
+                // onLoad={() => 
+                //     editorRef.current.editor.processImage(templateState)
+                // }
+                onInit={() => 
+                    editorRef.current.editor.processImage(image, templateState)
+                }
+                onProcess={async({ dest }) => {
+                    manipulateAsync(dest, [], ).then((res) => {
+                        setFinished(true);
+                        setImage(res.uri);
+                        // console.log(res.uri)
+                    })
+                }}
+            />    
+        )
+    }, imageEquals)
+
+    const imageEquals = React.useCallback((prev, next) => {
+        return prev.image === next.image
+    }, [])
+
     if(deleted){
         return null;
     }
-
-    // Load Meme with template and template state
-    const createMeme = (
-        <PinturaEditor
-            ref={editorRef}
-            
-            // src={image}
-            // onClose={() => console.log('closed')}
-            // onDestroy={() => console.log('destroyed')}
-            // onLoad={() => 
-            //     editorRef.current.editor.processImage(templateState)
-            // }
-            onInit={() => 
-                editorRef.current.editor.processImage(image, templateState)
-            }
-            onProcess={async({ dest }) => {
-                manipulateAsync(dest, [], ).then((res) => {
-                    setFinished(true);
-                    setImage(res.uri);
-                    // console.log(res.uri)
-                })
-            }}
-        />     
-    )
-
 
     return (
         <View 
@@ -289,22 +306,12 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             <View style={{marginTop: 7, flexDirection: 'row', alignItems: 'center'}} >
                 
                 {/* Load Meme with template and template state */}
-                {!finished && createMeme}
+                {!finished && <CreateMeme image={image}/>}
 
                 {/* Profile Picture */}
-                <TouchableOpacity 
-                    onPress={() => {
-                        {
-                            profile != firebase.auth().currentUser.uid &&
-
-                                navigation.push('Profile', {
-                                    user: profile,
-                                    username: username,
-                                    profilePic: profilePic,
-                                })
-                        }
-                        
-                    }}
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                    <Image 
                         source={{uri: profilePic}} 
@@ -314,16 +321,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                 </TouchableOpacity>
 
                 {/* Username */}
-                <TouchableOpacity 
-                    onPress={() => {
-                        
-                        navigation.push('Profile', {
-                            user: profile,
-                            username: username,
-                            profilePic: profilePic,
-                        })
-                        
-                    }}
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                     <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
                         @{username}
@@ -333,15 +333,17 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
 
                 {/* Spacer */}
                 <TouchableOpacity
+                    activeOpacity={1}
                     style={{flex: 1, height: 30}}
-                    onPress={() => onNavToComment()}
+                    onPress={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 ></TouchableOpacity>
 
 
                 {/* Three Dots */}
-                <TouchableOpacity 
+                <TouchableOpacity
+                    activeOpacity={1}
                     style={{flexDirection: 'row', marginTop: -15, marginRight: 10}}
-                    onPress= {() => setOverlayVisible(true)}
+                    onPress= {toggleOverlay()}
                 >
                     {threeDots}
                 </TouchableOpacity>
@@ -350,8 +352,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
 
             {/* Comment Text */}
             {(text != null && text != "" && text != undefined) &&
-                <TouchableOpacity 
-                    onPress = {() => onNavToComment()}
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress = {onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
                     
@@ -364,8 +367,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             
             {/* Comment Image */}
             <TouchableOpacity
+                activeOpacity={1}
                 style={{backgroundColor: 'black', marginTop: 11, borderRadius: 0}}
-                onPress = {() => onNavToComment()}
+                onPress = {onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
                 <ResizableImage 
                     image={image}
@@ -382,35 +386,37 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
             <View style={{ height: 40, flexDirection: 'row', marginTop: 2,  alignItems: 'center', alignContent: 'center' }}>
                 
                 {/* View replies */}
-                    {
-                        commentCount > 0 &&
+                {
+                    commentCount > 0 &&
 
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        style={{ margin: 2, width: 150, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 0 }}
+                        onPress = {onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    > 
+                    
+                        <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}/>
 
-                        <TouchableOpacity
-                            style={{ margin: 2, width: 150, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 0 }}
-                            onPress = {() => onNavToComment()}
-                        > 
+                        <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
+                            View {commentString} replies
+                        </Text>
                         
-                            <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}/>
-
-                            <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
-                                View {commentString} replies
-                            </Text>
-                            
-                        </TouchableOpacity>
-                    }
+                    </TouchableOpacity>
+                }
 
 
                 {/* Spacer */}
                 <TouchableOpacity
+                    activeOpacity={1}
                     style={{flex: 1, height: 40, }}
-                    onPress={() => onNavToComment()}
+                    onPress={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile,profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 ></TouchableOpacity>
 
                 {/* Reply */}
                 <TouchableOpacity
+                    activeOpacity={1}
                     style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={() => onReply(true)}
+                    onPress={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 >
                     {reply}
 
@@ -421,8 +427,9 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                 
                 {/* Like Button */}
                 <TouchableOpacity
+                    activeOpacity={1}
                     style={{  flexDirection: 'row', paddingLeft: 10, width: 110, height: 40, alignItems: 'center', alignContent: 'center' }}
-                    onPress={async() => liked ? await onDisike() : await onLike()}
+                    onPress={toggleLike()}
                 >
                     
                     {liked ?
@@ -443,26 +450,23 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                 if the post is from the current users, user can delete it.
                 if the post is not from the current users, user can report it.
             */}
-            <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 100}}>
+            <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay()} overlayStyle={{borderRadius: 100}}>
                 
                 {profile === firebase.auth().currentUser.uid ?
                     <TouchableOpacity
+                        activeOpacity={1}
                         style={{flexDirection: 'row'}}
-                        onPress={async() => {
-                            setOverlayVisible(false);
-                            deleteComment();
-                        }
-                    }>
+                        onPress={deleteComment()}
+                    >
                         <DeleteIcon width={40} height={40} style={{marginLeft: 2}}/>
                         <Text style={styles.overlayText}>Delete Post</Text>
                     </TouchableOpacity>
                 :
                     <TouchableOpacity
+                        activeOpacity={1}
                         style={{flexDirection: 'row'}}
-                        onPress={() => {
-                            setOverlayVisible(false);
-                        }
-                    }>
+                        onPress={toggleOverlay()}
+                    >
                         <ReportIcon width={35} height={35} style={{marginLeft: 2}}/>
                         <Text style={styles.overlayText}>Report Post</Text>
                     </TouchableOpacity>
@@ -503,7 +507,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         // marginTop: 3,
         borderLeftWidth: 1,
-        borderLeftColor: '#242424',
+        borderLeftColor: '#202020',
         borderTopWidth: 1,
         borderTopColor: "#222222",
         borderBottomWidth: 0.5,
