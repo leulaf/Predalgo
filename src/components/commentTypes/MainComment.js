@@ -6,6 +6,8 @@ import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
+import Animated, {BounceInDown} from 'react-native-reanimated';
+
 import { fetchFirstFiveCommentsByRecent, fetchFirstFiveCommentsByPopular } from '../../shared/comment/GetComments';
 import { FlashList } from '@shopify/flash-list';
 
@@ -40,6 +42,7 @@ import ReportIcon from '../../../assets/danger.svg';
 import SubComment from './SubComment';
 
 import { getAuth } from "firebase/auth";
+
 
 const auth = getAuth();
 
@@ -88,6 +91,40 @@ const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profil
     })
 }
 
+// update like count and add post to liked collection
+const onLike = async (replyToPostId, commentId) => {
+    const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
+    const likedSnapshot = await getDoc(likedRef);
+  
+    if (!likedSnapshot.exists()) {
+        // add post to likes collection
+        await setDoc(likedRef, {});
+        
+        // update like count for Comment
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+        await updateDoc(commentRef, {
+            likesCount: increment(1)
+        })
+    }
+};
+
+// update like count and add post to liked collection
+const onDisike = async (replyToPostId, commentId) => {
+    // delete comment from likedComments collection
+    await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
+
+    // update like count for Comment
+    const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+    await updateDoc(commentRef, {
+        likesCount: increment(-1)
+    }).then(() => {
+
+    })
+
+};
+
 const goToProfile = (navigation, profile, username, profilePic) => () => {
     navigation.push('Profile', {
         user: profile,
@@ -96,105 +133,93 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
     })
 }
 
-const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const intToString = (commentCount) => {
+    if (commentCount === 0) {
+
+      return "0";
+    } else if (commentCount > 999 && commentCount < 1000000) {
+
+        return Math.floor(commentCount / 1000) + "k";
+    } else if (commentCount > 999999) {
+
+        return Math.floor(commentCount / 1000000) + "m";
+    } else {
+
+        return commentCount;
+    }
+};
+
+const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, templateState, imageWidth, imageHeight, likesCount, commentsCount, index }) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
     const [commentsList, setCommentsList] = useState([{id: "fir"}]); // array of comments - replies to this comment
 
-    const [image, setImage] = useState(imageUrl ? imageUrl :  template);
-
+    const [image, setImage] = useState(imageUrl);
     const flashListRef = useRef(null);
 
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
 
-    const [likeCount, setLikeCount] = useState(likesCount);
-    const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(commentsCount);
-    const [commentString, setCommentString] = useState("");
     const [liked, setLiked] = useState(false);
 
     const [viewMoreClicked, setViewMoreClicked] = useState(false);
 
     const editorRef = useRef(null);
 
-    const [finished, setFinished] = useState(template ? false : true);
+    const [finished, setFinished] = useState(false);
 
-    useEffect(() => {
-        onUpdateLikeCount(likesCount);
-        onUpdateCommentCount(commentsCount); // update comment count string
-    }, []);
+    let threeDots, likes, alreadyLiked, reply, down
 
-    // if like count is above 999 then display it as count/1000k + k
-    // if like count is above 999999 then display it as count/1000000 + m
-    // round down to whole number
-    const onUpdateLikeCount = React.useCallback((likeCount) => {
-        if (likeCount === 0) {
-          setLikeString("0");
-        } else if (likeCount > 999 && likeCount < 1000000) {
-          setLikeString(Math.floor(likeCount / 1000) + "k");
-        } else if (likeCount > 999999) {
-          setLikeString(Math.floor(likeCount / 1000000) + "m");
-        } else {
-          setLikeString(likeCount);
-        }
-    }, []);
+    if(theme == 'light'){
+        threeDots = <ThreeDotsLight width={33} height={33} style={{}}/>
+        likes = <Likes width={20} height={20} style={{ marginRight: 5 }}/>;
+        alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
+        reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
+        down = <Down width={25} height={25} style={{ marginRight: 5 }}/>;
+    }else{
+        threeDots = <ThreeDotsDark width={33} height={33} style={{}}/>
+        likes = <LikesDark width={21} height={21} style={{ marginRight: 5 }}/>;
+        alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
+        reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
+        down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
+    }
 
-    // if comment count is above 999 then display it as count/1000k + k
-    // if comment count is above 999999 then display it as count/1000000 + m
-    // round down to whole number
-    const onUpdateCommentCount = React.useCallback((commentCount) => {
-        if (commentCount === 0) {
-          setCommentString("0");
-        } else if (commentCount > 999 && commentCount < 1000000) {
-          setCommentString(Math.floor(commentCount / 1000) + "k");
-        } else if (commentCount > 999999) {
-          setCommentString(Math.floor(commentCount / 1000000) + "m");
-        } else {
-          setCommentString(commentCount);
-        }
-    }, []);
-
-    // update like count and add post to liked collection
-    const onLike = React.useCallback(async () => {
-        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
-        const likedSnapshot = await getDoc(likedRef);
+    // // update like count and add post to liked collection
+    // const onLike = React.useCallback(async () => {
+    //     const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
+    //     const likedSnapshot = await getDoc(likedRef);
       
-        if (!likedSnapshot.exists()) {
-            // add post to likes collection
-            await setDoc(likedRef, {});
+    //     if (!likedSnapshot.exists()) {
+    //         // add post to likes collection
+    //         await setDoc(likedRef, {});
             
-            // update like count for Comment
-            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+    //         // update like count for Comment
+    //         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-            await updateDoc(commentRef, {
-                likesCount: increment(1)
-            }).then(() => {
-                onUpdateLikeCount(likeCount + 1);
-                setLikeCount(likeCount + 1);
-            });
-        }
-      
-        setLiked(true);
-    }, [likeCount]);
+    //         await updateDoc(commentRef, {
+    //             likesCount: increment(1)
+    //         }).then(() => {
 
-    // update like count and add post to liked collection
-    const onDisike = React.useCallback(async () => {
-        // delete comment from likedComments collection
-        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
+    //         });
+    //     }
+    //     setLiked(true);
+    // }, []);
 
-        // update like count for Comment
-        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+    // // update like count and add post to liked collection
+    // const onDisike = React.useCallback(async () => {
+    //     // delete comment from likedComments collection
+    //     await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
-        await updateDoc(commentRef, {
-            likesCount: increment(-1)
-        }).then(() => {
-            onUpdateLikeCount(likeCount - 1);
-            setLikeCount(likeCount - 1);
-            setLiked(false);
-        });
-    }, [likeCount]);
+    //     // update like count for Comment
+    //     const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+    //     await updateDoc(commentRef, {
+    //         likesCount: increment(-1)
+    //     }).then(() => {
+    //         setLiked(false);
+    //     });
+    // }, []);
 
     const deleteComment = React.useCallback(() => async() => {
         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
@@ -251,8 +276,6 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
         
     }, []);
 
-    let threeDots, likes, alreadyLiked, reply, down
-
     const getFirstFiveCommentsByPopular = React.useCallback(async () => {
         await fetchFirstFiveCommentsByPopular(replyToPostId, commentId).then((comments) => {
             // console.log("comments")
@@ -268,22 +291,11 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
         await getFirstFiveCommentsByPopular();
     }, [viewMoreClicked]);
     
-    if(theme == 'light'){
-        threeDots = <ThreeDotsLight width={33} height={33} style={{}}/>
-        likes = <Likes width={20} height={20} style={{ marginRight: 5 }}/>;
-        alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
-        reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <Down width={25} height={25} style={{ marginRight: 5 }}/>;
-    }else{
-        threeDots = <ThreeDotsDark width={33} height={33} style={{}}/>
-        likes = <LikesDark width={21} height={21} style={{ marginRight: 5 }}/>;
-        alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
-        reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
-    }
+    
 
     const toggleLike = React.useCallback(() => async() => {
-       liked ? await onDisike() : await onLike()
+        setLiked(!liked);
+        liked ? await onDisike(replyToPostId, commentId) : await onLike(replyToPostId, commentId)
     }, [liked]);
 
     const toggleOverlay = React.useCallback(() => () => {
@@ -291,7 +303,13 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
     }, [overlayVisible]);
 
     // Load Meme with template and template state
-    const CreateMeme = React.memo(({image}) => {
+    const CreateMeme = React.useCallback(({image}) => {
+        if(templateState){
+            setFinished(true);
+            setImage(imageUrl);
+            return;
+        }
+
         return (
             <PinturaEditor
                 ref={editorRef}
@@ -314,11 +332,11 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                 }}
             />    
         )
-    }, imageEquals);
+    }, []);
 
-    const imageEquals = React.useCallback((prev, next) => {
-        return prev.image === next.image
-    }, [])
+    // const imageEquals = React.useCallback((prev, next) => {
+    //     return prev.image === next.image
+    // }, [])
 
     const Item = React.memo(({item})=>{
         return (
@@ -366,7 +384,10 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
     }
 
     return (
-        <View style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}>
+        <Animated.View 
+            entering={index < 7 &&BounceInDown}
+            style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}
+        >
 
             {/* Load Meme with template and template state */}
             {!finished && <CreateMeme image={image}/>}
@@ -486,7 +507,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                     }
 
                     <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                        {likeString} Likes
+                        {liked? intToString(likesCount + 1) : intToString(likesCount)} Likes
                     </Text>
 
                 </TouchableOpacity>
@@ -496,9 +517,9 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             {/* Replies - SubComments */}
             <View style={{backgroundColor: 
                     theme == 'light' ? 
-                        commentCount > 0 ? '#F2F2F2' : '#FFFFFF'
+                        commentsCount > 0 ? '#F2F2F2' : '#FFFFFF'
                     : 
-                        commentCount > 0 ? '#000000' : '#151515', 
+                        commentsCount > 0 ? '#000000' : '#151515', 
                     minHeight: 3,
             }}>
 
@@ -539,7 +560,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             
             {/* View replies */}
             {
-                commentCount > 0 &&
+                commentsCount > 0 &&
                     <TouchableOpacity 
                         activeOpacity={1}
                         style={{
@@ -553,7 +574,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                         <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
                             margin: 10,
                         }]}>
-                            View {commentString} replies
+                            View {intToString(commentsCount)} replies
                         </Text>
 
                         {down}
@@ -589,7 +610,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                     </TouchableOpacity>
                 }
             </Overlay>
-        </View>
+        </Animated.View>
     );
 }
 

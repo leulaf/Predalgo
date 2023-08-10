@@ -53,7 +53,7 @@ const ResizableImage = ({ image, height, width, maxHeight, maxWidth, borderRadiu
     return (
         
         <Image
-
+            // placeholder={require('../../assets/placeholder.png')}
             source={{uri : image}}
             alignSelf='center'
             height={imageHeight}

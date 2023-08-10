@@ -19,69 +19,69 @@ const commentTextOnPost = async (text, replyToPostId, replyToProfile, replyToUse
             return;
         }
 
-        for(let i = 0; i < 100; i++){
-            await addDoc(collection(db, "comments", replyToPostId, "comments"), {
-                replyToPostId: replyToPostId,
-                replyToProfile: replyToProfile,
-                replyToUsername: replyToUsername,
-                isMainComment: true,
-                text: `${100 - i}        ${text}`,
-                likesCount: 100 - i,
-                commentsCount: 0,
-                creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-                profile: auth.currentUser.uid,
-                username: auth.currentUser.displayName,
-                profilePic: auth.currentUser.photoURL,
-            }).then(async (docRef) => {
+        // for(let i = 0; i < 100; i++){
+        //     await addDoc(collection(db, "comments", replyToPostId, "comments"), {
+        //         replyToPostId: replyToPostId,
+        //         replyToProfile: replyToProfile,
+        //         replyToUsername: replyToUsername,
+        //         isMainComment: true,
+        //         text: `${100 - i}        ${text}`,
+        //         likesCount: 100 - i,
+        //         commentsCount: 0,
+        //         creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+        //         profile: auth.currentUser.uid,
+        //         username: auth.currentUser.displayName,
+        //         profilePic: auth.currentUser.photoURL,
+        //     }).then(async (docRef) => {
                 
     
-                // increment comments count on post
-                const postRef = doc(db, 'allPosts', replyToPostId);
+        //         // increment comments count on post
+        //         const postRef = doc(db, 'allPosts', replyToPostId);
     
-                await updateDoc(postRef, {
-                    commentsCount: increment(1)
-                }).then(() => {
+        //         await updateDoc(postRef, {
+        //             commentsCount: increment(1)
+        //         }).then(() => {
                     
-                    if(i == 99){
-                        resolve(docRef.id);
-                    }
+        //             if(i == 99){
+        //                 resolve(docRef.id);
+        //             }
                     
-                });
+        //         });
     
                 
-            }).catch(function (error) {
-                // console.log(error);
-            });
-        }
-        // add text post to database
-        // await addDoc(collection(db, "comments", replyToPostId, "comments"), {
-        //     replyToPostId: replyToPostId,
-        //     replyToProfile: replyToProfile,
-        //     replyToUsername: replyToUsername,
-        //     isMainComment: true,
-        //     text: text,
-        //     likesCount: 0,
-        //     commentsCount: 0,
-        //     creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        //     profile: auth.currentUser.uid,
-        //     username: auth.currentUser.displayName,
-        //     profilePic: auth.currentUser.photoURL,
-        // }).then(async (docRef) => {
-            
-
-        //     // increment comments count on post
-        //     const postRef = doc(db, 'allPosts', replyToPostId);
-
-        //     await updateDoc(postRef, {
-        //         commentsCount: increment(1)
-        //     }).then(() => {
-        //         resolve(docRef.id);
+        //     }).catch(function (error) {
+        //         // console.log(error);
         //     });
+        // }
+        // add text post to database
+        await addDoc(collection(db, "comments", replyToPostId, "comments"), {
+            replyToPostId: replyToPostId,
+            replyToProfile: replyToProfile,
+            replyToUsername: replyToUsername,
+            isMainComment: true,
+            text: text,
+            likesCount: 0,
+            commentsCount: 0,
+            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+            profile: auth.currentUser.uid,
+            username: auth.currentUser.displayName,
+            profilePic: auth.currentUser.photoURL,
+        }).then(async (docRef) => {
+            
+
+            // increment comments count on post
+            const postRef = doc(db, 'allPosts', replyToPostId);
+
+            await updateDoc(postRef, {
+                commentsCount: increment(1)
+            }).then(() => {
+                resolve(docRef.id);
+            });
 
             
-        // }).catch(function (error) {
-        //     // console.log(error);
-        // });
+        }).catch(function (error) {
+            // console.log(error);
+        });
 
     });
 

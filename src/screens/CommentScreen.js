@@ -103,7 +103,7 @@ const CommentScreen = ({navigation, route}) => {
 
     // Load Meme with template and template state
     // Load Meme with template and template state
-    const CreateMeme = React.memo(({image}) => {
+    const CreateMeme = React.useCallback(({image}) => {
         return (
             <PinturaEditor
                 ref={editorRef}
@@ -126,7 +126,7 @@ const CommentScreen = ({navigation, route}) => {
                 }}
             />    
         )
-    }, imageEquals)
+    }, [])
 
     const imageEquals = React.useCallback((prev, next) => {
         return prev.image === next.image

@@ -263,7 +263,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
 
     // Load Meme with template and template state
     // Load Meme with template and template state
-    const CreateMeme = React.memo(({image}) => {
+    const CreateMeme = React.useCallback(({image}) => {
         return (
             <PinturaEditor
                 ref={editorRef}
@@ -286,11 +286,11 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                 }}
             />    
         )
-    }, imageEquals)
-
-    const imageEquals = React.useCallback((prev, next) => {
-        return prev.image === next.image
     }, [])
+
+    // const imageEquals = React.useCallback((prev, next) => {
+    //     return prev.image === next.image
+    // }, [])
 
     if(deleted){
         return null;
