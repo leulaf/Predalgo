@@ -9,6 +9,8 @@ require('firebase/firestore');
 
 import { getAuth, updateProfile } from "firebase/auth";
 
+import {commentTextOnPost} from './UploadText';
+
 const auth = getAuth();
 
 async function commentMemeOnPost(imageUrl, memeName, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth) {
@@ -78,6 +80,39 @@ async function commentMemeOnPost(imageUrl, memeName, text, replyToPostId, replyT
 const saveMemeToPost = async (memeName, templateUrl, imageState, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth ) => {
     return new Promise(async (resolve, reject) => {
         // let id
+
+        // for(let i = 0; i < 100; i++){
+        //     await addDoc(collection(db, "comments", replyToPostId, "comments"), {
+        //         replyToPostId: replyToPostId,
+        //         replyToProfile: replyToProfile,
+        //         replyToUsername: replyToUsername,
+        //         isMainComment: true,
+        //         memeName: memeName,
+        //         template: templateUrl,
+        //         templateState: imageState,
+        //         imageHeight: imageHeight,
+        //         imageWidth: imageWidth,
+        //         text: `${100 - i}   ${"text"}`,
+        //         likesCount: 100 - i,
+        //         commentsCount: 100 - i,
+        //         creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+        //         profile: auth.currentUser.uid,
+        //         username: auth.currentUser.displayName,
+        //         profilePic: auth.currentUser.photoURL,
+        //     }).then(async (docRef) => {
+        //         // navigate to comment screen with the new comment
+        //         // id = docRef.id;
+        //         await commentTextOnPost("My goal right now is to find a way to make a group of people and add transactions. I can add a form to get these values and store them as key value pair. But i couldn't figure out how to make this persistent. I have to use a DB but which to use?", replyToPostId, replyToProfile, replyToUsername, 100-i )
+        //         if(i == 99){
+        //             resolve(docRef.id);
+        //         }
+        //     }).catch(function (error) {
+        //         // console.log(error);
+        //     });
+    
+        //     // return id;
+        // }
+
 
         // add text post to database
         const docRef = await addDoc(collection(db, "comments", replyToPostId, "comments"), {

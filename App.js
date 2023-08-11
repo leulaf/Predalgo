@@ -23,7 +23,7 @@ import { MainStackNavigator } from './src/navigation/StackNavigator';
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const Stack = createStackNavigator();
-global.XMLHttpRequest = global.originalXMLHttpRequest || global.XMLHttpRequest;
+
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);

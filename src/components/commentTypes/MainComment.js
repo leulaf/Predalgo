@@ -6,9 +6,9 @@ import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
-import Animated, {BounceInDown} from 'react-native-reanimated';
+import Animated, {FadeIn} from 'react-native-reanimated';
 
-import { fetchFirstFiveCommentsByRecent, fetchFirstFiveCommentsByPopular } from '../../shared/comment/GetComments';
+import { fetchFirstFiveCommentsByPopular, fetchNextFiveCommentsByPopular } from '../../shared/comment/GetComments';
 import { FlashList } from '@shopify/flash-list';
 
 import { manipulateAsync } from 'expo-image-manipulator';
@@ -93,36 +93,44 @@ const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profil
 
 // update like count and add post to liked collection
 const onLike = async (replyToPostId, commentId) => {
-    const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
-    const likedSnapshot = await getDoc(likedRef);
-  
-    if (!likedSnapshot.exists()) {
-        // add post to likes collection
-        await setDoc(likedRef, {});
-        
-        // update like count for Comment
-        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+    return new Promise(async (resolve, reject) => {
+        const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
+        const likedSnapshot = await getDoc(likedRef);
+    
+        if (!likedSnapshot.exists()) {
 
-        await updateDoc(commentRef, {
-            likesCount: increment(1)
-        })
-    }
+            // add post to likes collection
+            await setDoc(likedRef, {});
+            
+            // update like count for Comment
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+            await updateDoc(commentRef, {
+                likesCount: increment(1)
+            }).then(() => {
+                resolve(true);
+            })
+        }else{
+            resolve(true);
+        }
+    });
 };
 
 // update like count and add post to liked collection
 const onDisike = async (replyToPostId, commentId) => {
-    // delete comment from likedComments collection
-    await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
+    return new Promise(async (resolve, reject) => {
+        // delete comment from likedComments collection
+        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
-    // update like count for Comment
-    const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        // update like count for Comment
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-    await updateDoc(commentRef, {
-        likesCount: increment(-1)
-    }).then(() => {
-
-    })
-
+        await updateDoc(commentRef, {
+            likesCount: increment(-1)
+        }).then(() => {
+            resolve(true);
+        })
+    });
 };
 
 const goToProfile = (navigation, profile, username, profilePic) => () => {
@@ -149,13 +157,65 @@ const intToString = (commentCount) => {
     }
 };
 
-const MainComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, templateState, imageWidth, imageHeight, likesCount, commentsCount, index }) => {
+const ImagePost = React.memo(({item, index, navigation})=>{
+    return (
+        <SubComment
+            navigation={navigation}
+            replyToPostId={item.replyToPostId}
+            replyToCommentId={item.replyToCommentId}
+            profile={item.profile}
+            username={item.username}
+            profilePic={item.profilePic}
+            commentId={item.id}
+            text={item.text}
+            imageUrl={item.imageUrl}
+            memeName={item.memeName}
+            template={item.template}
+            templateState={item.templateState}
+            imageWidth={item.imageWidth}
+            imageHeight={item.imageHeight}
+            likesCount={item.likesCount}
+            commentsCount={item.commentsCount}
+            index={index}
+        />
+    );
+}, itemEquals);
+
+const itemEquals = (prev, next) => {
+    return prev.item.id === next.item.id
+};
+
+const TextPost = React.memo(({item, index, navigation})=>{
+    return (
+        <SubComment
+            navigation={navigation}
+            replyToPostId={item.replyToPostId}
+            replyToCommentId={item.replyToCommentId}
+            profile={item.profile}
+            username={item.username}
+            profilePic={item.profilePic}
+            commentId={item.id}
+            text={item.text}
+            imageUrl={item.imageUrl}
+            memeName={item.memeName}
+            template={item.template}
+            templateState={item.templateState}
+            imageWidth={item.imageWidth}
+            imageHeight={item.imageHeight}
+            likesCount={item.likesCount}
+            commentsCount={item.commentsCount}
+            index={index}
+        />
+    );
+}, itemEquals);
+
+
+const MainComment = ({ navigation, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount, index }) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const navigation = useNavigation();
 
     const [commentsList, setCommentsList] = useState([{id: "fir"}]); // array of comments - replies to this comment
 
-    const [image, setImage] = useState(imageUrl);
+    const [image, setImage] = useState(imageUrl ? imageUrl :  template);
     const flashListRef = useRef(null);
 
     const [deleted, setDeleted] = useState(false);
@@ -163,11 +223,11 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
 
     const [liked, setLiked] = useState(false);
 
-    const [viewMoreClicked, setViewMoreClicked] = useState(false);
+    const [commentsShown, setCommentsShown] = useState(0);
 
     const editorRef = useRef(null);
 
-    const [finished, setFinished] = useState(false);
+    const [finished, setFinished] = useState(template ? false : true);
 
     let threeDots, likes, alreadyLiked, reply, down
 
@@ -185,41 +245,6 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
         down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
     }
 
-    // // update like count and add post to liked collection
-    // const onLike = React.useCallback(async () => {
-    //     const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
-    //     const likedSnapshot = await getDoc(likedRef);
-      
-    //     if (!likedSnapshot.exists()) {
-    //         // add post to likes collection
-    //         await setDoc(likedRef, {});
-            
-    //         // update like count for Comment
-    //         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-
-    //         await updateDoc(commentRef, {
-    //             likesCount: increment(1)
-    //         }).then(() => {
-
-    //         });
-    //     }
-    //     setLiked(true);
-    // }, []);
-
-    // // update like count and add post to liked collection
-    // const onDisike = React.useCallback(async () => {
-    //     // delete comment from likedComments collection
-    //     await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
-
-    //     // update like count for Comment
-    //     const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-
-    //     await updateDoc(commentRef, {
-    //         likesCount: increment(-1)
-    //     }).then(() => {
-    //         setLiked(false);
-    //     });
-    // }, []);
 
     const deleteComment = React.useCallback(() => async() => {
         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
@@ -229,9 +254,8 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
             if (snapshot.exists) {
                 await deleteDoc(commentRef).then(async () => {
                     Alert.alert('Comment deleted!');
-
                     setDeleted(true);
-                    
+
                     // update comment count for Comment or Post
                     if(replyToCommentId){
                         const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
@@ -258,7 +282,7 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
 
                 // if (data.imageUrl) {
                 //     const imageRef = ref(storage, "gs://predalgo-backend.appspot.com/profilePics/adaptive-icon.png");
-  
+
                 //     // Delete the file
                 //     deleteObject(imageRef).then(() => {
                 //         // File deleted successfully
@@ -269,47 +293,52 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                 //     });
                 // }
             }
-
-            
         })
-    
-        
-    }, []);
+    })
 
-    const getFirstFiveCommentsByPopular = React.useCallback(async () => {
-        await fetchFirstFiveCommentsByPopular(replyToPostId, commentId).then((comments) => {
-            // console.log("comments")
-            setCommentsList(comments);
-        });
-    }, []);
+    const getFiveCommentsByPopular = React.useCallback(() => async () => {
 
-    const onFirstViewMoreClicked = React.useCallback(() => async() => {
-        if(viewMoreClicked){
-            return;
+        if(commentsShown > 0 && commentsCount - commentsShown > 0){
+            await fetchNextFiveCommentsByPopular(replyToPostId, commentId, commentsList[commentsList.length-1].snap).then((comments) => {
+                // console.log("comments")
+                commentsList[commentsList.length-1].snap = null;
+                setCommentsShown(commentsShown + comments.length);
+                setCommentsList(commentsList => [...commentsList, ...comments]);
+            });
+        }else if(commentsShown == 0){
+            await fetchFirstFiveCommentsByPopular(replyToPostId, commentId).then((comments) => {
+                setCommentsShown(comments.length-1);
+                setCommentsList(comments);
+            });
         }
-        setViewMoreClicked(true);
-        await getFirstFiveCommentsByPopular();
-    }, [viewMoreClicked]);
-    
-    
 
-    const toggleLike = React.useCallback(() => async() => {
-        setLiked(!liked);
-        liked ? await onDisike(replyToPostId, commentId) : await onLike(replyToPostId, commentId)
-    }, [liked]);
+    }, [commentsShown, commentsList]);
+
+
+    const toggleLike = () => async() => {
+        if(liked){
+            await onDisike(replyToPostId, commentId).then((result) => {
+                if(result){
+                    setLiked(false);
+                }
+            })
+        }else{
+            await onLike(replyToPostId, commentId).then((result) => {
+                if(result){
+                    setLiked(true);
+                }
+            })
+        }
+    }
+
 
     const toggleOverlay = React.useCallback(() => () => {
         setOverlayVisible(!overlayVisible);
     }, [overlayVisible]);
 
+
     // Load Meme with template and template state
     const CreateMeme = React.useCallback(({image}) => {
-        if(templateState){
-            setFinished(true);
-            setImage(imageUrl);
-            return;
-        }
-
         return (
             <PinturaEditor
                 ref={editorRef}
@@ -334,58 +363,33 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
         )
     }, []);
 
-    // const imageEquals = React.useCallback((prev, next) => {
-    //     return prev.image === next.image
-    // }, [])
-
-    const Item = React.memo(({item})=>{
-        return (
-            <SubComment
-                replyToPostId={replyToPostId}
-                replyToCommentId={commentId}
-                profile={item.profile}
-                username={item.username}
-                profilePic={item.profilePic}
-                commentId={item.id}
-                text={item.text}
-                imageUrl={item.imageUrl}
-                memeName={item.memeName}
-                template={item.template}
-                templateState={item.templateState}
-                imageWidth={item.imageWidth}
-                imageHeight={item.imageHeight}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-                // updateCommentCount={commentCount}
-                // setUpdateCommentCount={setCommentCount}
-                // setUpdateCommentString={onUpdateCommentCount}
-            />
-        );
-    }, itemEquals);
-
-    const itemEquals = React.useCallback((prev, next) => {
-        return prev.item.id === next.item.id
-    }, [])
 
     const renderItem = React.useCallback(({ item, index }) => {
         if(index == 0){
             return (
                 null
             );
+        }else if(item.imageUrl || item.template){
+            return (
+                <ImagePost item={item} index={index} navigation={navigation}/>
+            );
+        }else{
+            return (
+                <TextPost item={item} index={index} navigation={navigation}/>
+            );
         }
+    }, [])
 
-        return (
-            <Item item={item}/>
-        );
-    }, []);
 
     if(deleted){
         return null;
     }
 
+
     return (
         <Animated.View 
-            entering={index < 7 &&BounceInDown}
+            // entering={index < 4 && StretchInY}
+            entering={FadeIn}
             style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}
         >
 
@@ -526,34 +530,24 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                 <FlashList
                     ref={flashListRef}
                     data={commentsList}
-                    // onEndReachedThreshold={0.2}
+                    // onEndReachedThreshold={0.5}
                     // onEndReached={() => }
-                    estimatedItemSize={300}
+                    
 
                     extraData={[commentsList]}
                     renderItem={renderItem}
                     
                     removeClippedSubviews={true}
 
-                    estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+                    estimatedItemSize={300}
+                    estimatedListSize={{height: windowHeight, width: windowWidth - 10}}
 
                     ListFooterComponent={
                         <View style={{ marginTop: 2, marginBottom: 2}}/>
                     }
                     keyExtractor={(item, index) => item.id.toString + "-" + index.toString()}
 
-                    // maxToRenderPerBatch={5}
-                    // updateCellsBatchingPeriod={100}
-                    // windowSizeprop={5}
-
-                    //optimization
-                    
-                    // initialNumToRender={10}
-                    // maxToRenderPerBatch={10}
-                    // windowSize={10}
-                    // updateCellsBatchingPeriod={100}
-                    // onEndReachedThreshold={0.5}
-                    // onEndReached={() => {}} //need to implement infinite scroll
                 />
             </View>
 
@@ -568,13 +562,13 @@ const MainComment = ({ profile, username, profilePic, commentId, replyToCommentI
                             // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
                             borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
                         }}
-                        onPress = {onFirstViewMoreClicked()}
+                        onPress = {getFiveCommentsByPopular()}
                     >
-
+                        
                         <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
                             margin: 10,
                         }]}>
-                            View {intToString(commentsCount)} replies
+                            View {intToString(commentsCount - commentsShown)} replies
                         </Text>
 
                         {down}

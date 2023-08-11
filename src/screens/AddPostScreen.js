@@ -29,7 +29,7 @@ const AddPostScreen = ({navigation, route}) => {
     const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
     const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
 
-    const { forCommentOnComment, forCommentOnPost} = route.params;
+    const { forCommentOnComment, forCommentOnPost} = route?.params;
 
     useEffect(() => {
       getFirstTenTemplates();

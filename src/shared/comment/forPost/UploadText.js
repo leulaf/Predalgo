@@ -5,6 +5,7 @@ import { doc, setDoc, getDoc, collection, addDoc, updateDoc, increment } from "f
 import firebase from 'firebase/compat/app';
 require('firebase/firestore');
 
+
 import { getAuth, updateProfile } from "firebase/auth";
 
 const auth = getAuth();

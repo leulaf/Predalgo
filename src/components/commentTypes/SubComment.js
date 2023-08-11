@@ -6,6 +6,8 @@ import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
+import Animated, {FadeIn} from 'react-native-reanimated';
+
 import PinturaEditor from "@pqina/react-native-expo-pintura";
 
 import { manipulateAsync } from 'expo-image-manipulator';
@@ -91,88 +93,50 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
     })
 }
 
-const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount,}) => {
-    const {theme,setTheme} = useContext(ThemeContext);
-    const navigation = useNavigation();
+const intToString = (commentCount) => {
+    if (commentCount === 0) {
 
-    const [deleted, setDeleted] = useState(false);
-    const [overlayVisible, setOverlayVisible] = useState(false);
+      return "0";
+    } else if (commentCount > 999 && commentCount < 1000000) {
 
-    const [image, setImage] = useState(imageUrl ? imageUrl :  template);
-    
-    const [likeCount, setLikeCount] = useState(likesCount);
-    const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(commentsCount);
-    const [commentString, setCommentString] = useState("");
-    const [liked, setLiked] = useState(false);
+        return Math.floor(commentCount / 1000) + "k";
+    } else if (commentCount > 999999) {
 
-    const [viewWidth, setViewWidth] = useState(0);
+        return Math.floor(commentCount / 1000000) + "m";
+    } else {
 
-    const editorRef = useRef(null);
+        return commentCount;
+    }
+};
 
-    const [finished, setFinished] = useState(template ? false : true);
-
-    useEffect(() => {
-        onUpdateLikeCount(likesCount);
-        onUpdateCommentCount(commentsCount); // update comment count string
-    }, []);
-
-    // if like count is above 999 then display it as count/1000k + k
-    // if like count is above 999999 then display it as count/1000000 + m
-    // round down to whole number
-    const onUpdateLikeCount = React.useCallback((likeCount) => {
-        if (likeCount === 0) {
-          setLikeString("0");
-        } else if (likeCount > 999 && likeCount < 1000000) {
-          setLikeString(Math.floor(likeCount / 1000) + "k");
-        } else if (likeCount > 999999) {
-          setLikeString(Math.floor(likeCount / 1000000) + "m");
-        } else {
-          setLikeString(likeCount);
-        }
-    }, []);
-
-    // if comment count is above 999 then display it as count/1000k + k
-    // if comment count is above 999999 then display it as count/1000000 + m
-    // round down to whole number
-    const onUpdateCommentCount = React.useCallback((commentCount) => {
-        if (commentCount === 0) {
-          setCommentString("0");
-        } else if (commentCount > 999 && commentCount < 1000000) {
-          setCommentString(Math.floor(commentCount / 1000) + "k");
-        } else if (commentCount > 999999) {
-          setCommentString(Math.floor(commentCount / 1000000) + "m");
-        } else {
-          setCommentString(commentCount);
-        }
-    }, []);
-
-    // update like count and add post to liked collection
-    const onLike = React.useCallback(async () => {
+// update like count and add post to liked collection
+const onLike = async (replyToPostId, commentId) => {
+    return new Promise(async (resolve, reject) => {
         const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
         const likedSnapshot = await getDoc(likedRef);
-      
+    
         if (!likedSnapshot.exists()) {
+
             // add post to likes collection
             await setDoc(likedRef, {});
-
+            
             // update like count for Comment
             const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-      
-            updateDoc(commentRef, {
+
+            await updateDoc(commentRef, {
                 likesCount: increment(1)
             }).then(() => {
-                onUpdateLikeCount(likeCount + 1);
-                setLikeCount(likeCount + 1);
-                onUpdateLikeCount(likeCount + 1); // update like count string
-            });
+                resolve(true);
+            })
+        }else{
+            resolve(true);
         }
-      
-        setLiked(true);
-    }, [likeCount])
+    });
+};
 
-    // update like count and add post to liked collection
-    const onDisike = React.useCallback(async () => {
+// update like count and add post to liked collection
+const onDisike = async (replyToPostId, commentId) => {
+    return new Promise(async (resolve, reject) => {
         // delete comment from likedComments collection
         await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
@@ -182,13 +146,28 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         await updateDoc(commentRef, {
             likesCount: increment(-1)
         }).then(() => {
-            onUpdateLikeCount(likeCount - 1);
-            setLikeCount(likeCount - 1);
-            setLiked(false);
-        });
-    }, [likeCount])
+            resolve(true);
+        })
+    });
+};
 
-    const deleteComment = React.useCallback(() => () => {
+const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount,}) => {
+    const {theme,setTheme} = useContext(ThemeContext);
+    const navigation = useNavigation();
+
+    const [deleted, setDeleted] = useState(false);
+    const [overlayVisible, setOverlayVisible] = useState(false);
+
+    const [image, setImage] = useState(imageUrl ? imageUrl :  template);
+    
+    const [liked, setLiked] = useState(false);
+
+    const editorRef = useRef(null);
+
+    const [finished, setFinished] = useState(template ? false : true);
+
+
+    const deleteComment = React.useCallback(() => async() => {
         setOverlayVisible(false);
         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
         const commentSnapshot =  getDoc(commentRef);
@@ -230,11 +209,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                 //     });
                 // }
             }
-
-            
         })
-    
-        
     }, []);
 
     let threeDots, likes, alreadyLiked, reply, down
@@ -253,13 +228,28 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
     }
 
-    const toggleLike = React.useCallback(() => async() => {
-        liked ? await onDisike() : await onLike()
-    }, [liked]);
+
+    const toggleLike = () => async() => {
+        if(liked){
+            await onDisike(replyToPostId, commentId).then((result) => {
+                if(result){
+                    setLiked(false);
+                }
+            })
+        }else{
+            await onLike(replyToPostId, commentId).then((result) => {
+                if(result){
+                    setLiked(true);
+                }
+            })
+        }
+    }
+
 
     const toggleOverlay = React.useCallback(() => () => {
         setOverlayVisible(!overlayVisible);
     }, [overlayVisible]);
+
 
     // Load Meme with template and template state
     // Load Meme with template and template state
@@ -288,16 +278,15 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
         )
     }, [])
 
-    // const imageEquals = React.useCallback((prev, next) => {
-    //     return prev.image === next.image
-    // }, [])
 
     if(deleted){
         return null;
     }
 
+
     return (
-        <View 
+        <Animated.View 
+            entering={FadeIn}
             // onLayout={(event) => setViewWidth(event.nativeEvent.layout.width)} 
             style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}
         >
@@ -387,7 +376,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                 
                 {/* View replies */}
                 {
-                    commentCount > 0 &&
+                    commentsCount > 0 &&
 
                     <TouchableOpacity
                         activeOpacity={1}
@@ -398,7 +387,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                         <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}/>
 
                         <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
-                            View {commentString} replies
+                            View {commentsCount} replies
                         </Text>
                         
                     </TouchableOpacity>
@@ -439,7 +428,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                     }
 
                     <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                        {likeString} Likes
+                        {liked ? intToString(likesCount + 1) : intToString(likesCount)} Likes
                     </Text>
 
                 </TouchableOpacity>
@@ -473,7 +462,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                 }
             </Overlay>
 
-        </View>
+        </Animated.View>
     );
 }
 

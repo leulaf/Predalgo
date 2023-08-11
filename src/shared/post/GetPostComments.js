@@ -61,8 +61,8 @@ const fetchFirstTenPostCommentsByPopular = async (replyToPostId) => {
         // Wait for all promises to resolve before returning the resolved posts
         const resolvedPosts = await Promise.all(posts);
 
-        // resolvedPosts.unshift({id: "fir", index: resolvedPosts.length});
-        // resolvedPosts.unshift({id: "sec", index: resolvedPosts.length});
+        resolvedPosts.unshift({id: "fir", index: resolvedPosts.length});
+        resolvedPosts.unshift({id: "sec", index: resolvedPosts.length});
 
         resolve(resolvedPosts);
     });
@@ -75,7 +75,7 @@ const fetchNextTenPopularComments = async (replyToPostId, lastDocument) => {
             collection(db, "comments", replyToPostId, "comments"), 
             where("isMainComment", "==", true), 
             orderBy("likesCount", "desc"),
-            startAfter(lastDocument.snap),
+            startAfter(lastDocument),
             limit(10)
         );
 

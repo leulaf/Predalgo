@@ -149,6 +149,7 @@ function BottomTabNavigator ({navigation}) {
                 />
 
                 <Bottom_Tab.Screen name={addPostName} component={AddPostScreen} 
+                    initialParams={{ forCommentOnComment: false, forCommentOnPost: false }}
                     options={{
                         drawerIcon: ({color}) => (
                             <Ionicons name="home-outline" size={22} color={color} />

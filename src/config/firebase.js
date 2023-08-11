@@ -6,10 +6,14 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/firestore';
 import { getStorage } from "firebase/storage";
+// import {
+//     initializeAuth,
+//     getReactNativePersistence
+// } from 'firebase/auth/react-native';
 import {
     initializeAuth,
     getReactNativePersistence
-} from 'firebase/auth/react-native';
+} from 'firebase/auth';
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, connectFirestoreEmulator, initializeFirestore } from "firebase/firestore";
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID, FIREBASE_MEASUREMENT_ID } from "@env";
