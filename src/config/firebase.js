@@ -5,7 +5,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/firestore';
-import { getStorage } from "firebase/storage";
+import { getStorage, ref, deleteObject } from "firebase/storage";
 // import {
 //     initializeAuth,
 //     getReactNativePersistence
@@ -60,4 +60,4 @@ const db = getFirestore(Firebase);
 const storage = getStorage(Firebase);
 
 
-export {Firebase, firebase, auth, db, storage};
+export {Firebase, firebase, auth, db, storage, ref, deleteObject};

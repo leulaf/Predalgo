@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
+import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlashList, Dimensions} from 'react-native';
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import GlobalStyles from '../../constants/GlobalStyles';
@@ -10,11 +10,16 @@ import MultiImagePost from './MultiImagePost';
 import TextPost from './TextPost';
 import { set } from 'react-native-reanimated';
 
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
+
+const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+
 export default function AllUserPosts({ userId, username, profilePic, postList, byNewPosts, byPopularPosts, handleNewPostsClick, handlePopularPostsClick, handleRefreshPostsClick, handleNewPostsRefreshClick, handlePopularPostsRefreshClick }){
     const {theme,setTheme} = useContext(ThemeContext);
 
     {/* New/Popular/Refresh button */}
-    const topButtons = (
+    const topButtons = React.useCallback((
         <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 15}}>
             {/* New button */}
             {
@@ -68,85 +73,90 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                     </TouchableOpacity>
             }
         </View>
-    );
+    ), []);
 
-    const renderItem = ({ item, index }) => {
-        let post;
+
+    const renderItem = React.useCallback(({ item, index }) => {
         if(item.imageUrl){
-            post = <ImagePost
-                key={index}
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
-                imageUrl={item.imageUrl}
-                title={item.title}
-                tags={item.tags}
-                memeName={item.memeName}
-                profile={item.profile}
-                username={username}
-                profilePic={profilePic}
-                postId={item.id}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
-        }else if(item.imageUrls){
-            post = <MultiImagePost
-                key={index}
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
-                title={item.title}
-                imageUrls={item.imageUrls}
-                tags={item.tags}
-                profile={item.profile}
-                username={username}
-                profilePic={profilePic}
-                postId={item.id}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
-        }else if(item.text){
-            post = <TextPost
-                key={index}
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
-                title={item.title}
-                text={item.text}
-                tags={item.tags}
-                profile={item.profile}
-                username={username}
-                profilePic={profilePic}
-                postId={item.id}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
-        }
-
-        if(index == postList.length -1){
             return (
-                <View style={{marginBottom: 150}}>
-                    {post}
-                </View>
-            );
+                <ImagePost
+                    key={index}
+                    repostProfile={item.repostProfile}
+                    repostComment={item.repostComment}
+                    imageUrl={item.imageUrl}
+                    title={item.title}
+                    tags={item.tags}
+                    memeName={item.memeName}
+                    profile={item.profile}
+                    username={username}
+                    profilePic={profilePic}
+                    postId={item.id}
+                    likesCount={item.likesCount}
+                    commentsCount={item.commentsCount}
+                />
+            )
+        }else if(item.imageUrls){
+            return (
+                <MultiImagePost
+                    key={index}
+                    repostProfile={item.repostProfile}
+                    repostComment={item.repostComment}
+                    title={item.title}
+                    imageUrls={item.imageUrls}
+                    tags={item.tags}
+                    profile={item.profile}
+                    username={username}
+                    profilePic={profilePic}
+                    postId={item.id}
+                    likesCount={item.likesCount}
+                    commentsCount={item.commentsCount}
+                />
+            )
+        }else if(item.text){
+            return (
+                <TextPost
+                    key={index}
+                    repostProfile={item.repostProfile}
+                    repostComment={item.repostComment}
+                    title={item.title}
+                    text={item.text}
+                    tags={item.tags}
+                    profile={item.profile}
+                    username={username}
+                    profilePic={profilePic}
+                    postId={item.id}
+                    likesCount={item.likesCount}
+                    commentsCount={item.commentsCount}
+                />
+            )
         }
-        return post;
-    };
+    }, []);
 
-    // useEffect(() => {
-    //     // This effect will re-render the component when the postList prop changes
-    // }, [postList]);
 
     return (
         <View 
             style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}
         >
-            <Tabs.FlatList
-                data={postList}
-                keyExtractor={(item, index) => item.id + '-' + index}
+            <Tabs.FlashList
+                data={postList.length > 0 ? postList : [{id: "fir"}]}
+
+                extraData={[postList]}
+
+                // onEndReached={commentsList[commentsList.length-1].snap && getNextTenComments }
+                // onEndReachedThreshold={1} //need to implement infinite scroll
+
+                removeClippedSubviews={true}
+
+                estimatedItemSize={400}
+                estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+                ListFooterComponent={
+                    <View style={{height: 200}}/>
+                }
+
+                keyExtractor={keyExtractor}
                 ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top
-                renderItem={({ item, index }) => {
-                    return (
-                        renderItem({ item, index })
-                    );
-                }}
+                renderItem={renderItem}
             />
         </View>
     );

@@ -2,8 +2,8 @@ import React, {useContext, useRef, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Image } from 'expo-image';
 import GlobalStyles from '../../constants/GlobalStyles';
-import { firebase, storage, db } from '../../config/firebase';
-import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+import { firebase, storage, db, ref, deleteObject } from '../../config/firebase';
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
@@ -168,49 +168,44 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
 
 
     const deleteComment = React.useCallback(() => async() => {
-        setOverlayVisible(false);
         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-        const commentSnapshot =  getDoc(commentRef);
-        
-        commentSnapshot.then(async (snapshot) => {
-            if (snapshot.exists) {
-                await deleteDoc(commentRef).then(async () => {
-                    Alert.alert('Comment deleted!');
+        const commentSnapshot = await getDoc(commentRef);
+        data = commentSnapshot.data();
 
-                    setDeleted(true);
-                    
-                    const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+        if (commentSnapshot.exists) {
+            await deleteDoc(commentRef).then(async () => {
+                
+                Alert.alert('Comment deleted!');
+                setDeleted(true);
 
-                    await updateDoc(commentRef, {
-                        commentsCount: increment(-1)
-                    }).then(() => {
-                        // setUpdateCommentString(updateCommentCount - 1);
-                        // setUpdateCommentCount(updateCommentCount - 1);
-                    });
-                }).catch((error) => {
-                    // console.log(error);
+
+                // update comment count for Comment or Post
+                const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+
+                await updateDoc(commentRef, {
+                    commentsCount: increment(-1)
                 })
-
                 
 
-                data = snapshot.data();
-                // console.log(data.imageUrl);
+                if (data.imageUrl) {
+                    const imageRef = ref(storage, data.imageUrl);
 
-                // if (data.imageUrl) {
-                //     const imageRef = ref(storage, "gs://predalgo-backend.appspot.com/profilePics/adaptive-icon.png");
-  
-                //     // Delete the file
-                //     deleteObject(imageRef).then(() => {
-                //         // File deleted successfully
-                //         console.log('Image deleted!');
-                //     }).catch((error) => {
-                //         // Uh-oh, an error occurred!
-                //         console.log(error);
-                //     });
-                // }
-            }
-        })
+                    // Delete the file
+                    await deleteObject(imageRef).then(() => {
+                        // File deleted successfully
+                        // console.log('Image deleted!');
+                    }).catch((error) => {
+                        // Uh-oh, an error occurred!
+                        // console.log(error);
+                    });
+                }
+
+            }).catch((error) => {
+                // console.log(error);
+            })
+        }
     }, []);
+
 
     let threeDots, likes, alreadyLiked, reply, down
     

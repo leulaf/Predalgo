@@ -1,109 +1,79 @@
-import React, {useState, useEffect, useContext, useRef} from 'react';
-import {TouchableOpacity, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions, Animated, PanResponder} from 'react-native';
-import { ScrollView } from 'react-native-virtualized-view';
-import { firebase, db, storage } from '../../config/firebase';
-import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
+import React, {useState, useEffect, useContext} from 'react';
+import {TouchableOpacity, View, Text, StyleSheet, FlatList, Dimensions} from 'react-native';
 import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
 import GlobalStyles from '../../constants/GlobalStyles';
+import ResizableImage from  '../../shared/ResizableImage';
 
-ImageContainer = (props) => {    
-    return (
-        <Image 
-            width={200} // this will make image take full width of the device
-            source={props.imageSource} // pass the image source via props
-            style={{borderRadius: 10}}
-        />
-    );
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
+
+
+const renderItem = ({ item, index }) => {
+  // If the item is the last item in the list, add some extra bottom padding
+
+  return (
+    <TouchableOpacity
+      activeOpacity={1}
+      style={
+        index % 2 == 1 ?
+          {marginLeft: 2, marginRight: 4, marginBottom: 6} 
+        :
+          {marginLeft: 4, marginRight: 2, marginBottom: 6} 
+      }
+    >
+      <ResizableImage
+        image={item.imageUrl}
+        maxWidth={windowWidth/2 - 8}
+        height={item.height}
+        width={item.width}
+        style={{borderRadius: 10}}
+      />
+    </TouchableOpacity>
+  );
 };
+
+
+const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 export default function AllUserMediaPosts({ userId, postList }){
     const {theme,setTheme} = useContext(ThemeContext);
     const [imagePostList, setImagePostList] = useState([]);
-    const [leftMediaPosts, setLeftMediaPosts] = useState([]);
-    const [rightMediaPosts, setRightMediaPosts] = useState([]);
+
 
     useEffect(() => {
       setImagePostList(postList.filter(obj => obj.imageUrl !== undefined && obj.imageUrl !== null));
     }, [postList]);
 
-    useEffect(() => {      
-      setLeftAndRightMediaPosts(imagePostList);
-    }, [imagePostList]);
 
-    // a function to split the meme templates into two arrays, the left should be odd indexes and the right should be even indexes
-    const setLeftAndRightMediaPosts = async (posts) => {
-        let left = [];
-        let right = [];
-
-        for(let i = 0; i < posts.length; i++){
-            if(i % 2 == 0){
-                left.push(posts[i]);
-            }else{
-                right.push(posts[i]);
-            }
-        }
-
-
-        setLeftMediaPosts(left);
-        setRightMediaPosts(right);
-    };
-      
-    const renderMedia = ({ item, index, length }) => {
-      // If the item is the last item in the list, add some extra bottom padding
-      if (index == length - 1) {
-        return (
-          <TouchableOpacity
-            style={{ marginBottom: 150 }}
-          >
-            <ImageContainer imageSource={{ uri: item.imageUrl }}  />
-          </TouchableOpacity>
-        );
-      }
-
-      return (
-        <TouchableOpacity
-          style={{  }}
-        >
-          <ImageContainer imageSource={{ uri: item.imageUrl }} />
-        </TouchableOpacity>
-      );
-    };
-    
     return (
-      <Tabs.ScrollView
+      <View
         style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1, marginTop: 15 }]}
       >
-        <View style={{ flexDirection: "row" }}>
-          {/* left side of images */}
-          <View style={{ flex: 1 }}>
-            <FlatList
-              numColumns={1}
-              data={leftMediaPosts}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item, index }) => {
-                return (
-                  renderMedia({ item, index, length: leftMediaPosts.length })
-                );
-              }}
-            />
-          </View>
 
-          {/* right side of images */}
-          <View style={{ flex: 1 }}>
-            <FlatList
-              numColumns={1}
-              data={rightMediaPosts}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item, index }) => {
-                return (
-                  renderMedia({ item, index, length: rightMediaPosts.length })
-                );
-              }}
-            />
-          </View>
-        </View>
-      </Tabs.ScrollView>
+        <Tabs.MasonryFlashList
+          data={imagePostList}
+          numColumns={2}
+
+          // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+          // onEndReachedThreshold={1} //need to implement infinite scroll
+          
+          renderItem={renderItem}
+          extraData={[imagePostList]}
+
+          removeClippedSubviews={true}
+
+          estimatedItemSize={200}
+          estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+          ListFooterComponent={
+              <View style={{height: 100}}/>
+          }
+
+          keyExtractor={keyExtractor}
+        />
+
+      </View>
     );
 }
 

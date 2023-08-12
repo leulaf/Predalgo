@@ -3,9 +3,12 @@ import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert} from 'reac
 import { Image } from 'expo-image';
 import {ThemeContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
-import { firebase, storage, db } from '../../config/firebase';
-import { doc, getDoc, getDocs, where, collection, query, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+import { firebase, storage, db, ref, deleteObject } from '../../config/firebase';
+import { doc, getDoc, getDocs, where, collection, query, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
+
+import Animated, {FadeIn} from 'react-native-reanimated';
+
 import GlobalStyles from '../../constants/GlobalStyles';
 
 import ContentBottom from './ContentBottom';
@@ -64,72 +67,76 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
     const [overlayVisible, setOverlayVisible] = useState(false);
 
     const [image, setImage] = useState(template ? template : imageUrl);
-    // let threeDots
+
+
+    let threeDots
     
-    // if(theme == 'light'){
-    //     threeDots = <ThreeDotsLight width={40} height={40} style={styles.threeDots}/>
-    // }else{
-    //     threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
-    // }
+    if(theme == 'light'){
+        threeDots = <ThreeDotsLight width={40} height={40} style={styles.threeDots}/>
+    }else{
+        threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
+    }
 
     
-
     const toggleOverlay = React.useCallback(() => () => {
         setOverlayVisible(!overlayVisible);
     }, [overlayVisible]);
 
-    const deletePost = React.useCallback(() => () => {
+
+    const deletePost = React.useCallback(() => async() => {
         setOverlayVisible(false);
         const postRef = doc(db, 'allPosts', postId);
-        const postSnapshot = getDoc(postRef);
-        
-        postSnapshot.then((snapshot) => {
-            if (snapshot.exists) {
-                deleteDoc(postRef).then(() => {
-                    Alert.alert('Post deleted!');
+        const postSnapshot = await getDoc(postRef);
+        data = postSnapshot.data();
 
-                    setDeleted(true);
+        if (postSnapshot.exists) {
+            await deleteDoc(commentRef).then(async () => {
+                
+                Alert.alert('Post deleted!');
+                setDeleted(true);
 
-                    // update posts count for current user
-                    const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
 
-                    updateDoc(currentUserRef, {
-                        posts: increment(-1)
-                    });
+                // update posts count for current user
+                const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
 
-                }).catch((error) => {
-                    // console.log(error);
+                await updateDoc(currentUserRef, {
+                    posts: increment(-1)
                 });
 
-                data = snapshot.data();
-                // console.log(data.imageUrl);
 
-                // if (data.imageUrl) {
-                //     const imageRef = ref(storage, "gs://predalgo-backend.appspot.com/profilePics/adaptive-icon.png");
-  
-                //     // Delete the file
-                //     deleteObject(imageRef).then(() => {
-                //         // File deleted successfully
-                //         console.log('Image deleted!');
-                //     }).catch((error) => {
-                //         // Uh-oh, an error occurred!
-                //         console.log(error);
-                //     });
-                // }
-            }
+                if (data.imageUrl) {
+                    const imageRef = ref(storage, data.imageUrl);
 
-            
-        })
+                    // Delete the file
+                    await deleteObject(imageRef).then(() => {
+                        // File deleted successfully
+                        // console.log('Image deleted!');
+                    }).catch((error) => {
+                        // Uh-oh, an error occurred!
+                        // console.log(error);
+                    });
+                }
+
+            }).catch((error) => {
+                // console.log(error);
+            })
+        }
     }, []);
 
+
     // if post is deleted or content is null, don't show post
-    if (deleted || content == null) {  
+    if (deleted || content == null || content == undefined) {  
         return null;
     }
 
+
     return (
-        <View style={theme == 'light' ? GlobalStyles.lightPostContainer: GlobalStyles.darkPostContainer}>
+        <Animated.View
+            entering={FadeIn} 
+            style={theme == 'light' ? GlobalStyles.lightPostContainer: GlobalStyles.darkPostContainer}
+        >
             
+
             {/* profile pic, username and title*/}
             <View 
                 style={{flexDirection: 'row', marginLeft: 10, marginTop: 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
@@ -185,15 +192,10 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                     style={{flexDirection: 'row'}}
                     onPress= {toggleOverlay()}
                 >
-                    {
-                        theme == 'light' ?
-                            <ThreeDotsLight width={40} height={40} style={styles.threeDots}/>
-                        :
-                            <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
-                    }
+                    {threeDots}
                 </TouchableOpacity>
-                
             </View>
+
 
             {/* title */}
             <TouchableOpacity
@@ -213,7 +215,6 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             </TouchableOpacity>
                 
             
-            
             {/* Post content. Image, Text etc. */}
             <TouchableOpacity
                 activeOpacity={1}
@@ -224,18 +225,20 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 
             </TouchableOpacity>
 
+
             {/* tags and meme name */}
             {contentBottom(memeName, tags)}
 
+
             {/* likes, comments, repost, share */}
             {postBottom(postId, likesCount, commentsCount)}
+
 
             {/* 
                 an overlay popup that appears when you click on the three dots.
                 if the post is from the current users, user can delete it.
                 if the post is not from the current users, user can report it.
             */}
-
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay()}>
                 
                 {profile === firebase.auth().currentUser.uid ?
@@ -259,7 +262,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 }
             </Overlay>
 
-        </View>
+        </Animated.View>
     );
 }
 

@@ -24,6 +24,10 @@ import AddIconDark from '../../assets/add_dark.svg';
 import AllUserPosts from '../components/postTypes/AllUserPosts';
 import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
 
+const navigateTo = (navigation, screen) => () => {
+    navigation.navigate(screen, {profile: firebase.auth().currentUser.uid})
+}
+
 const auth = getAuth();
 
 function MainProfileScreen ({navigation, ...props}) {
@@ -42,30 +46,47 @@ function MainProfileScreen ({navigation, ...props}) {
     const [byPopularPosts, setByPopularPosts] = useState(false);
 
     useEffect(() => {
+        // Fetch user info
+        props.fetchUser();
+
+        // Fetch posts
+        handleNewPostsClick();
+
+        const { currentUser } = props;
+        
+        if(currentUser != null){
+            // setUser(currentUser);
+            setFollowers(currentUser.followers);
+            setFollowing(currentUser.following);
+            setPostCount(currentUser.posts);
+            setBio(currentUser.bio);
+        }
+
         navigation.setOptions({
             header: () => <MainProfileTop />
         });
-    }, []);
+    }, [props.currentUser]);
 
-    async function uploadImage(imageUrl) {
+
+    const uploadImage = React.useCallback(async(imageUrl) => {
         // Convert image to blob format(array of bytes)
         const response = await fetch(imageUrl);
         const blob = await response.blob();
-     
-     
+        
+        
         // const filename = imageUrl.substring(imageUrl.lastIndexOf('/')+1);
         const childPath = `profilePics/${auth.currentUser.uid}`;
-     
-     
+        
+        
         const storageRef = ref(storage, childPath);
-     
+        
         
         const uploadTask =  uploadBytesResumable(storageRef, blob)
         .catch ((e) => {
             // console.log(e);
         })
-     
-     
+        
+        
         uploadTask.then((snapshot) => {
             // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
             // console.log('File metadata:', snapshot.metadata);
@@ -79,37 +100,38 @@ function MainProfileScreen ({navigation, ...props}) {
             // console.error('Upload failed', error);
             // ...
         });
-     };
-     
-     
-     const pickProfilePic = async () => {
+    }, [auth.currentUser]);
+    
+    
+    const pickProfilePic = React.useCallback(() => async () => {
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             // allowsEditing: true,
         });
-     
-     
+        
+        
         if (!result.canceled) {
-             const compressedImage = await compressImage(result.assets[0].uri);
-             await uploadImage(compressedImage);
+                const compressedImage = await compressImage(result.assets[0].uri);
+                await uploadImage(compressedImage);
         }else{
             //  console.log('cancelled');
         }
-     };
-     
-     async function compressImage(imageUrl){
-         const compressedImage = await manipulateAsync(
-           imageUrl,
-           [{ resize: {height:100}}],
-           { compress: 0.7, format: SaveFormat.JPEG }
-         );
-     
-         return compressedImage.uri;
-     }
-     
-     
-     const addProfilePic = async (url) => {
+    }, []);
+    
+
+    const compressImage = React.useCallback(async(imageUrl) => {
+        const compressedImage = await manipulateAsync(
+        imageUrl,
+        [{ resize: {height:100}}],
+        { compress: 0.7, format: SaveFormat.JPEG }
+        );
+    
+        return compressedImage.uri;
+    }, [])
+    
+    
+    const addProfilePic = React.useCallback(async (url) => {
         updateProfile(auth.currentUser, {
             photoURL: url
         }).then(() => {
@@ -127,78 +149,60 @@ function MainProfileScreen ({navigation, ...props}) {
             // Alert.alert('Profile picture updated successfully \n Refresh App to see changes');
         })
 
-     };
-     
-     
-     const setNewBio = async (description) => {
+    }, []);
+    
+    
+    const setNewBio = React.useCallback(async (description) => {
         const profileBioRef = doc(db, "users", firebase.auth().currentUser.uid);
         await updateDoc(profileBioRef, {
             bio: description
         }).then(() => {
             Alert.alert('Profile bio updated');
         })
-     };
-
-    useEffect(() => {
-        props.fetchUser();
-   }, []);
-
-    useEffect(() => {
-        const { currentUser } = props;
-        
-        if(currentUser != null){
-            // setUser(currentUser);
-            setFollowers(currentUser.followers);
-            setFollowing(currentUser.following);
-            setPostCount(currentUser.posts);
-            setBio(currentUser.bio);
-        }
-    }, [props.currentUser]);
-
-    // Fetch posts
-    useEffect(() => {
-        handleNewPostsClick();
     }, []);
 
-    const handleNewPostsClick = async () => {
+
+    const handleNewPostsClick = React.useCallback(async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
         const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
         setPostList(posts);
-    };
+    }, []);
     
-    const handlePopularPostsClick = async () => {
+
+    const handlePopularPostsClick = React.useCallback(async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
         const posts = await fetchUserPostsByPopular(firebase.auth().currentUser.uid);
         setPostList(posts);
-    };
+    }, []);
 
-   const finishEdit = () => {
-       setNewBio(bio);
-       setOverlayVisible(!overlayVisible);
-       props.fetchUser();
-   };
+    
+    const finishEdit = React.useCallback(() => () => {
+        setNewBio(bio);
+        setOverlayVisible(!overlayVisible);
+        props.fetchUser();
+    }, []);
+
+    const toggleOverlay = React.useCallback(() => () => {
+        setOverlayVisible(!overlayVisible);
+    }, [overlayVisible]);
 
 
-   const header = () => {
+   const header = React.useCallback(() => {
        return (
            <View style={theme == 'light' ? styles.lightProfileContainer :styles.darkProfileContainer }>
               
                 <View style={{flexDirection: 'column'}}>
                     {/* Profile picture and username */}
                     <TouchableOpacity
-                        onPress={() => pickProfilePic().then(() => {
-                            props.fetchUser();
-                        })}
+                        onPress={pickProfilePic()}
                         style={{flexDirection: 'column'}}
                     >
                         {
-                            profilePic != "" ? (                           
-                                <Image source={{uri: profilePic}} style={styles.profilePicture} cachePolicy='disk'/>
-                            ) : (
-                                <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
-                            )
+                            profilePic != "" &&                           
+                            
+                            <Image source={{uri: profilePic}} style={styles.profilePicture} placeholder={require('../../assets/profile_default.png')} cachePolicy='disk'/>
                         }
                         
                         {theme == 'light' ?
@@ -211,9 +215,7 @@ function MainProfileScreen ({navigation, ...props}) {
                     
                     {/* Edit Bio button */}
                     <TouchableOpacity
-                        onPress={() => {
-                            setOverlayVisible(!overlayVisible);
-                        }}
+                        onPress={toggleOverlay()}
                         style={theme == 'light' ? styles.lightEditButton : styles.darkEditButton}
                     >
                         <Text style={theme == 'light' ? styles.lightEditText : styles.darkEditText}>Edit Bio</Text>
@@ -232,10 +234,9 @@ function MainProfileScreen ({navigation, ...props}) {
                             <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                         </View>
 
-
                         {/* Followers */}
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("Followers", {profile: firebase.auth().currentUser.uid})}
+                            onPress={navigateTo(navigation, "Followers")}
                             style={styles.countContainer}
                         >
                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{followers}</Text>
@@ -245,7 +246,7 @@ function MainProfileScreen ({navigation, ...props}) {
 
                         {/* Following */}
                         <TouchableOpacity
-                            onPress={() => navigation.navigate("Following", {profile: firebase.auth().currentUser.uid})}
+                            onPress={navigateTo(navigation, "Following")}
                             style={styles.countContainer}
                         >
                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{following}</Text>
@@ -261,7 +262,7 @@ function MainProfileScreen ({navigation, ...props}) {
                 </View>
 
                 {/* Edit profile bio */}
-                <Overlay isVisible={overlayVisible} onBackdropPress={finishEdit} overlayStyle={{borderRadius: 20}}>
+                <Overlay isVisible={overlayVisible} onBackdropPress={finishEdit()} overlayStyle={{borderRadius: 20}}>
                     <Text style={styles.lightCountText}>Edit Bio</Text>
                     <TextInput
                         secureTextEntry={false}
@@ -279,9 +280,7 @@ function MainProfileScreen ({navigation, ...props}) {
                     />
                     {/* Done editing button */}
                     <TouchableOpacity
-                        onPress={() =>
-                            finishEdit()
-                        }
+                        onPress={finishEdit()}
                         style={styles.lightDoneButton}
                     >
                         <Text style={styles.lightEditText}>Done</Text>
@@ -290,7 +289,7 @@ function MainProfileScreen ({navigation, ...props}) {
 
            </View>
        )
-   }
+   }, [profilePic, bio]);
 
 
    const tabBar = props => (

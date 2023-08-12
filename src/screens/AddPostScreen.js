@@ -1,9 +1,15 @@
-import React, {useContext, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, FlatList, Image, TextInput, TouchableOpacity, Alert} from 'react-native';
-import { ScrollView } from 'react-native-virtualized-view';
-import { Overlay } from 'react-native-elements';
+import React, {useContext, useState, useEffect, useRef} from 'react';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Dimensions} from 'react-native';
+
+import Animated, {FadeIn} from 'react-native-reanimated';
+
+import { MasonryFlashList } from '@shopify/flash-list';
+
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, getDoc, doc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+
+import ResizableImage from '../shared/ResizableImage';
+import { Image } from 'expo-image';
 
 import { StackActions } from '@react-navigation/native';
 
@@ -16,26 +22,53 @@ import AddPostTopBar from '../components/AddPostTopBar';
 import DarkMemeCreate from '../../assets/post_meme_create_dark.svg';
 import LightMemeCreate from '../../assets/post_meme_create_light.svg';
 
+const navToUpload = (navigation, forCommentOnComment, forCommentOnPost) => () => {
+  navigation.dispatch(
+    StackActions.replace("Upload", {
+      forCommentOnComment: forCommentOnComment,
+      forCommentOnPost: forCommentOnPost,
+      forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
+    })
+  )
+}
+
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
+
+const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 const AddPostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-
-    const [newMemeName, setNewMemeName] = useState("");
-    const [newTemplate, setNewTemplate] = useState(null);
-    const [base64, setBase64] = useState(null);
     
-    const [overlayVisible, setOverlayVisible] = useState(false);
+    const [memeTemplates, setMemeTeplates] = useState([{id : "fir"}, {id: "sec"}]);
 
-    const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
-    const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
+    const { forCommentOnComment, forCommentOnPost } = route?.params;
 
-    const { forCommentOnComment, forCommentOnPost} = route?.params;
+    const flashListRef = useRef(null);
 
     useEffect(() => {
       getFirstTenTemplates();
+
+      navigation.setOptions({
+          header: () => <AddPostTopBar />
+      });
     }, []);
 
-    const getFirstTenTemplates = async () => {
+
+    // Removes the bottom navigation
+    useEffect(() => {
+      navigation.setOptions({
+        tabBarStyle: {
+          display: "none"
+        }
+      });
+      return () => navigation.getParent()?.setOptions({
+        tabBarStyle: undefined
+      });
+    }, [navigation]);
+
+
+    const getFirstTenTemplates = React.useCallback(async () => {
         const q = query(
             collection(db, "imageTemplates"),
             orderBy("useCount", "desc"),
@@ -50,159 +83,122 @@ const AddPostScreen = ({navigation, route}) => {
                 return { id, ...data }
             })
 
-            setLeftAndRightMemeTemplates(templates);
-        });
-    };
-
-    // a function to split the meme templates into two arrays, the left should be odd indexes and the right should be even indexes
-    const setLeftAndRightMemeTemplates = async (memeTemplates) => {
-        let left = [];
-        let right = [];
-
-        for(let i = 0; i < memeTemplates.length; i++){
-            if(i % 2 == 0){
-                left.push(memeTemplates[i]);
-            }else{
-                right.push(memeTemplates[i]);
-            }
-        }
-
-        setLeftMemeTemplates(left);
-        setRightMemeTemplates(right);
-    };
-
-    
-    // Sets the header to the AddPostTop component
-    useEffect(() => {
-        navigation.setOptions({
-            header: () => <AddPostTopBar />
+            setMemeTeplates(templates);
         });
     }, []);
-    
-    // Removes the bottom navigation
-    useEffect(() => {
-      navigation.setOptions({
-        tabBarStyle: {
-          display: "none"
-        }
-      });
-      return () => navigation.getParent()?.setOptions({
-        tabBarStyle: undefined
-      });
-    }, [navigation]);
+
+
+    const navToMeme = React.useCallback((item) => () => {
+      if(forCommentOnComment || forCommentOnPost){
+        navigation.navigate('EditMeme', {
+          replyMemeName: item.name,
+          imageUrl: item.url,
+          height: item.height,
+          width: item.width,
+          templateExists: true,
+          forCommentOnComment: forCommentOnComment,
+          forCommentOnPost: forCommentOnPost,
+          forMemeComment: true
+        })
+      }else{
+        navigation.navigate('Meme', {
+          memeName: item.name,
+          template: item.url,
+          useCount: item.useCount,
+          uploader: item.uploader,
+          forCommentOnComment: forCommentOnComment,
+          forCommentOnPost: forCommentOnPost,
+        })
+      }
+    }, [])
+
+
+    const renderItem = React.useCallback(({item, index}) => {
+      return (
+        <Animated.View
+            entering={FadeIn}
+        >
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={navToMeme(item)}
+            style={
+              index % 2 == 1 ?
+                {marginLeft: 2, marginRight: 4, marginBottom: 6} 
+              :
+                {marginLeft: 4, marginRight: 2, marginBottom: 6} 
+            }
+          >
+            <ResizableImage
+              image={item.url}
+              maxWidth={windowWidth/2 - 8}
+              height={item.height}
+              width={item.width}
+              style={{borderRadius: 10}}
+            />
+          </TouchableOpacity>
+        </Animated.View>
+      );
+    }, [])
+
 
     return (
-      <View
+      <Animated.View
+        entering={FadeIn}
         onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
         onTouchEnd={e => {
         if (e.nativeEvent.pageX - this.touchX > 150)
             // console.log('Swiped Right')
             navigation.goBack()
         }}
-        style={styles.container}
+        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
       >
-        <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
+
+        <MasonryFlashList
+          ref={flashListRef}
+          data={memeTemplates}
+          numColumns={2}
+
+          // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+          // onEndReachedThreshold={1} //need to implement infinite scroll
           
-          {!(forCommentOnComment || forCommentOnPost) &&
-            <PostBar/>
+          renderItem={renderItem}
+          extraData={[memeTemplates]}
+
+          removeClippedSubviews={true}
+
+          estimatedItemSize={200}
+          estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+          showsVerticalScrollIndicator={false}
+
+          ListHeaderComponent={
+            <View>
+              {!(forCommentOnComment || forCommentOnPost) &&
+                <PostBar/>
+              }
+
+              <View style={{width: '100%', flexDirection: 'row', alignContent: 'center', justifyContent: 'center'}}>
+                  <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
+                      <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                          Meme Templates
+                      </Text>
+                  </View>
+              </View>
+            </View>
           }
 
-          <View style={{width: '100%', flexDirection: 'row', alignContent: 'center', justifyContent: 'center'}}>
-              <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
-                  <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                      Meme Templates
-                  </Text>
-              </View>
-          </View> 
+          ListFooterComponent={
+              <View style={{height: 100}}/>
+          }
 
-          {/* left side of meme templates */}
-          <View style={{flexDirection: 'row'}}>
-            <View style={{flex: 1}}>
-              <FlatList
-                // nestedScrollEnabled={true}
-                numColumns={1}
-                data={leftMemeTemplates}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => 
-                          {
-                            forCommentOnComment || forCommentOnPost ?
-                              navigation.navigate('EditMeme', {
-                                replyMemeName: item.name,
-                                templateExists: true,
-                                forCommentOnComment: forCommentOnComment,
-                                forCommentOnPost: forCommentOnPost,
-                              })
-                            :
-                              navigation.navigate('Meme', {
-                                memeName: item.name,
-                              })
-                          }
-                      }
-                    >
-                      <ImageContainer
-                        imageSource={{ uri: item.url }}
-                      />
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-
-            {/* right side of meme templates */}
-            <View style={{flex: 1}}>
-              <FlatList
-                // nestedScrollEnabled={true}
-                numColumns={1}
-                data={rightMemeTemplates}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => 
-                        {
-                          forCommentOnComment || forCommentOnPost ?
-                            navigation.navigate('EditMeme', {
-                              replyMemeName: item.name,
-                              templateExists: true,
-                              forCommentOnComment: forCommentOnComment,
-                              forCommentOnPost: forCommentOnPost,
-                            })
-                          :
-                            navigation.navigate('Meme', {
-                              memeName: item.name,
-                            })
-                        }
-                      }
-                    >
-                      <ImageContainer
-                        imageSource={{ uri: item.url }}
-                      />
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-          </View>
+          keyExtractor={keyExtractor}
+        />
 
           
-        </ScrollView>
-
         {/* Add template button */}
         <TouchableOpacity
               style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
-              onPress={() => 
-
-                navigation.dispatch(
-                  StackActions.replace("Upload", {
-                    forCommentOnComment: forCommentOnComment,
-                    forCommentOnPost: forCommentOnPost,
-                    forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
-                  })
-                )
-              }
+              onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
           >
             {theme == "light" ?
                 <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
@@ -215,8 +211,7 @@ const AddPostScreen = ({navigation, route}) => {
             </Text>
         </TouchableOpacity>
 
-
-      </View>
+      </Animated.View>
     );
 }
 

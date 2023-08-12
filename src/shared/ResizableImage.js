@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 
-const ResizableImage = ({ image, height, width, maxHeight, maxWidth, borderRadius, style }) => {
+const ResizableImage = ({ image, height, width, maxHeight, maxWidth, style }) => {
     if(image === null || image === undefined || image === ''){
         return null;
     }
@@ -9,17 +9,17 @@ const ResizableImage = ({ image, height, width, maxHeight, maxWidth, borderRadiu
     if(maxWidth && maxHeight){
 
 
-        if(height > width && maxHeight/height <= 1){
+        if(maxWidth > maxHeight && maxHeight/height <= 1){
 
             imageHeight = maxHeight;
             imageWidth = (maxHeight / height) * width;
 
-        }else if(width > height && maxWidth/width <= 1){
+        }else if(maxHeight > maxWidth && maxWidth/width <= 1){
 
             imageWidth = maxWidth;
             imageHeight = (maxWidth / width) * height;
 
-        }else if(width === height && maxWidth/width <= 1){
+        }else if(maxWidth === maxHeight && maxWidth/width <= 1){
 
             imageWidth = maxWidth;
             imageHeight = (maxWidth / width) * height;

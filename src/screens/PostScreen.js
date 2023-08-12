@@ -62,7 +62,10 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 
 const Header = React.memo(({theme, navigation, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
     return (
-        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+        <Animated.View
+            entering={FadeIn}
+            style={theme == 'light' ? styles.lightContainer : styles.darkContainer}
+        >
             <View 
                 style={theme == 'light' ? styles.lightUserContainer : styles.darkUserContainer}
             >
@@ -115,7 +118,7 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
 
             </View>
             
-        </View>
+        </Animated.View>
     );
 }, imageEquals);
 
@@ -296,8 +299,7 @@ const PostScreen = ({navigation, route}) => {
 
 
     return (
-        <Animated.View
-            entering={FadeIn}
+        <View
             onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
             onTouchEnd={e => {
             if (e.nativeEvent.pageX - this.touchX > 150)
@@ -328,7 +330,7 @@ const PostScreen = ({navigation, route}) => {
                 estimatedListSize={{height: windowHeight ,  width: windowWidth}}
 
                 ListFooterComponent={
-                    <View style={{height: 400}}/>
+                    <View style={{height: 200}}/>
                 }
 
                 keyExtractor={keyExtractor}
@@ -336,7 +338,7 @@ const PostScreen = ({navigation, route}) => {
 
             {replyBottomSheet(navigation, postId, profile, username)}
 
-        </Animated.View>
+        </View>
     );
 };
 

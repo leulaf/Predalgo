@@ -2,8 +2,8 @@ import React, {useContext, useRef, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Image } from 'expo-image';
 import GlobalStyles from '../../constants/GlobalStyles';
-import { firebase, storage, db } from '../../config/firebase';
-import { doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+import { firebase, storage, db, ref, deleteObject } from '../../config/firebase';
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
@@ -248,53 +248,51 @@ const MainComment = ({ navigation, profile, username, profilePic, commentId, rep
 
     const deleteComment = React.useCallback(() => async() => {
         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-        const commentSnapshot = getDoc(commentRef);
-        
-        commentSnapshot.then(async (snapshot) => {
-            if (snapshot.exists) {
-                await deleteDoc(commentRef).then(async () => {
-                    Alert.alert('Comment deleted!');
-                    setDeleted(true);
+        const commentSnapshot = await getDoc(commentRef);
+        data = commentSnapshot.data();
 
-                    // update comment count for Comment or Post
-                    if(replyToCommentId){
-                        const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
-
-                        await updateDoc(commentRef, {
-                            commentsCount: increment(-1)
-                        })
-                    }else{
-                        const postRef = doc(db, 'allPosts', replyToPostId);
-
-                        await updateDoc(postRef, {
-                            commentsCount: increment(-1)
-                        })
-                    }
-
-                }).catch((error) => {
-                    // console.log(error);
-                })
-
+        if (commentSnapshot.exists) {
+            await deleteDoc(commentRef).then(async () => {
                 
+                Alert.alert('Comment deleted!');
+                setDeleted(true);
 
-                data = snapshot.data();
-                // console.log(data.imageUrl);
 
-                // if (data.imageUrl) {
-                //     const imageRef = ref(storage, "gs://predalgo-backend.appspot.com/profilePics/adaptive-icon.png");
+                // update comment count for Comment or Post
+                if(replyToCommentId){
+                    const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
 
-                //     // Delete the file
-                //     deleteObject(imageRef).then(() => {
-                //         // File deleted successfully
-                //         console.log('Image deleted!');
-                //     }).catch((error) => {
-                //         // Uh-oh, an error occurred!
-                //         console.log(error);
-                //     });
-                // }
-            }
-        })
-    })
+                    await updateDoc(commentRef, {
+                        commentsCount: increment(-1)
+                    })
+                }else{
+                    const postRef = doc(db, 'allPosts', replyToPostId);
+
+                    await updateDoc(postRef, {
+                        commentsCount: increment(-1)
+                    })
+                }
+
+
+                if (data.imageUrl) {
+                    const imageRef = ref(storage, data.imageUrl);
+
+                    // Delete the file
+                    await deleteObject(imageRef).then(() => {
+                        // File deleted successfully
+                        // console.log('Image deleted!');
+                    }).catch((error) => {
+                        // Uh-oh, an error occurred!
+                        // console.log(error);
+                    });
+                }
+
+            }).catch((error) => {
+                // console.log(error);
+            })
+        }
+    }, []);
+
 
     const getFiveCommentsByPopular = React.useCallback(() => async () => {
 

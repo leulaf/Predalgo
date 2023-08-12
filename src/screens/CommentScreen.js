@@ -63,7 +63,10 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 
 const Header = React.memo(({theme, navigation, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
     return (
-        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+        <Animated.View
+            entering={FadeIn}
+            style={theme == 'light' ? styles.lightContainer : styles.darkContainer}
+        >
             <View 
                 style={theme == 'light' ? styles.lightUserContainer : styles.darkUserContainer}
             >
@@ -116,7 +119,7 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
 
             </View>
             
-        </View>
+        </Animated.View>
     );
 }, imageEquals);
 
@@ -298,8 +301,7 @@ const CommentScreen = ({navigation, route}) => {
 
     //NEED***NEED to make sure multiple instance of PinturaLoadImage are not created***
     return (
-        <Animated.View
-            entering={FadeIn}
+        <View
             onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
             onTouchEnd={e => {
             if (e.nativeEvent.pageX - this.touchX > 150)
@@ -326,7 +328,7 @@ const CommentScreen = ({navigation, route}) => {
 
                 removeClippedSubviews={true}
 
-                estimatedItemSize={400}
+                estimatedItemSize={300}
                 estimatedListSize={{height: windowHeight, width: windowWidth}}
 
                 ListFooterComponent={
@@ -338,7 +340,7 @@ const CommentScreen = ({navigation, route}) => {
 
             {replyBottomSheet(onReply, navigation, replyToPostId, commentId, profile, username)}
             
-        </Animated.View>
+        </View>
     );
 
 };

@@ -10,6 +10,10 @@ import SimpleTopBar from '../components/SimpleTopBar';
 import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
 import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 
+const navigateTo = (navigation, user) => () => {
+    navigation.navigate("Followers", {profile: user})
+}
+
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
     const [following, setFollowing] = useState(false);
@@ -27,6 +31,9 @@ export default function ProfileScreen ({route, navigation}) {
 
     // Check if current user is following the user
     useEffect(() => {
+        handleNewPostsClick();
+
+        // *** catch array of following users and use that instead of making a request
         const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
         const docSnap = getDoc(docRef)
         .then((docSnap) => {
@@ -38,28 +45,23 @@ export default function ProfileScreen ({route, navigation}) {
         });
     }, []);
 
-    // Fetch posts
-    // Fetch posts
-    useEffect(() => {
-        handleNewPostsClick();
-    }, []);
 
-    const handleNewPostsClick = async () => {
+    const handleNewPostsClick = React.useCallback(async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
         const posts = await fetchUserPostsByRecent(user);
         setPostList(posts);
-    };
+    }, []);
     
-    const handlePopularPostsClick = async () => {
+    const handlePopularPostsClick = React.useCallback(async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
         const posts = await fetchUserPostsByPopular(user);
         setPostList(posts);
-    };
+    }, []);
 
     // Follow current user
-    const onFollow = () => {
+    const onFollow = React.useCallback(() => {
         // add user to following collection
         const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
         
@@ -96,10 +98,10 @@ export default function ProfileScreen ({route, navigation}) {
         updateDoc(currentUserRef, {
             following: increment(1)
         });
-    }
+    }, [user])
 
     // Unfollow current user
-    const onUnfollow = () => {
+    const onUnfollow = React.useCallback(() => {
         // remove user from following collection
         const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
 
@@ -132,9 +134,13 @@ export default function ProfileScreen ({route, navigation}) {
         updateDoc(currentUserRef, {
             following: increment(-1)
         });
-    }
+    }, [user])
+
+    const toggleFollowing = React.useCallback(() => () => {
+        following ? onUnfollow() : onFollow();
+    }, [following]);
     
-    const header = () => {
+    const header = React.useCallback(() => {
         return (
             <View style={theme == 'light' ? styles.lightProfileContainer :styles.darkProfileContainer }>
                
@@ -145,18 +151,15 @@ export default function ProfileScreen ({route, navigation}) {
                         style={{flexDirection: 'column'}}
                     >
                         {
-                            user.profilePic != "" ? (                           
-                                <Image source={{uri: user.profilePic}} style={styles.profilePicture} cachePolicy='disk'/>
-                            ) : (
-                                <Image source={require('../../assets/profile_default.png')} style={styles.profilePicture}/>
-                            )
+                            user.profilePic != "" &&                          
+                            <Image source={{uri: user.profilePic}} style={styles.profilePicture} placeholder={require('../../assets/profile_default.png')} cachePolicy='disk'/>
                         }
                     </View>
 
                     {/* Follow/Following button */}
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightFollowButton : styles.darkFollowButton}
-                        onPress={() => { following ? onUnfollow() : onFollow()}}
+                        onPress={toggleFollowing()}
                     >
                         <Text style={theme == 'light' ? styles.lightFollowText : styles.darkFollowText}>
                             {following ? 'Following' : 'Follow'}
@@ -180,7 +183,7 @@ export default function ProfileScreen ({route, navigation}) {
  
                          {/* Followers */}
                          <TouchableOpacity
-                                onPress={() => navigation.push('Followers', {profile: user})}
+                                onPress={navigateTo(navigation, user)}
                                  style={styles.countContainer}
                          >
                              <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.followers}</Text>
@@ -197,10 +200,10 @@ export default function ProfileScreen ({route, navigation}) {
  
             </View>
         )
-    }
+    }, [user])
  
  
-    const tabBar = props => (
+    const tabBar = React.useCallback(props => (
         <MaterialTabBar
             {...props}
             indicatorStyle={theme == 'light' ?
@@ -217,7 +220,7 @@ export default function ProfileScreen ({route, navigation}) {
             activeColor = {theme == 'light' ? '#222222' : 'white'}
             inactiveColor = {theme == 'light' ? '#333333' : '#F4F4F4'}
         />
-    );
+    ), []);
    
     return (
         <Tabs.Container
