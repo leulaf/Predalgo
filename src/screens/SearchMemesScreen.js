@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, Text, Image,StyleSheet, TouchableOpacity, FlatList} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import { ScrollView } from 'react-native-virtualized-view';
 import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
@@ -8,14 +8,55 @@ import { manipulateAsync } from 'expo-image-manipulator';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 
+import { StackActions } from '@react-navigation/native';
+
+import Animated, {FadeIn} from 'react-native-reanimated';
+
+import { MasonryFlashList } from '@shopify/flash-list';
+
+import ResizableImage from '../shared/ResizableImage';
+
 import MemesSearchBar from '../components/MemesSearchBar';
 
+const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
+  if(forCommentOnComment || forCommentOnPost){
+    navigation.dispatch(
+        StackActions.replace('EditMeme', {
+        replyMemeName: item.name,
+        imageUrl: item.url,
+        height: item.height,
+        width: item.width,
+        templateExists: true,
+        forCommentOnComment: forCommentOnComment,
+        forCommentOnPost: forCommentOnPost,
+        forMemeComment: forCommentOnComment
+      })
+    )
+  }else{
+    navigation.navigate('Meme', {
+      memeName: item.name,
+      template: item.url,
+      height: item.height,
+      width: item.width,
+      useCount: item.useCount,
+      uploader: item.uploader,
+      forCommentOnComment: forCommentOnComment,
+      forCommentOnPost: forCommentOnPost,
+    })
+  }
+}
 
-export default function SearchMemesScreen({navigation, route}){
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
+
+const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
+
+const SearchMemesScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [leftMemeTemplates, setLeftMemeTemplates] = useState([]);
-    const [rightMemeTemplates, setRightMemeTemplates] = useState([]);
+    const [memeTemplates, setMemeTeplates] = useState([{id: "fir"}, {id: "sec"}]);
     const [term, setTerm] = useState('');
+
+    const {forCommentOnComment, forCommentOnPost} = route?.params;
 
     useEffect(() => {
         if (term !== '') {
@@ -33,28 +74,11 @@ export default function SearchMemesScreen({navigation, route}){
                     const id = doc.id;
                     return { id, ...data }
                 })
-                setLeftAndRightMemeTemplates(templates);
+                setMemeTeplates(templates);
             });
         }
     }, [term]);
-
-    // a function to split the meme templates into two arrays, the left should be odd indexes and the right should be even indexes
-    const setLeftAndRightMemeTemplates = async (memeTemplates) => {
-        let left = [];
-        let right = [];
-
-        for(let i = 0; i < memeTemplates.length; i++){
-            if(i % 2 == 0){
-                left.push(memeTemplates[i]);
-            }else{
-                right.push(memeTemplates[i]);
-            }
-        }
-
-        setLeftMemeTemplates(left);
-        setRightMemeTemplates(right);
-    };
-   
+    // console.log(memeTemplates)
     // Sets the header to the SimpleTopBar component
     useEffect(() => {
         navigation.setOptions({
@@ -62,82 +86,87 @@ export default function SearchMemesScreen({navigation, route}){
         });
     }, []);
 
-    const getbase64AndNav = async (image, memeName) => {
-      const manipResult = await manipulateAsync(image, [], {
-        // compress: 0.2,
-        // format: SaveFormat.PNG,
-        base64: true,
-      });
-  
-      await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`, memeName: memeName});
-    };
+
+    const renderItem = React.useCallback(({item, index}) => {
+      return (
+        <Animated.View
+            entering={FadeIn}
+        >
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={navToMeme(navigation, item, forCommentOnComment, forCommentOnPost)}
+            style={
+              index % 2 == 1 ?
+                {marginLeft: 2, marginRight: 4, marginBottom: 6} 
+              :
+                {marginLeft: 4, marginRight: 2, marginBottom: 6} 
+            }
+          >
+            <ResizableImage
+              image={item.url}
+              maxWidth={windowWidth/2 - 8}
+              height={item.height}
+              width={item.width}
+              style={{borderRadius: 10}}
+            />
+          </TouchableOpacity>
+        </Animated.View>
+      );
+    }, [])
     
+
     return (
-      <ScrollView
+      <Animated.View
+        entering={FadeIn}
         onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
         onTouchEnd={e => {
         if (e.nativeEvent.pageX - this.touchX > 150)
             // console.log('Swiped Right')
             navigation.goBack()
         }}
-        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}
+        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
       >
 
-            
-          <View style={{flexDirection: 'row', marginTop: 10}}>
+        <MasonryFlashList
+          // ref={flashListRef}
+          data={memeTemplates}
+          numColumns={2}
 
-            {/* left side of meme templates */}
-            <View style={{}}>
-              <FlatList
-                // nestedScrollEnabled={true}
-                numColumns={1}
-                data={leftMemeTemplates}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
-                    >
-                      <Image
-                        imageSource={{ uri: item.url }}
-                      />
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
+          // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+          // onEndReachedThreshold={1} //need to implement infinite scroll
+          
+          renderItem={renderItem}
+          extraData={[memeTemplates]}
 
-            {/* right side of meme templates */}
-            <View style={{}}>
-              <FlatList
-                // nestedScrollEnabled={true}
-                numColumns={1}
-                data={rightMemeTemplates}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('Meme', {memeName: item.name})}
-                    >
-                      <Image
-                        imageSource={{ uri: item.url }}
-                      />
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-          </View>
+          removeClippedSubviews={true}
 
-        <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-            Didn't find the right template?
-        </Text>
+          estimatedItemSize={200}
+          estimatedListSize={{height: windowHeight, width: windowWidth}}
 
-        <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-            Try changing the captalization for some words and check spelling.
-        </Text>
-                
-      </ScrollView>
+          showsVerticalScrollIndicator={false}
+
+          contentContainerStyle={{paddingTop: 5}}
+
+          ListFooterComponent={
+              <View style={{}}>
+
+                  <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                    Didn't find the right template?
+                  </Text>
+
+                  <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                    Try changing the capitalization for some words and check spelling.
+                  </Text>
+              </View>
+          }
+
+          keyExtractor={keyExtractor}
+        />
+
+
+        
+
+      </Animated.View>
     );
 }
 
@@ -158,3 +187,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
 });
+
+export default SearchMemesScreen;

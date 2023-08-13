@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
+import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, Dimensions} from 'react-native';
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
@@ -10,13 +10,72 @@ import GlobalStyles from '../../constants/GlobalStyles';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { useNavigation } from '@react-navigation/native';
 
-export default function AllTagPosts({ tag }){
+import { FlashList } from '@shopify/flash-list';
+
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
+
+const renderItem = ({ item, index }) => {
+    let post;
+
+    if(item.imageUrl){
+        post = <ImagePost
+            key={index}
+            repostProfile={item.repostProfile}
+            repostComment={item.repostComment}
+            imageUrl={item.imageUrl}
+            title={item.title}
+            tags={item.tags}
+            memeName={item.memeName}
+            profile={item.profile}
+            postId={item.id}
+            likesCount={item.likesCount}
+            commentsCount={item.commentsCount}
+        />
+    }else if(item.imageUrls){
+        post = <MultiImagePost
+            key={index}
+            repostProfile={item.repostProfile}
+            repostComment={item.repostComment}
+            title={item.title}
+            imageUrls={item.imageUrls}
+            tags={item.tags}
+            profile={item.profile}
+            postId={item.id}
+            likesCount={item.likesCount}
+            commentsCount={item.commentsCount}
+        />
+    }else if(item.text){
+        post = <TextPost
+            key={index}
+            repostProfile={item.repostProfile}
+            repostComment={item.repostComment}
+            title={item.title}
+            text={item.text}
+            tags={item.tags}
+            profile={item.profile}
+            postId={item.id}
+            likesCount={item.likesCount}
+            commentsCount={item.commentsCount}
+        />
+    }
+
+    return post;
+};
+
+const itemEquals = (prev, next) => {
+    return true
+};
+
+const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+
+const AllTagPosts = ({ tag }) => {
     if(tag === "" || tag === null){
         return null;
     }
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
-    const [postList, setPostList] = useState([]);
+    const [postList, setPostList] = useState([{id: "fir"}]);
     const [newPosts, setNewPosts] = useState(true);
     const [popularPosts, setPopularPosts] = useState(false);
 
@@ -107,7 +166,7 @@ export default function AllTagPosts({ tag }){
     }
 
     {/* New/Popular/Refresh button */}
-    const topButtons = (
+    const topButtons = React.memo(() =>
         <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 10}}>
             {/* New button */}
             {
@@ -171,80 +230,36 @@ export default function AllTagPosts({ tag }){
 
             
         </View>
-    );
-
-    const renderItem = ({ item, index }) => {
-        let post;
-
-        if(item.imageUrl){
-            post = <ImagePost
-                key={index}
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
-                imageUrl={item.imageUrl}
-                title={item.title}
-                tags={item.tags}
-                memeName={item.memeName}
-                profile={item.profile}
-                postId={item.id}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
-        }else if(item.imageUrls){
-            post = <MultiImagePost
-                key={index}
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
-                title={item.title}
-                imageUrls={item.imageUrls}
-                tags={item.tags}
-                profile={item.profile}
-                postId={item.id}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
-        }else if(item.text){
-            post = <TextPost
-                key={index}
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
-                title={item.title}
-                text={item.text}
-                tags={item.tags}
-                profile={item.profile}
-                postId={item.id}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
-            />
-        }
-
-        if(index == postList.length -1){
-            return (
-                <View style={{marginBottom: 150}}>
-                    {post}
-                </View>
-            );
-        }
-        return post;
-    };
+    , [newPosts, popularPosts]);
+    
 
     return (
-        <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
-            <FlatList
-                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-                onTouchEnd={e => {
-                if (e.nativeEvent.pageX - this.touchX > 150)
-                    // console.log('Swiped Right')
-                    navigation.goBack()
-                }}
+        <View 
+            onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+            onTouchEnd={e => {
+            if (e.nativeEvent.pageX - this.touchX > 150)
+                // console.log('Swiped Right')
+                navigation.goBack()
+            }}
+            style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}
+        >
+            <FlashList
                 data={postList}
-                keyExtractor={(item, index) => item.id + '-' + index}
+                extraData={[postList]}
+
+                renderItem={renderItem}
+
+                removeClippedSubviews={true}
+
+                estimatedItemSize={400}
+                estimatedListSize={{height: windowHeight, width: windowWidth}}
+                
+                keyExtractor={keyExtractor}
+                
                 ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top
-                renderItem={({ item, index }) => {
-                    return (
-                        renderItem({ item, index })
-                    );
-                }}
+                ListFooterComponent={
+                    <View style={{height: 200}}/>
+                }
             />
         </View>
     );
@@ -365,3 +380,5 @@ const styles = StyleSheet.create({
         marginTop: 4
     },
 });
+
+export default AllTagPosts;

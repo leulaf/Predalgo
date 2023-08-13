@@ -88,7 +88,8 @@ const EditMemeScreen = ({ navigation, route }) => {
                 width: width,
                 forCommentOnComment: forCommentOnComment,
                 forCommentOnPost: forCommentOnPost,
-                imageState: imageReply.imageState
+                imageState: imageReply.imageState,
+                templateExists: imageReply.templateExists,
             });
             editorRef.current.editor.close();
             setOverlayVisible(false);
@@ -169,13 +170,14 @@ const EditMemeScreen = ({ navigation, route }) => {
         setImageReply({
             memeName: memeName,
             uri: dest,
-            undeditedUri: templateExists ? templateExists : image,
-            template: templateExists ? templateExists : null,
+            undeditedUri: templateExists ? imageUrl : image,
+            template: templateExists ? imageUrl : null,
             height: height,
             width: width,
             forCommentOnComment: forCommentOnComment,
             forCommentOnPost: forCommentOnPost,
-            imageState: imageState
+            imageState: imageState,
+            templateExists: templateExists,
         });
 
         editorRef.current.editor.close();

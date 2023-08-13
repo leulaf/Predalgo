@@ -8,23 +8,67 @@ import { collection, query, where, limit, getDocs, getDoc, doc } from "firebase/
 import GlobalStyles from '../constants/GlobalStyles';
 import SimpleTopBar from '../components/SimpleTopBar';
 
-const windowWidth = Dimensions.get('window').width;
+import { StackActions } from '@react-navigation/native';
 
-const Top_Tab = createMaterialTopTabNavigator();
+import Animated, {FadeIn} from 'react-native-reanimated';
 
-export default function FavoriteTemplatesScreen({navigation}){
+import { MasonryFlashList } from '@shopify/flash-list';
+
+import ResizableImage from '../shared/ResizableImage';
+
+
+const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
+  if(forCommentOnComment || forCommentOnPost){
+    navigation.dispatch(
+        StackActions.replace('EditMeme', {
+            replyMemeName: item.name,
+            imageUrl: item.url,
+            height: item.height,
+            width: item.width,
+            templateExists: true,
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
+            forMemeComment: forCommentOnComment
+      })
+    )
+  }else{
+    navigation.navigate('Meme', {
+        memeName: item.name,
+        template: item.url,
+        height: item.height,
+        width: item.width,
+        useCount: item.useCount,
+        uploader: item.uploader,
+        forCommentOnComment: forCommentOnComment,
+        forCommentOnPost: forCommentOnPost,
+    })
+  }
+}
+
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
+
+const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
+
+const FavoriteTemplatesScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [templates, setTemplates] = useState([]);
+    const [memeTemplates, setMemeTemplates] = useState([{id: "fir"}]);
 
-    
+    const {forCommentOnComment, forCommentOnPost} = route?.params;
+
     useEffect(() => {
         getFirstFourTemplates();
+
+        // Sets the header to the SimpleTopBar component
+        navigation.setOptions({
+            header: () => <SimpleTopBar title={"Favorite Templates"}/>
+        });
     }, []);
 
-    const getFirstFourTemplates = async () => {
+    const getFirstFourTemplates = React.useCallback(async () => {
         const q = query(
             collection(db, "favoriteImageTemplates", firebase.auth().currentUser.uid, "templates"),
-            limit(4)
+            limit(8)
         );
         
         await getDocs(q)
@@ -34,53 +78,82 @@ export default function FavoriteTemplatesScreen({navigation}){
                 const id = doc.id;
                 return { id, ...data }
             })
-            setTemplates(templates);
-        });
-    };
-
-    
-
-    // Sets the header to the SimpleTopBar component
-    useEffect(() => {
-        navigation.setOptions({
-            header: () => <SimpleTopBar title={"Favorite Templates"}/>
+            setMemeTemplates(templates);
         });
     }, []);
+
+    const renderItem = React.useCallback(({item, index}) => {
+        return (
+            <Animated.View
+                entering={FadeIn}
+            >
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={navToMeme(navigation, item, forCommentOnComment, forCommentOnPost)}
+                    style={
+                    index % 2 == 1 ?
+                        {marginLeft: 2, marginRight: 4, marginBottom: 6} 
+                    :
+                        {marginLeft: 4, marginRight: 2, marginBottom: 6} 
+                    }
+                >   
+                    {/* Meme name */}
+                    <Text style={theme == 'light' ? styles.lightName : styles.darkName}>
+                        {item.name}
+                    </Text>
+
+                    <ResizableImage
+                        image={item.url}
+                        maxWidth={windowWidth/2 - 8}
+                        height={item.height}
+                        width={item.width}
+                        style={{borderRadius: 10}}
+                    />
+                </TouchableOpacity>
+            </Animated.View>
+        );
+    }, [])
+
     
     return (
-        <View style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}>
+        <Animated.View
+        entering={FadeIn}
+        onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
+        onTouchEnd={e => {
+        if (e.nativeEvent.pageX - this.touchX > 150)
+            // console.log('Swiped Right')
+            navigation.goBack()
+        }}
+        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
+      >
 
-            <FlatList
-                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-                onTouchEnd={e => {
-                if (e.nativeEvent.pageX - this.touchX > 150)
-                    // console.log('Swiped Right')
-                    navigation.goBack()
-                }}
-                numColumns={1}
-                data={templates}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => {
-                    return (
-                    <TouchableOpacity
-                    style={{marginTop: 15}}
-                        onPress={() => navigation.navigate('Meme', {memeName: item.name})}
-                    >
-                        {/* Meme name */}
-                        <Text style={theme == 'light' ? styles.lightName : styles.darkName}>
-                            {item.name}
-                        </Text>
+        <MasonryFlashList
+            // ref={flashListRef}
+            data={memeTemplates}
+            numColumns={2}
 
-                        {/* Meme template image */}
-                        <Image
-                            imageSource={{ uri: item.url }}
-                        />
-                    </TouchableOpacity>
-                    );
-                }}
-            />
+            // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+            // onEndReachedThreshold={1} //need to implement infinite scroll
+            
+            renderItem={renderItem}
+            extraData={[memeTemplates]}
 
-        </View>
+            removeClippedSubviews={true}
+
+            estimatedItemSize={200}
+            estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+            showsVerticalScrollIndicator={false}
+
+            contentContainerStyle={{paddingTop: 5}}
+
+            keyExtractor={keyExtractor}
+        />
+
+
+        
+
+      </Animated.View>
     );
 }
 
@@ -141,3 +214,5 @@ const styles = StyleSheet.create({
         borderColor: '#444444',
     },
 });
+
+export default FavoriteTemplatesScreen;

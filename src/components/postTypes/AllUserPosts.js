@@ -13,22 +13,24 @@ import { set } from 'react-native-reanimated';
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
+const itemEquals = (prev, next) => {
+    return true
+};
+
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 export default function AllUserPosts({ userId, username, profilePic, postList, byNewPosts, byPopularPosts, handleNewPostsClick, handlePopularPostsClick, handleRefreshPostsClick, handleNewPostsRefreshClick, handlePopularPostsRefreshClick }){
     const {theme,setTheme} = useContext(ThemeContext);
 
     {/* New/Popular/Refresh button */}
-    const topButtons = React.useCallback((
+    const topButtons = React.useCallback(() =>
         <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 15}}>
             {/* New button */}
             {
                 byNewPosts ?
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightNewButtonActive : styles.darkNewButtonActive}
-                        onPress={() => { 
-                            handleNewPostsClick();
-                        }}
+                        // onPress={handleNewPostsClick()}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
                             New
@@ -37,9 +39,7 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                 :
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightNewButtonInactive : styles.darkNewButtonInactive}
-                        onPress={() => { 
-                            handleNewPostsClick();
-                        }}
+                        // onPress={handleNewPostsClick()}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
                             New
@@ -52,9 +52,7 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                 byPopularPosts ?
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightPopularButtonActive : styles.darkPopularButtonActive}
-                        onPress={() => { 
-                            handlePopularPostsClick(); 
-                        }}
+                        // onPress={handlePopularPostsClick()}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
                             Popular
@@ -63,9 +61,7 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                 :
                     <TouchableOpacity
                         style={theme == 'light' ? styles.lightPopularButtonInactive : styles.darkPopularButtonInactive}
-                        onPress={() => { 
-                            handlePopularPostsClick(); 
-                        }}
+                        // onPress={handlePopularPostsClick()}
                     >
                         <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
                             Popular
@@ -73,8 +69,8 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                     </TouchableOpacity>
             }
         </View>
-    ), []);
-
+    , [byNewPosts, byPopularPosts]);
+        
 
     const renderItem = React.useCallback(({ item, index }) => {
         if(item.imageUrl){

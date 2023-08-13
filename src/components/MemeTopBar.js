@@ -15,7 +15,7 @@ import BookmarkDark from '../../assets/saved_inactive_dark.svg';
 
 const windowWidth = Dimensions.get('window').width;
 
-const favoriteTemplate = async (name, url) => {
+const favoriteTemplate = async (name, url, height, width) => {
 
     const templateRef = doc(db, "favoriteImageTemplates", firebase.auth().currentUser.uid, "templates", name);
     const templateSnapshot = await getDoc(templateRef);
@@ -24,7 +24,9 @@ const favoriteTemplate = async (name, url) => {
         // add post to likes collection
         await setDoc(templateRef, {
             name: name,
-            url: url
+            url: url,
+            height,
+            width
         }).then(() => {
             Alert.alert('Added to favorites');
         })
@@ -44,51 +46,52 @@ const deleteFavoriteTemplate = async (name) => {
     });
 }
 
-const MemeTopBar = ({name, url}) => {
+const MemeTopBar = ({name, url, height, width}) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
 
     return (
-            <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
+        <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
+
+
+            {/* back button */}
+            <TouchableOpacity 
+                        style={{flex: 1, flexDirection: 'row'}}
+                        onPress={() => {navigation.goBack()}}
+            >
+                {
+                    theme == 'light' ?
+                        <BackLight style={styles.backIcon} width={22} height={22}/>
+                    :
+                        <BackDark style={styles.backIcon} width={22} height={22}/>
+                }
+
+                <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                    {name.substring(0, Math.min(name.length, 12)) + '...'}
+                </Text>
                 
+            </TouchableOpacity>
 
-                {/* back button */}
-                <TouchableOpacity 
-                            style={{flex: 1, flexDirection: 'row'}}
-                            onPress={() => {navigation.goBack()}}
-                >
-                    {
-                        theme == 'light' ?
-                            <BackLight style={styles.backIcon} width={22} height={22}/>
-                        :
-                            <BackDark style={styles.backIcon} width={22} height={22}/>
-                    }
 
-                    <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                        {name.substring(0, Math.min(name.length, 12)) + '...'}
-                    </Text>
-                    
-                </TouchableOpacity>
-
-                {/* bookmark button */}
-                <TouchableOpacity 
-                            style={{flexDirection: 'row'}}
-                            onPress={() => {favoriteTemplate(name, url)}}
-                >
-                    {
-                        theme == 'light' ?
-                            <BookmarkLight style={styles.backIcon} width={23} height={23}/>
-                        :
-                            <BookmarkDark style={styles.backIcon} width={23} height={23}/>
-                    }
-                    
-                    <Text style={theme == 'light' ? styles.lightFavoriteText : styles.darkFavoriteText}>
-                        Favorite
-                    </Text>
-                    
-                </TouchableOpacity>
+            {/* bookmark button */}
+            <TouchableOpacity 
+                        style={{flexDirection: 'row'}}
+                        onPress={() => {favoriteTemplate(name, url, height, width)}}
+            >
+                {
+                    theme == 'light' ?
+                        <BookmarkLight style={styles.backIcon} width={23} height={23}/>
+                    :
+                        <BookmarkDark style={styles.backIcon} width={23} height={23}/>
+                }
                 
-            </View>
+                <Text style={theme == 'light' ? styles.lightFavoriteText : styles.darkFavoriteText}>
+                    Favorite
+                </Text>
+                
+            </TouchableOpacity>
+            
+        </View>
     );
 }
 

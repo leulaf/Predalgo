@@ -491,6 +491,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                                         cameraPic: false,
                                         dontCompress: true,
                                         replyMemeName: replyImageToPost.memeName ? replyImageToPost.memeName : null,
+                                        templateExists: replyImageToPost.templateExists ? replyImageToPost.templateExists : null,
                                     })
                                 }
 

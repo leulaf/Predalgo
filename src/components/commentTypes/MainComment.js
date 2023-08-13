@@ -70,6 +70,27 @@ const onNavToComment =  (navigation, commentId, replyToPostId, replyToCommentId,
     })
 }
 
+const onNavToCommentWithComments = (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, commentsList) => {
+    navigation.push('Comment', {
+        commentId: commentId,
+        comments: commentsList,
+        replyToPostId: replyToPostId,
+        replyToCommentId: replyToCommentId,
+        replyToProfile: profile,
+        replyToUsername: username,
+        imageUrl: image,
+        memeName: memeName,
+        imageHeight: imageHeight,
+        imageWidth: imageWidth,
+        text: text,
+        likesCount: likesCount,
+        commentsCount: commentsCount,
+        profile: profile,
+        username: username,
+        profilePic: profilePic,
+    })
+}
+
 const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
     navigation.push('Comment', {
         commentId: commentId,
@@ -210,10 +231,10 @@ const TextPost = React.memo(({item, index, navigation})=>{
 }, itemEquals);
 
 
-const MainComment = ({ navigation, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount, index }) => {
+const MainComment = ({ navigation, comments, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount, index }) => {
     const {theme,setTheme} = useContext(ThemeContext);
 
-    const [commentsList, setCommentsList] = useState([{id: "fir"}]); // array of comments - replies to this comment
+    const [commentsList, setCommentsList] = useState([comments ? comments : {id: "fir"}]); // array of comments - replies to this comment
 
     const [image, setImage] = useState(imageUrl ? imageUrl :  template);
     const flashListRef = useRef(null);
@@ -244,7 +265,6 @@ const MainComment = ({ navigation, profile, username, profilePic, commentId, rep
         reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
         down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
     }
-
 
     const deleteComment = React.useCallback(() => async() => {
         const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
@@ -296,9 +316,10 @@ const MainComment = ({ navigation, profile, username, profilePic, commentId, rep
 
     const getFiveCommentsByPopular = React.useCallback(() => async () => {
 
-        if(commentsShown > 0 && commentsCount - commentsShown > 0){
+        if(commentsShown >= 15 && commentsCount - commentsShown > 10){
+            onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, commentsList);
+        }else if(commentsShown > 0 && commentsCount - commentsShown > 0){
             await fetchNextFiveCommentsByPopular(replyToPostId, commentId, commentsList[commentsList.length-1].snap).then((comments) => {
-                // console.log("comments")
                 commentsList[commentsList.length-1].snap = null;
                 setCommentsShown(commentsShown + comments.length);
                 setCommentsList(commentsList => [...commentsList, ...comments]);

@@ -31,7 +31,7 @@ export default function ProfileScreen ({route, navigation}) {
 
     // Check if current user is following the user
     useEffect(() => {
-        handleNewPostsClick();
+        populateInitialPosts();
 
         // *** catch array of following users and use that instead of making a request
         const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
@@ -45,20 +45,26 @@ export default function ProfileScreen ({route, navigation}) {
         });
     }, []);
 
-
-    const handleNewPostsClick = React.useCallback(async () => {
+    const populateInitialPosts = React.useCallback(async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
         const posts = await fetchUserPostsByRecent(user);
         setPostList(posts);
-    }, []);
+    }, [user]);
+
+    const handleNewPostsClick = React.useCallback(() => async () => {
+        setByNewPosts(true);
+        setByPopularPosts(false);
+        const posts = await fetchUserPostsByRecent(user);
+        setPostList(posts);
+    }, [user]);
     
-    const handlePopularPostsClick = React.useCallback(async () => {
+    const handlePopularPostsClick = React.useCallback(() => async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
         const posts = await fetchUserPostsByPopular(user);
         setPostList(posts);
-    }, []);
+    }, [user]);
 
     // Follow current user
     const onFollow = React.useCallback(() => {
@@ -284,7 +290,7 @@ export default function ProfileScreen ({route, navigation}) {
         backgroundColor: '#0A0A0A',
     },
     lightLabel: {
-        color: '#880808',
+        color: '#666666',
         fontSize: 16,
         fontWeight: '600',
     },

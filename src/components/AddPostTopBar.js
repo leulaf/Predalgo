@@ -12,7 +12,7 @@ import BookmarkLight from '../../assets/saved_inactive.svg';
 import BackDark from '../../assets/back_light.svg';
 import BookmarkDark from '../../assets/saved_inactive_dark.svg';
 
-const AddPostTopBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
+const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -34,7 +34,7 @@ const AddPostTopBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
 
         <TouchableOpacity 
             style={theme == 'light' ? styles.lightBar : styles.darkBar}
-            onPress={() => navigation.navigate('SearchMemes')}
+            onPress={navToSearchMemes}
         >
             
             <Feather name="search" style={theme == "light" ? styles.lightIconStyle : styles.darkIconStyle}/>
@@ -48,7 +48,7 @@ const AddPostTopBar = ({term, onTermChange, onTermSubmit, openDrawer}) => {
         {/* bookmark button */}
         <TouchableOpacity 
             style={{flexDirection: 'row'}}
-            onPress={() => navigation.navigate('FavoriteTemplates')}
+            onPress={navToFavorites}
         >
             {
                 theme == 'light' ?

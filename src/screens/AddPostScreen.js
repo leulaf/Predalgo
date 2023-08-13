@@ -32,10 +32,70 @@ const navToUpload = (navigation, forCommentOnComment, forCommentOnPost) => () =>
   )
 }
 
+const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
+  if(forCommentOnComment || forCommentOnPost){
+    navigation.dispatch(
+        StackActions.replace('EditMeme', {
+        replyMemeName: item.name,
+        imageUrl: item.url,
+        height: item.height,
+        width: item.width,
+        templateExists: true,
+        forCommentOnComment: forCommentOnComment,
+        forCommentOnPost: forCommentOnPost,
+        forMemeComment: forCommentOnComment
+      })
+    )
+  }else{
+    navigation.navigate('Meme', {
+      memeName: item.name,
+      template: item.url,
+      height: item.height,
+      width: item.width,
+      useCount: item.useCount,
+      uploader: item.uploader,
+      forCommentOnComment: forCommentOnComment,
+      forCommentOnPost: forCommentOnPost,
+    })
+  }
+}
+
+const navToSearchMemes = (navigation, forCommentOnComment, forCommentOnPost) => () => {
+  if(forCommentOnComment || forCommentOnPost){
+    navigation.dispatch(
+        StackActions.replace('SearchMemes', {
+        forCommentOnComment: forCommentOnComment,
+        forCommentOnPost: forCommentOnPost,
+      })
+    )
+  }else{
+    navigation.navigate(('SearchMemes'), {
+      forCommentOnComment: forCommentOnComment,
+      forCommentOnPost: forCommentOnPost,
+    })
+  }
+}
+
+const navToFavorites = (navigation, forCommentOnComment, forCommentOnPost) => () => {
+  if(forCommentOnComment || forCommentOnPost){
+    navigation.dispatch(
+        StackActions.replace('FavoriteTemplates', {
+        forCommentOnComment: forCommentOnComment,
+        forCommentOnPost: forCommentOnPost,
+      })
+    )
+  }else{
+    navigation.navigate(('FavoriteTemplates'), {
+      forCommentOnComment: forCommentOnComment,
+      forCommentOnPost: forCommentOnPost,
+    })
+  }
+}
+
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
-const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
 
 const AddPostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -50,7 +110,7 @@ const AddPostScreen = ({navigation, route}) => {
       getFirstTenTemplates();
 
       navigation.setOptions({
-          header: () => <AddPostTopBar />
+          header: () => <AddPostTopBar navToFavorites={navToFavorites(navigation, forCommentOnComment, forCommentOnPost)} navToSearchMemes={navToSearchMemes(navigation, forCommentOnComment, forCommentOnPost)}/>
       });
     }, []);
 
@@ -88,31 +148,6 @@ const AddPostScreen = ({navigation, route}) => {
     }, []);
 
 
-    const navToMeme = React.useCallback((item) => () => {
-      if(forCommentOnComment || forCommentOnPost){
-        navigation.navigate('EditMeme', {
-          replyMemeName: item.name,
-          imageUrl: item.url,
-          height: item.height,
-          width: item.width,
-          templateExists: true,
-          forCommentOnComment: forCommentOnComment,
-          forCommentOnPost: forCommentOnPost,
-          forMemeComment: true
-        })
-      }else{
-        navigation.navigate('Meme', {
-          memeName: item.name,
-          template: item.url,
-          useCount: item.useCount,
-          uploader: item.uploader,
-          forCommentOnComment: forCommentOnComment,
-          forCommentOnPost: forCommentOnPost,
-        })
-      }
-    }, [])
-
-
     const renderItem = React.useCallback(({item, index}) => {
       return (
         <Animated.View
@@ -120,7 +155,7 @@ const AddPostScreen = ({navigation, route}) => {
         >
           <TouchableOpacity
             activeOpacity={1}
-            onPress={navToMeme(item)}
+            onPress={navToMeme(navigation, item, forCommentOnComment, forCommentOnPost)}
             style={
               index % 2 == 1 ?
                 {marginLeft: 2, marginRight: 4, marginBottom: 6} 

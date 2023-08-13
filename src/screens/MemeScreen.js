@@ -1,6 +1,8 @@
 import React, {useContext, useRef, useState, useEffect,} from 'react';
 import {View, Text, StyleSheet, Button, TouchableOpacity, Dimensions} from 'react-native';
-import TextTicker from 'react-native-text-ticker'
+import TextTicker from 'react-native-text-ticker';
+
+import { StackActions } from '@react-navigation/native';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
@@ -22,15 +24,33 @@ import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
-const getbase64AndNav = async (navigation, image, memeName) => {
-    const manipResult = await manipulateAsync(image, [], {
-        // compress: 0.2,
-        // format: SaveFormat.PNG,
-        base64: true,
-    });
-
-    await navigation.navigate('EditMeme', {imageUrl: `data:image/jpeg;base64,${manipResult.base64}`, memeName: memeName});
-};
+const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
+    if(forCommentOnComment || forCommentOnPost){
+      navigation.dispatch(
+          StackActions.replace('EditMeme', {
+              replyMemeName: item.name,
+              imageUrl: item.url,
+              height: item.height,
+              width: item.width,
+              templateExists: true,
+              forCommentOnComment: forCommentOnComment,
+              forCommentOnPost: forCommentOnPost,
+              forMemeComment: forCommentOnComment
+        })
+      )
+    }else{
+      navigation.navigate('EditMeme', {
+        replyMemeName: item.name,
+        imageUrl: item.url,
+        height: item.height,
+        width: item.width,
+        templateExists: true,
+        forCommentOnComment: forCommentOnComment,
+        forCommentOnPost: forCommentOnPost,
+        forMemeComment: forCommentOnComment
+      })
+    }
+  }
 
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
@@ -39,7 +59,7 @@ const MemeScreen = ({ navigation, route }) => {
 
     const [memeTemplates, setMemeTeplates] = useState([{id : "fir"}, {id: "sec"}]);
 
-    const { memeName, template, uploader, useCount, forCommentOnComment, forCommentOnPost } = route.params;
+    const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost } = route.params;
 
     const flashListRef = useRef(null);
    
@@ -47,7 +67,7 @@ const MemeScreen = ({ navigation, route }) => {
         getFirstTenMemes();
 
         navigation.setOptions({
-            header: () => <MemeTopBar name={memeName} url={template}/>,
+            header: () => <MemeTopBar name={memeName} url={template} height={height} width={width} />,
         });
     }, []);
 
@@ -72,28 +92,6 @@ const MemeScreen = ({ navigation, route }) => {
         });
     }, []);
 
-
-    const navToMeme = React.useCallback((item) => () => {
-        if(forCommentOnComment || forCommentOnPost){
-            navigation.navigate('EditMeme', {
-                replyMemeName: item.name,
-                imageUrl: item.url,
-                height: item.height,
-                width: item.width,
-                templateExists: true,
-                forCommentOnComment: forCommentOnComment,
-                forCommentOnPost: forCommentOnPost,
-                forMemeComment: true
-            })
-        }else{
-            navigation.navigate('Meme', {
-                memeName: item.name,
-                template: item.url,
-                useCount: item.useCount,
-                uploader: item.uploader
-            })
-        }
-    }, [])
 
 
     const renderItem = React.useCallback(({item, index}) => {
@@ -208,7 +206,13 @@ const MemeScreen = ({ navigation, route }) => {
             {/* create meme button */}
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightUseTemplateButton : styles.darkUseTemplateButton}
-                onPress={() => getbase64AndNav(navigation, template, memeName)}
+                onPress={navToEdit(navigation, {
+                    name: memeName,
+                    template: template,
+                    height: height,
+                    width: width,
+                    
+                }, forCommentOnComment, forCommentOnPost)}
             >
                 {theme == "light" ?
                     <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>

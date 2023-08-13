@@ -159,7 +159,6 @@ const itemEquals = (prev, next) => {
 }
 
 const TextPost = React.memo(({item, index, navigation})=>{
-    const tempString = Math.random();
     return (
         <MainComment
             navigation={navigation}
@@ -170,13 +169,6 @@ const TextPost = React.memo(({item, index, navigation})=>{
             profilePic={item.profilePic}
             commentId={item.id}
             text={item.text}
-            imageUrl={item.imageUrl}
-            memeName={item.memeName}
-            // templateState={item.templateState && {"annotation": [{"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "31.2280701754386%", "id": "7fs6et27a", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": "0.15567325678682167", "textAlign": "left", "width": "41.31578947368421%", "x": "2.631578944757731%", "y": "0.17543859301029396%"}, {"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "33.33333333333333%", "id": "u8012jlbl", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": tempString.toString(), "textAlign": "left", "width": "40.26315789473684%", "x": "60.78947367898914%", "y": "0.1754386069339992%"}, {"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "32.28070175438596%", "id": "inhrf4onv", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": tempString.toString(), "textAlign": "left", "width": "41.8421052631579%", "x": "0.26315789082079816%", "y": "71.75438597535504%"}, {"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "32.98245614035087%", "id": "6bki5dmuu", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": tempString.toString(), "textAlign": "left", "width": "38.421052631578945%", "x": "62.368421050020885%", "y": "72.80701753515734%"}], "backgroundColor": [0, 0, 0, 0], "crop": {"height": 3024, "width": 4032, "x": 0, "y": 0}, "cropLimitToImage": true, "cropMaxSize": {"height": 32768, "width": 32768}, "cropMinSize": {"height": 1, "width": 1}, "decoration": [], "flipX": false, "flipY": false, "frame": {"disableStyle": ["backgroundColor", "strokeColor", "strokeWidth"], "frameColor": [0, 0, 0], "height": "100%", "width": "100%", "x": 0, "y": 0}, "redaction": [], "rotation": 0}}
-            templateState={item.templateState}
-            template={item.template}
-            imageWidth={item.imageWidth}
-            imageHeight={item.imageHeight}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
             index={index}
@@ -184,12 +176,14 @@ const TextPost = React.memo(({item, index, navigation})=>{
     );
 }, itemEquals);
 
-const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
 
 const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [commentsList, setCommentsList] = useState([{id: "one"}, {id: "two"}]);
-    const {profile, commentId, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, template, templateState, imageWidth, imageHeight, memeName, tags, likesCount, commentsCount} = route.params;
+    
+    const {profile, commentId, comments, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, template, templateState, imageWidth, imageHeight, memeName, tags, likesCount, commentsCount} = route.params;
+    // console.log(comments)
+    const [commentsList, setCommentsList] = useState([comments ? comments : {id: "one"}, {id: "two"}]);
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
 
@@ -198,9 +192,9 @@ const CommentScreen = ({navigation, route}) => {
 
     const flashListRef = useRef(null);
     const editorRef = useRef(null);
-    
+
     useEffect(() => {
-        getFirstTenCommentsByPopular();
+        comments ?  setCommentsList(comments)  : getFirstTenCommentsByPopular();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
         
@@ -216,7 +210,7 @@ const CommentScreen = ({navigation, route}) => {
     }, []);
 
     const getNextTenPopularComments = React.useCallback(async() => {
-        
+
         const comments = await fetchNextTenPopularComments(replyToPostId, commentId, commentsList[commentsList.length-1].snap);
         commentsList[commentsList.length-1].snap = null;
         setCommentsList(commentsList => [...commentsList, ...comments]);
@@ -259,6 +253,7 @@ const CommentScreen = ({navigation, route}) => {
 
     
     const renderItem = React.useCallback(({ item, index }) => {
+        // console.log(item, "     ", index)
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
             return (
@@ -299,6 +294,10 @@ const CommentScreen = ({navigation, route}) => {
         }
     }, [theme, image]);
 
+    if(commentsList < 5){
+        return null
+    }
+
     //NEED***NEED to make sure multiple instance of PinturaLoadImage are not created***
     return (
         <View
@@ -335,7 +334,7 @@ const CommentScreen = ({navigation, route}) => {
                     <View style={{height: 200}}/>
                 }
 
-                keyExtractor={keyExtractor}
+                // keyExtractor={keyExtractor}
             />
 
             {replyBottomSheet(onReply, navigation, replyToPostId, commentId, profile, username)}

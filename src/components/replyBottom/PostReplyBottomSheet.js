@@ -17,6 +17,9 @@ import CreateMemeLight from '../../../assets/meme_create_light.svg';
 import PostButtonLight from '../../../assets/reply_light.svg';
 import LinkLight from '../../../assets/link_light.svg';
 
+import DeleteImageLight from '../../../assets/x.svg';
+import DeleteImageDark from '../../../assets/x.svg';
+
 // dark mode icons
 import UploadDark from '../../../assets/upload_dark.svg';
 import CreateMemeDark from '../../../assets/meme_create_dark.svg';
@@ -277,7 +280,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
 
 
-            {/* Upload Button */}
+            {/* Upload Image Button */}
             <TouchableOpacity
                     // style={{flexDirection: 'row',}}
                     onPress={() => 
@@ -474,48 +477,61 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                     
                     {
                         (replyImageToPost && currentIndex != 0) &&
-                        <TouchableOpacity
-                            onPress={() => 
+                        <View style={{alignSelf: 'center', flexDirection: 'row'}}>
+                            {/* Selected Image */}
+                            <TouchableOpacity
+                                onPress={() => 
 
-                                {   
-                                    navigation.navigate(replyImageToPost.memeName ? 'EditMeme' : "EditImage", {
-                                        imageUrl: replyImageToPost.undeditedUri,
-                                        height: replyImageToPost.height,
-                                        width: replyImageToPost.width,
-                                        imageState: replyImageToPost.imageState,
-                                        forCommentOnComment: false,
-                                        forCommentOnPost: true,
-                                        forComment: true,
-                                        cameraPic: false,
-                                        dontCompress: true,
-                                        replyMemeName: replyImageToPost.memeName ? replyImageToPost.memeName : null,
-                                    })
+                                    {   
+                                        navigation.navigate(replyImageToPost.memeName ? 'EditMeme' : "EditImage", {
+                                            imageUrl: replyImageToPost.undeditedUri,
+                                            height: replyImageToPost.height,
+                                            width: replyImageToPost.width,
+                                            imageState: replyImageToPost.imageState,
+                                            forCommentOnComment: false,
+                                            forCommentOnPost: true,
+                                            forComment: true,
+                                            cameraPic: false,
+                                            dontCompress: true,
+                                            replyMemeName: replyImageToPost.memeName ? replyImageToPost.memeName : null,
+                                            templateExists: replyImageToPost.templateExists ? replyImageToPost.templateExists : null,
+                                        })
+                                    }
+
                                 }
+                            >
+                                <Image 
+                                    source={{uri : replyImageToPost.uri}}
+                                    // resizeMode='contain'
+                                    style={{
+                                        height:
+                                        replyImageToPost.height < replyImageToPost.width ?
+                                            (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.5
+                                        :
+                                            (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.25,
 
-                            }
-                        >
-                            <Image 
-                                source={{uri : replyImageToPost.uri}}
-                                // resizeMode='contain'
-                                style={{
-                                    height:
-                                    replyImageToPost.height < replyImageToPost.width ?
-                                        (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.5
-                                    :
-                                        (replyImageToPost.height * (win.width / replyImageToPost.width)) * 0.25,
+                                        width:
+                                        replyImageToPost.height < replyImageToPost.width ?
+                                            win.width * 0.5
+                                        :
+                                            win.width * 0.25,
 
-                                    width:
-                                    replyImageToPost.height < replyImageToPost.width ?
-                                        win.width * 0.5
-                                    :
-                                        win.width * 0.25,
+                                        alignSelf: 'center',
+                                        borderRadius: 10,
+                                        marginTop: 10,
+                                    }}
+                                />
+                            </TouchableOpacity>
 
-                                    alignSelf: 'center',
-                                    borderRadius: 10,
-                                    marginTop: 10,
-                                }}
-                            />
-                        </TouchableOpacity>
+                            {/* Delete Image */}
+                            <TouchableOpacity style={{ marginRight: 10, marginTop: 10, }} onPress={() => setReplyImageToPost(null)}>
+                                <DeleteImageLight height={30} width={30}/>
+                                <Text marginBottom={0} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                                    Delete
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                        
                     }
                     
 

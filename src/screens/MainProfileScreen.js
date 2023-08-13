@@ -50,7 +50,7 @@ function MainProfileScreen ({navigation, ...props}) {
         props.fetchUser();
 
         // Fetch posts
-        handleNewPostsClick();
+        populateInitialPosts();
 
         const { currentUser } = props;
         
@@ -65,7 +65,7 @@ function MainProfileScreen ({navigation, ...props}) {
         navigation.setOptions({
             header: () => <MainProfileTop />
         });
-    }, [props.currentUser]);
+    }, []);
 
 
     const uploadImage = React.useCallback(async(imageUrl) => {
@@ -161,8 +161,14 @@ function MainProfileScreen ({navigation, ...props}) {
         })
     }, []);
 
+    const populateInitialPosts = React.useCallback(async () => {
+        setByNewPosts(true);
+        setByPopularPosts(false);
+        const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
+        setPostList(posts);
+    }, []);
 
-    const handleNewPostsClick = React.useCallback(async () => {
+    const handleNewPostsClick = React.useCallback(() => async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
         const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
@@ -170,7 +176,7 @@ function MainProfileScreen ({navigation, ...props}) {
     }, []);
     
 
-    const handlePopularPostsClick = React.useCallback(async () => {
+    const handlePopularPostsClick = React.useCallback(() => async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
         const posts = await fetchUserPostsByPopular(firebase.auth().currentUser.uid);
@@ -383,7 +389,7 @@ const styles = StyleSheet.create({
        backgroundColor: '#0A0A0A',
    },
    lightLabel: {
-       color: '#880808',
+       color: '#666666',
        fontSize: 16,
        fontWeight: '600',
    },
