@@ -6,6 +6,8 @@ import { firebase, storage, db, ref, deleteObject } from '../../config/firebase'
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
+import CommentText from '../../shared/CommentText';
+
 import Animated, {FadeIn} from 'react-native-reanimated';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
@@ -341,9 +343,7 @@ const SubComment = ({ profile, username, profilePic, commentId, replyToCommentId
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
                     
-                    <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
-                        {text}
-                    </Text>
+                    <CommentText text={text}/>
 
                 </TouchableOpacity>
             }

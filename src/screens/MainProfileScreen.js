@@ -197,7 +197,7 @@ function MainProfileScreen ({navigation, ...props}) {
 
    const header = React.useCallback(() => {
        return (
-           <View style={theme == 'light' ? styles.lightProfileContainer :styles.darkProfileContainer }>
+           <View style={theme == 'light' ? styles.lightProfileContainer : styles.darkProfileContainer }>
               
                 <View style={{flexDirection: 'column'}}>
                     {/* Profile picture and username */}
@@ -295,7 +295,7 @@ function MainProfileScreen ({navigation, ...props}) {
 
            </View>
        )
-   }, [profilePic, bio]);
+   }, [profilePic, bio, theme]);
 
 
    const tabBar = props => (

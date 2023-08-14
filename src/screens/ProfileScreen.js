@@ -34,7 +34,7 @@ export default function ProfileScreen ({route, navigation}) {
         populateInitialPosts();
 
         // *** catch array of following users and use that instead of making a request
-        const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
+        const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
         const docSnap = getDoc(docRef)
         .then((docSnap) => {
             if (docSnap.exists()) {
@@ -48,21 +48,21 @@ export default function ProfileScreen ({route, navigation}) {
     const populateInitialPosts = React.useCallback(async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
-        const posts = await fetchUserPostsByRecent(user);
+        const posts = await fetchUserPostsByRecent(user.id);
         setPostList(posts);
     }, [user]);
 
     const handleNewPostsClick = React.useCallback(() => async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
-        const posts = await fetchUserPostsByRecent(user);
+        const posts = await fetchUserPostsByRecent(user.id);
         setPostList(posts);
     }, [user]);
     
     const handlePopularPostsClick = React.useCallback(() => async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
-        const posts = await fetchUserPostsByPopular(user);
+        const posts = await fetchUserPostsByPopular(user.id);
         setPostList(posts);
     }, [user]);
 
@@ -72,7 +72,7 @@ export default function ProfileScreen ({route, navigation}) {
         const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
         
         setDoc(followRef, {
-            id: user,
+            id: user.id,
         }).then(() => {
             setFollowing(true);
             Alert.alert('Followed');
@@ -81,7 +81,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // add user to followers collection
-        const followerRef = doc(db, 'followers', user, "userFollowers", firebase.auth().currentUser.uid);
+        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
 
         setDoc(followerRef, {
             id: firebase.auth().currentUser.uid,
@@ -92,7 +92,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // update followers count for user being followed
-        const userRef = doc(db, 'users', user);
+        const userRef = doc(db, 'users', user.id);
 
         updateDoc(userRef, {
             followers: increment(1)
@@ -109,7 +109,7 @@ export default function ProfileScreen ({route, navigation}) {
     // Unfollow current user
     const onUnfollow = React.useCallback(() => {
         // remove user from following collection
-        const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
+        const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
 
         deleteDoc(unfollowRef).then(() => {
             setFollowing(false);
@@ -119,7 +119,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // remove user from followers collection
-        const followerRef = doc(db, 'followers', user, "userFollowers", firebase.auth().currentUser.uid);
+        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
 
         deleteDoc(followerRef).then(() => {
             // console.log('Removed from followers collection');
@@ -128,7 +128,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // update followers count for user being unfollowed
-        const userRef = doc(db, 'users', user);
+        const userRef = doc(db, 'users', user.id);
 
         updateDoc(userRef, {
             followers: increment(-1)
@@ -148,7 +148,7 @@ export default function ProfileScreen ({route, navigation}) {
     
     const header = React.useCallback(() => {
         return (
-            <View style={theme == 'light' ? styles.lightProfileContainer :styles.darkProfileContainer }>
+            <View style={theme == 'light' ? styles.lightProfileContainer : styles.darkProfileContainer }>
                
                  <View style={{flexDirection: 'column', marginTop: 5,}}>               
                      
@@ -206,7 +206,7 @@ export default function ProfileScreen ({route, navigation}) {
  
             </View>
         )
-    }, [user])
+    }, [user, theme, following])
  
  
     const tabBar = React.useCallback(props => (
@@ -254,7 +254,7 @@ export default function ProfileScreen ({route, navigation}) {
         >
             <Tabs.Tab name="Posts">
                 <AllUserPosts
-                    userId={user}
+                    userId={user.id}
                     username={user.username}
                     profilePic={user.profilePic}
                     postList={postList}
@@ -268,7 +268,7 @@ export default function ProfileScreen ({route, navigation}) {
             </Tabs.Tab>
             <Tabs.Tab name="Media">
                 <AllUserMediaPosts
-                    userId={user}
+                    userId={user.id}
                     postList={postList}
                     profilePic={user.profilePic}
                 />

@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
+import PostText from '../shared/PostText';
+
 import Animated, {FadeIn} from 'react-native-reanimated';
 
 import { FlashList } from '@shopify/flash-list';
@@ -97,11 +99,7 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
 
             <View style={{marginBottom: 8}}>
 
-                {text &&
-                    <Text style={theme == "light" ? styles.lightPostText : styles.darkPostText}>
-                        {text}
-                    </Text>
-                }
+                    <PostText text={text}/>
 
                     <ResizableImage 
                     image={image}

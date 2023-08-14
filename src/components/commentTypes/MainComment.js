@@ -6,6 +6,8 @@ import { firebase, storage, db, ref, deleteObject } from '../../config/firebase'
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
+import CommentText from '../../shared/CommentText';
+
 import Animated, {FadeIn} from 'react-native-reanimated';
 
 import { fetchFirstFiveCommentsByPopular, fetchNextFiveCommentsByPopular } from '../../shared/comment/GetComments';
@@ -468,9 +470,8 @@ const MainComment = ({ navigation, comments, profile, username, profilePic, comm
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
                     
-                    <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
-                        {text}
-                    </Text>
+                    <CommentText text={text}/>
+
 
                 </TouchableOpacity>
             }

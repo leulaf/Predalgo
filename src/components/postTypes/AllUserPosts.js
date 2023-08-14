@@ -69,7 +69,7 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                     </TouchableOpacity>
             }
         </View>
-    , [byNewPosts, byPopularPosts]);
+    , [byNewPosts, byPopularPosts, theme]);
         
 
     const renderItem = React.useCallback(({ item, index }) => {

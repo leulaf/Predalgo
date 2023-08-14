@@ -6,6 +6,8 @@ import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "fire
 import {ThemeContext} from '../../../context-store/context';
 import PostContainer from './PostContainer';
 
+import PostText from '../../shared/PostText';
+
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -69,7 +71,7 @@ const TextPost = ({ navigation, title, username = "", profilePic = "", text, tag
             navigation={navigation}
 
             content={
-                <Text numberOfLines={15} style={theme == "light" ? GlobalStyles.lightPostText : GlobalStyles.darkPostText}>{text}</Text>
+                <PostText numberOfLines={15} text={text}/>
             }
         />
     );
