@@ -2,7 +2,7 @@ import React, { useEffect, useRef,  useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
-import PostText from '../shared/PostText';
+import PostText from '../shared/Text/PostText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 

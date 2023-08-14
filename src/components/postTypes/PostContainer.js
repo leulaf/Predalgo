@@ -7,6 +7,8 @@ import { firebase, storage, db, ref, deleteObject } from '../../config/firebase'
 import { doc, getDoc, getDocs, where, collection, query, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 
+import TitleText from '../../shared/Text/TitleText';
+
 import Animated, {FadeIn} from 'react-native-reanimated';
 
 import GlobalStyles from '../../constants/GlobalStyles';
@@ -203,14 +205,8 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 onPress={onNavToComment(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
-                <Text numberOfLines={2} 
-                    style={theme == 'light' ? styles.lightPostTitle: styles.darkPostTitle}>
-                        {title ?
-                            title
-                        :
-                            ""
-                        }
-                </Text>
+                {/* title */}
+                <TitleText text={title}/>
 
             </TouchableOpacity>
                 

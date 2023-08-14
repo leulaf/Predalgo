@@ -4,9 +4,12 @@ import React, { useEffect, useRef, useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
-import PostText from '../shared/PostText';
+import PostText from '../shared/Text/PostText';
+import TitleText from '../shared/Text/TitleText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
+
+import { manipulateAsync } from 'expo-image-manipulator';
 
 import { FlashList } from '@shopify/flash-list';
 
@@ -29,7 +32,6 @@ import uuid from 'react-native-uuid';
 import SimpleTopBar from '../components/SimpleTopBar';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
-
 
 
 const HEADER_HEIGHT = 200; 
@@ -62,7 +64,7 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
     })
 }
 
-const Header = React.memo(({theme, navigation, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
+const Header = React.memo(({theme, navigation, title, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
     return (
         <Animated.View
             entering={FadeIn}
@@ -98,6 +100,9 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
 
 
             <View style={{marginBottom: 8}}>
+
+                    {/* title */}
+                    <TitleText text={title}/>
 
                     <PostText text={text}/>
 
@@ -201,9 +206,9 @@ const PostScreen = ({navigation, route}) => {
 
     const getFirstTenPostCommentsByPopular = React.useCallback(async() => {
 
-        setCommentsList(await fetchFirstTenPostCommentsByPopular(postId));
+        const comments = await fetchFirstTenPostCommentsByPopular(postId);
+        setCommentsList(commentsList => [...commentsList, ...comments]);
     }, []);
-
 
     const getNextTenPopularComments = React.useCallback(async() => {
         
@@ -222,7 +227,7 @@ const PostScreen = ({navigation, route}) => {
 
 
     // Load Meme with template and template state
-    const CreateMeme = React.useCallback(({image}) => {
+    const CreateMeme = React.useCallback(({image, meme}) => {
         return (
             <PinturaEditor
                 ref={editorRef}
@@ -247,9 +252,30 @@ const PostScreen = ({navigation, route}) => {
         )
     }, [])
 
+    const urlToUri = async(template, templateState) => {
+        // console.log('getting meme', template, templateState)
+        // setGetMeme({
+        //     template: template,
+        //     templateState: templateState
+        // });
+
+        // while(createdMeme == null){
+        //     setTimeout(() => {
+        //         console.log('waiting')
+        //     }, 100);
+        // }
+
+        // setGetMeme(null);
+        
+        // const meme = createdMeme;
+        // console.log(meme)
+        // setCreatedMeme(null);
+        // console.log(meme)
+        // return meme;
+    }
+
 
     const renderItem = React.useCallback(({ item, index }) => {
-        
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
             return (
@@ -257,6 +283,7 @@ const PostScreen = ({navigation, route}) => {
                     theme={theme}
                     image={image}
                     navigation={navigation}
+                    title={title}
                     memeName={memeName}
                     imageHeight={imageHeight}
                     imageWidth={imageWidth}

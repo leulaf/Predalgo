@@ -6,7 +6,7 @@ import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "fire
 import {ThemeContext} from '../../../context-store/context';
 import PostContainer from './PostContainer';
 
-import PostText from '../../shared/PostText';
+import PostText from '../../shared/Text/PostText';
 
 import { useNavigation } from '@react-navigation/native';
 

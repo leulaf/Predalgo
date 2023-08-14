@@ -1,42 +1,9 @@
-import React, {useEffect, useState, useContext} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-import { ThemeContext } from '../../context-store/context';
+import {Text, StyleSheet} from 'react-native';
 import uuid from 'react-native-uuid';
 import { useNavigation } from '@react-navigation/native';
-import { firebase, storage, db } from '../config/firebase';
-import { getDocs, where, limit, collection, query } from "firebase/firestore";
 
-const navigateToTag = async(tag, navigation) => {
-
-    if(tag.charAt(0) == '#'){
-        navigation.push('Tag', {tag: tag});
-    }else if(tag.charAt(0) == '@'){
-        const username = tag.substring(1);
-
-        const q = query(collection(db, "users"), where("username", "==", username), limit(1));
-
-        const userSnap = await getDocs(q);   
-
-        if(userSnap.docs.length > 0){
-            const user = userSnap.docs[0].data();
-            user.id = userSnap.docs[0].id;
-
-            navigation.push('Profile', { user: user });
-        }
-
-    }
-}
-
-function padding(a, b, c, d) {
-    return {
-      paddingTop: a,
-      paddingRight: b !== undefined ? b : a,
-      paddingBottom: c !== undefined ? c : a,
-      paddingLeft: d !== undefined ? d : (b !== undefined ? b : a)
-    }
-}
-
-const splitText = (text, theme, navigation) => {
+export default SplitPost = (text, theme) => {
+    const navigation = useNavigation();
     let parts = text.split(' ');
     let currIndex = 0;
 
@@ -55,7 +22,7 @@ const splitText = (text, theme, navigation) => {
                 <Text
                     key={uuid.v4()}
                     suppressHighlighting={true}
-                    onPress={() => navigateToTag(parts[i], navigation)}
+                    onPress={() => NavigateToTag(parts[i], navigation)}
                     style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
                 >
                     {parts[i]}
@@ -85,7 +52,7 @@ const splitText = (text, theme, navigation) => {
                 <Text
                     key={uuid.v4()}
                     suppressHighlighting={true}
-                    onPress={() => navigateToTag(parts[i], navigation)}
+                    onPress={() => NavigateToTag(parts[i], navigation)}
                     style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
                 >
                     {" " + parts[i]}
@@ -113,35 +80,8 @@ const splitText = (text, theme, navigation) => {
     return finalText;
 };
 
-const CommentText = ({text}) => {
-    const {theme} = useContext(ThemeContext);
-    const navigation = useNavigation();
-
-    
-    return (
-
-        <Text
-            numberOfLines={15}
-            style={styles.commentContainer}
-        >
-
-            {splitText(text, theme, navigation).map((textPart, index) => {
-                // console.log(textPart);
-                return textPart;
-            })}
-            
-        </Text>
-        
-        
-    );
-}
 
 const styles = StyleSheet.create({
-    commentContainer: {
-        marginHorizontal: 10,
-        marginTop: 7,
-        textAlign: 'auto',
-    },
     lightCommentText: {
         fontSize: 18,
         fontWeight: "400",
@@ -171,5 +111,3 @@ const styles = StyleSheet.create({
         // marginBottom: 6,
     }
 })
-
-export default CommentText;

@@ -6,7 +6,7 @@ import { firebase, storage, db, ref, deleteObject } from '../../config/firebase'
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
-import CommentText from '../../shared/CommentText';
+import CommentText from '../../shared/Text/CommentText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
@@ -253,6 +253,10 @@ const MainComment = ({ navigation, comments, profile, username, profilePic, comm
     const [finished, setFinished] = useState(template ? false : true);
 
     let threeDots, likes, alreadyLiked, reply, down
+
+        
+
+
 
     if(theme == 'light'){
         threeDots = <ThreeDotsLight width={33} height={33} style={{}}/>

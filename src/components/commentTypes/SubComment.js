@@ -6,7 +6,7 @@ import { firebase, storage, db, ref, deleteObject } from '../../config/firebase'
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 
-import CommentText from '../../shared/CommentText';
+import CommentText from '../../shared/Text/CommentText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
