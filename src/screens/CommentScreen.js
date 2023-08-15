@@ -126,7 +126,7 @@ const imageEquals =(prev, next) => {
 }
 
 const ImagePost = React.memo(({item, index, navigation})=>{
-    const tempString = Math.random();
+    // const tempString = Math.random();
     return (
         <MainComment
             navigation={navigation}
@@ -299,12 +299,6 @@ const CommentScreen = ({navigation, route}) => {
     //NEED***NEED to make sure multiple instance of PinturaLoadImage are not created***
     return (
         <View
-            onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-            onTouchEnd={e => {
-            if (e.nativeEvent.pageX - this.touchX > 150)
-                // console.log('Swiped Right')
-                onGoBack();
-            }}
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
             {/* Load Meme with template and template state */}

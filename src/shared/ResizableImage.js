@@ -1,4 +1,6 @@
 import { Image } from 'expo-image';
+// import {  Image, } from 'react-native';
+
 
 const ResizableImage = ({ image, height, width, maxHeight, maxWidth, style }) => {
     if(image === null || image === undefined || image === ''){

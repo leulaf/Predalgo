@@ -118,12 +118,6 @@ const SearchMemesScreen = ({navigation, route}) => {
     return (
       <Animated.View
         entering={FadeIn}
-        onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-        onTouchEnd={e => {
-        if (e.nativeEvent.pageX - this.touchX > 150)
-            // console.log('Swiped Right')
-            navigation.goBack()
-        }}
         style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
       >
 

@@ -117,41 +117,32 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
     
     return (
         <Animated.View
-        entering={FadeIn}
-        onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-        onTouchEnd={e => {
-        if (e.nativeEvent.pageX - this.touchX > 150)
-            // console.log('Swiped Right')
-            navigation.goBack()
-        }}
-        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
-      >
+            entering={FadeIn}
+            style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
+        >
 
-        <MasonryFlashList
-            // ref={flashListRef}
-            data={memeTemplates}
-            numColumns={2}
+            <MasonryFlashList
+                // ref={flashListRef}
+                data={memeTemplates}
+                numColumns={2}
 
-            // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
-            // onEndReachedThreshold={1} //need to implement infinite scroll
-            
-            renderItem={renderItem}
-            extraData={[memeTemplates]}
+                // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+                // onEndReachedThreshold={1} //need to implement infinite scroll
+                
+                renderItem={renderItem}
+                extraData={[memeTemplates]}
 
-            removeClippedSubviews={true}
+                removeClippedSubviews={true}
 
-            estimatedItemSize={200}
-            estimatedListSize={{height: windowHeight, width: windowWidth}}
+                estimatedItemSize={200}
+                estimatedListSize={{height: windowHeight, width: windowWidth}}
 
-            showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
 
-            contentContainerStyle={{paddingTop: 5}}
+                contentContainerStyle={{paddingTop: 5}}
 
-            keyExtractor={keyExtractor}
-        />
-
-
-        
+                keyExtractor={keyExtractor}
+            />
 
       </Animated.View>
     );

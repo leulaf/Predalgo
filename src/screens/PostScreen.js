@@ -177,6 +177,21 @@ const TextPost = React.memo(({item, index, navigation})=>{
     );
 }, itemEquals);
 
+const overrideItemLayout = (layout, item) => () => {
+    if(item.imageHeight){
+        //make sure to account for max image size & top and bottom of comment
+        layout.size = item.imageHeight+100; 
+    }else{
+        layout.size = 0;
+    }
+    
+    // layout.span = windowWidth;
+}
+
+const getItemType= (item) => {
+    return item.imageHeight ? "image" : "text";
+}
+
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 const PostScreen = ({navigation, route}) => {
@@ -199,8 +214,9 @@ const PostScreen = ({navigation, route}) => {
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
 
         navigation.setOptions({
-            header: () => <SimpleTopBar title={"Back"}/>
+            header: () => <SimpleTopBar title={"Back"}/>,
         });
+
     }, []);
 
 
@@ -252,27 +268,6 @@ const PostScreen = ({navigation, route}) => {
         )
     }, [])
 
-    const urlToUri = async(template, templateState) => {
-        // console.log('getting meme', template, templateState)
-        // setGetMeme({
-        //     template: template,
-        //     templateState: templateState
-        // });
-
-        // while(createdMeme == null){
-        //     setTimeout(() => {
-        //         console.log('waiting')
-        //     }, 100);
-        // }
-
-        // setGetMeme(null);
-        
-        // const meme = createdMeme;
-        // console.log(meme)
-        // setCreatedMeme(null);
-        // console.log(meme)
-        // return meme;
-    }
 
 
     const renderItem = React.useCallback(({ item, index }) => {
@@ -314,16 +309,10 @@ const PostScreen = ({navigation, route}) => {
             );
         }
     }, [theme, image])
-
+    
 
     return (
         <View
-            onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-            onTouchEnd={e => {
-            if (e.nativeEvent.pageX - this.touchX > 150)
-                // console.log('Swiped Right')
-                onGoBack();
-            }}
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
             {/* Load Meme with template and template state */}
@@ -336,7 +325,7 @@ const PostScreen = ({navigation, route}) => {
                 onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
                 onEndReachedThreshold={1} //need to implement infinite scroll
 
-                extraData={[commentsList]}
+                // extraData={[commentsList]}
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
@@ -344,14 +333,17 @@ const PostScreen = ({navigation, route}) => {
 
                 removeClippedSubviews={true}
 
-                estimatedItemSize={300}
+                estimatedItemSize={200}
                 estimatedListSize={{height: windowHeight ,  width: windowWidth}}
 
                 ListFooterComponent={
                     <View style={{height: 200}}/>
                 }
 
+                getItemType={getItemType}
+                
                 keyExtractor={keyExtractor}
+
             />
 
             {replyBottomSheet(navigation, postId, profile, username)}

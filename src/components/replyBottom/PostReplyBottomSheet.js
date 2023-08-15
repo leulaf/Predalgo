@@ -10,6 +10,7 @@ import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/con
 
 import BottomSheet, {BottomSheetScrollView, BottomSheetTextInput} from '@gorhom/bottom-sheet';
 
+import LinkInput from './replyScreens/LinkInput';
 
 // light mode icons
 import UploadLight from '../../../assets/upload_light.svg';
@@ -42,10 +43,14 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     const [replyMemeToPost, setReplyMemeToPost] = useState("");
 
     const inputAccessoryViewID = uuid.v4(); // maybe use uuid to generate this id
-
+    
+    const [linkInput, setLinkInput] = useState(null);
     const [textInputInFocus, setTextInputInFocus] = useState(false);
 
+    const [currentSelection, setCurrentSelection] = useState({start: 0, end: 0});
+
     const [currentIndex, setCurrentIndex] = useState(0);
+    
 
     let upload, createMeme, createMemeSmall, link, linkSmall, replyButton
 
@@ -89,6 +94,17 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
             // handleSheetChanges(2);
         }
     }, [imageReply])
+
+    const onSelectionChange = ({ nativeEvent: { selection, text } }) => {
+        console.log(
+          "change selection to",
+          selection,
+          "for value",
+          this.state.value
+        );
+        console.log(text);
+        setCurrentSelection(selection);
+    };
 
 
     // Makes sure the keyboard is open when the bottom sheet is expanded
@@ -415,49 +431,52 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                 ),
                         ]}
                     >
+
                         {/* <BottomSheetTextInput */}
-                        <TextInput
-                            ref={(input) => { replyTextToPostRef.current = input; }}
-                            inputAccessoryViewID={inputAccessoryViewID}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            onFocus={() => handleFocus() }   //focus received
-                            onBlur={() =>  handleBlur() }     //focus lost
-                            maxLength={2000}
-                            multiline={true}
-                            style={[
-                                theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle, 
-                                {   
-                                    height: !textInputInFocus ? 35 :
+                        { linkInput == null &&
+                            <TextInput
+                                ref={(input) => { replyTextToPostRef.current = input; }}
+                                inputAccessoryViewID={inputAccessoryViewID}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                onFocus={() => handleFocus() }   //focus received
+                                onBlur={() =>  handleBlur() }     //focus lost
+                                maxLength={2000}
+                                multiline={true}
+                                style={[
+                                    theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle, 
+                                    {   
+                                        height: !textInputInFocus ? 35 :
 
-                                    (replyImageToPost ? 225 
+                                        (replyImageToPost ? 225 
 
-                                        : 
+                                            : 
 
-                                        currentIndex == 1 ? 225 : 415
-                                    ),
-                                    marginTop: 1,
-                                }
-                            ]} 
-                            placeholder="Reply to post"
-                            value={replyTextToPost}
-                            placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
-                            onChangeText={newTerm => setReplyTextToPost(newTerm)}
-                            // onEndEditing={(newTerm) => 
-                            //     commentTextOnPost(
-                            //         newTerm,
-                            //         replyToProfile,
-                            //         replyToPostId,
-                            //         replyToUsername,
-                            //     ).then((comment) => {
-                            //         
-                            //         bottomSheetRef.current.snapToIndex(0);
-                            //     })
-                            // }
-                        />
+                                            currentIndex == 1 ? 225 : 415
+                                        ),
+                                        marginTop: 1,
+                                    }
+                                ]} 
+                                placeholder="Reply to post"
+                                value={replyTextToPost}
+                                placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
+                                onChangeText={newTerm => setReplyTextToPost(newTerm)}
+                                // onEndEditing={(newTerm) => 
+                                //     commentTextOnPost(
+                                //         newTerm,
+                                //         replyToProfile,
+                                //         replyToPostId,
+                                //         replyToUsername,
+                                //     ).then((comment) => {
+                                //         
+                                //         bottomSheetRef.current.snapToIndex(0);
+                                //     })
+                                // }
+                            />
+                        }
 
                         {
-                            textInputInFocus ?
+                            textInputInFocus && linkInput == null?
                                 // {/* Show bottom buttons only when text input is clicked */}
                                 <InputAccessoryView nativeID={inputAccessoryViewID}>
                                     {bottomButtons()}
@@ -471,12 +490,19 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                     {createMemeSmall}
                                 </TouchableOpacity>
                         }
+
+                        {/* <BottomSheeLinkInput */}
+                        { linkInput != null &&
+                            <LinkInput 
+                            
+                            />
+                        }
                             
 
                     </View>
                     
                     {
-                        (replyImageToPost && currentIndex != 0) &&
+                        (replyImageToPost && currentIndex != 0 && linkInput == null) &&
                         <View style={{alignSelf: 'center', flexDirection: 'row'}}>
                             {/* Selected Image */}
                             <TouchableOpacity
