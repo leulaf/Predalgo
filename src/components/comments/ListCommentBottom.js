@@ -25,7 +25,7 @@ import DownDark from '../../../assets/down_dark.svg';
 
 
 // SecondaryComment is a comment that is a reply to a comment
-import SubComment from './SubComment';
+import SubComment from './subComment/SubComment';
 
 
 const windowWidth = Dimensions.get('screen').width;

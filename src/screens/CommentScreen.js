@@ -1,4 +1,4 @@
-import React, { useEffect, useRef,  useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
@@ -11,28 +11,25 @@ import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
 
+import getItemType from '../shared/GetItemType'
+import overrideItemLayout from '../shared/OverrideItemLayout'
+
 import { fetchFirstTenCommentsByPopular, fetchNextTenPopularComments } from '../shared/comment/GetComments';
 
-import GlobalStyles from '../constants/GlobalStyles';
 
+import CreateMeme from '../shared/CreateMeme';
 
 import ContentBottom from '../components/postTypes/ContentBottom';
 
-import CommentBottom from '../components/commentTypes/CommentBottom';
+import CommentBottom from '../components/comments/CommentBottom';
 
 import ReplyBottomSheet from '../components/replyBottom/CommentReplyBottomSheet';
 
-import MainComment from '../components/commentTypes/MainComment';
+import MainComment from '../components/comments/mainComment/MainComment';
 
-import SimpleTopBar from '../components/SimpleTopBar';
-
-import PinturaEditor from "@pqina/react-native-expo-pintura";
-
-import { manipulateAsync } from 'expo-image-manipulator';
+import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
 
-const HEADER_HEIGHT = 200; 
-const STICKY_HEADER_HEIGHT = 50; 
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -100,13 +97,14 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
 
             <View style={{marginBottom: 8}}>
 
-                    <PostText text={text}/>
+                <PostText text={text}/>
 
-                    <ResizableImage 
+                <ResizableImage 
                     image={image}
                     height={imageHeight}
                     width={imageWidth}
                     maxWidth={windowWidth}
+                    maxHeight={500}
                     style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
                 />
                 
@@ -125,11 +123,13 @@ const imageEquals =(prev, next) => {
     return prev.image === next.image
 }
 
-const ImagePost = React.memo(({item, index, navigation})=>{
+
+const ImagePost = React.memo(({item, index, navigation, theme})=>{
     // const tempString = Math.random();
     return (
         <MainComment
             navigation={navigation}
+            theme={theme}
             replyToPostId={item.replyToPostId}
             replyToCommentId={item.replyToCommentId}
             profile={item.profile}
@@ -156,10 +156,11 @@ const itemEquals = (prev, next) => {
     return prev.item.id === next.item.id
 }
 
-const TextPost = React.memo(({item, index, navigation})=>{
+const TextPost = React.memo(({item, index, navigation, theme})=>{
     return (
         <MainComment
             navigation={navigation}
+            theme={theme}
             replyToPostId={item.replyToPostId}
             replyToCommentId={item.replyToCommentId}
             profile={item.profile}
@@ -174,6 +175,7 @@ const TextPost = React.memo(({item, index, navigation})=>{
     );
 }, itemEquals);
 
+
 const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
 
 const CommentScreen = ({navigation, route}) => {
@@ -181,18 +183,15 @@ const CommentScreen = ({navigation, route}) => {
     
     const {profile, commentId, comments, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, template, templateState, imageWidth, imageHeight, memeName, tags, likesCount, commentsCount} = route.params;
     // console.log(comments)
-    const [commentsList, setCommentsList] = useState([comments ? comments : {id: "one"}, {id: "two"}]);
+    const [commentsList, setCommentsList] = useState(comments ? comments :[ {id: "one"}, {id: "two"}]);
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
 
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
     const [finished, setFinished] = useState(template ? false : true);
 
-    const flashListRef = useRef(null);
-    const editorRef = useRef(null);
-
     useEffect(() => {
-        comments ?  setCommentsList(comments)  : getFirstTenCommentsByPopular();
+        commentsList.length > 2 ?  null : getFirstTenCommentsByPopular();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
         
@@ -203,8 +202,9 @@ const CommentScreen = ({navigation, route}) => {
 
 
     const getFirstTenCommentsByPopular = React.useCallback(async() => {
-
-        setCommentsList(await fetchFirstTenCommentsByPopular(replyToPostId, commentId));
+        console.log("sdf")
+        const comments = await fetchFirstTenCommentsByPopular(replyToPostId, commentId);
+        setCommentsList(commentsList => [...commentsList, ...comments]);
     }, []);
 
     const getNextTenPopularComments = React.useCallback(async() => {
@@ -221,33 +221,6 @@ const CommentScreen = ({navigation, route}) => {
         }
         navigation.goBack(null);
     }, [imageReply]);
-
-
-    // Load Meme with template and template state
-    const CreateMeme = React.useCallback(({image}) => {
-        return (
-            <PinturaEditor
-                ref={editorRef}
-                
-                // src={image}
-                // onClose={() => console.log('closed')}
-                // onDestroy={() => console.log('destroyed')}
-                // onLoad={() => 
-                //     editorRef.current.editor.processImage(templateState)
-                // }
-                onInit={() => 
-                    editorRef.current.editor.processImage(image, templateState)
-                }
-                onProcess={async({ dest }) => {
-                    manipulateAsync(dest, [], ).then((res) => {
-                        setFinished(true);
-                        setImage(res.uri);
-                        // console.log(res.uri)
-                    })
-                }}
-            />    
-        )
-    }, [])
 
     
     const renderItem = React.useCallback(({ item, index }) => {
@@ -281,20 +254,17 @@ const CommentScreen = ({navigation, route}) => {
                     />
                 </View>
             );
-        }else if(item.imageUrl || item.template){
+        }else if(item.imageHeight){
             return (
-                <ImagePost item={item} index={index} navigation={navigation}/>
+                <ImagePost item={item} navigation={navigation} theme={theme}/>
             );
         }else{
             return (
-                <TextPost item={item} index={index} navigation={navigation}/>
+                <TextPost item={item} navigation={navigation} theme={theme}/>
             );
         }
     }, [theme, image]);
 
-    if(commentsList < 5){
-        return null
-    }
 
     //NEED***NEED to make sure multiple instance of PinturaLoadImage are not created***
     return (
@@ -302,16 +272,16 @@ const CommentScreen = ({navigation, route}) => {
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
             {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image}/>}
+            {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
 
             <FlashList
-                ref={flashListRef}
+                // ref={flashListRef}
                 data={commentsList}
                 
                 onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
                 onEndReachedThreshold={1} //need to implement infinite scroll
 
-                extraData={[commentsList]}
+                // extraData={[]}
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
@@ -319,36 +289,27 @@ const CommentScreen = ({navigation, route}) => {
 
                 removeClippedSubviews={true}
 
-                estimatedItemSize={300}
+                estimatedItemSize={200}
                 estimatedListSize={{height: windowHeight, width: windowWidth}}
 
                 ListFooterComponent={
                     <View style={{height: 200}}/>
                 }
 
-                // keyExtractor={keyExtractor}
+                getItemType={getItemType}
+                
+                // overrideItemLayout={overrideItemLayout}
+
+                keyExtractor={keyExtractor}
             />
 
             {replyBottomSheet(onReply, navigation, replyToPostId, commentId, profile, username)}
-            
         </View>
     );
 
 };
 
 const styles = StyleSheet.create({
-    header: {
-        height: HEADER_HEIGHT,
-        backgroundColor: 'lightblue',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    stickyHeader: {
-        height: STICKY_HEADER_HEIGHT,
-        backgroundColor: 'lightgreen',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     item: {
         padding: 10,
     },

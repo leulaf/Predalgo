@@ -7,7 +7,7 @@ import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
-import SimpleTopBar from '../components/SimpleTopBar';
+import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
 

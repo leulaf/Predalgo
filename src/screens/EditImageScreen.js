@@ -2,7 +2,7 @@ import React, {useContext, useState, useEffect, useRef} from 'react';
 import {View, StyleSheet,} from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
-import EditImageTopBar from '../components/EditImageTopBar';
+import EditImageTopBar from '../ScreenTop/EditImageTopBar';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
 import {

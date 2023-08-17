@@ -3,7 +3,7 @@ import {View, Text, TextInput, StyleSheet, TouchableOpacity, Alert} from 'react-
 import { Overlay } from 'react-native-elements';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
-import EditImageTopBar from '../components/EditImageTopBar';
+import EditImageTopBar from '../ScreenTop/EditImageTopBar';
 
 import { StackActions } from '@react-navigation/native';
 

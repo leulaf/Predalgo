@@ -22,14 +22,15 @@ const fetchFirstTenCommentsByRecent = async (replyToPostId, commentId) => {
             const data = doc.data();
             const id = doc.id;
 
+            if(index == snapshot.docs.length - 1){
+                return { id, snap: doc, ...data, index };
+            }
+
             return { id, ...data, index };
         });
 
         // Wait for all promises to resolve before returning the resolved posts
         const resolvedPosts = await Promise.all(posts);
-
-        resolvedPosts.unshift({id: "fir", index: resolvedPosts.length});
-        resolvedPosts.unshift({id: "sec", index: resolvedPosts.length});
         
         resolve(resolvedPosts);
     });
@@ -60,9 +61,6 @@ const fetchFirstTenCommentsByPopular = async (replyToPostId, commentId) => {
 
         // Wait for all promises to resolve before returning the resolved posts
         const resolvedPosts = await Promise.all(posts);
-
-        resolvedPosts.unshift({id: "fir", index: resolvedPosts.length});
-        resolvedPosts.unshift({id: "sec", index: resolvedPosts.length});
 
         resolve(resolvedPosts);
     });

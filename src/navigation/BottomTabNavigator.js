@@ -4,7 +4,7 @@ import { DrawerActions } from '@react-navigation/native';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ThemeContext} from '../../context-store/context';
-import TopBar from '../components/TopBar';
+import TopBar from '../ScreenTop/TopBar';
 
 import { BlurView } from 'expo-blur';
 

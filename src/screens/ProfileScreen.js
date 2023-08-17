@@ -6,7 +6,7 @@ import {ThemeContext} from '../../context-store/context';
 import { firebase, db, storage } from '../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import AllUserPosts from '../components/postTypes/AllUserPosts';
-import SimpleTopBar from '../components/SimpleTopBar';
+import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
 import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 

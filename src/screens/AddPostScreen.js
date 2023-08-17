@@ -17,7 +17,7 @@ import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import imgflip from '../api/imgflip';
 import PostBar from '../components/PostBar';
-import AddPostTopBar from '../components/AddPostTopBar';
+import AddPostTopBar from '../ScreenTop/AddPostTopBar';
 
 import DarkMemeCreate from '../../assets/post_meme_create_dark.svg';
 import LightMemeCreate from '../../assets/post_meme_create_light.svg';

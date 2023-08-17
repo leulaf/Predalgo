@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, TextInput} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ThemeContext} from '../../context-store/context';
 import UsersScreen from '../components/followingScreens/UsersScreen';
-import SimpleTopBar from '../components/SimpleTopBar';
+import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
 

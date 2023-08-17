@@ -12,7 +12,7 @@ import { getAuth, updateProfile } from "firebase/auth";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
 
-import MainProfileTop from '../components/MainProfileTop';
+import MainProfileTop from '../ScreenTop/MainProfileTop';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

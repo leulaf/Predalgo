@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
@@ -9,8 +9,6 @@ import TitleText from '../shared/Text/TitleText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
-import { manipulateAsync } from 'expo-image-manipulator';
-
 import { FlashList } from '@shopify/flash-list';
 
 import { Image } from 'expo-image';
@@ -18,24 +16,22 @@ import ResizableImage from '../shared/ResizableImage';
 
 import { fetchFirstTenPostCommentsByRecent, fetchFirstTenPostCommentsByPopular, fetchNextTenPopularComments } from '../shared/post/GetPostComments';
 
-import GlobalStyles from '../constants/GlobalStyles';
+import CreateMeme from '../shared/CreateMeme';
+
 import ContentBottom from '../components/postTypes/ContentBottom';
+
 import PostBottom from '../components/postTypes/PostBottom';
+
 import ReplyBottomSheet from '../components/replyBottom/PostReplyBottomSheet';
 
-import MainComment from '../components/commentTypes/MainComment';
+import MainComment from '../components/comments/mainComment/MainComment';
 
-import ListCommentBottom from '../components/commentTypes/ListCommentBottom';
-import uuid from 'react-native-uuid';
-
-
-import SimpleTopBar from '../components/SimpleTopBar';
-
-import PinturaEditor from "@pqina/react-native-expo-pintura";
+import getItemType from '../shared/GetItemType'
+import overrideItemLayout from '../shared/OverrideItemLayout'
 
 
-const HEADER_HEIGHT = 200; 
-const STICKY_HEADER_HEIGHT = 50; 
+import SimpleTopBar from '../ScreenTop/SimpleTopBar';
+
 
 const windowWidth = Dimensions.get("screen").width;
 const windowHeight = Dimensions.get("screen").height;
@@ -107,12 +103,13 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                     <PostText text={text}/>
 
                     <ResizableImage 
-                    image={image}
-                    height={imageHeight}
-                    width={imageWidth}
-                    maxWidth={windowWidth}
-                    style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
-                />
+                        image={image}
+                        height={imageHeight}
+                        width={imageWidth}
+                        maxWidth={windowWidth}
+                        maxHeight={500}
+                        style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
+                    />
                 
                 {/* Content bottom */}
                 <View style={{marginLeft: 5, marginTop: 5, marginBottom: 0}}>
@@ -129,11 +126,12 @@ const imageEquals =(prev, next) => {
     return prev.image === next.image
 }
 
-const ImagePost = React.memo(({item, index, navigation})=>{
-    const tempString = Math.random();
+
+const ImagePost = React.memo(({item, theme, navigation})=>{
     return (
         <MainComment
             navigation={navigation}
+            theme={theme}
             replyToPostId={item.replyToPostId}
             profile={item.profile}
             username={item.username}
@@ -149,7 +147,6 @@ const ImagePost = React.memo(({item, index, navigation})=>{
             imageHeight={item.imageHeight}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
-            index={index}
         />
     );
 }, itemEquals);
@@ -159,11 +156,11 @@ const itemEquals = (prev, next) => {
     return prev.item.id === next.item.id
 }
 
-const TextPost = React.memo(({item, index, navigation})=>{
-    const tempString = Math.random();
+const TextPost = React.memo(({item, theme, navigation})=>{
     return (
         <MainComment
             navigation={navigation}
+            theme={theme}
             replyToPostId={item.replyToPostId}
             profile={item.profile}
             username={item.username}
@@ -172,27 +169,13 @@ const TextPost = React.memo(({item, index, navigation})=>{
             text={item.text}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
-            index={index}
         />
     );
 }, itemEquals);
 
-const overrideItemLayout = (layout, item) => () => {
-    if(item.imageHeight){
-        //make sure to account for max image size & top and bottom of comment
-        layout.size = item.imageHeight+100; 
-    }else{
-        layout.size = 0;
-    }
-    
-    // layout.span = windowWidth;
-}
-
-const getItemType= (item) => {
-    return item.imageHeight ? "image" : "text";
-}
 
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+
 
 const PostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
@@ -203,9 +186,6 @@ const PostScreen = ({navigation, route}) => {
 
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
     const [finished, setFinished] = useState(template ? false : true);
-
-    const flashListRef = useRef(null);
-    const editorRef = useRef(null);
 
 
     useEffect(() => {
@@ -242,34 +222,6 @@ const PostScreen = ({navigation, route}) => {
     }, [imageReply]);
 
 
-    // Load Meme with template and template state
-    const CreateMeme = React.useCallback(({image, meme}) => {
-        return (
-            <PinturaEditor
-                ref={editorRef}
-                
-                // src={image}
-                // onClose={() => console.log('closed')}
-                // onDestroy={() => console.log('destroyed')}
-                // onLoad={() => 
-                //     editorRef.current.editor.processImage(templateState)
-                // }
-                onInit={() => 
-                    editorRef.current.editor.processImage(image, templateState)
-                }
-                onProcess={async({ dest }) => {
-                    manipulateAsync(dest, [], ).then((res) => {
-                        setFinished(true);
-                        setImage(res.uri);
-                        // console.log(res.uri)
-                    })
-                }}
-            />    
-        )
-    }, [])
-
-
-
     const renderItem = React.useCallback(({ item, index }) => {
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
@@ -299,13 +251,13 @@ const PostScreen = ({navigation, route}) => {
                     />
                 </View>
             );
-        }else if(item.imageUrl || item.template){
+        }else if(item.imageHeight){
             return (
-                <ImagePost item={item} index={index} navigation={navigation}/>
+                <ImagePost item={item} navigation={navigation} theme={theme}/>
             );
         }else{
             return (
-                <TextPost item={item} index={index} navigation={navigation}/>
+                <TextPost item={item} navigation={navigation} theme={theme}/>
             );
         }
     }, [theme, image])
@@ -316,16 +268,15 @@ const PostScreen = ({navigation, route}) => {
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
             {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image}/>}
+            {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
             
             <FlashList
-                ref={flashListRef}
                 data={commentsList}
                 
                 onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
                 onEndReachedThreshold={1} //need to implement infinite scroll
 
-                // extraData={[commentsList]}
+                // extraData={[]}
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
@@ -341,30 +292,18 @@ const PostScreen = ({navigation, route}) => {
                 }
 
                 getItemType={getItemType}
+
+                // overrideItemLayout={overrideItemLayout}
                 
                 keyExtractor={keyExtractor}
-
             />
 
             {replyBottomSheet(navigation, postId, profile, username)}
-
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    header: {
-        height: HEADER_HEIGHT,
-        backgroundColor: 'lightblue',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    stickyHeader: {
-        height: STICKY_HEADER_HEIGHT,
-        backgroundColor: 'lightgreen',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     item: {
         padding: 10,
     },

@@ -6,7 +6,7 @@ import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, orderBy, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
-import SimpleTopBar from '../components/SimpleTopBar';
+import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 import AllTagPosts from '../components/postTypes/AllTagPosts';
 
 export default function TagScreen({navigation, route}){

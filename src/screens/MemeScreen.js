@@ -16,7 +16,7 @@ import {ThemeContext} from '../../context-store/context';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, query, where, orderBy, limit, getDocs, } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
-import MemeTopBar from '../components/MemeTopBar';
+import EditMemeTopBar from '../ScreenTop/EditImageTopBar';
 
 import DarkMemeCreate from '../../assets/post_meme_create_light.svg';
 import LightMemeCreate from '../../assets/post_meme_create_dark.svg';

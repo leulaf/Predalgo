@@ -3,7 +3,8 @@ import { View, StyleSheet, Dimensions} from 'react-native';
 import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import PostContainer from './PostContainer';
-import ImageContainer from '../ImageContainer';
+
+// import ImageContainer from '../ImageContainer';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -72,7 +73,7 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, 
             content={
                 <View >
                     <View style={{flexDirection: "row", alignSelf: 'center'}}>
-                        <ImageContainer imageSource={{ uri: imageUrl }} />
+                        {/* <ImageContainer imageSource={{ uri: imageUrl }} /> */}
                     </View>
                 </View>
             }
