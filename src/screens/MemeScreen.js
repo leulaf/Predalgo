@@ -16,7 +16,7 @@ import {ThemeContext} from '../../context-store/context';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, query, where, orderBy, limit, getDocs, } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
-import EditMemeTopBar from '../ScreenTop/EditImageTopBar';
+import MemeTopBar from '../ScreenTop/MemeTopBar'
 
 import DarkMemeCreate from '../../assets/post_meme_create_light.svg';
 import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
@@ -141,12 +141,13 @@ const MemeScreen = ({ navigation, route }) => {
                 data={memeTemplates}
                 numColumns={2}
                 
+                optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
 
                 // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
                 // onEndReachedThreshold={1} //need to implement infinite scroll
                 
                 renderItem={renderItem}
-                extraData={[memeTemplates]}
+                // extraData={[]}
 
                 removeClippedSubviews={true}
 
@@ -154,6 +155,11 @@ const MemeScreen = ({ navigation, route }) => {
                 estimatedListSize={{height: windowHeight, width: windowWidth}}
 
                 showsVerticalScrollIndicator={false}
+
+                overrideItemLayout={(layout, item) =>{
+                    layout.span = windowWidth/2 - 8;
+                    // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+                }}
 
                 ListHeaderComponent={
                     // template image, meme name, uploader, use count

@@ -182,7 +182,7 @@ const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     
     const {profile, commentId, comments, onReply, replyToCommentId, replyToPostId, username, profilePic, text, imageUrl, template, templateState, imageWidth, imageHeight, memeName, tags, likesCount, commentsCount} = route.params;
-    // console.log(comments)
+
     const [commentsList, setCommentsList] = useState(comments ? comments :[ {id: "one"}, {id: "two"}]);
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
@@ -202,7 +202,7 @@ const CommentScreen = ({navigation, route}) => {
 
 
     const getFirstTenCommentsByPopular = React.useCallback(async() => {
-        console.log("sdf")
+
         const comments = await fetchFirstTenCommentsByPopular(replyToPostId, commentId);
         setCommentsList(commentsList => [...commentsList, ...comments]);
     }, []);
@@ -224,7 +224,7 @@ const CommentScreen = ({navigation, route}) => {
 
     
     const renderItem = React.useCallback(({ item, index }) => {
-        // console.log(item, "     ", index)
+
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
             return (

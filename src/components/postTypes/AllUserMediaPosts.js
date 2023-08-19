@@ -55,13 +55,17 @@ export default function AllUserMediaPosts({ userId, postList }){
           data={imagePostList}
           numColumns={2}
 
+          optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
+
           // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
           // onEndReachedThreshold={1} //need to implement infinite scroll
           
           renderItem={renderItem}
-          extraData={[imagePostList]}
+          // extraData={[]}
 
           removeClippedSubviews={true}
+
+          showsVerticalScrollIndicator={false}
 
           estimatedItemSize={200}
           estimatedListSize={{height: windowHeight, width: windowWidth}}
@@ -69,6 +73,11 @@ export default function AllUserMediaPosts({ userId, postList }){
           ListFooterComponent={
               <View style={{height: 100}}/>
           }
+
+          overrideItemLayout={(layout, item) =>{
+            layout.span = windowWidth/2 - 8;
+            // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+          }}
 
           keyExtractor={keyExtractor}
         />

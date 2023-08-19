@@ -10,7 +10,7 @@ import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/con
 
 import BottomSheet, {BottomSheetScrollView, BottomSheetTextInput} from '@gorhom/bottom-sheet';
 
-import LinkInput from './replyScreens/LinkInput';
+import LinkInput from './shared/LinkInput';
 
 // light mode icons
 import UploadLight from '../../../assets/upload_light.svg';
@@ -44,7 +44,8 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
     const inputAccessoryViewID = uuid.v4(); // maybe use uuid to generate this id
     
-    const [linkInput, setLinkInput] = useState(null);
+    const [linkView, setLinkView] = useState(false);
+
     const [textInputInFocus, setTextInputInFocus] = useState(false);
 
     const [currentSelection, setCurrentSelection] = useState({start: 0, end: 0});
@@ -96,13 +97,12 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     }, [imageReply])
 
     const onSelectionChange = ({ nativeEvent: { selection, text } }) => {
-        console.log(
-          "change selection to",
-          selection,
-          "for value",
-          this.state.value
-        );
-        console.log(text);
+        // console.log(
+        //   "change selection to",
+        //   selection,
+        //   "for value",
+        //   replyTextToPost.substring(selection.start, selection.end)
+        // );
         setCurrentSelection(selection);
     };
 
@@ -148,8 +148,15 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     // Collapse the bottom sheet when the text input is blurred (Not in focus)
     const handleBlur = () => {
 
-        Keyboard.dismiss();
+        !linkView && Keyboard.dismiss();
+        !linkView && bottomSheetRef.current.snapToIndex(0);
+    }
+
+    const handleBlurLinkView = () => {
         bottomSheetRef.current.snapToIndex(0);
+        // setLinkView(false);
+        Keyboard.dismiss();
+        
     }
 
     const onReplyWithText = async () => {
@@ -277,98 +284,113 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
 
     const bottomButtons = () => (
+        linkView ?
+            <LinkInput
+                handleFocus={handleFocus}
+                handleBlur={handleBlurLinkView}
+                theme={theme}
+                linkView={linkView}
+                setLinkView={setLinkView}
+                currentSelection={currentSelection}
+                setCurrentSelection={setCurrentSelection}
+                replyTextToPost={replyTextToPost}
+                setReplyTextToPost={setReplyTextToPost}
+            />
+
+        :
+
         <View style={theme == 'light' ? styles.lightBottomContainer : styles.darkBottomContainer}>
         
-        {/* Upload, Link, Create Meme Buttons */}
-        <View style={{ flex: 1, flexDirection: 'row', marginBottom: 1}}>
-            
+            {/* Upload, Link, Create Meme Buttons */}
+            <View style={{ flex: 1, flexDirection: 'row', marginBottom: 1}}>
+                
 
-            
-            
-            {/* Link Button */}
-            <TouchableOpacity
-                    // style={{flexDirection: 'row',}}
-                    onPress={() => navigation.navigate("Upload")}
-                >
-                {link}
-            </TouchableOpacity>
-
-
+                
+                
+                {/* Link Button */}
+                <TouchableOpacity
+                        // style={{flexDirection: 'row',}}
+                        onPress={() => setLinkView(true)}
+                    >
+                    {link}
+                </TouchableOpacity>
 
 
-            {/* Upload Image Button */}
-            <TouchableOpacity
-                    // style={{flexDirection: 'row',}}
+
+
+                {/* Upload Image Button */}
+                <TouchableOpacity
+                        // style={{flexDirection: 'row',}}
+                        onPress={() => 
+                            {
+                                setImageReply(null)
+                                navigation.navigate("Upload", {
+                                    forCommentOnComment: false,
+                                    forCommentOnPost: true,
+                                })
+                            }
+                        }
+                    >
+                    {upload}
+                </TouchableOpacity>   
+                
+                
+
+
+
+                {/* Create Meme Button */}
+                <TouchableOpacity
+                    style={{flexDirection: 'row',  flex: 1 }}
                     onPress={() => 
                         {
                             setImageReply(null)
-                            navigation.navigate("Upload", {
+                            navigation.navigate("AddPost", {
                                 forCommentOnComment: false,
                                 forCommentOnPost: true,
                             })
                         }
                     }
                 >
-                {upload}
-            </TouchableOpacity>   
-            
-            
+                    {createMeme}
+                    
+                    <Text marginBottom={0} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                        Memes
+                    </Text>
+
+                </TouchableOpacity>
 
 
 
-            {/* Create Meme Button */}
+            </View>
+
+
+            {/* Reply Button */}
             <TouchableOpacity
-                style={{flexDirection: 'row',  flex: 1 }}
-                onPress={() => 
-                    {
-                        setImageReply(null)
-                        navigation.navigate("AddPost", {
-                            forCommentOnComment: false,
-                            forCommentOnPost: true,
-                        })
-                    }
-                }
-            >
-                {createMeme}
-                
-                <Text marginBottom={0} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
-                    Memes
-                </Text>
+                style={{marginBottom: 6}}
+                onPress={ async () =>
+                        {
+                            Keyboard.dismiss();
+                            bottomSheetRef.current.snapToIndex(0);
 
-            </TouchableOpacity>
+                            if(replyImageToPost && replyImageToPost.template){
+                                
+                                await onReplyWithMeme();
 
+                            }else if(replyImageToPost){
+                                
+                                await onReplyWithImage();
 
+                            }else{
 
-        </View>
+                                await onReplyWithText();
 
-
-        {/* Reply Button */}
-        <TouchableOpacity
-            style={{marginBottom: 6}}
-            onPress={ async () =>
-                    {
-                        Keyboard.dismiss();
-                        bottomSheetRef.current.snapToIndex(0);
-
-                        if(replyImageToPost && replyImageToPost.template){
-                            
-                            await onReplyWithMeme();
-
-                        }else if(replyImageToPost){
-                            
-                            await onReplyWithImage();
-
-                        }else{
-
-                            await onReplyWithText();
-
+                            }
                         }
                     }
-                }
-        >
-            {replyButton}
-        </TouchableOpacity>
-        
+            >
+                {replyButton}
+            </TouchableOpacity>
+            
 
 
         </View>
@@ -399,10 +421,24 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                 backgroundStyle={theme == 'light' ? styles.lightBottomSheet : styles.darkBottomSheet}
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#DDDDDD' : '#2D2D2D'}}
             >
+                {/* { linkView &&
+                            <LinkInput
+                                handleFocus={() => handleFocus() }
+                                theme={theme}
+                                linkView={linkView}
+                                setLinkView={setLinkView}
+                                inputAccessoryViewID={inputAccessoryViewID}
+                                replyTextToPost={replyTextToPost}
+                                setReplyTextToPost={setReplyTextToPost}
+                            />
+                        } */}
+                
                 <View 
                     automaticallyAdjustKeyboardInsets={true}
                     // contentContainerStyle={theme == 'light' ? styles.lightReplyTextToPostContainer : styles.darkReplyTextToPostContainer}
                 >
+                    
+                    
                     <View 
                         style={[
                             theme == 'light' ? 
@@ -431,9 +467,10 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                 ),
                         ]}
                     >
-
+                        {/* <BottomSheeLinkInput */}
+                        
                         {/* <BottomSheetTextInput */}
-                        { linkInput == null &&
+                        { 
                             <TextInput
                                 ref={(input) => { replyTextToPostRef.current = input; }}
                                 inputAccessoryViewID={inputAccessoryViewID}
@@ -460,7 +497,14 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                 placeholder="Reply to post"
                                 value={replyTextToPost}
                                 placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
-                                onChangeText={newTerm => setReplyTextToPost(newTerm)}
+                                onChangeText={
+                                    newTerm => 
+                                    setReplyTextToPost(
+                                        newTerm
+                                    )
+                            }
+                                onSelectionChange={onSelectionChange}
+                                // selection={currentSelection}
                                 // onEndEditing={(newTerm) => 
                                 //     commentTextOnPost(
                                 //         newTerm,
@@ -476,12 +520,14 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                         }
 
                         {
-                            textInputInFocus && linkInput == null?
+                            textInputInFocus ?
                                 // {/* Show bottom buttons only when text input is clicked */}
                                 <InputAccessoryView nativeID={inputAccessoryViewID}>
                                     {bottomButtons()}
                                 </InputAccessoryView>
                             :
+                                
+                                !linkView &&
                                 <TouchableOpacity
                                     style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center',}}
                                     onPress = {() => handleFocus()}
@@ -489,20 +535,16 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                     {linkSmall}
                                     {createMemeSmall}
                                 </TouchableOpacity>
+                                
                         }
 
-                        {/* <BottomSheeLinkInput */}
-                        { linkInput != null &&
-                            <LinkInput 
-                            
-                            />
-                        }
+                        
                             
 
                     </View>
                     
                     {
-                        (replyImageToPost && currentIndex != 0 && linkInput == null) &&
+                        (replyImageToPost && currentIndex != 0) &&
                         <View style={{alignSelf: 'center', flexDirection: 'row'}}>
                             {/* Selected Image */}
                             <TouchableOpacity

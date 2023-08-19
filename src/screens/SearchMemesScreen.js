@@ -126,13 +126,20 @@ const SearchMemesScreen = ({navigation, route}) => {
           data={memeTemplates}
           numColumns={2}
 
+          optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
+
           // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
           // onEndReachedThreshold={1} //need to implement infinite scroll
           
           renderItem={renderItem}
-          extraData={[memeTemplates]}
+          // extraData={[]}
 
           removeClippedSubviews={true}
+
+          overrideItemLayout={(layout, item) =>{
+            layout.span = windowWidth/2 - 8;
+            // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+        }}
 
           estimatedItemSize={200}
           estimatedListSize={{height: windowHeight, width: windowWidth}}

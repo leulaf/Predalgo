@@ -6,7 +6,7 @@ import Animated, {FadeIn} from 'react-native-reanimated';
 import { MasonryFlashList } from '@shopify/flash-list';
 
 import { db, storage } from '../config/firebase';
-import { collection, addDoc, getDoc, doc, query, where, orderBy, limit, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDoc, doc, query, where, orderBy, startAfter, limit, getDocs } from "firebase/firestore";
 
 import ResizableImage from '../shared/ResizableImage';
 import { Image } from 'expo-image';
@@ -132,20 +132,45 @@ const AddPostScreen = ({navigation, route}) => {
         const q = query(
             collection(db, "imageTemplates"),
             orderBy("useCount", "desc"),
-            limit(10)
+            limit(5)
         );
         
         await getDocs(q)
         .then((snapshot) => {
-            let templates = snapshot.docs.map(doc => {
+            let templates = snapshot.docs.map((doc, index)=> {
                 const data = doc.data();
                 const id = doc.id;
+
+                if(index == snapshot.docs.length -1){
+                  return { id, ...data, snap: doc }
+                }
                 return { id, ...data }
             })
 
             setMemeTeplates(templates);
         });
     }, []);
+
+    const getNextTenTemplates = React.useCallback(async () => {
+
+      const q = query(
+          collection(db, "imageTemplates"),
+          orderBy("useCount", "desc"),
+          // startAfter(memeTemplates[memeTemplates.length-1].snap),
+          limit(10)
+      );
+      
+      await getDocs(q)
+      .then((snapshot) => {
+          let templates = snapshot.docs.map(doc => {
+              const data = doc.data();
+              const id = doc.id;
+              return { id, ...data }
+          })
+
+          setMemeTeplates(templates);
+      });
+  }, []);
 
 
     const renderItem = React.useCallback(({item, index}) => {
@@ -193,11 +218,13 @@ const AddPostScreen = ({navigation, route}) => {
           data={memeTemplates}
           numColumns={2}
 
-          // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
-          // onEndReachedThreshold={1} //need to implement infinite scroll
+          optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
+
+          onEndReached={memeTemplates[memeTemplates.length-1].snap && getNextTenTemplates() }
+          onEndReachedThreshold={1} //need to implement infinite scroll
           
           renderItem={renderItem}
-          extraData={[memeTemplates]}
+          // extraData={[]}
 
           removeClippedSubviews={true}
 
@@ -205,6 +232,11 @@ const AddPostScreen = ({navigation, route}) => {
           estimatedListSize={{height: windowHeight, width: windowWidth}}
 
           showsVerticalScrollIndicator={false}
+
+          overrideItemLayout={(layout, item) =>{
+            layout.span = windowWidth/2 - 8;
+            // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+          }}
 
           ListHeaderComponent={
             <View>

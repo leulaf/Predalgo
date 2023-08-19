@@ -30,50 +30,6 @@ const windowWidth = Dimensions.get('screen').width;
 
 const Stack = createStackNavigator();
 
-// const cardStyleInterpolator = ({
-//     current,
-//     next,
-//     inverted,
-//     layouts: { screen }
-//   }) => {
-//     const progress = Animated.add(
-//       current.progress.interpolate({
-//         inputRange: [0, 1],
-//         outputRange: [0, 1],
-//         extrapolate: "clamp"
-//       }),
-//       next
-//         ? next.progress.interpolate({
-//             inputRange: [0, 1],
-//             outputRange: [0, 1],
-//             extrapolate: "clamp"
-//           })
-//         : 0
-//     );
-
-//     return {
-//       cardStyle: {
-//         transform: [
-//           {
-//             translateX: Animated.multiply(
-//               progress.interpolate({
-//                 inputRange: [0, 1, 2],
-//                 outputRange: [
-//                   screen.width, // Focused, but offscreen in the beginning
-//                   0, // Fully focused
-//                   //I changed this line only
-//                   //screen.width * -0.3 // Fully unfocused
-//                   -screen.width
-//                 ],
-//                 extrapolate: "clamp"
-//               }),
-//               inverted
-//             )
-//           }
-//         ]
-//       }
-//     };
-//   };
 
 const MainStackNavigator = ({}) => {
 
@@ -81,11 +37,6 @@ const MainStackNavigator = ({}) => {
   return (
     <Stack.Navigator 
         initialRouteName="Drawer"
-        // screenOptions={{
-            // headerShown: false, //Optional
-            // cardStyle: { backgroundColor: "transparent" }, //Optional
-            // cardStyleInterpolator
-        // }}
     >
         <Stack.Screen name="Drawer" component={DrawerNavigator}
             options={{
