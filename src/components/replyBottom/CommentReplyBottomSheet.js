@@ -10,6 +10,8 @@ import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/con
 
 import BottomSheet, {BottomSheetScrollView, BottomSheetTextInput} from '@gorhom/bottom-sheet';
 
+import LinkInput from './shared/LinkInput';
+
 // light mode icons
 import UploadLight from '../../../assets/upload_light.svg';
 import CreateMemeLight from '../../../assets/meme_create_light.svg';
@@ -40,6 +42,10 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
     const [replyMemeToPost, setReplyMemeToPost] = useState("");
 
     const inputAccessoryViewID = uuid.v4(); // maybe use uuid to generate this id
+
+    const [linkView, setLinkView] = useState(false);
+
+    const [currentSelection, setCurrentSelection] = useState({start: 0, end: 0});
 
     const [textInputInFocus, setTextInputInFocus] = useState(false);
 
@@ -85,6 +91,16 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
         }
     }, [imageReply])
 
+    const onSelectionChange = ({ nativeEvent: { selection, text } }) => {
+        // console.log(
+        //   "change selection to",
+        //   selection,
+        //   "for value",
+        //   replyTextToPost.substring(selection.start, selection.end)
+        // );
+        setCurrentSelection(selection);
+    };
+
     // Makes sure the keyboard is open when the bottom sheet is expanded
     const handleSheetAnimate = useCallback((from, to) => {
         // console.log('handleSheetAnimate', from, to);
@@ -127,8 +143,15 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
     // Collapse the bottom sheet when the text input is blurred (Not in focus)
     const handleBlur = () => {
 
-        Keyboard.dismiss();
+        !linkView && Keyboard.dismiss();
+        !linkView && bottomSheetRef.current.snapToIndex(0);
+    }
+
+    const handleBlurLinkView = () => {
         bottomSheetRef.current.snapToIndex(0);
+        // setLinkView(false);
+        Keyboard.dismiss();
+        
     }
 
     const onReplyWithText = async () => {
@@ -261,6 +284,20 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
 
 
     const bottomButtons = () => (
+        linkView ?
+            <LinkInput
+                handleFocus={handleFocus}
+                handleBlur={handleBlurLinkView}
+                theme={theme}
+                linkView={linkView}
+                setLinkView={setLinkView}
+                currentSelection={currentSelection}
+                setCurrentSelection={setCurrentSelection}
+                replyTextToPost={replyTextToPost}
+                setReplyTextToPost={setReplyTextToPost}
+            />
+
+        :
         <View style={theme == 'light' ? styles.lightBottomContainer : styles.darkBottomContainer}>
         
         {/* Upload, Link, Create Meme Buttons */}
@@ -272,7 +309,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
             {/* Link Button */}
             <TouchableOpacity
                     // style={{flexDirection: 'row',}}
-                    onPress={() => navigation.navigate("Upload")}
+                    onPress={() => setLinkView(true)}
                 >
                 {link}
             </TouchableOpacity>
@@ -443,6 +480,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                             placeholder="Reply to comment"
                             placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
                             onChangeText={newTerm => setReplyTextToPost(newTerm)}
+                            onSelectionChange={onSelectionChange}
                             // onEndEditing={(newTerm) => 
                             //     commentTextOnPost(
                             //         newTerm,
@@ -455,22 +493,18 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                             //     })
                             // }
                         />
+                        
+                        {
+                            !textInputInFocus && !linkView &&
 
-                        {textInputInFocus ?
-                                // {/* Show bottom buttons only when text input is clicked */}
-                                <InputAccessoryView nativeID={inputAccessoryViewID}>
-                                    {bottomButtons()}
-                                </InputAccessoryView>
-                            :
-                                <TouchableOpacity
-                                    style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center',}}
-                                    onPress = {() => handleFocus()}
-                                > 
-                                    {linkSmall}
-                                    {createMemeSmall}
-                                </TouchableOpacity>
+                            <TouchableOpacity
+                                style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center',}}
+                                onPress = {() => handleFocus()}
+                            > 
+                                {linkSmall}
+                                {createMemeSmall}
+                            </TouchableOpacity>
                         }
-                            
 
                     </View>
                     
@@ -526,12 +560,11 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
 
                 {/* Show bottom buttons only when text input is clicked */}
                 {
-                    textInputInFocus ?
-                        <InputAccessoryView nativeID={inputAccessoryViewID}>
-                            {bottomButtons()}
-                        </InputAccessoryView>
-                    :
-                        null
+                    textInputInFocus &&
+                    
+                    <InputAccessoryView nativeID={inputAccessoryViewID}>
+                        {bottomButtons()}
+                    </InputAccessoryView>
                 }
 
             </BottomSheet>

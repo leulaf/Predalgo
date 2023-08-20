@@ -9,7 +9,7 @@ function isValidUrl(string) {
     const urlRegexSafe = require('url-regex-safe');
     const matches = string.match(urlRegexSafe());
 
-    return matches?.length == 1;
+    return matches?.length == 1 && matches[0].length == string.length;
 }
 
 // Format link url string to later parse and display as clickable link
@@ -64,9 +64,11 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
             );
 
             setLinkView(false);
-        }if(linkInput != "" && !isValidUrl(linkInput)){
+        }else if(linkInput != "" && !isValidUrl(linkInput)){
 
             Alert.alert('Invalid URL\nPlease enter a valid URL')
+        }else{
+            setLinkView(false);
         }
 
         
@@ -147,7 +149,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     maxLength={100}
                     multiline={false}
                     style={theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle} 
-                    placeholder="https://"
+                    placeholder="https://example.com"
                     value={linkInput}
                     placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
                     onChangeText={

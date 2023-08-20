@@ -46,9 +46,9 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     
     const [linkView, setLinkView] = useState(false);
 
-    const [textInputInFocus, setTextInputInFocus] = useState(false);
-
     const [currentSelection, setCurrentSelection] = useState({start: 0, end: 0});
+
+    const [textInputInFocus, setTextInputInFocus] = useState(false);
 
     const [currentIndex, setCurrentIndex] = useState(0);
     
@@ -421,17 +421,6 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                 backgroundStyle={theme == 'light' ? styles.lightBottomSheet : styles.darkBottomSheet}
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#DDDDDD' : '#2D2D2D'}}
             >
-                {/* { linkView &&
-                            <LinkInput
-                                handleFocus={() => handleFocus() }
-                                theme={theme}
-                                linkView={linkView}
-                                setLinkView={setLinkView}
-                                inputAccessoryViewID={inputAccessoryViewID}
-                                replyTextToPost={replyTextToPost}
-                                setReplyTextToPost={setReplyTextToPost}
-                            />
-                        } */}
                 
                 <View 
                     automaticallyAdjustKeyboardInsets={true}
@@ -467,7 +456,6 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                 ),
                         ]}
                     >
-                        {/* <BottomSheeLinkInput */}
                         
                         {/* <BottomSheetTextInput */}
                         { 
@@ -498,11 +486,11 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                                 value={replyTextToPost}
                                 placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
                                 onChangeText={
-                                    newTerm => 
-                                    setReplyTextToPost(
-                                        newTerm
-                                    )
-                            }
+                                        newTerm => 
+                                        setReplyTextToPost(
+                                            newTerm
+                                        )
+                                }
                                 onSelectionChange={onSelectionChange}
                                 // selection={currentSelection}
                                 // onEndEditing={(newTerm) => 
@@ -520,21 +508,15 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                         }
 
                         {
-                            textInputInFocus ?
-                                // {/* Show bottom buttons only when text input is clicked */}
-                                <InputAccessoryView nativeID={inputAccessoryViewID}>
-                                    {bottomButtons()}
-                                </InputAccessoryView>
-                            :
-                                
-                                !linkView &&
-                                <TouchableOpacity
-                                    style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center',}}
-                                    onPress = {() => handleFocus()}
-                                >
-                                    {linkSmall}
-                                    {createMemeSmall}
-                                </TouchableOpacity>
+                            !textInputInFocus && !linkView &&
+
+                            <TouchableOpacity
+                                style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center',}}
+                                onPress = {() => handleFocus()}
+                            >
+                                {linkSmall}
+                                {createMemeSmall}
+                            </TouchableOpacity>
                                 
                         }
 
@@ -604,7 +586,15 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                     
 
                 </View>
+                
+                {/* Show bottom buttons only when text input is clicked */}
+                {
+                    textInputInFocus &&
 
+                    <InputAccessoryView nativeID={inputAccessoryViewID}>
+                        {bottomButtons()}
+                    </InputAccessoryView>
+                }
 
             </BottomSheet>
     );

@@ -1,7 +1,9 @@
 import {Text, StyleSheet} from 'react-native';
 import uuid from 'react-native-uuid';
 import { useNavigation } from '@react-navigation/native';
+import OpenURLButton from './OpenURLButton';
 
+// ***CLEAN THIS UP***
 export default SplitPost = (text, theme) => {
     const navigation = useNavigation();
     let parts = text.split(' ');
@@ -10,8 +12,30 @@ export default SplitPost = (text, theme) => {
     let finalText = [];
     
     for (let i = 0; i < parts.length; i++) {
-        
-        if((parts[i].charAt(0) === '#' || parts[i].charAt(0) === '@') && parts[i].length > 1 && i == 0){
+
+        let url = "";
+        let name = "";
+
+        let urlStart
+        let urlEnd 
+
+        let nameStart
+        let nameEnd
+
+
+        if(parts[i].includes('[') && parts[i].includes(']') && parts[i].includes('(') && parts[i].includes(')')){
+            urlStart = parts[i].indexOf('[') + 1;
+            urlEnd = parts[i].indexOf(']');
+
+            nameStart = parts[i].indexOf('(') + 1;
+            nameEnd = parts[i].indexOf(')');
+
+            url = parts[i].substring(urlStart, urlEnd) != '' ? parts[i].substring(urlStart, urlEnd) : null;
+            name = parts[i].substring(nameStart, nameEnd) != '' ? parts[i].substring(nameStart, nameEnd) : null;
+
+        }
+
+        if((parts[i].charAt(0) === '#' || parts[i].charAt(0) === '@' || urlStart) && parts[i].length > 1 && i == 0){
             // finalText.push( 
             //     <Text key={uuid.v4()} style={theme == 'light' ? styles.lightPostText : styles.darkPostText}>
             //         {parts.slice(currIndex, i).join(" ")}
@@ -19,19 +43,38 @@ export default SplitPost = (text, theme) => {
             // );
 
             finalText.push(
-                <Text
-                    key={uuid.v4()}
-                    suppressHighlighting={true}
-                    onPress={() => NavigateToTag(parts[i], navigation)}
-                    style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
-                >
-                    {parts[i]}
-                </Text>
+                urlStart?
+                    <Text key={uuid.v4()}>
+                        <Text style={theme == 'light' ? styles.lightPostText : styles.darkPostText}>
+                            {" " + parts[i].substring(0, urlStart - 1)}
+                        </Text>
+
+                        <OpenURLButton
+                            url={url}
+                            name={name}
+                            style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
+                        />
+
+                        <Text style={theme == 'light' ? styles.lightPostText : styles.darkPostText}>
+                            {parts[i].substring(nameEnd + 1)}
+                        </Text>
+                    </Text>
+                    
+                :
+                    <Text
+                        key={uuid.v4()}
+                        suppressHighlighting={true}
+                        onPress={() => NavigateToTag(parts[i], navigation)}
+                        style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
+                    >
+                        {parts[i]}
+                    </Text>
             );
+
 
             currIndex = i + 1;
 
-        }else if((parts[i].charAt(0) === '#' || parts[i].charAt(0) === '@') && parts[i].length > 1){
+        }else if((parts[i].charAt(0) === '#' || parts[i].charAt(0) === '@' || urlStart) && parts[i].length > 1){
 
             if(currIndex == 0){
                 finalText.push( 
@@ -49,14 +92,32 @@ export default SplitPost = (text, theme) => {
             
 
             finalText.push(
-                <Text
-                    key={uuid.v4()}
-                    suppressHighlighting={true}
-                    onPress={() => NavigateToTag(parts[i], navigation)}
-                    style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
-                >
-                    {" " + parts[i]}
-                </Text>
+                urlStart?
+                    <Text key={uuid.v4()}>
+                        <Text style={theme == 'light' ? styles.lightPostText : styles.darkPostText}>
+                            {" " + parts[i].substring(0, urlStart - 1)}
+                        </Text>
+
+                        <OpenURLButton
+                            url={url}
+                            name={name}
+                            style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
+                        />
+                        
+                        <Text style={theme == 'light' ? styles.lightPostText : styles.darkPostText}>
+                            {parts[i].substring(nameEnd + 1)}
+                        </Text>
+                    </Text>
+                        
+                :
+                    <Text
+                        key={uuid.v4()}
+                        suppressHighlighting={true}
+                        onPress={() => NavigateToTag(parts[i], navigation)}
+                        style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
+                    >
+                        {" " + parts[i]}
+                    </Text>
             );
 
             currIndex = i + 1;

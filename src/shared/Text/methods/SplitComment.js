@@ -44,19 +44,18 @@ export default SplitPost = (text, theme) => {
 
             finalText.push(
                 urlStart?
-                    <Text>
-                        <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                    <Text key={uuid.v4()}>
+                        <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                             {" " + parts[i].substring(0, urlStart - 1)}
                         </Text>
 
                         <OpenURLButton
-                            key={uuid.v4()}
                             url={url}
                             name={name}
                             style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
                         />
 
-                        <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                        <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                             {parts[i].substring(nameEnd + 1)}
                         </Text>
                     </Text>
@@ -93,19 +92,18 @@ export default SplitPost = (text, theme) => {
 
             finalText.push(
                 urlStart?
-                    <Text>
-                        <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                    <Text key={uuid.v4()}>
+                        <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                             {" " + parts[i].substring(0, urlStart - 1)}
                         </Text>
 
                         <OpenURLButton
-                            key={uuid.v4()}
                             url={url}
                             name={name}
                             style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
                         />
                         
-                        <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                        <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                             {parts[i].substring(nameEnd + 1)}
                         </Text>
                     </Text>
