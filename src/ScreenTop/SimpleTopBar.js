@@ -1,5 +1,6 @@
 import React, {useContext, useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
+import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../context-store/context';
 
@@ -9,35 +10,92 @@ import BackLight from '../../assets/back.svg';
 // dark mode icons
 import BackDark from '../../assets/back_light.svg';
 
+// light mode icons
+import ThreeDotsLight from '../../assets/three_dots_light.svg';
+
+// dark mode icons
+import ThreeDotsDark from '../../assets/three_dots_dark.svg';
+
 const windowWidth = Dimensions.get('window').width;
 
-const SimpleTopBar = ({title}) => {
+const SimpleTopBar = ({title, onGoBack}) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
 
+    let threeDots
+
+    if(theme == 'light'){
+        threeDots = <ThreeDotsLight width={38} height={38} style={{marginBottom: 5, marginRight: 12}}/>
+    }else{
+        threeDots = <ThreeDotsDark width={38} height={38} style={{marginBottom: 5, marginRight: 12}}/>
+    }
+
     return (
             <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
-                
+
+
 
                 {/* back button */}
                 <TouchableOpacity 
-                            style={{flexDirection: 'row'}}
-                            onPress={() => {navigation.goBack()}}
+                            style={{ marginTop: 0, height: 18, width:18, alignItems: 'center', alignContent: 'flex-start', justifyContent: 'flex-start',}}
+                            onPress={() => onGoBack()}
                 >
                     {
                         theme == 'light' ?
-                            <BackLight style={styles.backIcon} width={22} height={22}/>
+                            <BackLight style={styles.backIcon} width={18} height={18}/>
                         :
-                            <BackDark style={styles.backIcon} width={22} height={22}/>
+                            <BackDark style={styles.backIcon} width={18} height={18}/>
                     }
-                    
-                    <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                        {title}
-                    </Text>
                     
                 </TouchableOpacity>
 
+
+                {/* Post/Comment */}
+                <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                    {title}
+                </Text>
+
+
+                {/* Three dots - options button */}
+                <TouchableOpacity
+                    // onPress={() => {navigation.goBack()}}
+                >
+                    {threeDots}
+                </TouchableOpacity>
+
+
+
+                {/*  */}
+                {/*  */}
+                {/*  */}
                 
+                {/* Horizontal container */}
+                {/* <View style={{marginTop: 40, alignSelf: 'flex-end', flexDirection: "row", alignItems: 'center', alignContent: 'center', justifyContent: 'center'}}> */}
+                    
+                    {/* username */}
+                    {/* <TouchableOpacity
+                        activeOpacity={1}
+                        style={{flexDirection: 'column', marginRight: 5}}
+                        onPress={() => goToProfile()}
+                    >
+                        <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                            @{username}
+                        </Text>
+                    </TouchableOpacity> */}
+
+                    {/* profile pic */}
+                    {/* <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={() => goToProfile()}
+                    >
+                        {profilePic != "" &&
+                            <Image source={{ uri: profilePic }} style={styles.profileImage} placeholder={require('../../assets/profile_default.png')} cachePolicy={'disk'}/>
+                        }
+                    </TouchableOpacity> */}
+
+                    {/* Reply to post/comment */}
+
+                {/* </View> */}
                 
             </View>
     );
@@ -47,37 +105,80 @@ const SimpleTopBar = ({title}) => {
 const styles = StyleSheet.create({
     lightTopContainer: {
         backgroundColor: 'white',
-        height: 90,
+        height: Constants.statusBarHeight-5,
         flexDirection: 'row',
-        borderBottomWidth: 1.5,
-        borderColor: '#efefef'
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        alignContent: 'center',
+        borderTopRightRadius: 15,
+        borderTopLeftRadius: 15,
+        // borderBottomWidth: 1.5,
+        // borderColor: '#efefef'
     },
     darkTopContainer: {
-        backgroundColor: '#0C0C0C',
-        height: 90,
+        backgroundColor: '#151515',
+        height: Constants.statusBarHeight-5,
         flexDirection: 'row',
-        borderBottomWidth: 1.5,
-        borderColor: '#2f2f2f'
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        alignContent: 'center',
+        // alignContent: 'center',
+        // justifyContent: 'center',
+        // borderBottomWidth: 1.5,
+        // borderColor: '#2f2f2f'
     },
     backIcon: {
         // alignSelf: 'center',
-        marginTop: 52,
-        marginLeft: 10,
+        // marginTop: 52,
+        marginLeft: 15,
         padding: 10,
     },
     lightText: {
         fontSize: 20,
-        color: '#222222',
+        color: '#3D3D3D',
         fontWeight: '600',
-        marginTop: 50,
-        marginLeft: 5
+        marginTop: 1,
+        marginLeft: 10
     },
     darkText: {
         fontSize: 20,
         color: '#f2f2f2',
         fontWeight: '600',
-        marginTop: 50,
-        marginLeft: 5
+        marginTop: 1,
+        marginLeft: 10
+    },
+    profileImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 50,
+        marginRight: 5,
+        padding: 10,
+    },
+    lightUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#444444',
+        textAlign: "left",
+        marginBottom: 1,
+    },
+    darkUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#DDDDDD',
+        textAlign: "left",
+        marginBottom: 1,
+    },
+    lightRepostUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#777777',
+        textAlign: "left",
+    },
+    darkRepostUsername: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: '#BBBBBB',
+        textAlign: "left",
     },
 });
 

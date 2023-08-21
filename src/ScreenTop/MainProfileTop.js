@@ -18,6 +18,7 @@ const windowWidth = Dimensions.get('window').width;
 
 const MainProfileTop = (props) => {
     const {theme,setTheme} = useContext(ThemeContext);
+    // ****get username from MainProfileScreen instead of using auth.currentUser.displayName*****
     const [username, setUsername] = useState(auth.currentUser.displayName);
 
    return (

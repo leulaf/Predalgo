@@ -175,7 +175,7 @@ export default function ProfileScreen ({route, navigation}) {
                  </View>
                      
  
-                 {/* Posts, Following */}
+                 {/* Posts, Followers */}
                  <View style={{flexDirection: 'column', marginTop: 0, marginLeft: 2}}>
                      <View style={{flexDirection: 'row'}}>
                          

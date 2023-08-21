@@ -1,8 +1,10 @@
 
 
 import React, { useEffect, useState, useContext } from 'react';
-import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
+
+import Constants from 'expo-constants';
 
 import PostText from '../shared/Text/PostText';
 import TitleText from '../shared/Text/TitleText';
@@ -61,6 +63,12 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 }
 
 const Header = React.memo(({theme, navigation, title, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
+    const [following, setFollowing] = useState(false);
+
+    const toggleFollowing = React.useCallback(() => () => {
+        // following ? onUnfollow() : onFollow();
+        setFollowing(!following);
+    }, [following]);
     return (
         <Animated.View
             entering={FadeIn}
@@ -74,11 +82,9 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                     activeOpacity={1}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
-                    {profilePic != "" ? (
-                        <Image source={{ uri: profilePic }} style={styles.profileImage} cachePolicy={'disk'}/>
-                    ) : (
-                        <Image source={require('../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
-                    )}
+                    {profilePic != "" &&
+                        <Image source={{ uri: profilePic }} style={styles.profileImage} placeholder={require('../../assets/profile_default.png')} cachePolicy={'disk'}/>
+                    }
                 </TouchableOpacity>
                 
                 {/* username */}
@@ -89,6 +95,28 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                 >
                     <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
                         @{username}
+                    </Text>
+                </TouchableOpacity>
+
+                {/* Follow/Following button */}
+                <TouchableOpacity
+                activeOpacity={1}
+                    style={
+                        theme == 'light' ? 
+                            !following ? styles.lightFollowButton : styles.lightFollowingButton
+                        :
+                            !following ? styles.darkFollowButton : styles.darkFollowingButton
+                    }
+                    onPress={toggleFollowing()}
+                >
+                    <Text style={
+                        theme == 'light' ?
+                            !following ? styles.lightFollowText : styles.lightFollowingText
+                        :
+                            !following ? styles.darkFollowText : styles.darkFollowingText
+                        }
+                    >
+                        {following ? 'Following' : 'Follow'}
                     </Text>
                 </TouchableOpacity>
 
@@ -108,7 +136,7 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                         width={imageWidth}
                         maxWidth={windowWidth}
                         maxHeight={500}
-                        style={{marginTop: 14, borderRadius: 0, alignSelf: 'center'}}
+                        style={{marginTop: 7, borderRadius: 10, alignSelf: 'center'}}
                     />
                 
                 {/* Content bottom */}
@@ -192,11 +220,6 @@ const PostScreen = ({navigation, route}) => {
         getFirstTenPostCommentsByPopular();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
-
-        navigation.setOptions({
-            header: () => <SimpleTopBar title={"Back"}/>,
-        });
-
     }, []);
 
 
@@ -269,7 +292,10 @@ const PostScreen = ({navigation, route}) => {
         >
             {/* Load Meme with template and template state */}
             {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
-            
+
+            {/* Top */}
+            <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight,}]}/>
+
             <FlashList
                 data={commentsList}
                 
@@ -287,9 +313,18 @@ const PostScreen = ({navigation, route}) => {
                 estimatedItemSize={200}
                 estimatedListSize={{height: windowHeight ,  width: windowWidth}}
 
+                ListHeaderComponent={
+                    <SimpleTopBar title={"Post"} onGoBack={onGoBack}/>
+                }
+
                 ListFooterComponent={
                     <View style={{height: 200}}/>
                 }
+
+
+                // onScroll={(e) => {
+                //     scrollY.setValue(e.nativeEvent.contentOffset.y) && console.log("e.nativeEvent.contentOffset.y");
+                // }}
 
                 getItemType={getItemType}
 
@@ -331,9 +366,9 @@ const styles = StyleSheet.create({
     lightUserContainer: {
         backgroundColor: 'white',
         flexDirection: 'row',
-        marginTop: 16.5,
+        marginTop: 10,
         marginLeft: 13,
-        marginBottom: 7,
+        marginBottom: 5,
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
@@ -341,9 +376,9 @@ const styles = StyleSheet.create({
     darkUserContainer: {
         backgroundColor: '#151515',
         flexDirection: 'row',
-        marginTop: 16.5,
+        marginTop: 10,
         marginLeft: 13,
-        marginBottom: 7,
+        marginBottom: 5,
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
@@ -374,81 +409,87 @@ const styles = StyleSheet.create({
         color: '#BBBBBB',
         textAlign: "left",
     },
-    lightPostTitle: {
-        fontSize: 22,
-        fontWeight: "600",
-        color: '#333333',
-        textAlign: 'auto',
-        marginHorizontal: 14,
-        // marginTop: 1,
-        // marginVertical: 2,
-        // width: 290,
-    },
-    darkPostTitle: {
-        fontSize: 22,
-        fontWeight: "600",
-        color: '#DDDDDD',
-        textAlign: 'auto',
-        marginHorizontal: 14,
-        // marginTop: 1,
-        // marginVertical: 2,
-        // width: 290,
-    },
     lightFollowButton: {
         flexDirection: 'column',
         backgroundColor: '#ffffff',
         borderRadius: 20,
-        width: 110,
-        height: 30,
-        marginLeft: 5,
-        marginTop: 12,
-        marginBottom: 10,
+        width: 75,
+        height: 40,
+        marginRight: 6,
+        marginBottom: 4,
         borderWidth: 1.5,
-        borderColor: '#888888'
+        borderColor: '#BBBBBB',
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
     },
     darkFollowButton: {
         flexDirection: 'column',
         backgroundColor: '#1A1A1A',
         borderRadius: 20,
-        width: 110,
-        height: 30,
-        marginLeft: 5,
-        marginTop: 12,
-        marginBottom: 10,
+        width: 75,
+        height: 40,
+        marginRight: 6,
+        marginBottom: 4,
         borderWidth: 1.5,
-        borderColor: '#888888'
+        borderColor: '#666666',
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+    },
+    lightFollowingButton: {
+        flexDirection: 'column',
+        backgroundColor: '#444444',
+        borderRadius: 20,
+        width: 95,
+        height: 40,
+        marginRight: 5,
+        marginBottom: 4,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+    },
+    darkFollowingButton: {
+        flexDirection: 'column',
+        backgroundColor: '#EEEEEE',
+        borderRadius: 20,
+        width: 95,
+        height: 40,
+        marginRight: 5,
+        marginBottom: 4,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
     },
     lightFollowText: {
-        fontSize: 18,
+        fontSize: 17,
         color: '#222222',
         fontWeight: '600',
         alignSelf: 'center',
-        marginTop: 1
+        marginBottom: 1
     },
     darkFollowText: {
-        fontSize: 18,
+        fontSize: 17,
         color: '#ffffff',
         fontWeight: '600',
         alignSelf: 'center',
-        marginTop: 1
+        marginBottom: 1
     },
-    lightPostText: {
-        fontSize: 18,
-        fontWeight: "400",
-        color: '#222222',
-        textAlign: 'auto',
-        marginHorizontal: 14,
-        marginTop: 6,
+    lightFollowingText: {
+        fontSize: 17,
+        color: '#ffffff',
+        fontWeight: '600',
+        alignSelf: 'center',
+        marginBottom: 1
     },
-    darkPostText: {
-        fontSize: 18,
-        fontWeight: "400",
-        color: '#F4F4F4',
-        textAlign: 'auto',
-        marginHorizontal: 14,
-        marginTop: 6,
+    darkFollowingText: {
+        fontSize: 17,
+        color: '#000000',
+        fontWeight: '600',
+        alignSelf: 'center',
+        marginBottom: 1
     },
-    
+ 
 });
 
 export default PostScreen;

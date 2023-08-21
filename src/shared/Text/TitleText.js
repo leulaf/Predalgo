@@ -6,7 +6,7 @@ import { ThemeContext } from '../../../context-store/context';
 import SplitTitle from './methods/SplitTitle';
 
 const PostText = ({text, numberOfLines}) => {
-    if(text == undefined || text == null || text == '') {
+    if(!(text)) {
         return null;
     }
 

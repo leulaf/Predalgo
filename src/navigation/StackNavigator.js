@@ -123,13 +123,13 @@ const MainStackNavigator = ({}) => {
         />
         <Stack.Screen name="Post" component={PostScreen}
             options={{
-                // headerShown: false,
+                headerShown: false,
                 gestureResponseDistance: windowWidth,
             }}
         />
         <Stack.Screen name="Comment" component={CommentScreen}
             options={{
-                // headerShown: false,
+                headerShown: false,
                 gestureResponseDistance: windowWidth,
             }}
         />

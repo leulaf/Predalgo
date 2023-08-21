@@ -77,7 +77,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     const replyTextToPostRef = useRef(null);
 
     // variables
-    const snapPoints = useMemo(() => ['13%', '70%', '99%'], []);
+    const snapPoints = useMemo(() => ['11%', '70%', '99%'], []);
 
     useEffect(() => {
         if(imageReply && imageReply.forCommentOnPost){
