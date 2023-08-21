@@ -2,6 +2,8 @@ import React, {useEffect, useState, useContext, useMemo, useRef, useCallback} fr
 import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
+import { BlurView } from 'expo-blur';
+
 import { commentImageOnComment } from '../../shared/comment/forComment/UploadImage';
 import { saveMemeToComment} from '../../shared/comment/forComment/UploadMeme';
 import { commentTextOnComment } from '../../shared/comment/forComment/UploadText';
@@ -13,10 +15,12 @@ import BottomSheet, {BottomSheetScrollView, BottomSheetTextInput} from '@gorhom/
 import LinkInput from './shared/LinkInput';
 
 // light mode icons
-import UploadLight from '../../../assets/upload_light.svg';
-import CreateMemeLight from '../../../assets/meme_create_light.svg';
+import UploadLight from '../../../assets/reply_upload_light.svg';
+import SmallCreateMemeLight from '../../../assets/meme_create_light.svg';
+import CreateMemeLight from '../../../assets/reply_meme_create_light.svg';
 import PostButtonLight from '../../../assets/reply_light.svg';
-import LinkLight from '../../../assets/link_light.svg';
+import LinkLight from '../../../assets/reply_link_light.svg';
+import SmallLinkLight from '../../../assets/link_light.svg';
 
 // dark mode icons
 import UploadDark from '../../../assets/upload_dark.svg';
@@ -57,9 +61,9 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
     // icons
     if(theme == 'light'){
         link = <LinkLight width={30.5} height={30.5} marginLeft={8} marginRight={7} />;
-        linkSmall = <LinkLight width={26.5} height={26.5} marginRight={5} marginTop={5}/>;
+        linkSmall = <SmallLinkLight width={26.5} height={26.5} marginRight={5} marginTop={5}/>;
         createMeme = <CreateMemeLight width={27} height={27} marginRight={7}/>;
-        createMemeSmall = <CreateMemeLight width={23.5} height={23.5} marginRight={15} />;
+        createMemeSmall = <SmallCreateMemeLight width={23.5} height={23.5} marginRight={15} />;
         upload = <UploadLight width={28} height={28} marginRight={17}/>;
         replyButton = <PostButtonLight width={95} height={35} marginRight={8}/>;
     }else{
@@ -404,21 +408,29 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                 onAnimate={handleSheetAnimate}
                 // onChange={() => handleSheetChanges}
                 keyboardBehavior="interactive"
+                backgroundComponent={() =>
+                    <BlurView 
+                        tint = {theme == 'light' ?  "light" : "dark"}
+                        intensity={theme == 'light' ?  100 : 100}
+                        style={[StyleSheet.absoluteFill, {}]}
+                    />
+                }
                 style={{
-                    backgroundColor: theme == 'light' ? 'white' : '#141414',  // <==== HERE
-                    borderRadius: 24,
-                    shadowColor: theme == 'light' ? '#005FFF' : '#DDDDDD',
-                    shadowOffset: {
-                      width: 0,
-                      height: theme == 'light' ? 6 : 6,
-                    },
-                    shadowOpacity: theme == 'light' ? 0.6 : 0.33,
-                    shadowRadius: 12,
-                    elevation: 5,
+                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(32, 32, 32, 0.3)',  // <==== HERE
+                    overflow: 'hidden',
+                    borderRadius: 20,
+                    // shadowColor: theme == 'light' ? '#005FFF' : '#DDDDDD',
+                    // shadowOffset: {
+                    //   width: 0,
+                    //   height: theme == 'light' ? 6 : 6,
+                    // },
+                    // shadowOpacity: theme == 'light' ? 0.6 : 0.33,
+                    // shadowRadius: 12,
+                    // elevation: 5,
                 }}
                 // style={{backgroundColor: theme == 'light' ? styles.lightContainer : styles.darkContainer}}
                 backgroundStyle={theme == 'light' ? styles.lightBottomSheet : styles.darkBottomSheet}
-                handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#DDDDDD' : '#2D2D2D'}}
+                handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#C3C3C3' : '#363636'}}
             >
                 <View 
                     automaticallyAdjustKeyboardInsets={true}
@@ -478,7 +490,14 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                             ]} 
                             value={replyTextToPost}
                             placeholder="Reply to comment"
-                            placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
+                            placeholderTextColor={theme == "light" ? "#555555" : "#BBBBBB"}
+                            backgroundComponent={() =>
+                                <BlurView
+                                    tint = {theme == 'light' ?  "light" : "dark"}
+                                    intensity={theme == 'light' ?  100 : 100}
+                                    style={[StyleSheet.absoluteFill, {borderRadius: 240}]}
+                                />
+                            }
                             onChangeText={newTerm => setReplyTextToPost(newTerm)}
                             onSelectionChange={onSelectionChange}
                             // onEndEditing={(newTerm) => 
@@ -562,7 +581,16 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                 {
                     textInputInFocus &&
                     
-                    <InputAccessoryView nativeID={inputAccessoryViewID}>
+                    <InputAccessoryView 
+                        nativeID={inputAccessoryViewID}
+                        backgroundComponent={() =>
+                            <BlurView
+                                tint = {theme == 'light' ?  "light" : "dark"}
+                                intensity={theme == 'light' ?  100 : 100}
+                                style={[StyleSheet.absoluteFill, {borderRadius: 24}]}
+                            />
+                        }
+                    >
                         {bottomButtons()}
                     </InputAccessoryView>
                 }
@@ -591,30 +619,30 @@ const styles = StyleSheet.create({
         backgroundColor: '#141414',
     },
     lightReplyTextPostBar: {
-        height: 40,
+        height: 44,
         width: "97%",
-        borderRadius: 20,
+        borderRadius: 30,
         flexDirection: 'row',
         alignSelf: 'center',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        backgroundColor: '#FAFAFA',
+        backgroundColor: 'rgba(255, 255, 255, 0.35)',
         borderWidth: 1,
-        borderColor: '#EDEDED',
+        borderColor: '#E2E2E2',
     },
     darkReplyTextPostBar: {
-        height: 40,
+        height: 44,
         width: "97%",
-        borderRadius: 20,
+        borderRadius: 30,
         flexDirection: 'row',
         alignSelf: 'center',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        backgroundColor: '#202020',
+        backgroundColor: 'rgba(32, 32, 32, 0.35)',
         borderWidth: 1,
-        borderColor: '#262626',
+        borderColor: '#242424',
     },
     lightFocusReplyTextPostBar: {
         height: 425,
@@ -678,7 +706,7 @@ const styles = StyleSheet.create({
     },
     lightBottomContainer: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
+        // backgroundColor: '#FFFFFF',
         // alignSelf: 'flex-end',
         alignItems: 'center',
         alignContent: 'center',
@@ -693,7 +721,7 @@ const styles = StyleSheet.create({
         // alignSelf: 'flex-end',
         alignItems: 'center',
         alignContent: 'center',
-        backgroundColor: '#141414',
+        // backgroundColor: '#141414',
         height: 40,
         // backgroundColor: '#1C1C1C',
         // marginVertical: 10,

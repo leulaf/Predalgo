@@ -42,10 +42,10 @@ const MemeName = ({ memeName, theme, navigation }) => {
 const styles = StyleSheet.create({
     memeName: {
         width: windowWidth,
-        paddingLeft: 12,
+        paddingLeft: 10,
         flexDirection: 'row',
         alignSelf: 'flex-end',
-        padding: 6,
+        padding: 5,
         position: 'absolute',
     }
 });
