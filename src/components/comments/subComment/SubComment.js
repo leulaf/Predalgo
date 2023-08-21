@@ -2,7 +2,9 @@ import React from 'react';
 
 import styles from './Styles';
 
-import {TouchableOpacity, Dimensions} from 'react-native';
+import {View, TouchableOpacity, Dimensions} from 'react-native';
+
+import MemeName from './MemeName';
 
 import CommentText from '../../../shared/Text/CommentText';
 
@@ -104,17 +106,38 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
             
                 <TouchableOpacity
                     activeOpacity={1}
-                    style={{backgroundColor: 'black', marginTop: 11, borderRadius: 0}}
+                    style={{flexDirection: 'row', backgroundColor: 'black', marginTop: 11, borderRadius: 0, alignItems: 'center', justifyContent: 'center'}}
                     onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 >
-                    <ResizableImage 
-                        image={image}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxHeight={500}
-                        maxWidth={windowWidth - 10}
-                        style={{borderRadius: 0}}
-                    />
+                    <View style={{flexDirection: 'row'}}>
+                        <ResizableImage 
+                            image={image}
+                            height={imageHeight}
+                            width={imageWidth}
+                            maxHeight={500}
+                            maxWidth={windowWidth - 10}
+                            style={{borderRadius: 0}}
+                        />
+                        {/* MemeName */}
+                        {/* {
+                            memeName &&
+                            <MemeName
+                                theme={theme}
+                                memeName={memeName}
+                                navigation={navigation}
+                            />
+                        } */}
+                    </View>
+
+                    {
+                        memeName &&
+                        <MemeName
+                            theme={theme}
+                            memeName={memeName}
+                            navigation={navigation}
+                        />
+                    }
+                        
                 </TouchableOpacity>
             }
 

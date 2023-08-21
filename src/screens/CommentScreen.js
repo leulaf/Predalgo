@@ -313,7 +313,7 @@ const CommentScreen = ({navigation, route}) => {
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
-                // showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
 
                 removeClippedSubviews={true}
 
@@ -323,6 +323,9 @@ const CommentScreen = ({navigation, route}) => {
                 ListHeaderComponent={
 
                     <SimpleTopBar
+                        theme={theme}
+                        // ****** use goToReplyDirectly when navigating to comment directly instead of a post/comment ******
+                        // goToReplyDirectly={route?.params?.replyToPostId || route?.params?.replyToCommentId ? true : false}
                         title={"Comment"}
                         onGoBack={onGoBack}
                         replyToCommentId={replyToCommentId}
@@ -424,11 +427,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 20,
         width: 75,
-        height: 40,
+        height: 37,
         marginRight: 6,
         marginBottom: 4,
         borderWidth: 1.5,
-        borderColor: '#BBBBBB',
+        borderColor: '#CCCCCC',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
@@ -438,11 +441,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#1A1A1A',
         borderRadius: 20,
         width: 75,
-        height: 40,
+        height: 37,
         marginRight: 6,
         marginBottom: 4,
         borderWidth: 1.5,
-        borderColor: '#666666',
+        borderColor: '#5D5D5D',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
@@ -452,7 +455,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#444444',
         borderRadius: 20,
         width: 95,
-        height: 40,
+        height: 37,
         marginRight: 5,
         marginBottom: 4,
         alignItems: 'center',
@@ -464,7 +467,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#EEEEEE',
         borderRadius: 20,
         width: 95,
-        height: 40,
+        height: 37,
         marginRight: 5,
         marginBottom: 4,
         alignItems: 'center',

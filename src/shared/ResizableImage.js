@@ -10,107 +10,107 @@ const ResizableImage = ({ image, height, width, maxHeight, maxWidth, style }) =>
         return null;
     }
     
-    // let ratio = Math.min(1, maxWidth / width, maxHeight / height);
+    let ratio = Math.min(1, maxWidth / width, maxHeight / height);
 
-    let imageHeight, imageWidth
+    // let imageHeight, imageWidth
 
-    if(maxWidth && maxHeight){
-
-
-        if(maxWidth > maxHeight && maxHeight/height <= 1){
-
-            imageHeight = maxHeight;
-            imageWidth = (maxHeight / height) * width;
-
-        }else if(maxHeight > maxWidth && maxWidth/width <= 1){
-
-            imageWidth = maxWidth;
-            imageHeight = (maxWidth / width) * height;
-
-        }else if(maxWidth === maxHeight && maxWidth/width <= 1){
-
-            imageWidth = maxWidth;
-            imageHeight = (maxWidth / width) * height;
-
-        }else if(maxWidth === maxHeight && maxHeight/height <= 1){
-            imageHeight = maxHeight;
-            imageWidth = (maxHeight / height) * width;
-        }else{
-
-            imageHeight = height;
-            imageWidth = width;
-
-        }
+    // if(maxWidth && maxHeight){
 
 
-    }else if(maxWidth && maxWidth/width <= 1){
+    //     if(maxWidth > maxHeight && maxHeight/height <= 1){
 
-        imageWidth = maxWidth;
-        imageHeight = (maxWidth / width) * height;
+    //         imageHeight = maxHeight;
+    //         imageWidth = (maxHeight / height) * width;
 
-    }else if(maxHeight && maxHeight/height <= 1){
+    //     }else if(maxHeight > maxWidth && maxWidth/width <= 1){
 
-        imageHeight = maxHeight;
-        imageWidth = (maxHeight / height) * width;
+    //         imageWidth = maxWidth;
+    //         imageHeight = (maxWidth / width) * height;
 
-    }else{
+    //     }else if(maxWidth === maxHeight && maxWidth/width <= 1){
 
-        imageHeight = height;
-        imageWidth = width;
+    //         imageWidth = maxWidth;
+    //         imageHeight = (maxWidth / width) * height;
 
-    }
+    //     }else if(maxWidth === maxHeight && maxHeight/height <= 1){
+    //         imageHeight = maxHeight;
+    //         imageWidth = (maxHeight / height) * width;
+    //     }else{
 
+    //         imageHeight = height;
+    //         imageWidth = width;
 
-    ////
-    ////
-    ///
-
-
-    if(maxWidth && maxHeight){
-
-
-        if(maxWidth > maxHeight && maxHeight/height <= 1){
-
-            imageHeight = maxHeight;
-            imageWidth = (maxHeight / height) * width;
-
-        }else if(maxHeight > maxWidth && maxWidth/width <= 1){
-
-            imageWidth = maxWidth;
-            imageHeight = (maxWidth / width) * height;
-
-        }else if(maxWidth === maxHeight && maxWidth/width <= 1){
-
-            imageWidth = maxWidth;
-            imageHeight = (maxWidth / width) * height;
-
-        }else if(maxWidth === maxHeight && maxHeight/height <= 1){
-            imageHeight = maxHeight;
-            imageWidth = (maxHeight / height) * width;
-        }else{
-
-            imageHeight = height;
-            imageWidth = width;
-
-        }
+    //     }
 
 
-    }else if(maxWidth && maxWidth/width <= 1){
+    // }else if(maxWidth && maxWidth/width <= 1){
 
-        imageWidth = maxWidth;
-        imageHeight = (maxWidth / width) * height;
+    //     imageWidth = maxWidth;
+    //     imageHeight = (maxWidth / width) * height;
 
-    }else if(maxHeight && maxHeight/height <= 1){
+    // }else if(maxHeight && maxHeight/height <= 1){
 
-        imageHeight = maxHeight;
-        imageWidth = (maxHeight / height) * width;
+    //     imageHeight = maxHeight;
+    //     imageWidth = (maxHeight / height) * width;
 
-    }else{
+    // }else{
 
-        imageHeight = height;
-        imageWidth = width;
+    //     imageHeight = height;
+    //     imageWidth = width;
 
-    }
+    // }
+
+
+    // ////
+    // ////
+    // ///
+
+
+    // if(maxWidth && maxHeight){
+
+
+    //     if(maxWidth > maxHeight && maxHeight/height <= 1){
+
+    //         imageHeight = maxHeight;
+    //         imageWidth = (maxHeight / height) * width;
+
+    //     }else if(maxHeight > maxWidth && maxWidth/width <= 1){
+
+    //         imageWidth = maxWidth;
+    //         imageHeight = (maxWidth / width) * height;
+
+    //     }else if(maxWidth === maxHeight && maxWidth/width <= 1){
+
+    //         imageWidth = maxWidth;
+    //         imageHeight = (maxWidth / width) * height;
+
+    //     }else if(maxWidth === maxHeight && maxHeight/height <= 1){
+    //         imageHeight = maxHeight;
+    //         imageWidth = (maxHeight / height) * width;
+    //     }else{
+
+    //         imageHeight = height;
+    //         imageWidth = width;
+
+    //     }
+
+
+    // }else if(maxWidth && maxWidth/width <= 1){
+
+    //     imageWidth = maxWidth;
+    //     imageHeight = (maxWidth / width) * height;
+
+    // }else if(maxHeight && maxHeight/height <= 1){
+
+    //     imageHeight = maxHeight;
+    //     imageWidth = (maxHeight / height) * width;
+
+    // }else{
+
+    //     imageHeight = height;
+    //     imageWidth = width;
+
+    // }
 
     return (
         
@@ -118,10 +118,10 @@ const ResizableImage = ({ image, height, width, maxHeight, maxWidth, style }) =>
             // placeholder={require('../../assets/placeholder.png')}
             source={{uri : image}}
             alignSelf='center'
-            height={imageHeight}
-            width={imageWidth}
-            // height={height * ratio}
-            // width={width * ratio}
+            // height={imageHeight}
+            // width={imageWidth}
+            height={height * ratio}
+            width={width * ratio}
             style={style ? style : {}}
             cachePolicy={'disk'}
         />

@@ -4,6 +4,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
+import { doc, getDoc } from "firebase/firestore";
+
 import Constants from 'expo-constants';
 
 import PostText from '../shared/Text/PostText';
@@ -33,6 +35,7 @@ import overrideItemLayout from '../shared/OverrideItemLayout'
 
 
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
+import { set } from 'core-js/core/dict';
 
 
 const windowWidth = Dimensions.get("screen").width;
@@ -207,17 +210,37 @@ const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 const PostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
+    
+    const {postId} = route.params;
+    
+    const [post, setPost] = useState("Waiting for post to load");
+
     const [commentsList, setCommentsList] = useState([{id: "one"}, {id: "two"}]);
-    const {title, profile, likesCount, commentsCount, imageUrl, template, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
 
-    const [image, setImage] = useState(imageUrl ? imageUrl : template);
-    const [finished, setFinished] = useState(template ? false : true);
+    const [image, setImage] = useState("");
+
+    const [finished, setFinished] = useState(false);
 
 
     useEffect(() => {
-        getFirstTenPostCommentsByPopular();
+        const getPostWithComments = async() => {
+            const postRef = doc(db, "allPosts", postId);
+            const postSnap = await getDoc(postRef);
+
+            if (postSnap.exists()) {
+                setPost(postSnap.data());
+                setImage(postSnap.data().imageUrl ? postSnap.data().imageUrl : postSnap.data().template);
+                setFinished(postSnap.data().template ? false : true);
+                getFirstTenPostCommentsByPopular();
+            }else{
+                // Make sure that the user is not going to this screen repeatedly and making calls to the database
+                setPost("Post not found");
+            }
+        }
+        
+        getPostWithComments();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     }, []);
@@ -253,15 +276,15 @@ const PostScreen = ({navigation, route}) => {
                     theme={theme}
                     image={image}
                     navigation={navigation}
-                    title={title}
-                    memeName={memeName}
-                    imageHeight={imageHeight}
-                    imageWidth={imageWidth}
-                    text={text}
-                    tags={tags}
-                    profile={profile}
-                    username={username}
-                    profilePic={profilePic}
+                    title={post.title}
+                    memeName={post.memeName}
+                    imageHeight={post.imageHeight}
+                    imageWidth={post.imageWidth}
+                    text={post.text}
+                    tags={post.tags}
+                    profile={post.profile}
+                    username={post.username}
+                    profilePic={post.profilePic}
                 />
             );
         }else if (index === 1) {
@@ -269,8 +292,8 @@ const PostScreen = ({navigation, route}) => {
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
                     <PostBottom
                         postId={postId}
-                        likesCount={likesCount}
-                        commentsCount={commentsCount}
+                        likesCount={post.likesCount}
+                        commentsCount={post.commentsCount}
                     />
                 </View>
             );
@@ -284,14 +307,28 @@ const PostScreen = ({navigation, route}) => {
             );
         }
     }, [theme, image])
-    
+
+
+    // Displayed while waiting for post or if post is not found
+    if(post == "Waiting for post to load" || post == "Post not found"){
+        return (
+            <View
+                style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}
+            >
+                <Text style={theme == 'light' ? styles.lightNoPostText : styles.darkNoPostText}>
+                   {post}
+                </Text>
+            </View>
+        );
+    }
+
 
     return (
         <View
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
             {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
+            {!finished && <CreateMeme image={image} templateState={post.templateState} setFinished={setFinished} setImage={setImage}/>}
 
             {/* Top */}
             <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight,}]}/>
@@ -306,7 +343,7 @@ const PostScreen = ({navigation, route}) => {
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
-                showsVerticalScrollIndicator={false}
+                // showsVerticalScrollIndicator={false}
 
                 removeClippedSubviews={true}
 
@@ -314,11 +351,7 @@ const PostScreen = ({navigation, route}) => {
                 estimatedListSize={{height: windowHeight ,  width: windowWidth}}
 
                 ListHeaderComponent={
-                    <SimpleTopBar
-                        theme={theme}
-                        title={"Post"}
-                        onGoBack={onGoBack}
-                    />
+                    <SimpleTopBar title={"Post"} onGoBack={onGoBack}/>
                 }
 
                 ListFooterComponent={
@@ -337,7 +370,7 @@ const PostScreen = ({navigation, route}) => {
                 keyExtractor={keyExtractor}
             />
 
-            {replyBottomSheet(navigation, postId, profile, username)}
+            {replyBottomSheet(navigation, postId, post.profile, post.username)}
         </View>
     );
 };
@@ -418,7 +451,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 20,
         width: 75,
-        height: 37,
+        height: 40,
         marginRight: 6,
         marginBottom: 4,
         borderWidth: 1.5,
@@ -432,7 +465,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1A1A1A',
         borderRadius: 20,
         width: 75,
-        height: 37,
+        height: 40,
         marginRight: 6,
         marginBottom: 4,
         borderWidth: 1.5,
@@ -446,7 +479,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#444444',
         borderRadius: 20,
         width: 95,
-        height: 37,
+        height: 40,
         marginRight: 5,
         marginBottom: 4,
         alignItems: 'center',
@@ -458,7 +491,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#EEEEEE',
         borderRadius: 20,
         width: 95,
-        height: 37,
+        height: 40,
         marginRight: 5,
         marginBottom: 4,
         alignItems: 'center',
@@ -493,6 +526,21 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 1
     },
+    lightNoPostText: {
+        fontSize: 22,
+        color: '#ffffff',
+        fontWeight: '600',
+        alignSelf: 'center',
+        // marginBottom: 1
+    },
+    darkNoPostText: {
+        fontSize: 22,
+        color: '#000000',
+        fontWeight: '600',
+        alignSelf: 'center',
+        // marginBottom: 1
+    },
+ 
  
 });
 

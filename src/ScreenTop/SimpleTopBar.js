@@ -1,8 +1,6 @@
-import React, {useContext, useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
+import React, {} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Constants from 'expo-constants';
-import { useNavigation } from '@react-navigation/native';
-import {ThemeContext} from '../../context-store/context';
 
 // light mode icons
 import BackLight from '../../assets/back.svg';
@@ -16,11 +14,9 @@ import ThreeDotsLight from '../../assets/three_dots_light.svg';
 // dark mode icons
 import ThreeDotsDark from '../../assets/three_dots_dark.svg';
 
-const windowWidth = Dimensions.get('window').width;
 
-const SimpleTopBar = ({title, onGoBack}) => {
-    const navigation = useNavigation();
-    const {theme,setTheme} = useContext(ThemeContext);
+const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, goToReplyDirectly}) => {
+    // ****** use navigateBackOnPress when navigating to comment directly instead of a post/comment ******
 
     let threeDots
 
@@ -32,8 +28,6 @@ const SimpleTopBar = ({title, onGoBack}) => {
 
     return (
             <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
-
-
 
                 {/* back button */}
                 <TouchableOpacity 
@@ -52,7 +46,22 @@ const SimpleTopBar = ({title, onGoBack}) => {
 
                 {/* Post/Comment */}
                 <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                    {title}
+                    {title == 'Post' ? 'Post' : 'Reply to '}
+
+                        {title == 'Comment' && (replyToPostId != null || replyToCommentId == null) &&
+                        <Text
+                            // ***FINISH IMPLEMENTING THIS***
+                            onPress={() => {
+                                goToReplyDirectly ?
+                                    null
+                                :
+                                    onGoBack()
+                            }}
+                            style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
+                        >
+                            {replyToCommentId ? 'Comment' : 'Post'}
+                        </Text>
+                        }
                 </Text>
 
 
@@ -62,40 +71,6 @@ const SimpleTopBar = ({title, onGoBack}) => {
                 >
                     {threeDots}
                 </TouchableOpacity>
-
-
-
-                {/*  */}
-                {/*  */}
-                {/*  */}
-                
-                {/* Horizontal container */}
-                {/* <View style={{marginTop: 40, alignSelf: 'flex-end', flexDirection: "row", alignItems: 'center', alignContent: 'center', justifyContent: 'center'}}> */}
-                    
-                    {/* username */}
-                    {/* <TouchableOpacity
-                        activeOpacity={1}
-                        style={{flexDirection: 'column', marginRight: 5}}
-                        onPress={() => goToProfile()}
-                    >
-                        <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
-                            @{username}
-                        </Text>
-                    </TouchableOpacity> */}
-
-                    {/* profile pic */}
-                    {/* <TouchableOpacity
-                        activeOpacity={1}
-                        onPress={() => goToProfile()}
-                    >
-                        {profilePic != "" &&
-                            <Image source={{ uri: profilePic }} style={styles.profileImage} placeholder={require('../../assets/profile_default.png')} cachePolicy={'disk'}/>
-                        }
-                    </TouchableOpacity> */}
-
-                    {/* Reply to post/comment */}
-
-                {/* </View> */}
                 
             </View>
     );
@@ -110,8 +85,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         alignContent: 'center',
-        borderTopRightRadius: 15,
-        borderTopLeftRadius: 15,
+        // borderTopRightRadius: 15,
+        // borderTopLeftRadius: 15,
         // borderBottomWidth: 1.5,
         // borderColor: '#efefef'
     },
@@ -130,7 +105,7 @@ const styles = StyleSheet.create({
     backIcon: {
         // alignSelf: 'center',
         // marginTop: 52,
-        marginLeft: 15,
+        marginLeft: 20,
         padding: 10,
     },
     lightText: {
@@ -138,14 +113,32 @@ const styles = StyleSheet.create({
         color: '#3D3D3D',
         fontWeight: '600',
         marginTop: 1,
-        marginLeft: 10
+        marginLeft: 15
     },
     darkText: {
         fontSize: 20,
         color: '#f2f2f2',
         fontWeight: '600',
         marginTop: 1,
-        marginLeft: 10
+        marginLeft: 15
+    },
+    lightLinkText: {
+        fontSize: 20,
+        fontWeight: "600",
+        color: '#0055FB',
+        marginTop: 1,
+        marginLeft: 15
+        // textAlign: 'auto',
+        // marginBottom: 6,
+    },
+    darkLinkText: {
+        fontSize: 20,
+        fontWeight: "600",
+        color: '#0094FF',
+        marginTop: 1,
+        marginLeft: 15
+        // textAlign: 'auto',
+        // // marginBottom: 6,
     },
     profileImage: {
         width: 40,

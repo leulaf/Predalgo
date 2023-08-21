@@ -20,7 +20,7 @@ import DownDark from '../../../../assets/down_dark.svg';
 
 
 // ******** React memo ********
-export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId, replyToCommentId, profile, likesCount, commentsCount, onNavToComment, onReply,}) => {
+export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId, replyToCommentId, memeName, profile, likesCount, commentsCount, onNavToComment, onReply,}) => {
     
     const [liked, setLiked] = React.useState(false);
 
@@ -78,7 +78,6 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                     </Text>
                 </TouchableOpacity>
             }
-
 
             {/* Spacer */}
             <TouchableOpacity

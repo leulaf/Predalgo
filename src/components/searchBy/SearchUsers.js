@@ -87,12 +87,6 @@ function SearchUsers(props){
     if(users.length == 0){
         return (
             <View
-                onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-                onTouchEnd={e => {
-                if (e.nativeEvent.pageX - this.touchX > 150)
-                    // console.log('Swiped Right')
-                    navigation.goBack(null);
-                }}
                 style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}
             >
                 <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
@@ -104,12 +98,6 @@ function SearchUsers(props){
     
     return (
         <View
-            onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-            onTouchEnd={e => {
-            if (e.nativeEvent.pageX - this.touchX > 150)
-                // console.log('Swiped Right')
-                navigation.goBack(null);
-            }}
             style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}
         >
 

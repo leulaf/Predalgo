@@ -1,13 +1,12 @@
-
-
 import React, { useEffect, useState, useContext } from 'react';
-import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions, StatusBar } from 'react-native';
+import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
+
+import { doc, getDoc } from "firebase/firestore";
 
 import Constants from 'expo-constants';
 
 import PostText from '../shared/Text/PostText';
-import TitleText from '../shared/Text/TitleText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
@@ -16,27 +15,28 @@ import { FlashList } from '@shopify/flash-list';
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
 
-import { fetchFirstTenPostCommentsByRecent, fetchFirstTenPostCommentsByPopular, fetchNextTenPopularComments } from '../shared/post/GetPostComments';
+import getItemType from '../shared/GetItemType'
+import overrideItemLayout from '../shared/OverrideItemLayout'
+
+import { fetchFirstTenCommentsByPopular, fetchNextTenPopularComments } from '../shared/comment/GetComments';
+
 
 import CreateMeme from '../shared/CreateMeme';
 
 import ContentBottom from '../components/postTypes/ContentBottom';
 
-import PostBottom from '../components/postTypes/PostBottom';
+import CommentBottom from '../components/comments/CommentBottom';
 
-import ReplyBottomSheet from '../components/replyBottom/PostReplyBottomSheet';
+import ReplyBottomSheet from '../components/replyBottom/CommentReplyBottomSheet';
 
 import MainComment from '../components/comments/mainComment/MainComment';
-
-import getItemType from '../shared/GetItemType'
-import overrideItemLayout from '../shared/OverrideItemLayout'
-
 
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
 
-const windowWidth = Dimensions.get("screen").width;
-const windowHeight = Dimensions.get("screen").height;
+
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
 
 const contentBottom = (memeName, tags) => (
     <ContentBottom
@@ -45,10 +45,12 @@ const contentBottom = (memeName, tags) => (
     />
 );
 
-const replyBottomSheet = (navigation, postId, profile, username) => (
+const replyBottomSheet = (onReply, navigation, replyToPostId, commentId, profile, username) => (
     <ReplyBottomSheet
+        onReplying={onReply}
         navigation={navigation}
-        replyToPostId = {postId}
+        replyToPostId={replyToPostId}
+        replyToCommentId={commentId}
         replyToProfile = {profile}
         replyToUsername={username}
     />
@@ -62,13 +64,14 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
     })
 }
 
-const Header = React.memo(({theme, navigation, title, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
+const Header = React.memo(({theme, navigation, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic, }) => {
     const [following, setFollowing] = useState(false);
 
     const toggleFollowing = React.useCallback(() => () => {
         // following ? onUnfollow() : onFollow();
         setFollowing(!following);
     }, [following]);
+
     return (
         <Animated.View
             entering={FadeIn}
@@ -97,7 +100,7 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                         @{username}
                     </Text>
                 </TouchableOpacity>
-
+                
                 {/* Follow/Following button */}
                 <TouchableOpacity
                 activeOpacity={1}
@@ -119,25 +122,21 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                         {following ? 'Following' : 'Follow'}
                     </Text>
                 </TouchableOpacity>
-
             </View>
 
 
             <View style={{marginBottom: 8}}>
 
-                    {/* title */}
-                    <TitleText text={title}/>
+                <PostText text={text}/>
 
-                    <PostText text={text}/>
-
-                    <ResizableImage 
-                        image={image}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxWidth={windowWidth}
-                        maxHeight={500}
-                        style={{marginTop: 7, borderRadius: 10, alignSelf: 'center'}}
-                    />
+                <ResizableImage 
+                    image={image}
+                    height={imageHeight}
+                    width={imageWidth}
+                    maxWidth={windowWidth}
+                    maxHeight={500}
+                    style={{marginTop: 7, borderRadius: 10, alignSelf: 'center'}}
+                />
                 
                 {/* Content bottom */}
                 <View style={{marginLeft: 5, marginTop: 5, marginBottom: 0}}>
@@ -155,12 +154,14 @@ const imageEquals =(prev, next) => {
 }
 
 
-const ImagePost = React.memo(({item, theme, navigation})=>{
+const ImagePost = React.memo(({item, index, navigation, theme})=>{
+    // const tempString = Math.random();
     return (
         <MainComment
             navigation={navigation}
             theme={theme}
             replyToPostId={item.replyToPostId}
+            replyToCommentId={item.replyToCommentId}
             profile={item.profile}
             username={item.username}
             profilePic={item.profilePic}
@@ -175,6 +176,7 @@ const ImagePost = React.memo(({item, theme, navigation})=>{
             imageHeight={item.imageHeight}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
+            index={index}
         />
     );
 }, itemEquals);
@@ -184,12 +186,13 @@ const itemEquals = (prev, next) => {
     return prev.item.id === next.item.id
 }
 
-const TextPost = React.memo(({item, theme, navigation})=>{
+const TextPost = React.memo(({item, index, navigation, theme})=>{
     return (
         <MainComment
             navigation={navigation}
             theme={theme}
             replyToPostId={item.replyToPostId}
+            replyToCommentId={item.replyToCommentId}
             profile={item.profile}
             username={item.username}
             profilePic={item.profilePic}
@@ -197,55 +200,76 @@ const TextPost = React.memo(({item, theme, navigation})=>{
             text={item.text}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
+            index={index}
         />
     );
 }, itemEquals);
 
 
-const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
 
-
-const PostScreen = ({navigation, route}) => {
+const CommentScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [commentsList, setCommentsList] = useState([{id: "one"}, {id: "two"}]);
-    const {title, profile, likesCount, commentsCount, imageUrl, template, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
+
+    const {commentId} = route.params;
+
+    const [comment, setComment] = useState("Waiting for post to load");
+
+    const [commentsList, setCommentsList] = useState([ {id: "one"}, {id: "two"}]);
 
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
 
-    const [image, setImage] = useState(imageUrl ? imageUrl : template);
-    const [finished, setFinished] = useState(template ? false : true);
+    const [image, setImage] = useState("");
+    
+    const [finished, setFinished] = useState(false);
 
 
     useEffect(() => {
-        getFirstTenPostCommentsByPopular();
+        const getPostWithComments = async() => {
+            const commentRef = doc(db, "allPosts", commentId);
+            const commentSnap = await getDoc(commentRef);
+
+            if (commentSnap.exists()) {
+                setComment(commentSnap.data());
+                setImage(commentSnap.data().imageUrl ? commentSnap.data().imageUrl : commentSnap.data().template);
+                setFinished(commentSnap.data().template ? false : true);
+                getFirstTenCommentsByPopular();
+            }else{
+                // Make sure that the user is not going to this screen repeatedly and making calls to the database
+                setComment("Post not found");
+            }
+        }
+        
+        getPostWithComments();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     }, []);
 
 
-    const getFirstTenPostCommentsByPopular = React.useCallback(async() => {
+    const getFirstTenCommentsByPopular = React.useCallback(async() => {
 
-        const comments = await fetchFirstTenPostCommentsByPopular(postId);
+        const comments = await fetchFirstTenCommentsByPopular(comment.replyToPostId, commentId);
         setCommentsList(commentsList => [...commentsList, ...comments]);
     }, []);
 
     const getNextTenPopularComments = React.useCallback(async() => {
-        
-        const comments = await fetchNextTenPopularComments(postId, commentsList[commentsList.length-1].snap);
+
+        const comments = await fetchNextTenPopularComments(comment.replyToPostId, commentId, commentsList[commentsList.length-1].snap);
         commentsList[commentsList.length-1].snap = null;
         setCommentsList(commentsList => [...commentsList, ...comments]);
     }, [commentsList]);
 
 
     const onGoBack = React.useCallback(() => {
-        if(imageReply && imageReply.forCommentOnPost){
+        if(imageReply && imageReply.forCommentOnComment){
             setImageReply(null)
         }
         navigation.goBack(null);
     }, [imageReply]);
 
-
+    
     const renderItem = React.useCallback(({ item, index }) => {
+
         // index 0 is the header continng the profile pic, username, title and post content
         if (index === 0) {
             return (
@@ -253,24 +277,25 @@ const PostScreen = ({navigation, route}) => {
                     theme={theme}
                     image={image}
                     navigation={navigation}
-                    title={title}
-                    memeName={memeName}
-                    imageHeight={imageHeight}
-                    imageWidth={imageWidth}
-                    text={text}
-                    tags={tags}
-                    profile={profile}
-                    username={username}
-                    profilePic={profilePic}
+                    memeName={comment.memeName}
+                    imageHeight={comment.imageHeight}
+                    imageWidth={comment.imageWidth}
+                    text={comment.text}
+                    tags={comment.tags}
+                    profile={comment.profile}
+                    username={comment.username}
+                    profilePic={comment.profilePic}
                 />
             );
         }else if (index === 1) {
             return (
                 <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10}]}>
-                    <PostBottom
-                        postId={postId}
-                        likesCount={likesCount}
-                        commentsCount={commentsCount}
+                    <CommentBottom
+                        commentID={commentId}
+                        replyToCommentId={comment.replyToCommentId}
+                        replyToPostId={comment.replyToPostId}
+                        likesCount={comment.likesCount}
+                        commentsCount={comment.commentsCount}
                     />
                 </View>
             );
@@ -283,20 +308,36 @@ const PostScreen = ({navigation, route}) => {
                 <TextPost item={item} navigation={navigation} theme={theme}/>
             );
         }
-    }, [theme, image])
-    
+    }, [theme, image,]);
 
+
+    // Displayed while waiting for post or if post is not found
+    if(comment == "Waiting for post to load" || comment == "Post not found"){
+        return (
+            <View
+                style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}
+            >
+                <Text style={theme == 'light' ? styles.lightNoPostText : styles.darkNoPostText}>
+                   {comment}
+                </Text>
+            </View>
+        );
+    }
+
+
+    //NEED***NEED to make sure multiple instance of PinturaLoadImage are not created***
     return (
         <View
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
             {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
+            {!finished && <CreateMeme image={image} templateState={comment.templateState} setFinished={setFinished} setImage={setImage}/>}
 
             {/* Top */}
             <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight,}]}/>
 
             <FlashList
+                // ref={flashListRef}
                 data={commentsList}
                 
                 onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
@@ -306,40 +347,39 @@ const PostScreen = ({navigation, route}) => {
                 stickyHeaderIndices={[1]}
                 renderItem={renderItem}
 
-                showsVerticalScrollIndicator={false}
+                // showsVerticalScrollIndicator={false}
 
                 removeClippedSubviews={true}
 
                 estimatedItemSize={200}
-                estimatedListSize={{height: windowHeight ,  width: windowWidth}}
+                estimatedListSize={{height: windowHeight, width: windowWidth}}
 
                 ListHeaderComponent={
+
                     <SimpleTopBar
-                        theme={theme}
-                        title={"Post"}
+                        title={"Comment"}
                         onGoBack={onGoBack}
+                        replyToCommentId={comment.replyToCommentId}
+                        replyToPostId={comment.replyToPostId}
                     />
+
                 }
 
                 ListFooterComponent={
                     <View style={{height: 200}}/>
                 }
 
-
-                // onScroll={(e) => {
-                //     scrollY.setValue(e.nativeEvent.contentOffset.y) && console.log("e.nativeEvent.contentOffset.y");
-                // }}
-
                 getItemType={getItemType}
-
-                // overrideItemLayout={overrideItemLayout}
                 
+                // overrideItemLayout={overrideItemLayout}
+
                 keyExtractor={keyExtractor}
             />
 
-            {replyBottomSheet(navigation, postId, profile, username)}
+            {replyBottomSheet(comment.onReply, navigation, comment.replyToPostId, commentId, comment.profile, comment.username)}
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({
@@ -418,7 +458,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 20,
         width: 75,
-        height: 37,
+        height: 40,
         marginRight: 6,
         marginBottom: 4,
         borderWidth: 1.5,
@@ -432,7 +472,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#1A1A1A',
         borderRadius: 20,
         width: 75,
-        height: 37,
+        height: 40,
         marginRight: 6,
         marginBottom: 4,
         borderWidth: 1.5,
@@ -446,7 +486,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#444444',
         borderRadius: 20,
         width: 95,
-        height: 37,
+        height: 40,
         marginRight: 5,
         marginBottom: 4,
         alignItems: 'center',
@@ -458,7 +498,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#EEEEEE',
         borderRadius: 20,
         width: 95,
-        height: 37,
+        height: 40,
         marginRight: 5,
         marginBottom: 4,
         alignItems: 'center',
@@ -493,7 +533,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 1
     },
- 
 });
 
-export default PostScreen;
+export default CommentScreen;

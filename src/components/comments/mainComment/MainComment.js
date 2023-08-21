@@ -128,7 +128,7 @@ const MainComment = ({ navigation, theme, profile, username, profilePic, comment
 
                 <TouchableOpacity
                     activeOpacity={1}
-                    style={{backgroundColor: 'black', marginTop: 9, marginBottom: 2}}
+                    style={{backgroundColor: '#000000', marginTop: 9, marginBottom: 2}}
                     onPress = {onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 >
                     <ResizableImage 
@@ -153,6 +153,7 @@ const MainComment = ({ navigation, theme, profile, username, profilePic, comment
                 profile={profile}
                 likesCount={likesCount}
                 commentsCount={commentsCount}
+                memeName={memeName}
                 navToCommentWithComments={navToCommentWithComments}
                 onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}

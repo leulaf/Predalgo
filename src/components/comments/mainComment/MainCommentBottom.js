@@ -4,6 +4,8 @@ import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 
 import styles from './Styles';
 
+import MemeName from './MemeName';
+
 import { intToString, onLike, onDisike } from '../shared/CommentMethods';
 
 import overrideItemLayout from '../../../shared/OverrideItemLayout';
@@ -88,7 +90,7 @@ const TextPost = React.memo(({item, theme, navigation})=>{
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 // ******** React memo ********
-export default MainCommentBottom = ({navigation, theme, commentId, replyToPostId, replyToCommentId, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
+export default MainCommentBottom = ({navigation, theme, commentId, replyToPostId, memeName, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
     
     const [liked, setLiked] = React.useState(false);
 
@@ -169,6 +171,16 @@ export default MainCommentBottom = ({navigation, theme, commentId, replyToPostId
         <View style={{flex: 1}}>
             {/* Reply and Like */}
             <View style={{ flexDirection: 'row', marginTop: 1,  alignItems: 'center', alignContent: 'center'  }}>
+
+                {/* MemeName */}
+                {
+                    memeName &&
+                    <MemeName 
+                        memeName={memeName}
+                        theme={theme}
+                        navigation={navigation}
+                    />
+                }
 
                 {/* Spacer */}
                 <TouchableOpacity

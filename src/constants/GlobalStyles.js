@@ -81,15 +81,16 @@ const GlobalStyles = StyleSheet.create({
     lightMemeName: {
         fontSize: 16,
         fontWeight: "400",
-        color: '#000000',
+        color: '#444444',
         marginVertical: 5,
         // alignSelf: 'center',
     },
     darkMemeName: {
         fontSize: 16,
         fontWeight: "400",
-        color: '#FFFFFF',
+        color: '#EEEEEE',
         marginVertical: 5,
+        
         // alignSelf: 'center',
     },
     lightPostBottomText: {
