@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     lightLinkText: {
         fontSize: 20,
         fontWeight: "600",
-        color: '#004FE8',
+        color: '#1062FF',
         marginTop: 1,
         marginLeft: 15
         // textAlign: 'auto',

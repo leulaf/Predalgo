@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     darkLinkText: {
         fontSize: 22,
         fontWeight: "600",
-        color: '#00C5FF',
+        color: '#0094FF',
         textAlign: 'auto',
     }
 })
