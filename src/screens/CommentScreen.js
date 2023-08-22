@@ -43,10 +43,11 @@ const contentBottom = (memeName, tags) => (
     />
 );
 
-const replyBottomSheet = (onReply, navigation, replyToPostId, commentId, profile, username) => (
+const replyBottomSheet = (onReply, navigation, theme, replyToPostId, commentId, profile, username) => (
     <ReplyBottomSheet
         onReplying={onReply}
         navigation={navigation}
+        theme={theme}
         replyToPostId={replyToPostId}
         replyToCommentId={commentId}
         replyToProfile = {profile}
@@ -345,7 +346,7 @@ const CommentScreen = ({navigation, route}) => {
                 keyExtractor={keyExtractor}
             />
 
-            {replyBottomSheet(onReply, navigation, replyToPostId, commentId, profile, username)}
+            {replyBottomSheet(onReply, navigation, theme, replyToPostId, commentId, profile, username)}
         </View>
     );
 

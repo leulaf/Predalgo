@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext, useMemo, useRef, useCallback} from 'react';
+import React, {} from 'react';
 import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
@@ -10,9 +10,9 @@ import { commentImageOnPost } from '../../shared/comment/forPost/UploadImage';
 import { saveMemeToPost } from '../../shared/comment/forPost/UploadMeme';
 import { commentTextOnPost } from '../../shared/comment/forPost/UploadText';
 
-import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/context';
+import { AuthenticatedUserContext} from '../../../context-store/context';
 
-import BottomSheet, {BottomSheetScrollView, BottomSheetTextInput} from '@gorhom/bottom-sheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 import LinkInput from './shared/LinkInput';
 
@@ -41,22 +41,21 @@ const auth = getAuth();
 const win = Dimensions.get('window');
 
 
-const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyToUsername, addNewComment}) => {
-    const {theme,setTheme} = useContext(ThemeContext);
-    const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
-    const [replyTextToPost, setReplyTextToPost] = useState("");
-    const [replyImageToPost, setReplyImageToPost] = useState("");
-    const [replyMemeToPost, setReplyMemeToPost] = useState("");
+const PostReplyBottomSheet = ({navigation, theme, replyToPostId, replyToProfile, replyToUsername, addNewComment}) => {
+    const {imageReply, setImageReply} = React.useContext(AuthenticatedUserContext);
+    const [replyTextToPost, setReplyTextToPost] = React.useState("");
+    const [replyImageToPost, setReplyImageToPost] = React.useState("");
+    // const [replyMemeToPost, setReplyMemeToPost] = React.useState("");
 
     const inputAccessoryViewID = uuid.v4(); // maybe use uuid to generate this id
     
-    const [linkView, setLinkView] = useState(false);
+    const [linkView, setLinkView] = React.useState(false);
 
-    const [currentSelection, setCurrentSelection] = useState({start: 0, end: 0});
+    const [currentSelection, setCurrentSelection] = React.useState({start: 0, end: 0});
 
-    const [textInputInFocus, setTextInputInFocus] = useState(false);
+    const [textInputInFocus, setTextInputInFocus] = React.useState(false);
 
-    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = React.useState(0);
     
 
     let upload, createMeme, createMemeSmall, link, linkSmall, replyButton
@@ -79,13 +78,13 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     }
 
     // ref
-    const bottomSheetRef = useRef(null);
-    const replyTextToPostRef = useRef(null);
+    const bottomSheetRef = React.useRef(null);
+    const replyTextToPostRef = React.useRef(null);
 
     // variables
-    const snapPoints = useMemo(() => ['10%', '70%', '95%'], []);
+    const snapPoints = React.useMemo(() => ['10%', '70%', '95%'], []);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if(imageReply && imageReply.forCommentOnPost){
 
             setReplyImageToPost(imageReply);
@@ -102,7 +101,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
         }
     }, [imageReply])
 
-    const onSelectionChange = ({ nativeEvent: { selection, text } }) => {
+    const onSelectionChange = React.useCallback(({ nativeEvent: { selection, text } }) => {
         // console.log(
         //   "change selection to",
         //   selection,
@@ -110,11 +109,11 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
         //   replyTextToPost.substring(selection.start, selection.end)
         // );
         setCurrentSelection(selection);
-    };
+    }, []);
 
 
     // Makes sure the keyboard is open when the bottom sheet is expanded
-    const handleSheetAnimate = useCallback((from, to) => {
+    const handleSheetAnimate = React.useCallback((from, to) => {
         // console.log('handleSheetAnimate', from, to);
         
         if(to == 0){
@@ -139,7 +138,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     }, [snapPoints]);
 
     // Expand the bottom sheet when the text input is focused
-    const handleFocus = () => {
+    const handleFocus = React.useCallback(() => {
 
         if(replyImageToPost){
             bottomSheetRef.current.snapToIndex(2);
@@ -149,17 +148,17 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
         }
         setTextInputInFocus(true);
-    }
+    }, [replyImageToPost])
     
     // Collapse the bottom sheet when the text input is blurred (Not in focus)
-    const handleBlur = () => {
+    const handleBlur = React.useCallback(() => {
 
         !linkView && Keyboard.dismiss();
         !linkView && bottomSheetRef.current.snapToIndex(0);
-    }
+    }, [linkView])
 
 
-    const onReplyWithText = async () => {
+    const onReplyWithText = React.useCallback(async () => {
 
         await commentTextOnPost(
             replyTextToPost,
@@ -191,9 +190,9 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
         });
 
-    }
+    }, [replyTextToPost])
 
-    const onReplyWithImage = async () => {
+    const onReplyWithImage = React.useCallback(async () => {
 
         await commentImageOnPost(
             replyImageToPost.uri,
@@ -233,9 +232,9 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
         });
 
-    }
+    }, [replyImageToPost, replyTextToPost])
 
-    const onReplyWithMeme = async () => {
+    const onReplyWithMeme = React.useCallback(async () => {
 
         await saveMemeToPost(
             replyImageToPost.memeName,
@@ -280,10 +279,10 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
         });
 
-    }
+    }, [replyImageToPost, replyTextToPost])
 
 
-    const bottomButtons = () => (
+    const bottomButtons = React.useCallback(() => (
         linkView ?
             <LinkInput
                 handleFocus={handleFocus}
@@ -394,7 +393,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
 
 
         </View>
-    );
+    ), [linkView, replyImageToPost, replyTextToPost, currentSelection, theme]);
 
     return (
             <BottomSheet

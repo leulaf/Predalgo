@@ -45,8 +45,9 @@ const contentBottom = (memeName, tags) => (
     />
 );
 
-const replyBottomSheet = (navigation, postId, profile, username) => (
+const replyBottomSheet = (navigation, theme, postId, profile, username) => (
     <ReplyBottomSheet
+        theme={theme}
         navigation={navigation}
         replyToPostId = {postId}
         replyToProfile = {profile}
@@ -339,7 +340,7 @@ const PostScreen = ({navigation, route}) => {
                 keyExtractor={keyExtractor}
             />
 
-            {replyBottomSheet(navigation, postId, profile, username)}
+            {replyBottomSheet(navigation, theme, postId, profile, username)}
         </View>
     );
 };
