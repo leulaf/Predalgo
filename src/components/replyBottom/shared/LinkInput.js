@@ -1,5 +1,5 @@
 import React, {} from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Keyboard, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
 import {BlurView} from 'expo-blur';
@@ -27,6 +27,8 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
 
     const linkRef = React.useRef(null);
 
+    const [isKeyboardVisible, setKeyboardVisible] = React.useState("once");
+
     let link
 
     // icons
@@ -35,6 +37,32 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
     }else{
         link = <LinkDark width={26} height={26} marginLeft={2} marginRight={0} marginTop={4} />;
     }
+
+    React.useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+          'keyboardDidShow',
+          () => {
+            setKeyboardVisible(true); // or some other action
+          }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+          'keyboardDidHide',
+          () => {
+            setKeyboardVisible(false); // or some other action
+          }
+        );
+    
+        return () => {
+          keyboardDidHideListener.remove();
+          keyboardDidShowListener.remove();
+        };
+    }, []);
+
+    React.useEffect(() => {
+        if(!isKeyboardVisible && isKeyboardVisible != "once"){
+            handleBlur();
+        }
+    }, [isKeyboardVisible])
 
     const handleDone = () => () => {
         // if link name is empty, just display link URL as clickable link
@@ -105,7 +133,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     style={[theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle, {marginHorizontal: 0,}]} 
                     placeholder="Link Name"
                     value={linkName}
-                    placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
+                    placeholderTextColor={theme == "light" ? "#555555" : "#BBBBBB"}
                     onChangeText={
                         newTerm => 
                         setLinkName(
@@ -153,7 +181,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     style={theme == 'light' ? styles.lightInputStyle : styles.darkInputStyle} 
                     placeholder="https://example.com"
                     value={linkInput}
-                    placeholderTextColor={theme == "light" ? "#666666" : "#AAAAAA"}
+                    placeholderTextColor={theme == "light" ? "#555555" : "#BBBBBB"}
                     onChangeText={
                         newTerm => 
                         setLinkInput(
@@ -235,7 +263,7 @@ const styles = StyleSheet.create({
         marginRight: 4,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#CCCCCC',
+        borderColor: '#C3C3C3',
         alignItems: 'center',
         alignContent: 'center',
     },
@@ -247,7 +275,7 @@ const styles = StyleSheet.create({
         marginRight: 4,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#444444',
+        borderColor: '#4D4D4D',
         alignItems: 'center',
         alignContent: 'center',
     },
@@ -258,7 +286,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#CCCCCC',
+        borderColor: '#C3C3C3',
     },
     linkDarkContainer: {
         flex: 1,
@@ -267,7 +295,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
         borderRadius: 12,
         borderWidth: 1,
-        borderColor: '#444444',
+        borderColor: '#4D4D4D',
     },
     lightDoneButton: {
         width: 75,
