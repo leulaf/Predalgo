@@ -17,7 +17,7 @@ function isValidUrl(string) {
 // Format link url string to later parse and display as clickable link
 // (if link name is empty, just use link input) (if link input is empty, don't add link or link name)
 // final link string format: [link URL](link name)
-const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSelection, replyTextToPost, setReplyTextToPost, handleFocus, handleBlur}) => {
+const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSelection, replyTextToPost, setReplyTextToPost, handleFocus, bottomSheetRef}) => {
     
     const [linkName, setLinkName] = React.useState(replyTextToPost.substring(currentSelection.start, currentSelection.end));
     const [linkInput, setLinkInput] = React.useState("");
@@ -26,8 +26,6 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
     const linkViewID = uuid.v4();
 
     const linkRef = React.useRef(null);
-
-    const [isKeyboardVisible, setKeyboardVisible] = React.useState("once");
 
     let link
 
@@ -39,30 +37,17 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
     }
 
     React.useEffect(() => {
-        const keyboardDidShowListener = Keyboard.addListener(
-          'keyboardDidShow',
-          () => {
-            setKeyboardVisible(true); // or some other action
-          }
-        );
         const keyboardDidHideListener = Keyboard.addListener(
           'keyboardDidHide',
           () => {
-            setKeyboardVisible(false); // or some other action
+            bottomSheetRef.current.snapToIndex(0); // or some other action
           }
         );
     
         return () => {
           keyboardDidHideListener.remove();
-          keyboardDidShowListener.remove();
         };
     }, []);
-
-    React.useEffect(() => {
-        if(!isKeyboardVisible && isKeyboardVisible != "once"){
-            handleBlur();
-        }
-    }, [isKeyboardVisible])
 
     const handleDone = () => () => {
         // if link name is empty, just display link URL as clickable link
@@ -126,7 +111,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     autoCapitalize="none"
                     autoCorrect={false}
                     onFocus={() => handleFocus()}
-                    onBlur={() =>  handleBlur()} // focus lost
+                    onBlur={() =>  bottomSheetRef.current.snapToIndex(0)} // focus lost
                     blurOnSubmit={false}
                     maxLength={100}
                     multiline={false}
@@ -174,7 +159,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     autoCapitalize="none"
                     autoCorrect={false}
                     onFocus={() => handleFocus()}
-                    onBlur={() => handleBlur()} // focus lost
+                    onBlur={() => bottomSheetRef.current.snapToIndex(0)} // focus lost
                     blurOnSubmit={false}
                     maxLength={100}
                     multiline={false}

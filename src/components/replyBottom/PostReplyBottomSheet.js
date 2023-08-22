@@ -158,12 +158,6 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
         !linkView && bottomSheetRef.current.snapToIndex(0);
     }
 
-    const handleBlurLinkView = () => {
-        bottomSheetRef.current.snapToIndex(0);
-        // setLinkView(false);
-        Keyboard.dismiss();
-        
-    }
 
     const onReplyWithText = async () => {
 
@@ -293,7 +287,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
         linkView ?
             <LinkInput
                 handleFocus={handleFocus}
-                handleBlur={handleBlurLinkView}
+                bottomSheetRef={bottomSheetRef}
                 theme={theme}
                 linkView={linkView}
                 setLinkView={setLinkView}

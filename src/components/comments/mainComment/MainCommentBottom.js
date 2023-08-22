@@ -214,7 +214,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                 {/* Like Button */}
                 <TouchableOpacity 
                     activeOpacity={1}
-                    style={{ width: 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                    style={{ width: commentsCount < 100000 ? 100 : 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                     onPress={toggleLike()}
                 >
                     

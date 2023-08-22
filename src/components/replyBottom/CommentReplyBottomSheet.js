@@ -149,11 +149,6 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
         !linkView && bottomSheetRef.current.snapToIndex(0);
     }
 
-     // Collapse the bottom sheet when the text input is blurred (Not in focus)
-    const handleBlurLinkView = () => {
-        bottomSheetRef.current.snapToIndex(0);
-    }
-
     const onReplyWithText = async () => {
 
         await commentTextOnComment(
@@ -287,7 +282,7 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
         linkView ?
             <LinkInput
                 handleFocus={handleFocus}
-                handleBlur={handleBlurLinkView}
+                bottomSheetRef={bottomSheetRef}
                 theme={theme}
                 linkView={linkView}
                 setLinkView={setLinkView}

@@ -112,7 +112,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
             {/* Like Button */}
             <TouchableOpacity
                 activeOpacity={1}
-                style={{ flexDirection: 'row', paddingLeft: 10, width: 110, height: 40, alignItems: 'center', alignContent: 'center' }}
+                style={{ flexDirection: 'row', paddingLeft: 10, width: commentsCount < 100000 ? 100 : 110, height: 40, alignItems: 'center', alignContent: 'center' }}
                 onPress={toggleLike()}
             >
                 
