@@ -44,16 +44,14 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
     
     const toggleLike = () => async() => {
         if(liked){
+            setLiked(false);
             await onDisike(replyToPostId, commentId).then((result) => {
-                if(result){
-                    setLiked(false);
-                }
+                result == false && setLiked(true)
             })
         }else{
+            setLiked(true);
             await onLike(replyToPostId, commentId).then((result) => {
-                if(result){
-                    setLiked(true);
-                }
+                result == false && setLiked(false);
             })
         }
     }

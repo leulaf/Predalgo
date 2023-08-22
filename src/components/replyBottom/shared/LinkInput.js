@@ -2,6 +2,8 @@ import React, {} from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
+import {BlurView} from 'expo-blur';
+
 import LinkLight from '../../../../assets/link_light.svg';
 import LinkDark from '../../../../assets/link_dark.svg';
 
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         height: 55,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor: '#FFFFFF',
         alignItems: 'center',
         alignContent: 'center',
     },
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         height: 55,
-        backgroundColor: '#141414',
+        // backgroundColor: '#141414',
         alignItems: 'center',
         alignContent: 'center',
     },
@@ -272,7 +274,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 100,
         borderWidth: 1.5,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: 'rgba(255, 255, 255, 0.5)',
         borderColor: '#CCCCCC',
         marginRight: 7,
         alignItems: 'center',
@@ -284,7 +286,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 100,
         borderWidth: 1.5,
-        backgroundColor: '#242424',
+        backgroundColor: 'rgba(100, 100, 100, 0.5)',
         borderColor: '#393939',
         marginRight: 7,
         alignItems: 'center',

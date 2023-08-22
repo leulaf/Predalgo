@@ -4,7 +4,6 @@ import uuid from 'react-native-uuid';
 
 import { Shadow } from 'react-native-shadow-2';
 
-
 import { BlurView } from 'expo-blur';
 
 import { commentImageOnPost } from '../../shared/comment/forPost/UploadImage';
@@ -412,7 +411,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                 // onChange={() => handleSheetChanges}
                 keyboardBehavior="interactive"
                 backgroundComponent={() =>
-                    <BlurView 
+                    <BlurView
                         tint = {theme == 'light' ?  "light" : "dark"}
                         intensity={theme == 'light' ?  100 : 100}
                         style={[StyleSheet.absoluteFill, {}]}
@@ -436,7 +435,8 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#C3C3C3' : '#363636'}}
             >
                 
-                <View 
+                <View
+                    onPress={() => handleFocus()}
                     automaticallyAdjustKeyboardInsets={true}
                     // contentContainerStyle={theme == 'light' ? styles.lightReplyTextToPostContainer : styles.darkReplyTextToPostContainer}
                 >
@@ -671,7 +671,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(32, 32, 32, 0.33)',
+        backgroundColor: 'rgba(32, 32, 32, 0.35)',
         borderWidth: 1,
         borderColor: '#242424',
     },

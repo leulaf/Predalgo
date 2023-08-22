@@ -131,9 +131,9 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
                     image={image}
                     height={imageHeight}
                     width={imageWidth}
-                    maxWidth={windowWidth}
-                    maxHeight={600}
-                    style={{marginTop: 7, borderRadius: 10, alignSelf: 'center'}}
+                    maxWidth={windowWidth-8}
+                    maxHeight={windowHeight}
+                    style={{marginTop: 5, borderRadius: 15, alignSelf: 'center'}}
                 />
                 
                 {/* Content bottom */}

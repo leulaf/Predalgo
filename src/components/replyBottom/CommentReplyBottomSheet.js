@@ -432,7 +432,8 @@ const CommentReplyBottomSheet = ({navigation, replyToPostId, replyToCommentId, r
                 backgroundStyle={theme == 'light' ? styles.lightBottomSheet : styles.darkBottomSheet}
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#C3C3C3' : '#363636'}}
             >
-                <View 
+                <View
+                    onPress={() => handleFocus()}
                     automaticallyAdjustKeyboardInsets={true}
                     // contentContainerStyle={theme == 'light' ? styles.lightReplyTextToPostContainer : styles.darkReplyTextToPostContainer}
                 >
@@ -640,7 +641,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(32, 32, 32, 0.33)',
+        backgroundColor: 'rgba(32, 32, 32, 0.35)',
         borderWidth: 1,
         borderColor: '#242424',
     },

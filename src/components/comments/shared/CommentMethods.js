@@ -76,9 +76,16 @@ const onLike = async (replyToPostId, commentId) => {
 
             await updateDoc(commentRef, {
                 likesCount: increment(1)
-            }).then(() => {
+            })
+            .then(() => {
                 resolve(true);
             })
+            .catch((error) => {
+                // console.log(error);
+                resolve(false);
+            });
+
+
         }else{
             resolve(true);
         }
@@ -97,9 +104,14 @@ const onDisike = async (replyToPostId, commentId) => {
 
         await updateDoc(commentRef, {
             likesCount: increment(-1)
-        }).then(() => {
+        })
+        .then(() => {
             resolve(true);
         })
+        .catch((error) => {
+            // console.log(error);
+            resolve(false);
+        });
     });
 };
 
