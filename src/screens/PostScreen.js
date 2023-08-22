@@ -135,7 +135,7 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                         height={imageHeight}
                         width={imageWidth}
                         maxWidth={windowWidth}
-                        maxHeight={500}
+                        maxHeight={600}
                         style={{marginTop: 7, borderRadius: 10, alignSelf: 'center'}}
                     />
                 
@@ -155,10 +155,11 @@ const imageEquals =(prev, next) => {
 }
 
 
-const ImagePost = React.memo(({item, theme, navigation})=>{
+const ImagePost = React.memo(({item, theme, index, navigation})=>{
     return (
         <MainComment
             navigation={navigation}
+            index={index}
             theme={theme}
             replyToPostId={item.replyToPostId}
             profile={item.profile}
@@ -184,10 +185,11 @@ const itemEquals = (prev, next) => {
     return prev.item.id === next.item.id
 }
 
-const TextPost = React.memo(({item, theme, navigation})=>{
+const TextPost = React.memo(({item, theme, index, navigation})=>{
     return (
         <MainComment
             navigation={navigation}
+            index={index}
             theme={theme}
             replyToPostId={item.replyToPostId}
             profile={item.profile}
@@ -276,11 +278,11 @@ const PostScreen = ({navigation, route}) => {
             );
         }else if(item.imageHeight){
             return (
-                <ImagePost item={item} navigation={navigation} theme={theme}/>
+                <ImagePost item={item} navigation={navigation} index={index} theme={theme}/>
             );
         }else{
             return (
-                <TextPost item={item} navigation={navigation} theme={theme}/>
+                <TextPost item={item} navigation={navigation} index={index} theme={theme}/>
             );
         }
     }, [theme, image])

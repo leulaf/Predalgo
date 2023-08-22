@@ -3,6 +3,8 @@ import { StyleSheet, TouchableOpacity} from 'react-native';
 import TextTicker from 'react-native-text-ticker';
 import GlobalStyles from '../../../constants/GlobalStyles';
 
+import DownDark from '../../../../assets/down_dark.svg';
+
 import DarkMemeCreate from '../../../../assets/meme_create_dark.svg';
 import LightMemeCreate from '../../../../assets/meme_create_light.svg';
 
@@ -12,7 +14,8 @@ const MemeName = ({ memeName, theme, navigation }) => {
 
     if (memeName) {
         contentBottom =
-            <TouchableOpacity 
+            <TouchableOpacity
+                activeOpacity={0.8}
                 onPress={() => navigation.push('Meme', {memeName: memeName})}
                 style={styles.memeName}
             >
@@ -44,8 +47,6 @@ const MemeName = ({ memeName, theme, navigation }) => {
 const styles = StyleSheet.create({
     memeName: {
         width: 170,
-        marginTop: 0,
-        marginLeft: 0,
         flexDirection: 'row',
         paddingHorizontal: 5,
     }

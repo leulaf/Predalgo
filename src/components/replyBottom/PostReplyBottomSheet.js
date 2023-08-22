@@ -84,7 +84,7 @@ const PostReplyBottomSheet = ({navigation, replyToPostId, replyToProfile, replyT
     const replyTextToPostRef = useRef(null);
 
     // variables
-    const snapPoints = useMemo(() => ['11%', '70%', '95%'], []);
+    const snapPoints = useMemo(() => ['10%', '70%', '95%'], []);
 
     useEffect(() => {
         if(imageReply && imageReply.forCommentOnPost){
@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
     },
     lightReplyTextPostBar: {
         height: 44,
-        width: "97%",
+        width: "95%",
         borderRadius: 30,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -664,14 +664,14 @@ const styles = StyleSheet.create({
     },
     darkReplyTextPostBar: {
         height: 44,
-        width: "97%",
+        width: "95%",
         borderRadius: 30,
         flexDirection: 'row',
         alignSelf: 'center',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(32, 32, 32, 0.35)',
+        backgroundColor: 'rgba(32, 32, 32, 0.33)',
         borderWidth: 1,
         borderColor: '#242424',
     },
@@ -717,20 +717,22 @@ const styles = StyleSheet.create({
     },
     lightInputStyle: {
         flex: 1,
-        // height: 40,
+        height: 44,
         fontSize: 18,
         fontWeight: "400",
-        marginHorizontal: 12,
+        marginHorizontal: 10,
+        padding: 5,
         // marginVertical: 20,
         // alignSelf: 'center',
         color: '#222222',
     },
     darkInputStyle: {
         flex: 1,
-        // height: 40,
+        height: 44,
         fontSize: 18,
         fontWeight: "400",
-        marginHorizontal: 12,
+        marginHorizontal: 10,
+        padding: 5,
         // marginVertical: 13,
         // alignSelf: 'center',
         color: '#F4F4F4',

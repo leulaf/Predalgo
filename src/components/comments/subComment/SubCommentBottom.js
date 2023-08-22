@@ -2,6 +2,8 @@ import React from 'react';
 
 import { View, Text, TouchableOpacity } from 'react-native';
 
+import MemeName from '../shared/MemeName';
+
 import styles from './Styles';
 
 import { intToString, onLike, onDisike } from '../shared/CommentMethods';
@@ -63,7 +65,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                 
             {/* View replies */}
             {
-                commentsCount > 0 &&
+                (commentsCount > 0 && !(memeName)) &&
 
                 <TouchableOpacity
                     activeOpacity={1}
@@ -74,9 +76,19 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                     <View style={theme == 'light' ? styles.lightViewReplyLine : styles.darkViewReplyLine}/>
 
                     <Text style={theme == 'light' ? styles.lightViewText: styles.darkViewText}>
-                        View {commentsCount} replies
+                        View {intToString(commentsCount)} replies
                     </Text>
                 </TouchableOpacity>
+            }
+
+            {/* Meme Name */}
+            {
+                memeName &&
+                <MemeName
+                    theme={theme}
+                    memeName={memeName}
+                    navigation={navigation}
+                />
             }
 
             {/* Spacer */}

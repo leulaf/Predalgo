@@ -132,7 +132,7 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
                     height={imageHeight}
                     width={imageWidth}
                     maxWidth={windowWidth}
-                    maxHeight={500}
+                    maxHeight={600}
                     style={{marginTop: 7, borderRadius: 10, alignSelf: 'center'}}
                 />
                 
@@ -281,11 +281,11 @@ const CommentScreen = ({navigation, route}) => {
             );
         }else if(item.imageHeight){
             return (
-                <ImagePost item={item} navigation={navigation} theme={theme}/>
+                <ImagePost item={item} navigation={navigation} index={index} theme={theme}/>
             );
         }else{
             return (
-                <TextPost item={item} navigation={navigation} theme={theme}/>
+                <TextPost item={item} navigation={navigation} index={index} theme={theme}/>
             );
         }
     }, [theme, image,]);

@@ -43,7 +43,7 @@ const onNavToCommentWithComments = (navigation, commentId, replyToPostId, replyT
 
 
 // ******** React memo ********
-const MainComment = ({ navigation, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const MainComment = ({ navigation, index, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl :  template);
 
@@ -135,7 +135,7 @@ const MainComment = ({ navigation, theme, profile, username, profilePic, comment
                         image={image}
                         height={imageHeight}
                         width={imageWidth}
-                        maxHeight={500}
+                        maxHeight={550}
                         maxWidth={windowWidth}
                         style={{borderRadius: 0}}
                     />
@@ -146,6 +146,7 @@ const MainComment = ({ navigation, theme, profile, username, profilePic, comment
             {/* Comment Footer */}
             <MainCommentBottom
                 navigation={navigation}
+                index={index}
                 theme={theme}
                 commentId={commentId}
                 replyToCommentId={replyToCommentId}

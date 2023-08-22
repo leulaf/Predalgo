@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 
 import styles from './Styles';
 
-import MemeName from './MemeName';
+import MemeName from '../shared/MemeName';
 
 import { intToString, onLike, onDisike } from '../shared/CommentMethods';
 
@@ -90,7 +90,7 @@ const TextPost = React.memo(({item, theme, navigation})=>{
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 // ******** React memo ********
-export default MainCommentBottom = ({navigation, theme, commentId, replyToPostId, memeName, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
+export default MainCommentBottom = ({navigation, index, theme, commentId, replyToPostId, memeName, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
     
     const [liked, setLiked] = React.useState(false);
 
@@ -110,6 +110,17 @@ export default MainCommentBottom = ({navigation, theme, commentId, replyToPostId
         reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
         down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
     }
+
+    
+    // populate commentsList with first five comments
+    // only it is one of the first three comments
+    useEffect(() => {
+        index < 5 && commentsCount > 0 && commentsList.length == 0 &&
+        fetchFirstFiveCommentsByPopular(replyToPostId, commentId).then((comments) => {
+            setCommentsList(comments);
+        })
+    }, [])
+
 
     // ****PREVENT unnecessary requests*****
     // fetch comments five at a time
