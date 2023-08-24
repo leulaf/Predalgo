@@ -132,7 +132,7 @@ const Header = React.memo(({theme, navigation, memeName, image, imageHeight, ima
                     image={image}
                     height={imageHeight}
                     width={imageWidth}
-                    maxWidth={windowWidth-8}
+                    maxWidth={windowWidth-6}
                     maxHeight={windowHeight}
                     style={{marginTop: 5, borderRadius: 15, alignSelf: 'center'}}
                 />

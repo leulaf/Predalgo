@@ -2,11 +2,16 @@ import React from 'react';
 
 import { View, Text, TouchableOpacity } from 'react-native';
 
+// import * as Haptics from 'expo-haptics';
+
 import MemeName from '../shared/MemeName';
 
 import styles from './Styles';
 
 import { intToString, onLike, onDisike } from '../shared/CommentMethods';
+
+// Mood indicator choices
+import MoodIndicator from '../shared/MoodIndicator';
 
 // light mode icons
 import Likes from '../../../../assets/likes.svg';
@@ -25,6 +30,7 @@ import DownDark from '../../../../assets/down_dark.svg';
 export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId, replyToCommentId, memeName, profile, likesCount, commentsCount, onNavToComment, onReply,}) => {
     
     const [liked, setLiked] = React.useState(false);
+    const [chosenMood, setChosenMood] = React.useState(false);
 
     let likes, alreadyLiked, reply, down
 
@@ -43,6 +49,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
     
     
     const toggleLike = () => async() => {
+        // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         if(liked){
             setLiked(false);
             await onDisike(replyToPostId, commentId).then((result) => {
@@ -79,6 +86,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                 </TouchableOpacity>
             }
 
+
             {/* Meme Name */}
             {
                 memeName &&
@@ -89,12 +97,14 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                 />
             }
 
+
             {/* Spacer */}
             <TouchableOpacity
                 activeOpacity={1}
                 style={{flex: 1, height: 40, }}
                 onPress={onNavToComment()}
             ></TouchableOpacity>
+
 
             {/* Reply */}
             <TouchableOpacity
@@ -108,24 +118,38 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                     Reply
                 </Text>
             </TouchableOpacity>
-            
-            {/* Like Button */}
-            <TouchableOpacity
-                activeOpacity={1}
-                style={{ flexDirection: 'row', paddingLeft: 10, width: commentsCount < 100000 ? 100 : 110, height: 40, alignItems: 'center', alignContent: 'center' }}
-                onPress={toggleLike()}
-            >
-                
-                {liked ?
-                    alreadyLiked
-                :
-                    likes
-                }
 
-                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    {liked ? intToString(likesCount + 1) : intToString(likesCount)} Likes
-                </Text>
-            </TouchableOpacity>
+
+            {/* Mood Indicator */}
+            {liked &&
+            
+                <MoodIndicator/>
+            }
+
+
+            {/* Like Button */}
+            {
+                !liked &&
+
+                <TouchableOpacity 
+                    activeOpacity={1}
+                    style={{ width: commentsCount < 100000 ? 100 : 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                    onPress={toggleLike()}
+                >
+                    
+                    {/* {liked ?
+                        alreadyLiked
+                    :
+                        likes
+                    } */}
+                    {likes}
+
+                    <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                        {liked? intToString(likesCount + 1) : intToString(likesCount)} Likes
+                    </Text>
+
+                </TouchableOpacity>
+                }
 
         </View>
     );

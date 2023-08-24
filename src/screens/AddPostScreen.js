@@ -11,6 +11,8 @@ import { collection, addDoc, getDoc, doc, query, where, orderBy, startAfter, lim
 import ResizableImage from '../shared/ResizableImage';
 import { Image } from 'expo-image';
 
+import { BlurView } from 'expo-blur';
+
 import { StackActions } from '@react-navigation/native';
 
 import {ThemeContext} from '../../context-store/context';
@@ -36,26 +38,27 @@ const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => (
   if(forCommentOnComment || forCommentOnPost){
     navigation.dispatch(
         StackActions.replace('EditMeme', {
-        replyMemeName: item.name,
-        imageUrl: item.url,
-        height: item.height,
-        width: item.width,
-        templateExists: true,
-        forCommentOnComment: forCommentOnComment,
-        forCommentOnPost: forCommentOnPost,
-        forMemeComment: forCommentOnComment
+          uploader: item.uploader,
+          memeName: item.name,
+          template: item.url,
+          height: item.height,
+          width: item.width,
+          templateExists: true,
+          forCommentOnComment: forCommentOnComment,
+          forCommentOnPost: forCommentOnPost,
       })
     )
   }else{
     navigation.navigate('Meme', {
-      memeName: item.name,
-      template: item.url,
-      height: item.height,
-      width: item.width,
-      useCount: item.useCount,
-      uploader: item.uploader,
-      forCommentOnComment: forCommentOnComment,
-      forCommentOnPost: forCommentOnPost,
+        uploader: item.uploader,
+        memeName: item.name,
+        template: item.url,
+        height: item.height,
+        width: item.width,
+        useCount: item.useCount,
+        uploader: item.uploader,
+        forCommentOnComment: forCommentOnComment,
+        forCommentOnPost: forCommentOnPost,
     })
   }
 }
@@ -191,6 +194,7 @@ const AddPostScreen = ({navigation, route}) => {
             <ResizableImage
               image={item.url}
               maxWidth={windowWidth/2 - 8}
+              maxHeight={500}
               height={item.height}
               width={item.width}
               style={{borderRadius: 10}}
@@ -210,7 +214,7 @@ const AddPostScreen = ({navigation, route}) => {
             // console.log('Swiped Right')
             navigation.goBack()
         }}
-        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
+        style={[theme == 'light' ? {backgroundColor: '#FCFCFC'} : GlobalStyles.darkContainer, {flex: 1}]}
       >
 
         <MasonryFlashList
@@ -244,12 +248,10 @@ const AddPostScreen = ({navigation, route}) => {
                 <PostBar/>
               }
 
-              <View style={{width: '100%', flexDirection: 'row', alignContent: 'center', justifyContent: 'center'}}>
-                  <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
-                      <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                          Meme Templates
-                      </Text>
-                  </View>
+              <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
+                <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                    Meme Templates
+                </Text>
               </View>
             </View>
           }
@@ -263,7 +265,42 @@ const AddPostScreen = ({navigation, route}) => {
 
           
         {/* Add template button */}
-        <TouchableOpacity
+        
+
+            <TouchableOpacity
+                style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
+                onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
+            >
+              <BlurView
+                tint = {theme == 'light' ?  "light" : "dark"}
+                intensity={theme == 'light' ?  100 : 100}
+                style={[StyleSheet.absoluteFill, 
+                  {
+                    borderRadius: 100,
+                    flexDirection: 'row',
+                    justifyContent: "center",
+                    alignItems: 'center',
+                    alignSelf: 'center',
+                  }
+                ]}
+              >
+
+                {theme == "light" ?
+                    <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                    :
+                    <DarkMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                }
+
+                <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
+                    Add meme template
+                </Text>
+
+              </BlurView>
+          </TouchableOpacity>
+
+        
+
+        {/* <TouchableOpacity
               style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
               onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
           >
@@ -276,7 +313,7 @@ const AddPostScreen = ({navigation, route}) => {
             <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
                 Add meme template
             </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
       </Animated.View>
     );
@@ -296,72 +333,78 @@ const styles = StyleSheet.create({
   lightMemeTemplateContainer: {
     flexDirection: 'column',
     backgroundColor: '#ffffff',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 15,
-    // width: 110,
-    height: 40,
+    width: 'auto',
+    height: 42,
     marginLeft: 5,
     marginTop: 12,
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#C9C9C9'
+    borderWidth: 1.5,
+    borderColor: '#E4E4E4'
   },
   darkMemeTemplateContainer: {
     flexDirection: 'column',
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#0C0C0C',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 15,
-    // width: 110,
-    height: 40,
+    width: 'auto',
+    height: 42,
     marginLeft: 5,
     marginTop: 12,
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#484848'
+    borderWidth: 1.5,
+    borderColor: '#313131'
   },
   lightText: {
     fontSize: 22,
     color: '#444444',
     fontWeight: '600',
     alignSelf: 'center',
-    marginHorizontal: 10,
-    marginTop: 5,
+    marginHorizontal: 12,
   },
   darkText: {
     fontSize: 22,
     color: '#f2f2f2',
     fontWeight: '600',
     alignSelf: 'center',
-    marginHorizontal: 10,
-    marginTop: 5,
+    marginHorizontal: 12,
   },
   lightAddTemplateButton: {
-    width: 245,
-    height: 55,
+    overflow: 'hidden',
+    width: 250,
+    height: 60,
     borderRadius: 100,
     flexDirection: 'row',
     marginTop: 700,
     position: 'absolute',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: 'rgba(255, 255, 255, 0.50)',
     alignSelf: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: '#DDDDDD'
+    borderColor: '#CFCFCF',
   },
   darkAddTemplateButton: {
-    width: 245,
-    height: 55,
+    overflow: 'hidden',
+    width: 250,
+    height: 60,
     borderRadius: 100,
     flexDirection: 'row',
     marginTop: 700,
     position: 'absolute',
-    backgroundColor: '#151515',
+    backgroundColor: 'rgba(0, 0, 0, 0.40)',
     alignSelf: 'center',
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderColor: '#444444'
+    borderColor: '#262626'
   },
   lightAddTemplateText: {
       fontSize: 20,
-      color: '#111111',
+      color: '#000000',
       fontWeight: '500',
       alignSelf: 'center',
   },

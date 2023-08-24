@@ -105,6 +105,7 @@ const SearchMemesScreen = ({navigation, route}) => {
             <ResizableImage
               image={item.url}
               maxWidth={windowWidth/2 - 8}
+              maxHeight={500}
               height={item.height}
               width={item.width}
               style={{borderRadius: 10}}
@@ -118,7 +119,7 @@ const SearchMemesScreen = ({navigation, route}) => {
     return (
       <Animated.View
         entering={FadeIn}
-        style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
+        style={[theme == 'light' ? {backgroundColor: '#FCFCFC'} : GlobalStyles.darkContainer, {flex: 1}]}
       >
 
         <MasonryFlashList
@@ -148,9 +149,10 @@ const SearchMemesScreen = ({navigation, route}) => {
 
           contentContainerStyle={{paddingTop: 5}}
 
-          ListFooterComponent={
-              <View style={{}}>
-
+          ListFooterComponent= {
+            term != '' && 
+            
+            <View style={{marginTop: 30}}>
                   <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
                     Didn't find the right template?
                   </Text>

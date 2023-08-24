@@ -105,6 +105,7 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
                     <ResizableImage
                         image={item.url}
                         maxWidth={windowWidth/2 - 8}
+                        maxHeight={500}
                         height={item.height}
                         width={item.width}
                         style={{borderRadius: 10}}

@@ -3,6 +3,8 @@ import {View, Text, TextInput, StyleSheet, TouchableOpacity, Alert} from 'react-
 import { Overlay } from 'react-native-elements';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
+import Emojis from '../constants/EmojiStickers';
+
 import EditImageTopBar from '../ScreenTop/EditImageTopBar';
 
 import { StackActions } from '@react-navigation/native';
@@ -47,7 +49,7 @@ const EditMemeScreen = ({ navigation, route }) => {
     };
 
 
-    // console.log(imageReply.undeditedUri, imageUrl);
+    console.log( imageUrl);
 
     useEffect(() => {
         navigation.setOptions({
@@ -211,12 +213,13 @@ const EditMemeScreen = ({ navigation, route }) => {
                     'filter',
                     'finetune',
                     'crop',
-                    'decorate',
                     'sticker',
+                    // 'decorate',
                     'frame',
                     'redact',
                     // 'resize',
                 ]}
+                stickers={Emojis}
                 markupEditorToolStyles={createMarkupEditorToolStyles({
                     text: createMarkupEditorToolStyle("text", {
                         fontSize: "10%",
@@ -232,7 +235,6 @@ const EditMemeScreen = ({ navigation, route }) => {
                     ['line', 'Line', { disabled: false }],
                     ['path', 'Path', { disabled: false }],
                     ['preset', 'Preset', { disabled: false }],
-                    
                 ]}
                 imageFrame={{
                     // current style properties

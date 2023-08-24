@@ -28,27 +28,28 @@ const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => ()
     if(forCommentOnComment || forCommentOnPost){
       navigation.dispatch(
           StackActions.replace('EditMeme', {
-              replyMemeName: item.name,
-              imageUrl: item.url,
-              height: item.height,
-              width: item.width,
-              templateExists: true,
-              forCommentOnComment: forCommentOnComment,
-              forCommentOnPost: forCommentOnPost,
-              forMemeComment: forCommentOnComment
+                uploader: item.uploader,
+                replyMemeName: item.name,
+                imageUrl: item.template,
+                height: item.height,
+                width: item.width,
+                templateExists: true,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
+                forMemeComment: forCommentOnComment
         })
       )
     }else{
-      navigation.navigate('EditMeme', {
-        replyMemeName: item.name,
-        imageUrl: item.url,
-        height: item.height,
-        width: item.width,
-        templateExists: true,
-        forCommentOnComment: forCommentOnComment,
-        forCommentOnPost: forCommentOnPost,
-        forMemeComment: forCommentOnComment
-      })
+        navigation.navigate('EditMeme', {
+            replyMemeName: item.name,
+            imageUrl: item.template,
+            height: item.height,
+            width: item.width,
+            templateExists: true,
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
+            forMemeComment: forCommentOnComment
+        })
     }
   }
 
@@ -64,13 +65,14 @@ const MemeScreen = ({ navigation, route }) => {
     const flashListRef = useRef(null);
    
     useEffect(() => {
-        getFirstTenMemes();
+        useCount > 0 && getFirstTenMemes();
 
         navigation.setOptions({
             header: () => <MemeTopBar name={memeName} url={template} height={height} width={width} />,
         });
     }, []);
 
+    // console.log(template)
 
     const getFirstTenMemes = React.useCallback(async () => {
         const q = query(
@@ -213,11 +215,13 @@ const MemeScreen = ({ navigation, route }) => {
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightUseTemplateButton : styles.darkUseTemplateButton}
                 onPress={navToEdit(navigation, {
+                    uploader: uploader,
                     name: memeName,
                     template: template,
                     height: height,
                     width: width,
-                    
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
                 }, forCommentOnComment, forCommentOnPost)}
             >
                 {theme == "light" ?

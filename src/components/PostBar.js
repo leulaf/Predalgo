@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
        marginTop:  10,
        alignSelf: "center",
        alignItems: "center",
-       backgroundColor: "#FDFDFD",
+       backgroundColor: "#FFFFFF",
        borderWidth: 1,
-       borderColor: "#DDDDDD",
+       borderColor: "#E0E0E0",
        borderRadius: 30
    },
    darkMainContainer: {
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
        marginLeft: 8,
        backgroundColor: "#FEFEFE",
        borderWidth: 1,
-       borderColor: "#DDDDDD",
+       borderColor: "#E0E0E0",
        borderRadius: 30
    },
    darkTextContainer: {
@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
        alignSelf: "center",
        alignItems: "center",
        marginLeft: 8,
-       backgroundColor: "#1F1F1F",
+       backgroundColor: "#151515",
        borderWidth: 1,
-       borderColor: "#393939",
+       borderColor: "#333333",
        borderRadius: 30
    },
    lightText:{

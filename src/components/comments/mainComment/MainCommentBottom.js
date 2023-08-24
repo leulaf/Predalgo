@@ -4,6 +4,8 @@ import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 
 import styles from './Styles';
 
+// import * as Haptics from 'expo-haptics';
+
 import MemeName from '../shared/MemeName';
 
 import { intToString, onLike, onDisike } from '../shared/CommentMethods';
@@ -13,6 +15,9 @@ import getItemType from '../../../shared/GetItemType';
 
 import { fetchFirstFiveCommentsByPopular, fetchNextFiveCommentsByPopular } from '../../../shared/comment/GetComments';
 import { FlashList } from '@shopify/flash-list';
+
+// Mood indicator choices
+import MoodIndicator from '../shared/MoodIndicator';
 
 // SecondaryComment is a comment that is a reply to a comment
 import SubComment from '../subComment/SubComment';
@@ -93,6 +98,7 @@ const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 export default MainCommentBottom = ({navigation, index, theme, commentId, replyToPostId, memeName, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
     
     const [liked, setLiked] = React.useState(false);
+    const [chosenMood, setChosenMood] = React.useState(false);
 
     // const [commentsList, setCommentsList] = React.useState([{first1first: true, id: "fir"}]); // array of replies to this comment
     const [commentsList, setCommentsList] = React.useState([]); // array of replies to this comment
@@ -145,6 +151,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
 
     const toggleLike = () => async() => {
+        // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         if(liked){
             setLiked(false);
             await onDisike(replyToPostId, commentId).then((result) => {
@@ -191,12 +198,14 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                     />
                 }
 
+
                 {/* Spacer */}
                 <TouchableOpacity
                     activeOpacity={1}
                     style={{flex: 1, height: 40, }}
                     onPress={onNavToComment()}
                 ></TouchableOpacity>
+
 
                 {/* Reply */}
                 <TouchableOpacity 
@@ -210,25 +219,38 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                         Reply
                     </Text>
                 </TouchableOpacity>
+
+
+                {/* Mood Indicator */}
+                {liked &&
                 
+                    <MoodIndicator/>
+                }
+
+
                 {/* Like Button */}
-                <TouchableOpacity 
-                    activeOpacity={1}
-                    style={{ width: commentsCount < 100000 ? 100 : 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={toggleLike()}
-                >
-                    
-                    {liked ?
-                        alreadyLiked
-                    :
-                        likes
-                    }
+                {
+                    !liked &&
 
-                    <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                        {liked? intToString(likesCount + 1) : intToString(likesCount)} Likes
-                    </Text>
+                    <TouchableOpacity 
+                        activeOpacity={1}
+                        style={{ width: commentsCount < 100000 ? 100 : 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                        onPress={toggleLike()}
+                    >
+                        
+                        {/* {liked ?
+                            alreadyLiked
+                        :
+                            likes
+                        } */}
+                        {likes}
 
-                </TouchableOpacity>
+                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                            {liked? intToString(likesCount + 1) : intToString(likesCount)} Likes
+                        </Text>
+
+                    </TouchableOpacity>
+                  }
             </View>
 
 

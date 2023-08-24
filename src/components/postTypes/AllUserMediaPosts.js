@@ -25,6 +25,7 @@ const renderItem = ({ item, index }) => {
       <ResizableImage
         image={item.imageUrl}
         maxWidth={windowWidth/2 - 8}
+        maxHeight={500}
         height={item.height}
         width={item.width}
         style={{borderRadius: 10}}

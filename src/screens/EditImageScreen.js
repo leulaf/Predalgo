@@ -2,6 +2,8 @@ import React, {useContext, useState, useEffect, useRef} from 'react';
 import {View, StyleSheet,} from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
+import Emojis from '../constants/EmojiStickers';
+
 import EditImageTopBar from '../ScreenTop/EditImageTopBar';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
@@ -129,7 +131,7 @@ const EditImageScreen = ({ navigation, route }) => {
                     'finetune',
                     // 'annotate',
                     // 'decorate',
-                    // 'sticker',
+                    'sticker',
                     'frame',
                     'redact',
                     // 'resize',
@@ -150,6 +152,7 @@ const EditImageScreen = ({ navigation, route }) => {
                     ['path', 'Path', { disabled: false }],
                     ['preset', 'Preset', { disabled: false }],
                 ]}
+                stickers={Emojis}
                 imageFrame={{
                     // current style properties
                     frameColor: [0, 0, 0],

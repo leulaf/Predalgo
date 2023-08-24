@@ -46,7 +46,7 @@ const MemeName = ({ memeName, theme, navigation }) => {
 
 const styles = StyleSheet.create({
     memeName: {
-        width: 170,
+        maxWidth: 100,
         flexDirection: 'row',
         paddingHorizontal: 5,
     }
