@@ -1,7 +1,7 @@
 
 
-import React, { useEffect, useState, useContext } from 'react';
-import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions, StatusBar } from 'react-native';
+import React, {} from 'react';
+import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions, RefreshControl, StatusBar } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
 import Constants from 'expo-constants';
@@ -12,6 +12,8 @@ import TitleText from '../shared/Text/TitleText';
 import Animated, {FadeIn} from 'react-native-reanimated';
 
 import { FlashList } from '@shopify/flash-list';
+
+import LottieView from 'lottie-react-native';
 
 import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
@@ -34,6 +36,9 @@ import overrideItemLayout from '../shared/OverrideItemLayout'
 
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
+const refreshAnimationLight = require('../../assets/animations/Refresh_Picalgo_light.json');
+const refreshAnimationDark = require('../../assets/animations/Refresh_Picalgo_dark.json');
+const refreshingHeight = 100;
 
 const windowWidth = Dimensions.get("screen").width;
 const windowHeight = Dimensions.get("screen").height;
@@ -64,7 +69,7 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 }
 
 const Header = React.memo(({theme, navigation, title, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
-    const [following, setFollowing] = useState(false);
+    const [following, setFollowing] = React.useState(false);
 
     const toggleFollowing = React.useCallback(() => () => {
         // following ? onUnfollow() : onFollow();
@@ -209,21 +214,49 @@ const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 
 const PostScreen = ({navigation, route}) => {
-    const {theme,setTheme} = useContext(ThemeContext);
-    const [commentsList, setCommentsList] = useState([{id: "one"}, {id: "two"}]);
+    const {theme,setTheme} = React.useContext(ThemeContext);
+    const [commentsList, setCommentsList] = React.useState([{id: "one"}, {id: "two"}]);
     const {title, profile, likesCount, commentsCount, imageUrl, template, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
 
-    const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
+    const {imageReply, setImageReply} = React.useContext(AuthenticatedUserContext);
 
-    const [image, setImage] = useState(imageUrl ? imageUrl : template);
-    const [finished, setFinished] = useState(template ? false : true);
+    const [image, setImage] = React.useState(imageUrl ? imageUrl : template);
+    
+    const [finished, setFinished] = React.useState(template ? false : true);
 
 
-    useEffect(() => {
+    const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+    const [extraPaddingTop, setExtraPaddingTop] = React.useState(false);
+
+    const refreshViewRef = React.useRef(null);
+
+    // Used for tracking the scroll to make the refresh animation work correctly
+    const [offsetY, setOffsetY] = React.useState(0);
+
+    let progress = 0;
+
+    if (offsetY <= 0) {
+    progress = -offsetY / refreshingHeight;
+    }
+
+
+    React.useEffect(() => {
         getFirstTenPostCommentsByPopular();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     }, []);
+
+
+    React.useEffect(() => {
+        if (isRefreshing) {
+          setExtraPaddingTop(true);
+
+          refreshViewRef.current.play();
+        } else {
+          setExtraPaddingTop(false);
+        }
+    }, [isRefreshing]);
 
 
     const getFirstTenPostCommentsByPopular = React.useCallback(async() => {
@@ -238,6 +271,29 @@ const PostScreen = ({navigation, route}) => {
         commentsList[commentsList.length-1].snap = null;
         setCommentsList(commentsList => [...commentsList, ...comments]);
     }, [commentsList]);
+
+
+    function onScroll(event) {
+        const { nativeEvent } = event;
+        const { contentOffset } = nativeEvent;
+        const { y } = contentOffset;
+        setOffsetY(y);
+    }
+
+    // Refresh onRelease function
+    function onRelease() {
+        // offsetY must be less than the refreshing height
+        // to trigger refresh
+        if (offsetY <= -refreshingHeight && !isRefreshing) {
+        // For this example, we will set refreshing to true
+        // and then set it to false after 3 seconds.
+        // In your app this is where the actual refreshing happens
+        setIsRefreshing(true);
+        setTimeout(() => {
+            setIsRefreshing(false);
+        }, 3000);
+        }
+    }
 
 
     const onGoBack = React.useCallback(() => {
@@ -291,13 +347,36 @@ const PostScreen = ({navigation, route}) => {
 
     return (
         <View
-            style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
+            style={
+                theme == 'light' ? 
+                    [styles.lightMainContainer, {backgroundColor: offsetY > 0 ? '#F4F4F4' : '#FFFFFF'}]
+                :
+                    [styles.darkMainContainer, {backgroundColor: offsetY > 0 ? '#000000' : '#151515'}]
+            }
         >
             {/* Load Meme with template and template state */}
             {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
 
             {/* Top */}
             <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight,}]}/>
+
+            {/* Refresh View */}
+            {}
+            
+            {
+                offsetY < 0 && <LottieView
+                    ref={refreshViewRef}
+                    autoPlay
+                    style={[styles.lottieView]}
+                    source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
+                    // progress={progress}
+                />
+            }
+
+            {/* {
+                offsetY < -20 && 
+                <View style={{paddingBottom: 30}}/>
+            } */}
 
             <FlashList
                 data={commentsList}
@@ -321,6 +400,7 @@ const PostScreen = ({navigation, route}) => {
                         theme={theme}
                         title={"Post"}
                         onGoBack={onGoBack}
+                        extraPaddingTop={extraPaddingTop}
                     />
                 }
 
@@ -329,6 +409,41 @@ const PostScreen = ({navigation, route}) => {
                 }
 
 
+                refreshControl={
+                    <RefreshControl 
+                        refreshing={isRefreshing}
+                        onRefresh={() => {
+                            setExtraPaddingTop(true);
+                            setIsRefreshing(true);
+                            setTimeout(() => {
+                                setIsRefreshing(false);
+                            }, 5000);
+                        }}
+                        // progressViewOffset={progress}
+                        tintColor={'rgba(255, 255, 255, 0.0)'}
+                        // progressViewOffset={0}
+                    />
+                }
+
+                // refreshing={isRefreshing}
+
+                // onRefresh={() => {
+                //     setExtraPaddingTop(true);
+                //     setIsRefreshing(true);
+                //     setTimeout(() => {
+                //         setIsRefreshing(false);
+                //     }, 3000);
+                // }}
+
+                // refreshControl={
+                //     <View/>
+                // }
+
+                // progressViewOffset={progress}
+
+                // onResponderRelease={console.log("sadfadsfdfasdfsa")}
+
+                onScroll={onScroll}
                 // onScroll={(e) => {
                 //     scrollY.setValue(e.nativeEvent.contentOffset.y) && console.log("e.nativeEvent.contentOffset.y");
                 // }}
@@ -416,37 +531,44 @@ const styles = StyleSheet.create({
         color: '#BBBBBB',
         textAlign: "left",
     },
+    lottieView: {
+        height: refreshingHeight,
+        position: 'absolute',
+        top: 10,
+        left: 0,
+        right: 9,
+    },
     lightFollowButton: {
         flexDirection: 'column',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#505050',
         borderRadius: 20,
         width: 75,
         height: 37,
         marginRight: 6,
         marginBottom: 4,
-        borderWidth: 1.3,
-        borderColor: '#BBBBBB',
+        // borderWidth: 1.2,
+        // borderColor: '#555555',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
     },
     darkFollowButton: {
         flexDirection: 'column',
-        backgroundColor: '#1A1A1A',
+        backgroundColor: '#333333',
         borderRadius: 20,
         width: 75,
         height: 37,
         marginRight: 6,
         marginBottom: 4,
         borderWidth: 1.3,
-        borderColor: '#666666',
+        borderColor: '#555555',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
     },
     lightFollowingButton: {
         flexDirection: 'column',
-        backgroundColor: '#444444',
+        backgroundColor: '#3d3d3d',
         borderRadius: 20,
         width: 95,
         height: 37,
@@ -458,7 +580,7 @@ const styles = StyleSheet.create({
     },
     darkFollowingButton: {
         flexDirection: 'column',
-        backgroundColor: '#EEEEEE',
+        backgroundColor: '#EAEAEA',
         borderRadius: 20,
         width: 95,
         height: 37,
@@ -470,7 +592,7 @@ const styles = StyleSheet.create({
     },
     lightFollowText: {
         fontSize: 17,
-        color: '#222222',
+        color: '#FFFFFF',
         fontWeight: '600',
         alignSelf: 'center',
         marginBottom: 1

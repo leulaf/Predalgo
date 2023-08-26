@@ -29,18 +29,22 @@ import DownDark from '../../../../assets/down_dark.svg';
 // ******** React memo ********
 export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId, replyToCommentId, memeName, profile, likesCount, commentsCount, onNavToComment, onReply,}) => {
     
-    const [liked, setLiked] = React.useState(false);
-    const [chosenMood, setChosenMood] = React.useState(false);
+    const [emoji, setEmoji] = React.useState({
+        id: commentId,
+        show: "notLiked",
+        chose: ""
+    });
+
 
     let likes, alreadyLiked, reply, down
 
     if(theme == 'light'){
-        likes = <Likes width={20} height={20} style={{ marginRight: 5 }}/>;
+        likes = <Likes width={20} height={20} style={{ marginRight: 10 }}/>;
         alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
         reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
         down = <Down width={25} height={25} style={{ marginRight: 5 }}/>;
     }else{
-        likes = <LikesDark width={21} height={21} style={{ marginRight: 5 }}/>;
+        likes = <LikesDark width={21} height={21} style={{ marginRight: 10 }}/>;
         alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
         reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
         down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
@@ -50,17 +54,38 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
     
     const toggleLike = () => async() => {
         // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        if(liked){
-            setLiked(false);
-            await onDisike(replyToPostId, commentId).then((result) => {
-                result == false && setLiked(true)
-            })
-        }else{
-            setLiked(true);
-            await onLike(replyToPostId, commentId).then((result) => {
-                result == false && setLiked(false);
-            })
-        }
+        // if(emoji){
+        //     setEmoji(false);
+        //     await onDisike(replyToPostId, commentId).then((result) => {
+        //         setEmoji(!result)
+        //     })
+        // }else{
+
+            if(emoji.show ==  "notLiked"){
+                setEmoji({
+                    id: commentId,
+                    show: false,
+                    chose: ""
+                });
+                await onLike(replyToPostId, commentId).then((result) => {
+                        
+                        !result && 
+                        
+                        setEmoji({
+                            id: commentId,
+                            show: "notLiked",
+                            chose: ""
+                        });
+                })
+            }else{
+                setEmoji({
+                    id: commentId,
+                    show: false,
+                    chose: ""
+                });
+            }
+            
+        // }
     }
 
 
@@ -120,35 +145,49 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
             </TouchableOpacity>
 
 
-            {/* Mood Indicator */}
-            {liked &&
-            
-                <MoodIndicator/>
-            }
-
-
-            {/* Like Button */}
+            {/* Mood Indicator OR Like Button */}
             {
-                !liked &&
+                    emoji.show != "notLiked" ?
 
-                <TouchableOpacity 
-                    activeOpacity={1}
-                    style={{ width: commentsCount < 100000 ? 100 : 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={toggleLike()}
-                >
-                    
-                    {/* {liked ?
-                        alreadyLiked
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            style={{paddingLeft: 0, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
+                            onPress={toggleLike()}
+                        >
+                            
+                            {/* Mood Indicator */}
+                            <MoodIndicator
+                                id={commentId}
+                                emoji={emoji}
+                                setEmoji={setEmoji}
+                            />
+
+                            {
+                                emoji.show != false &&
+                                
+                                <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginRight: commentsCount < 100000 ? 20 : 30}]}>
+                                    {intToString(likesCount + 1)} Likes
+                                </Text>
+                            }
+
+                        </TouchableOpacity>
+
                     :
-                        likes
-                    } */}
-                    {likes}
+                    
+                        // Like Button
+                        <TouchableOpacity 
+                            activeOpacity={1}
+                            style={{ paddingRight: 10,  paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                            onPress={toggleLike()}
+                        >
 
-                    <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                        {liked? intToString(likesCount + 1) : intToString(likesCount)} Likes
-                    </Text>
+                            {likes}
 
-                </TouchableOpacity>
+                            <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginRight: commentsCount < 100000 ? 20 : 30}]}>
+                                {intToString(likesCount)}
+                            </Text>
+
+                        </TouchableOpacity>
                 }
 
         </View>

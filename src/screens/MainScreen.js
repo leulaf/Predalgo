@@ -9,7 +9,7 @@ import TopBar from '../ScreenTop/TopBar';
 import GamesScreen from '../screens/GamesScreen';
 import HomeScreen from '../screens/HomeScreen';
 import TvMoviesScreen from '../screens/TvMoviesScreen';
-import SideBar from '../components/SideBar';
+// import SideBar from '../components/SideBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
 
@@ -60,7 +60,7 @@ export default function MainScreen({navigation, openDrawer}){
                     <Top_Tab.Screen name="For You" component={HomeScreen} />
                     <Top_Tab.Screen name="Tv/Movies" component={TvMoviesScreen} />
                 </Top_Tab.Navigator>
-                <SideBar/>
+                {/* <SideBar/> */}
             </>
             
     );

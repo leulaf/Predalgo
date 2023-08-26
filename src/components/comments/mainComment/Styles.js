@@ -79,13 +79,13 @@ export default styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: "500",
         color: '#555555',
-        marginRight: 20,
+        marginRight: 10,
     },
     darkBottomText: {
         fontSize: 13,
         fontWeight: "500",
         color: '#DDDDDD',
-        marginRight: 20,
+        marginRight: 10,
     },
     overlayText: {
         fontSize: 22,

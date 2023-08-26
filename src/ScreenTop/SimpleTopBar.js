@@ -15,7 +15,7 @@ import ThreeDotsLight from '../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../assets/three_dots_dark.svg';
 
 
-const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, goToReplyDirectly}) => {
+const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, goToReplyDirectly, extraPaddingTop}) => {
     // ****** use navigateBackOnPress when navigating to comment directly instead of a post/comment ******
 
     let threeDots
@@ -26,8 +26,9 @@ const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, 
         threeDots = <ThreeDotsDark width={38} height={38} style={{marginBottom: 5, marginRight: 12}}/>
     }
 
+
     return (
-            <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
+            <View style={[theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer, {marginTop: extraPaddingTop && 15}]}>
 
                 {/* back button */}
                 <TouchableOpacity 
@@ -45,25 +46,34 @@ const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, 
 
 
                 {/* Post/Comment */}
-                <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                    {title == 'Post' ? 'Post' : 'Reply to '}
+                {
+                    !extraPaddingTop ?
+                    
+                    <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                        {title == 'Post' ? 'Post' : 'Reply to '}
 
-                        {title == 'Comment' && (replyToPostId != null || replyToCommentId == null) &&
-                        <Text
-                            // ***FINISH IMPLEMENTING THIS***
-                            onPress={() => {
-                                goToReplyDirectly ?
-                                    null
-                                :
-                                    onGoBack()
-                            }}
-                            style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
-                        >
-                            {replyToCommentId ? 'Comment' : 'Post'}
-                        </Text>
-                        }
-                </Text>
+                            {title == 'Comment' && (replyToPostId != null || replyToCommentId == null) &&
+                            <Text
+                                // ***FINISH IMPLEMENTING THIS***
+                                onPress={() => {
+                                    goToReplyDirectly ?
+                                        null
+                                    :
+                                        onGoBack()
+                                }}
+                                style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
+                            >
+                                {replyToCommentId ? 'Comment' : 'Post'}
+                            </Text>
+                            }
+                    </Text>
 
+                    :
+
+                    <Text style={[theme == 'light' ? styles.lightText : styles.darkText, {marginLeft: 24}]}>
+                        Refreshing
+                    </Text>
+                }
 
                 {/* Three dots - options button */}
                 <TouchableOpacity

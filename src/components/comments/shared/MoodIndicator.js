@@ -26,13 +26,14 @@ idea = <Idea width={30} height={30} style={{ marginRight: 0 }}/>;
 
 
 const initialOffset = 1;
-const finalOffset = 200;
-export default MoodIndicator = ({}) => {
+const finalOffset = 100;
+export default MoodIndicator = ({id, emoji, setEmoji}) => {
     
-    const [show, setShow] = React.useState({
-        show: false,
-        chose: ""
-    });
+    // const [emoji, setEmoji] = React.useState({
+    //     id: id,
+    //     show: false,
+    //     chose: ""
+    // });
 
     const happyOffset = useSharedValue(0);
     const sadOffset = useSharedValue(0);
@@ -59,37 +60,49 @@ export default MoodIndicator = ({}) => {
     }));
 
     React.useEffect(() => {
-        if(show.show == "happy"){
+        if(emoji.show == "happy"){
             // happyOffset.value = withRepeat(withSpring(-finalOffset, {damping: 10, mass: 0.7}), 2, true);
-            happyOffset.value = withSequence(withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 3}), withSpring(0, {damping: 15}))
-            setShow(
+            happyOffset.value = withSequence(
+                withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
+                withSpring(0, {damping: 15, mass: 0.5})
+            )
+            setEmoji(
                 {
                     show: "stop",
                     chose: "happy"
                 }
             );
-        }else if(show.show == "sad"){
+        }else if(emoji.show == "sad"){
             // sadOffset.value = withRepeat(withSpring(-finalOffset, {damping: 10}), 2, true);
-            sadOffset.value =  withSequence(withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 3}), withSpring(0, {damping: 15}))
-            setShow(
+            sadOffset.value =  withSequence(
+                withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
+                withSpring(0, {damping: 15, mass: 0.5})
+            )
+            setEmoji(
                 {
                     show: "stop",
                     chose: "sad"
                 }
             );
-        }else if(show.show == "angry"){
+        }else if(emoji.show == "angry"){
             // angryOffset.value = withRepeat(withSpring(-finalOffset, {damping: 10}), 2, true);
-            angryOffset.value = withSequence(withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 3}), withSpring(0, {damping: 15}))
-            setShow(
+            angryOffset.value = withSequence(
+                withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
+                withSpring(0, {damping: 15, mass: 0.5})
+            )
+            setEmoji(
                 {
                     show: "stop",
                     chose: "angry"
                 }
             );
-        }else if(show.show== "idea"){
+        }else if(emoji.show== "idea"){
             // ideaOffset.value = withRepeat(withSpring(-finalOffset, {damping: 10}), 2, true);
-            ideaOffset.value = withSequence(withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 3}), withSpring(0, {damping: 15}))
-            setShow(
+            ideaOffset.value = withSequence(
+                withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
+                withSpring(0, {damping: 15, mass: 0.5})
+            )
+            setEmoji(
                 {
                     show: "stop",
                     chose: "idea"
@@ -97,19 +110,19 @@ export default MoodIndicator = ({}) => {
             );
         }
         
-    }, [show]);
+    }, [emoji]);
 
     return(
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -5}}>
 
             {/* Happy */}
             {
-                (show.chose == "happy" || show.show === false) &&
+                (emoji.chose == "happy" || emoji.show === false) &&
 
-                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 5, paddingRight: show.chose == "happy" ? 20 : 15, marginLeft: show.chose == "happy" ? -5 : 0}}
+                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "happy" ? 13 : 15, marginLeft: emoji.chose == "happy" ? -2 : 0}}
                     onPress={() => {
-                        setShow(
-                            show.chose == "happy" ?
+                        setEmoji(
+                            emoji.chose == "happy" ?
                                 {
                                     show: false
                                 }
@@ -120,7 +133,7 @@ export default MoodIndicator = ({}) => {
                                 }
                         )
 
-                        show.chose == "happy" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        emoji.chose == "happy" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }}
                 >
                     <Animated.View style={[happyStyle]}>
@@ -134,12 +147,12 @@ export default MoodIndicator = ({}) => {
 
             {/* Sad */}
             {
-                (show.chose == "sad" || show.show === false) &&
+                (emoji.chose == "sad" || emoji.show === false) &&
 
-                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 5, paddingRight: show.chose == "happy" ? 20 : 15, marginLeft: show.chose == "happy" ? -5 : 0}}
+                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "sad" ? 13 : 15, marginLeft: emoji.chose == "sad" ? -2 : 0}}
                     onPress={() => {
-                        setShow(
-                            show.chose == "sad" ?
+                        setEmoji(
+                            emoji.chose == "sad" ?
                                 {
                                     show: false
                                 }
@@ -150,7 +163,7 @@ export default MoodIndicator = ({}) => {
                                 }
                         )
 
-                        show.chose == "sad" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        emoji.chose == "sad" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }}
                 >
                     <Animated.View style={[sadStyle]}>
@@ -163,12 +176,12 @@ export default MoodIndicator = ({}) => {
 
             {/* Angry */}
             {
-                (show.chose == "angry" || show.show === false) &&
+                (emoji.chose == "angry" || emoji.show === false) &&
 
-                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 5, paddingRight: show.chose == "happy" ? 20 : 15, marginLeft: show.chose == "happy" ? -5 : 0}}
+                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "angry" ? 12 : 15, marginLeft: emoji.chose == "angry" ? -3 : 0}}
                     onPress={() => {
-                        setShow(
-                            show.chose == "angry" ?
+                        setEmoji(
+                            emoji.chose == "angry" ?
                                 {
                                     show: false
                                 }
@@ -179,7 +192,7 @@ export default MoodIndicator = ({}) => {
                                 }
                         )
 
-                        show.chose == "angry" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        emoji.chose == "angry" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }}
                 >
                     <Animated.View style={[angryStyle]}>
@@ -192,12 +205,12 @@ export default MoodIndicator = ({}) => {
 
             {/* Idea */}
             {
-                (show.chose == "idea" || show.show=== false) &&
+                (emoji.chose == "idea" || emoji.show=== false) &&
 
-                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 5, paddingRight: show.chose == "happy" ? 20 : 15, marginLeft: show.chose == "happy" ? -5 : 0}}
+                <TouchableOpacity style={{paddingTop: 0, paddingBottom: 12, paddingRight: emoji.chose == "idea" ? 9 : 15, marginLeft: emoji.chose == "idea" ? -7 : 0}}
                     onPress={() => {
-                        setShow(
-                            show.chose == "idea" ?
+                        setEmoji(
+                            emoji.chose == "idea" ?
                                 {
                                     show: false
                                 }
@@ -208,7 +221,7 @@ export default MoodIndicator = ({}) => {
                                 }
                         )
 
-                        show.chose == "idea" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        emoji.chose == "idea" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 }}
                 >
                     <Animated.View style={[ideaStyle]}>

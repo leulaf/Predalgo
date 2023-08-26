@@ -97,8 +97,12 @@ const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 // ******** React memo ********
 export default MainCommentBottom = ({navigation, index, theme, commentId, replyToPostId, memeName, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
     
-    const [liked, setLiked] = React.useState(false);
-    const [chosenMood, setChosenMood] = React.useState(false);
+    const [emoji, setEmoji] = React.useState({
+        id: commentId,
+        show: "notLiked",
+        chose: ""
+    });
+
 
     // const [commentsList, setCommentsList] = React.useState([{first1first: true, id: "fir"}]); // array of replies to this comment
     const [commentsList, setCommentsList] = React.useState([]); // array of replies to this comment
@@ -106,12 +110,12 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
     let likes, alreadyLiked, reply, down
 
     if(theme == 'light'){
-        likes = <Likes width={20} height={20} style={{ marginRight: 5 }}/>;
+        likes = <Likes width={20} height={20} style={{ marginRight: 10 }}/>;
         alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
         reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
         down = <Down width={25} height={25} style={{ marginRight: 5 }}/>;
     }else{
-        likes = <LikesDark width={21} height={21} style={{ marginRight: 5 }}/>;
+        likes = <LikesDark width={21} height={21} style={{ marginRight: 10 }}/>;
         alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
         reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
         down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
@@ -127,7 +131,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
         })
     }, [])
 
-
+    
     // ****PREVENT unnecessary requests*****
     // fetch comments five at a time
     const getFiveCommentsByPopular = React.useCallback(() => async () => {
@@ -152,17 +156,38 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
     const toggleLike = () => async() => {
         // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        if(liked){
-            setLiked(false);
-            await onDisike(replyToPostId, commentId).then((result) => {
-                setLiked(!result)
-            })
-        }else{
-            setLiked(true);
-            await onLike(replyToPostId, commentId).then((result) => {
-                    setLiked(result);
-            })
-        }
+        // if(emoji){
+        //     setEmoji(false);
+        //     await onDisike(replyToPostId, commentId).then((result) => {
+        //         setEmoji(!result)
+        //     })
+        // }else{
+
+            if(emoji.show ==  "notLiked"){
+                setEmoji({
+                    id: commentId,
+                    show: false,
+                    chose: ""
+                });
+                await onLike(replyToPostId, commentId).then((result) => {
+                        
+                        !result && 
+                        
+                        setEmoji({
+                            id: commentId,
+                            show: "notLiked",
+                            chose: ""
+                        });
+                })
+            }else{
+                setEmoji({
+                    id: commentId,
+                    show: false,
+                    chose: ""
+                });
+            }
+            
+        // }
     }
 
 
@@ -221,36 +246,52 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                 </TouchableOpacity>
 
 
-                {/* Mood Indicator */}
-                {liked &&
-                
-                    <MoodIndicator/>
+                {/* Mood Indicator OR Like Button */}
+                {
+                    emoji.show != "notLiked" ?
+
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            style={{paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
+                            onPress={toggleLike()}
+                        >
+                            
+                            {/* Mood Indicator */}
+                            <MoodIndicator
+                                id={commentId}
+                                emoji={emoji}
+                                setEmoji={setEmoji}
+                            />
+
+                            {
+                                emoji.show != false &&
+                                
+                                <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginRight: commentsCount < 100000 ? 20 : 30}]}>
+                                    {intToString(likesCount + 1)} Likes
+                                </Text>
+                            }
+
+                        </TouchableOpacity>
+
+                    :
+                    
+                        // Like Button
+                        <TouchableOpacity 
+                            activeOpacity={1}
+                            style={{ paddingRight: 10,  paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                            onPress={toggleLike()}
+                        >
+
+                            {likes}
+
+                            <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginRight: commentsCount < 100000 ? 20 : 30}]}>
+                                {intToString(likesCount)}
+                            </Text>
+
+                        </TouchableOpacity>
                 }
 
 
-                {/* Like Button */}
-                {
-                    !liked &&
-
-                    <TouchableOpacity 
-                        activeOpacity={1}
-                        style={{ width: commentsCount < 100000 ? 100 : 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                        onPress={toggleLike()}
-                    >
-                        
-                        {/* {liked ?
-                            alreadyLiked
-                        :
-                            likes
-                        } */}
-                        {likes}
-
-                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                            {liked? intToString(likesCount + 1) : intToString(likesCount)} Likes
-                        </Text>
-
-                    </TouchableOpacity>
-                  }
             </View>
 
 

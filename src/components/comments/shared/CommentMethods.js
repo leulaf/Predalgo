@@ -81,7 +81,7 @@ const onLike = async (replyToPostId, commentId) => {
                 resolve(true);
             })
             .catch((error) => {
-                // console.log(error);
+                console.log(error);
                 resolve(false);
             });
 
