@@ -84,7 +84,13 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
         <Animated.View 
             // entering={index < 4 && StretchInY}
             entering={FadeIn}
-            style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}
+            style={[theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer,
+                {borderColor: theme == 'light' ? 
+                    index != 2 ? '#E8E8E8' : "#FFFFFF"
+                    : 
+                    index != 2 ? '#202020' : "#151515"
+                }
+            ]}
         >
 
             {/* Load Meme with template and template state */}

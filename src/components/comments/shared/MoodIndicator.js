@@ -8,6 +8,8 @@ import Animated, {
     withSequence
 } from 'react-native-reanimated';
 
+import LottieView from 'lottie-react-native';
+
 import * as Haptics from 'expo-haptics';
 
 // mood emojis
@@ -26,7 +28,14 @@ idea = <Idea width={30} height={30} style={{ marginRight: 0 }}/>;
 
 
 const initialOffset = 1;
-const finalOffset = 100;
+const finalOffset = 50;
+
+
+
+
+const laughing = require('../../../../assets/emojis/blownAway.json');
+
+
 export default MoodIndicator = ({id, emoji, setEmoji}) => {
     
     // const [emoji, setEmoji] = React.useState({
@@ -39,6 +48,10 @@ export default MoodIndicator = ({id, emoji, setEmoji}) => {
     const sadOffset = useSharedValue(0);
     const angryOffset = useSharedValue(0);
     const ideaOffset = useSharedValue(0);
+
+    const laughingStyle = useAnimatedStyle(() => ({
+        transform: [{ translateY: happyOffset.value }],
+    }));
 
     const happyStyle = useAnimatedStyle(() => ({
         transform: [{ translateY: happyOffset.value }],
@@ -115,13 +128,13 @@ export default MoodIndicator = ({id, emoji, setEmoji}) => {
     return(
         <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -5}}>
 
-            {/* Happy */}
-            {
-                (emoji.chose == "happy" || emoji.show === false) &&
-
-                <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "happy" ? 13 : 15, marginLeft: emoji.chose == "happy" ? -2 : 0}}
+            {/* Laughing */}
+            <Animated.View style={[happyStyle]}>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    style={(emoji.chose == "happy" || emoji.show === false) &&{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "happy" ? 13 : 15, marginLeft: emoji.chose == "happy" ? -2 : 0}}
                     onPress={() => {
-                        setEmoji(
+                        (emoji.chose == "happy" || emoji.show === false) && setEmoji(
                             emoji.chose == "happy" ?
                                 {
                                     show: false
@@ -134,14 +147,17 @@ export default MoodIndicator = ({id, emoji, setEmoji}) => {
                         )
 
                         emoji.chose == "happy" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                }}
+                    }}
                 >
-                    <Animated.View style={[happyStyle]}>
-                        {happy}
-                    </Animated.View>
+                    
+                        <LottieView
+                            autoPlay
+                            style={{height: (emoji.chose == "happy" || emoji.show === false) && 60, width: 60, marginRight: 0, marginLeft: 0}}
+                            source={laughing}
+                        />
                     
                 </TouchableOpacity>
-            }
+            </Animated.View>
                 
 
 

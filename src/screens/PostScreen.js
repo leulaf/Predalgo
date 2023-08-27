@@ -36,6 +36,7 @@ import overrideItemLayout from '../shared/OverrideItemLayout'
 
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
+
 const refreshAnimationLight = require('../../assets/animations/Refresh_Picalgo_light.json');
 const refreshAnimationDark = require('../../assets/animations/Refresh_Picalgo_dark.json');
 const refreshingHeight = 100;
@@ -279,6 +280,17 @@ const PostScreen = ({navigation, route}) => {
         const { y } = contentOffset;
         setOffsetY(y);
     }
+
+    // const togglextraPaddingTop = React.useCallback((action) => {
+    //     if(action == "removeAndWait"){
+    //         setExtraPaddingTop(false);
+
+    //         setTimeout(() => {
+    //             setExtraPaddingTop(false);
+    //         }
+    //         , 1000);
+    //     }
+    // }, [extraPaddingTop]);
 
     // Refresh onRelease function
     function onRelease() {

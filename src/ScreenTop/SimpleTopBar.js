@@ -28,7 +28,7 @@ const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, 
 
 
     return (
-            <View style={[theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer, {marginTop: extraPaddingTop && 15}]}>
+            <View style={[theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer, {marginTop: extraPaddingTop  === true && 15}]}>
 
                 {/* back button */}
                 <TouchableOpacity 
@@ -47,7 +47,7 @@ const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, 
 
                 {/* Post/Comment */}
                 {
-                    !extraPaddingTop ?
+                    extraPaddingTop !== true ?
                     
                     <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
                         {title == 'Post' ? 'Post' : 'Reply to '}
