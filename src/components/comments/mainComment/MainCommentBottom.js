@@ -163,7 +163,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
         //     })
         // }else{
 
-            if(emoji.show ==  "notLiked"){
+            if(emoji.show == "notLiked"){
                 setEmoji({
                     id: commentId,
                     show: false,
@@ -215,7 +215,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
                 {/* MemeName */}
                 {
-                    memeName &&
+                    (memeName && (emoji.show == "notLiked" || emoji.show == "stop")) &&
                     <MemeName 
                         memeName={memeName}
                         theme={theme}
@@ -225,26 +225,33 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
 
                 {/* Spacer */}
-                <TouchableOpacity
-                    activeOpacity={1}
-                    style={{flex: 1, height: 40, }}
-                    onPress={onNavToComment()}
-                ></TouchableOpacity>
+                {
+                   (emoji.show == "notLiked" || emoji.show == "stop") &&
+
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        style={{flex: 1, height: 40, }}
+                        onPress={onNavToComment()}
+                    ></TouchableOpacity>
+                }
 
 
                 {/* Reply */}
-                <TouchableOpacity 
-                    activeOpacity={1}
-                    style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
-                    onPress={onReply()}
-                >
-                    {reply}
+                {
+                    (emoji.show == "notLiked" || emoji.show == "stop") &&
 
-                    <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                        Reply
-                    </Text>
-                </TouchableOpacity>
+                    <TouchableOpacity 
+                        activeOpacity={1}
+                        style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
+                        onPress={onReply()}
+                    >
+                        {reply}
 
+                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                            Reply
+                        </Text>
+                    </TouchableOpacity>
+                }
 
                 {/* Mood Indicator OR Like Button */}
                 {
@@ -261,10 +268,11 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                                 id={commentId}
                                 emoji={emoji}
                                 setEmoji={setEmoji}
+                                windowWidth={windowWidth}
                             />
 
                             {
-                                emoji.show != false &&
+                                (emoji.show != false || emoji.show != false) &&
                                 
                                 <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginRight: commentsCount < 100000 ? 20 : 30}]}>
                                     {intToString(likesCount + 1)} Likes

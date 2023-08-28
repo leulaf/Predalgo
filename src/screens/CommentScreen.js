@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     },
     lightFollowButton: {
         flexDirection: 'column',
-        backgroundColor: '#505050',
+        backgroundColor: '#3d3d3d',
         borderRadius: 20,
         width: 75,
         height: 37,
