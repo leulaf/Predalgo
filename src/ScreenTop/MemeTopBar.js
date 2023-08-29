@@ -8,10 +8,12 @@ import { doc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
 // light mode icons
 import BackLight from '../../assets/back.svg';
 import BookmarkLight from '../../assets/saved_inactive.svg';
+import BookmarkedLight from '../../assets/saved.svg';
 
 // dark mode icons
 import BackDark from '../../assets/back_light.svg';
 import BookmarkDark from '../../assets/saved_inactive_dark.svg';
+import BookmarkedDark from '../../assets/saved_dark.svg';
 
 const windowWidth = Dimensions.get('window').width;
 

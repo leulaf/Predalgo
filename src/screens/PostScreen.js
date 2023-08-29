@@ -370,7 +370,7 @@ const PostScreen = ({navigation, route}) => {
             {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
 
             {/* Top */}
-            <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight,}]}/>
+            <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight}]}/>
 
             {/* Refresh View */}
             {}

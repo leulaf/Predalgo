@@ -1,12 +1,15 @@
-import React, {useContext} from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
+
+import BottomSheet from '@gorhom/bottom-sheet';
+
+import { BlurView } from 'expo-blur';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ThemeContext} from '../../context-store/context';
 import TopBar from '../ScreenTop/TopBar';
 
-import { BlurView } from 'expo-blur';
 
 // Light-Mode Icons
 import Saved from '../../assets/saved.svg';
@@ -46,8 +49,11 @@ const addPostName = ' ';
 
 
 function BottomTabNavigator ({navigation}) {
-    // const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
+    const [showBottomSheet, setShowBottomSheet] = useState(false);
+    const bottomSheetRef = React.useRef(null);
+    const snapPoints = React.useMemo(() => ['1', '100%'], []);
+
     // const navigation =  
     let home, homeInactive, trend, trendInactive, post, saved, savedInactive, profile, profileInactive
 
@@ -84,11 +90,22 @@ function BottomTabNavigator ({navigation}) {
     }
 
 
-    return (
+    const toggleBottomSheet = () => {
+        bottomSheetRef.current.snapToIndex(showBottomSheet ? 0 : 1);
+        setShowBottomSheet(!showBottomSheet);
+    }
 
+
+    const DummyScreen = () =>
+    {
+        return null
+    }
+    
+
+    return (
+        <>
             <Bottom_Tab.Navigator
             initialRouteName={homeName}
-
             // tabBar={TabBar}
             
             screenOptions={({route}) => ({
@@ -148,7 +165,7 @@ function BottomTabNavigator ({navigation}) {
                     }}
                 />
 
-                <Bottom_Tab.Screen name={addPostName} component={AddPostScreen} 
+                {/* <Bottom_Tab.Screen name={addPostName} component={AddPostScreen} 
                     initialParams={{ forCommentOnComment: false, forCommentOnPost: false }}
                     options={{
                         drawerIcon: ({color}) => (
@@ -156,6 +173,22 @@ function BottomTabNavigator ({navigation}) {
                         ),
                         
                     }} 
+                /> */}
+
+                <Bottom_Tab.Screen 
+                name={addPostName}
+                component={
+                    DummyScreen
+                } 
+                options={{
+                    tabBarButton: props => (
+                        <TouchableOpacity {...props}
+                            onPress={() => 
+                                toggleBottomSheet()
+                            } 
+                        />
+                    ),
+                }}
                 />
 
                 <Bottom_Tab.Screen name={savedName} component={SavedScreen}
@@ -177,7 +210,47 @@ function BottomTabNavigator ({navigation}) {
                 />
 
             </Bottom_Tab.Navigator>
+            
 
+            <BottomSheet
+                ref={bottomSheetRef}
+                index={0}
+                snapPoints={snapPoints}
+                // onAnimate={handleSheetAnimate}
+                // onChange={() => handleSheetChanges}
+                enablePanDownToClose={true}
+                keyboardBehavior="interactive"
+                backgroundComponent={() =>
+                    <BlurView
+                        tint = {theme == 'light' ?  "light" : "dark"}
+                        intensity={theme == 'light' ? 25 : 30}
+                        style={[StyleSheet.absoluteFill, {}]}
+                    />
+                }
+                style={{
+                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(32, 32, 32, 0.3)',  // <==== HERE
+                    overflow: 'hidden',
+                    borderRadius: 20,
+                    // shadowColor: theme == 'light' ? '#005FFF' : '#DDDDDD',
+                    // shadowOffset: {
+                    //   width: 0,
+                    //   height: theme == 'light' ? 6 : 6,
+                    // },
+                    // shadowOpacity: theme == 'light' ? 0.6 : 0.33,
+                    // shadowRadius: 12,
+                    // elevation: 5,
+                }}
+                // style={{backgroundColor: theme == 'light' ? styles.lightContainer : styles.darkContainer}}
+                backgroundStyle={theme == 'light' ? 'rgba(255, 255, 255, 0.15)' : 'rgba(32, 32, 32, 0.3)'}
+                handleComponent={() => null}
+                
+            >
+                <AddPostScreen navigation={navigation} route={{ params: { showBottomSheet: showBottomSheet, toggleBottomSheet: toggleBottomSheet, forCommentOnComment: false, forCommentOnPost: false} }}/>
+
+            </BottomSheet>
+
+
+        </>
     );
 }
 

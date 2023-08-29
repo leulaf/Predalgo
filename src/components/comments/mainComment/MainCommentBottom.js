@@ -215,7 +215,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
                 {/* MemeName */}
                 {
-                    (memeName && (emoji.show == "notLiked" || emoji.show == "stop")) &&
+                    (memeName && (emoji.show != false  || commentId != emoji.id)) &&
                     <MemeName 
                         memeName={memeName}
                         theme={theme}
@@ -226,7 +226,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
                 {/* Spacer */}
                 {
-                   (emoji.show == "notLiked" || emoji.show == "stop") &&
+                   (emoji.show != false || commentId != emoji.id) &&
 
                     <TouchableOpacity
                         activeOpacity={1}
@@ -238,7 +238,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
                 {/* Reply */}
                 {
-                    (emoji.show == "notLiked" || emoji.show == "stop") &&
+                    (emoji.show != false  || commentId != emoji.id) &&
 
                     <TouchableOpacity 
                         activeOpacity={1}
@@ -255,9 +255,8 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
 
                 {/* Mood Indicator OR Like Button */}
                 {
-                    emoji.show != "notLiked" ?
-
-                        <TouchableOpacity
+                    emoji.show != "notLiked" && commentId == emoji.id ?
+                    <TouchableOpacity
                             activeOpacity={1}
                             style={{paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
                             onPress={toggleLike()}
@@ -265,16 +264,17 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                             
                             {/* Mood Indicator */}
                             <MoodIndicator
-                                id={commentId}
+                                commentId={commentId}
+                                replyToPostId={replyToPostId}
                                 emoji={emoji}
                                 setEmoji={setEmoji}
                                 windowWidth={windowWidth}
                             />
 
                             {
-                                (emoji.show != false || emoji.show != false) &&
+                                emoji.show != false &&
                                 
-                                <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginRight: commentsCount < 100000 ? 20 : 30}]}>
+                                <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginRight: commentsCount < 100000 ? 15 : 25}]}>
                                     {intToString(likesCount + 1)} Likes
                                 </Text>
                             }

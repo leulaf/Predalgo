@@ -93,6 +93,80 @@ const onLike = async (replyToPostId, commentId) => {
 };
 
 
+const onSelectMood = async (replyToPostId, commentId, mood) => {
+    console.log(replyToPostId, "  ", commentId, "  ", mood)
+    return new Promise(async (resolve, reject) => {
+
+        // update like count for Comment
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+        if(mood == "good"){
+            await updateDoc(commentRef, {
+                mood: increment(1),
+                moodCount: increment(1)
+            })
+            .then(() => {
+                resolve(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                resolve(false);
+            });
+        }else if(mood == "bad"){
+            await updateDoc(commentRef, {
+                mood: increment(-1),
+                moodCount: increment(1)
+            })
+            .then(() => {
+                resolve(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                resolve(false);
+            });
+        }
+        
+    
+    }
+)};
+
+
+const onUnselectMood = async (replyToPostId, commentId, mood) => {
+    console.log(replyToPostId, "  ", commentId, "  ", mood)
+    return new Promise(async (resolve, reject) => {
+
+        // update like count for Comment
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+        if(mood == "good"){
+            await updateDoc(commentRef, {
+                mood: increment(-1),
+                moodCount: increment(-1)
+            })
+            .then(() => {
+                resolve(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                resolve(false);
+            });
+        }else if(mood == "bad"){
+            await updateDoc(commentRef, {
+                mood: increment(1),
+                moodCount: increment(-1)
+            })
+            .then(() => {
+                resolve(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                resolve(false);
+            });
+        }
+    }
+)};
+
+
 // update like count and add post to liked collection
 const onDisike = async (replyToPostId, commentId) => {
     return new Promise(async (resolve, reject) => {
@@ -115,4 +189,4 @@ const onDisike = async (replyToPostId, commentId) => {
     });
 };
 
-export { onNavToComment, onReply, intToString, onDisike, onLike };
+export { onNavToComment, onReply, intToString, onDisike, onLike, onSelectMood, onUnselectMood };

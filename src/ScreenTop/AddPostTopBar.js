@@ -6,13 +6,13 @@ import { Feather } from '@expo/vector-icons';
 
 // light mode icons
 import BackLight from '../../assets/back.svg';
-import BookmarkLight from '../../assets/saved_inactive.svg';
+import BookmarkLight from '../../assets/saved.svg';
 
 // dark mode icons
 import BackDark from '../../assets/back_light.svg';
-import BookmarkDark from '../../assets/saved_inactive_dark.svg';
+import BookmarkDark from '../../assets/saved_dark.svg';
 
-const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
+const AddPostTopBar = ({navToFavorites, navToSearchMemes, closeBottomSheet}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -21,7 +21,7 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
         {/* back button */}
         <TouchableOpacity 
             style={{flexDirection: 'row'}}
-            onPress={() => {navigation.goBack()}}
+            onPress={() => {closeBottomSheet()}}
         >
             {
                 theme == 'light' ?
@@ -64,8 +64,18 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
 }
 
 const styles = StyleSheet.create({
+    lightContainer: {
+        backgroundColor: 'rgba(255, 255, 255, 0.75)',
+        height: 100,
+        flexDirection: 'row',
+    },
+    darkContainer: {
+        backgroundColor: 'rgba(32, 32, 32, 0.5)',
+        height: 100,
+        flexDirection: 'row',
+    },
     lightBar: {
-        height: 36,
+        height: 38,
         width: 315,
         borderRadius: 20,
         marginRight: 10,
@@ -73,12 +83,12 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#FEFEFE',
+        backgroundColor: '#FFFFFF',
         borderWidth: 1.5,
-        borderColor: '#DADADA',
+        borderColor: '#E2E2E2',
     },
     darkBar: {
-        height: 36,
+        height: 38,
         width: 315,
         borderRadius: 20,
         marginRight: 10,
@@ -86,9 +96,9 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
-        backgroundColor: '#141414',
+        backgroundColor: '#161616',
         borderWidth: 1.5,
-        borderColor: '#282828',
+        borderColor: '#262626',
     },
     backButton: {
         marginTop: 55,
@@ -144,16 +154,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 7,
         color: '#888888',
     },
-    lightContainer: {
-        backgroundColor: 'white',
-        height: 100,
-        flexDirection: 'row',
-    },
-    darkContainer: {
-        backgroundColor: '#0C0C0C',
-        height: 100,
-        flexDirection: 'row',
-    },
+    
 });
 
 export default AddPostTopBar;
