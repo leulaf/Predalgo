@@ -65,14 +65,18 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes, closeBottomSheet}) => 
 
 const styles = StyleSheet.create({
     lightContainer: {
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
         height: 100,
         flexDirection: 'row',
+        postition: 'absolute',
+        top: 0,
     },
     darkContainer: {
-        backgroundColor: 'rgba(32, 32, 32, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         height: 100,
         flexDirection: 'row',
+        postition: 'absolute',
+        top: 0,
     },
     lightBar: {
         height: 38,
@@ -85,7 +89,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: '#FFFFFF',
         borderWidth: 1.5,
-        borderColor: '#E2E2E2',
+        borderColor: '#E8E8E8',
     },
     darkBar: {
         height: 38,
@@ -98,7 +102,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: '#161616',
         borderWidth: 1.5,
-        borderColor: '#262626',
+        borderColor: '#2d2d2d',
     },
     backButton: {
         marginTop: 55,

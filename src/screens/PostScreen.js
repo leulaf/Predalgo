@@ -26,7 +26,7 @@ import ContentBottom from '../components/postTypes/ContentBottom';
 
 import PostBottom from '../components/postTypes/PostBottom';
 
-import ReplyBottomSheet from '../components/replyBottom/PostReplyBottomSheet';
+import ReplyBottomSheet from '../components/replyBottom/comments/PostReplyBottomSheet';
 
 import MainComment from '../components/comments/mainComment/MainComment';
 

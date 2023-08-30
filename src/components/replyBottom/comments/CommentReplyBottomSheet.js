@@ -4,33 +4,32 @@ import uuid from 'react-native-uuid';
 
 import { BlurView } from 'expo-blur';
 
-import { commentImageOnComment } from '../../shared/comment/forComment/UploadImage';
-import { saveMemeToComment} from '../../shared/comment/forComment/UploadMeme';
-import { commentTextOnComment } from '../../shared/comment/forComment/UploadText';
+import { commentImageOnComment } from '../../../shared/comment/forComment/UploadImage';
+import { saveMemeToComment} from '../../../shared/comment/forComment/UploadMeme';
+import { commentTextOnComment } from '../../../shared/comment/forComment/UploadText';
 
-import {AuthenticatedUserContext} from '../../../context-store/context';
+import {AuthenticatedUserContext} from '../../../../context-store/context';
 
 import BottomSheet from '@gorhom/bottom-sheet';
 
-import LinkInput from './shared/LinkInput';
+import LinkInput from '../shared/LinkInput';
 
 // light mode icons
-import UploadLight from '../../../assets/reply_upload_light.svg';
-import SmallCreateMemeLight from '../../../assets/meme_create_light.svg';
-import CreateMemeLight from '../../../assets/reply_meme_create_light.svg';
-import PostButtonLight from '../../../assets/reply_light.svg';
-import LinkLight from '../../../assets/reply_link_light.svg';
-import SmallLinkLight from '../../../assets/link_light.svg';
+import UploadLight from '../../../../assets/reply_upload_light.svg';
+import SmallCreateMemeLight from '../../../../assets/meme_create_light.svg';
+import CreateMemeLight from '../../../../assets/reply_meme_create_light.svg';
+import PostButtonLight from '../../../../assets/reply_light.svg';
+import LinkLight from '../../../../assets/reply_link_light.svg';
+import SmallLinkLight from '../../../../assets/link_light.svg';
 
 // dark mode icons
-import UploadDark from '../../../assets/upload_dark.svg';
-import CreateMemeDark from '../../../assets/meme_create_dark.svg';
-import PostButtonDark from '../../../assets/reply_dark.svg';
-import LinkDark from '../../../assets/link_dark.svg';
+import UploadDark from '../../../../assets/upload_dark.svg';
+import CreateMemeDark from '../../../../assets/meme_create_dark.svg';
+import PostButtonDark from '../../../../assets/reply_dark.svg';
+import LinkDark from '../../../../assets/link_dark.svg';
 
 import { getAuth } from "firebase/auth";
-import { set } from 'react-native-reanimated';
-import { ref } from 'firebase/storage';
+
 
 const auth = getAuth();
 

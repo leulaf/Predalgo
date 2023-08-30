@@ -1,5 +1,5 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, RefreshControl, Alert, Dimensions} from 'react-native';
+import {View, Text, StyleSheet, ImageBackground, TextInput, TouchableOpacity, RefreshControl, Alert, Dimensions} from 'react-native';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
@@ -15,7 +15,7 @@ import { BlurView } from 'expo-blur';
 
 import { StackActions } from '@react-navigation/native';
 
-import {ThemeContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import imgflip from '../api/imgflip';
 import PostBar from '../components/PostBar';
@@ -23,6 +23,9 @@ import AddPostTopBar from '../ScreenTop/AddPostTopBar';
 
 import DarkMemeCreate from '../../assets/post_meme_create_dark.svg';
 import LightMemeCreate from '../../assets/post_meme_create_light.svg';
+
+const lightBackground = require('../../assets/AddPostBackgroundLight.png');
+const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 
 const navToUpload = (navigation, forCommentOnComment, forCommentOnPost) => () => {
   navigation.dispatch(
@@ -102,8 +105,8 @@ const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString(
 
 const AddPostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    
-    const [memeTemplates, setMemeTeplates] = useState([{id : "fir"}, {id: "sec"}]);
+
+    const {memeTemplates, setMemeTeplates} = useContext(AuthenticatedUserContext);
 
     const { forCommentOnComment, forCommentOnPost, showBottomSheet, toggleBottomSheet } = route?.params;
 
@@ -170,9 +173,9 @@ const AddPostScreen = ({navigation, route}) => {
             onPress={navToMeme(navigation, item, forCommentOnComment, forCommentOnPost)}
             style={
               index % 2 == 1 ?
-                {marginLeft: 2, marginRight: 4, marginBottom: 6} 
+                {marginLeft: 2, marginRight: 2, marginBottom: 6} 
               :
-                {marginLeft: 4, marginRight: 2, marginBottom: 6} 
+                {marginLeft: 2, marginRight: 2, marginBottom: 6} 
             }
           >
             <ResizableImage
@@ -196,132 +199,139 @@ const AddPostScreen = ({navigation, route}) => {
     return (
       <Animated.View
         style={[
-          theme == 'light' ? {backgroundColor: 'rgba(255, 255, 255, 0.15)'} : {backgroundColor: 'rgba(0, 0, 0, 0.15)'},
+          theme == 'light' ? {backgroundColor: 'rgba(255, 255, 255, 1)'} : {backgroundColor: 'rgba(0, 0, 0, 1)'},
           {flex: 1}
         ]}
       >
-
-        <AddPostTopBar
-          navToFavorites={navToFavorites(navigation, forCommentOnComment, forCommentOnPost)}
-          navToSearchMemes={navToSearchMemes(navigation, forCommentOnComment, forCommentOnPost)}
-          closeBottomSheet={() => 
-            toggleBottomSheet()
-          }
-        />
-
-        {
-          // showBottomSheet &&
-        
-          <MasonryFlashList
-            ref={flashListRef}
-            data={memeTemplates}
-            numColumns={2}
-
-            // optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
-
-            onEndReached={memeTemplates[memeTemplates.length-1]?.snap && getNextTenTemplates() }
-            onEndReachedThreshold={1} //need to implement infinite scroll
-            
-            renderItem={renderItem}
-            // extraData={[]}
-
-            removeClippedSubviews={true}
-
-            estimatedItemSize={200}
-            estimatedListSize={{height: windowHeight, width: windowWidth}}
-
-            showsVerticalScrollIndicator={false}
-
-            // overrideItemLayout={(layout, item) =>{
-            //   layout.span = windowWidth/2 - 8;
-            //   // layout.size = item.imageHeight * (layout.span/item.imageWidth);
-            // }}
-
-            ListHeaderComponent={
-              <View>
-                {!(forCommentOnComment || forCommentOnPost) &&
-                  <PostBar/>
-                }
-
-                <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
-                  <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                      Meme Templates
-                  </Text>
-                </View>
-              </View>
-            }
-
-            ListFooterComponent={
-                <View style={{height: 100}}/>
-            }
-
-            keyExtractor={keyExtractor}
-
-            refreshControl={
-              <RefreshControl 
-                  // refreshing={isRefreshing}
-                  onRefresh={() => {
-                      toggleBottomSheet()
-                  }}
-                  // progressViewOffset={progress}
-                  tintColor={'rgba(255, 255, 255, 0.0)'}
-                  // progressViewOffset={0}
-              />
-          }
-          />
-        }
+        <ImageBackground 
+          source={theme == 'light' ? lightBackground : darkBackground} 
+          resizeMode="cover"
+          // height={windowHeight}
+          // width={windowWidth}
+          style={theme == 'light' ? styles.lightBackground : styles.darkBackground}
+        >
           
-        {/* Add template button */}
-        
+          <AddPostTopBar
+            navToFavorites={navToFavorites(navigation, forCommentOnComment, forCommentOnPost)}
+            navToSearchMemes={navToSearchMemes(navigation, forCommentOnComment, forCommentOnPost)}
+            closeBottomSheet={() => 
+              toggleBottomSheet()
+            }
+          />
 
-            <TouchableOpacity
-                style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
-                onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
-            >
-              <BlurView
-                tint = {theme == 'light' ?  "light" : "dark"}
-                intensity={theme == 'light' ?  75 : 100}
-                style={[StyleSheet.absoluteFill, 
-                  {
-                    borderRadius: 95,
-                    flexDirection: 'row',
-                    justifyContent: "center",
-                    alignItems: 'center',
-                    alignSelf: 'center',
+          {
+            // showBottomSheet &&
+          
+            <MasonryFlashList
+              ref={flashListRef}
+              data={memeTemplates}
+              numColumns={2}
+
+              // optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
+
+              onEndReached={memeTemplates[memeTemplates.length-1]?.snap && getNextTenTemplates() }
+              onEndReachedThreshold={1} //need to implement infinite scroll
+              
+              renderItem={renderItem}
+              // extraData={[]}
+
+              removeClippedSubviews={true}
+
+              estimatedItemSize={200}
+              estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+              showsVerticalScrollIndicator={false}
+
+              // overrideItemLayout={(layout, item) =>{
+              //   layout.span = windowWidth/2 - 8;
+              //   // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+              // }}
+
+              ListHeaderComponent={
+                <View>
+                  {!(forCommentOnComment || forCommentOnPost) &&
+                    <PostBar/>
                   }
-                ]}
-              >
 
-                {theme == "light" ?
-                    <LightMemeCreate width={31} height={31} alignSelf={'center'} marginRight={5} marginTop={4}/>
-                    :
-                    <DarkMemeCreate width={31} height={31} alignSelf={'center'} marginRight={5} marginTop={4}/>
-                }
+                  <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
+                    <Text style={theme == 'light' ? styles.lightMemeTemplateText : styles.darkMemeTemplateText}>
+                        Meme Templates
+                    </Text>
+                  </View>
+                </View>
+              }
 
-                <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
-                    Add meme template
-                </Text>
+              ListFooterComponent={
+                  <View style={{height: 100}}/>
+              }
 
-              </BlurView>
-          </TouchableOpacity>
+              keyExtractor={keyExtractor}
 
-        
+              refreshControl={
+                <RefreshControl 
+                    // refreshing={isRefreshing}
+                    onRefresh={() => {
+                        toggleBottomSheet()
+                    }}
+                    // progressViewOffset={progress}
+                    tintColor={'rgba(255, 255, 255, 0.0)'}
+                    // progressViewOffset={0}
+                />
+              }
+            />
+          }
+            
 
-        {/* <TouchableOpacity
+
+          {/* Add template button */}
+          <TouchableOpacity
               style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
               onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
           >
-            {theme == "light" ?
-                <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
-                :
-                <DarkMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
-            }
+            {/* <BlurView
+              tint = {theme == 'light' ?  "light" : "dark"}
+              intensity={theme == 'light' ?  75 : 100}
+              style={[StyleSheet.absoluteFill, 
+                {
+                  borderRadius: 95,
+                  flexDirection: 'row',
+                  justifyContent: "center",
+                  alignItems: 'center',
+                  alignSelf: 'center',
+                }
+              ]}
+            > */}
 
-            <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
-                Add meme template
-            </Text>
-        </TouchableOpacity> */}
+              {theme == "light" ?
+                  <LightMemeCreate width={31.5} height={31.5} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                  :
+                  <DarkMemeCreate width={31.5} height={31.5} alignSelf={'center'} marginRight={5} marginTop={4}/>
+              }
 
+              <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
+                  Add meme template
+              </Text>
+
+            {/* </BlurView> */}
+        </TouchableOpacity>
+
+          
+
+          {/* <TouchableOpacity
+                style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
+                onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
+            >
+              {theme == "light" ?
+                  <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+                  :
+                  <DarkMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
+              }
+
+              <Text style={theme == 'light' ? styles.lightAddTemplateText : styles.darkAddTemplateText}>
+                  Add meme template
+              </Text>
+          </TouchableOpacity> */}
+        </ImageBackground>
       </Animated.View>
     );
 }
@@ -329,6 +339,16 @@ const AddPostScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
   container: {
       flex: 1,
+  },
+  darkBackground: {
+    flex: 1,
+    height: windowHeight*1.7,
+    // justifyContent: 'center',
+  },
+  lightBackground: {
+    flex: 1,
+    height: windowHeight*1.6,
+    // justifyContent: 'center',
   },
   image: {
     width: 200,
@@ -339,47 +359,52 @@ const styles = StyleSheet.create({
   },
   lightMemeTemplateContainer: {
     flexDirection: 'column',
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: 'rgba(255, 255, 255, 1)',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 15,
+    borderRadius: 14,
     width: 'auto',
-    height: 42,
+    height: 44,
     marginLeft: 5,
     marginTop: 12,
-    marginBottom: 10,
+    marginBottom: 12,
     borderWidth: 1.5,
-    borderColor: '#E4E4E4'
+    borderColor: "#E8E8E8",
   },
   darkMemeTemplateContainer: {
     flexDirection: 'column',
-    backgroundColor: 'rgba(32, 32, 32, 0.3)',
+    backgroundColor: 'rgba(20, 20, 20, 1)',
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 15,
-    width: 'auto',
-    height: 42,
+    borderRadius: 14,
+    // width: 'auto',
+    // height: 44,
     marginLeft: 5,
     marginTop: 12,
-    marginBottom: 10,
+    marginBottom: 12,
     borderWidth: 1.5,
-    borderColor: '#313131'
+    borderColor: "#393939",
   },
-  lightText: {
-    fontSize: 22,
+  lightMemeTemplateText: {
+    fontSize: 24,
     color: '#444444',
     fontWeight: '600',
     alignSelf: 'center',
     marginHorizontal: 12,
+    marginBottom: 6,
+    marginTop: 5,
+
   },
-  darkText: {
-    fontSize: 22,
+  darkMemeTemplateText: {
+    fontSize: 24,
     color: '#f2f2f2',
     fontWeight: '600',
     alignSelf: 'center',
     marginHorizontal: 12,
+    marginBottom: 6,
+    marginTop: 4,
   },
   lightAddTemplateButton: {
     overflow: 'hidden',
@@ -389,11 +414,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     bottom: 50,
     position: 'absolute',
-    backgroundColor: 'rgba(255, 255, 255, 0.75)',
+    backgroundColor: 'rgba(255, 255, 255, 1)',
     alignSelf: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#CCCCCC',
+    borderColor: '#D4D4D4',
   },
   darkAddTemplateButton: {
     overflow: 'hidden',
@@ -403,23 +428,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     bottom: 50,
     position: 'absolute',
-    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+    backgroundColor: 'rgba(24, 24, 24, 1)',
     alignSelf: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#262626'
+    borderColor: '#282828'
   },
   lightAddTemplateText: {
-      fontSize: 24,
+      fontSize: 23.5,
       color: '#000000',
-      fontWeight: '500',
+      fontWeight: '600',
       alignSelf: 'center',
+      marginRight: 3
   },
   darkAddTemplateText: {
       fontSize: 24,
       color: '#F0F0F0',
       fontWeight: '500',
       alignSelf: 'center',
+      marginRight: 3
   },
   askText: {
     fontSize: 20,

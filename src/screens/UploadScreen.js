@@ -134,7 +134,7 @@ export default function UploadScreen({navigation, route}) {
               onPress={() => onGoBack()}
           >
               <BackIcon height={25} width={25}/>
-              <Text style={styles.text}>Back</Text>
+              {/* <Text style={styles.text}>Back</Text> */}
           </TouchableOpacity>
 
           {/* Flash On/Off button */}

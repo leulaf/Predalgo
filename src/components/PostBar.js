@@ -100,24 +100,24 @@ const styles = StyleSheet.create({
        flexDirection: "row",
        width: "98%",
        height: 60,
-       marginTop:  10,
+       marginTop:  15,
        alignSelf: "center",
        alignItems: "center",
-       backgroundColor: 'rgba(255, 255, 255, 0.55)',
+       backgroundColor: 'rgba(255, 255, 255, 1)',
        borderWidth: 1,
-       borderColor: "#E0E0E0",
+       borderColor: "#E8E8E8",
        borderRadius: 30
    },
    darkMainContainer: {
        flexDirection: "row",
        width: "98%",
        height: 60,
-       marginTop:  10,
+       marginTop:  15,
        alignSelf: "center",
        alignItems: "center",
-       backgroundColor: 'rgba(32, 32, 32, 0.63)',
+       backgroundColor: 'rgba(20, 20, 20, 1)',
        borderWidth: 1,
-       borderColor: "#2D2D2D",
+       borderColor: "#393939",
        borderRadius: 30
    },
    lightTextContainer: {
@@ -127,9 +127,9 @@ const styles = StyleSheet.create({
        alignSelf: "center",
        alignItems: "center",
        marginLeft: 8,
-       backgroundColor: 'rgba(255, 255, 255, 0.55)',
+       backgroundColor: 'rgba(255, 255, 255, 0.3)',
        borderWidth: 1,
-       borderColor: "#E0E0E0",
+       borderColor: "#E8E8E8",
        borderRadius: 30
    },
    darkTextContainer: {
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
        alignSelf: "center",
        alignItems: "center",
        marginLeft: 8,
-       backgroundColor: 'rgba(32, 32, 32, 0.55)',
+       backgroundColor: 'rgba(30, 30, 30, 1)',
        borderWidth: 1,
        borderColor: "#333333",
        borderRadius: 30
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
        marginLeft: 10,
        fontSize: 16,
        fontWeight: "400",
-       color: "#DDDDDD",
+       color: "#EEEEEE",
    }
 });
 

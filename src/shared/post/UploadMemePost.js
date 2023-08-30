@@ -11,7 +11,8 @@ import { getAuth } from "firebase/auth";
 
 const auth = getAuth();
 
-async function UploadImagePost(title, text, imageUrl, height, width, tags) {
+// fuction is not needed since the template is already uploaded to the database
+async function UploadMemePost(title, text, url, memeName, templateUrl, imageState, height, width, tags) {
     return new Promise(async (resolve, reject) => {
         // Convert image to blob format(array of bytes)
         const response = await fetch(imageUrl);
@@ -38,9 +39,20 @@ async function UploadImagePost(title, text, imageUrl, height, width, tags) {
                 // console.log(imageUrl);
                 // console.log('File available at', url);
                 
-                await saveImagePostData(title, text, url, height, width, tags)
+                await SaveMemePostData(title, text, url, memeName, templateUrl, imageState, height, width, tags)
                 .then(async (id) => {
-                    id != false ? resolve(id) : resolve(false);
+                    if (id != false) {
+                        // update posts count for current user
+                        const currentUserRef = doc(db, 'users', auth.currentUser.uid);
+
+                        await updateDoc(currentUserRef, {
+                            posts: increment(1)
+                        });
+
+                        resolve(id);
+                    }else{
+                        resolve(false);
+                    }
                 })
                 .catch((e) => {
                     resolve(false);
@@ -55,13 +67,16 @@ async function UploadImagePost(title, text, imageUrl, height, width, tags) {
 };
 
 
-const saveImagePostData = async (title, text, url, height, width, tags) => {
+const SaveMemePostData = async (title, text, url, memeName, templateUrl, imageState, height, width, tags) => {
     return new Promise(async (resolve, reject) => {
         // add text post to database
         await addDoc(collection(db, "allPosts"), {
             title: title,
             text: text,
             imageUrl: url,
+            memeName: memeName,
+            template: templateUrl,
+            templateState: imageState,
             height: height,
             width: width,
             tags: tags,
@@ -72,7 +87,6 @@ const saveImagePostData = async (title, text, url, height, width, tags) => {
             profilePic: auth.currentUser.photoURL,
             profile: auth.currentUser.uid
         }).then(async (docRef) => {
-            
             // update posts count for current user
             const currentUserRef = doc(db, 'users', auth.currentUser.uid);
 
@@ -81,7 +95,6 @@ const saveImagePostData = async (title, text, url, height, width, tags) => {
             });
 
             resolve(docRef.id);
-
             // Alert.alert("Post uploaded successfully!");
         }).catch(function (error) {
             resolve(false);
@@ -91,4 +104,4 @@ const saveImagePostData = async (title, text, url, height, width, tags) => {
 };
 
 
-export default UploadImagePost;
+export { UploadMemePost, SaveMemePostData }

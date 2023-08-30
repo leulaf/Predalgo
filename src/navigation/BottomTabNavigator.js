@@ -223,7 +223,7 @@ function BottomTabNavigator ({navigation}) {
                 backgroundComponent={() =>
                     <BlurView
                         tint = {theme == 'light' ?  "light" : "dark"}
-                        intensity={theme == 'light' ? 25 : 30}
+                        intensity={theme == 'light' ? 60 : 50}
                         style={[StyleSheet.absoluteFill, {}]}
                     />
                 }
