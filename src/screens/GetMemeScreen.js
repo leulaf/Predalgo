@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   lightText: {
     fontSize: 22,
     color: '#444444',
-    fontWeight: 600,
+    fontWeight: '600',
     alignSelf: 'center',
     marginHorizontal: 10,
     marginTop: 5,
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   darkText: {
     fontSize: 22,
     color: '#f2f2f2',
-    fontWeight: 600,
+    fontWeight: '600',
     alignSelf: 'center',
     marginHorizontal: 10,
     marginTop: 5,
@@ -354,19 +354,19 @@ const styles = StyleSheet.create({
   lightAddTemplateText: {
       fontSize: 20,
       color: '#111111',
-      fontWeight: 500,
+      fontWeight: '500',
       alignSelf: 'center',
   },
   darkAddTemplateText: {
       fontSize: 20,
       color: '#F0F0F0',
-      fontWeight: 500,
+      fontWeight: '500',
       alignSelf: 'center',
   },
   askText: {
     fontSize: 20,
     color: '#222222',
-    fontWeight: 500,
+    fontWeight: '500',
     alignSelf: 'center',
     marginTop: 5,
     marginBottom: 15,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
   answerText: {
       fontSize: 20,
       color: '#222222',
-      fontWeight: 500,
+      fontWeight: '500',
       alignSelf: 'center'
   },
 });

@@ -1,9 +1,15 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TextInput, ScrollView, Image, Dimensions, InputAccessoryView, Keyboard, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, StyleSheet, TextInput, ScrollView, Dimensions, InputAccessoryView, Keyboard, TouchableOpacity, Alert} from 'react-native';
+
+import { StackActions } from '@react-navigation/native';
+
+import {BlurView} from 'expo-blur';
 
 import Constants from 'expo-constants';
 
 import uuid from 'react-native-uuid';
+
+import { Image } from 'expo-image';
 
 import LinkInput from '../shared/LinkInput';
 
@@ -12,6 +18,10 @@ import {ThemeContext, AuthenticatedUserContext} from '../../context-store/contex
 import UploadImagePost from '../shared/post/UploadImagePost';
 import UploadTextPost from '../shared/post/UploadTextPost';
 import {SaveMemePostData} from '../shared/post/UploadMemePost';
+
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
 
 require('firebase/firestore');
 
@@ -23,27 +33,32 @@ import UploadLight from '../../assets/upload_light.svg';
 import LinkLight from '../../assets/link_light.svg';
 import CreateMemeLight from '../../assets/meme_create_light.svg';
 import PostButtonLight from '../../assets/post_button_light.svg';
+import DeleteImageLight from '../../assets/x.svg';
 // import ExpandImage from '../../assets/expand_image.svg';
 // import ShrinkImage from '../../assets/shrink_image.svg';
 
 // dark mode icons
-import BackDark from '../../assets/back_light.svg';
+import BackDark from '../../assets/down_dark.svg';
 import ExitIconDark from '../../assets/xDark.svg';
 import UploadDark from '../../assets/upload_dark.svg';
 import LinkDark from '../../assets/link_dark.svg';
 import CreateMemeDark from '../../assets/meme_create_dark.svg';
 import PostButtonDark from '../../assets/post_button_dark.svg';
 
+
+const win = Dimensions.get('window');
+
 const CreatePostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
     const {imagePost, setImagePost} = React.useContext(AuthenticatedUserContext);
-    const [inputInFocus, setInputInFocus] = React.useState(false);
     const [currentSelection, setCurrentSelection] = React.useState({start: 0, end: 0});
     const [title, setTitle] = React.useState('');
     const [text, setText] = React.useState('');
     const {imageUrl, memeName, imageUrls, newTemplate, newTemplateImage} = route.params;
     const [linkView, setLinkView] = React.useState(false);
     const [tempTags, setTempTags] = React.useState('');
+    const titleInputAccessoryViewID = uuid.v4();
     const textInputAccessoryViewID = uuid.v4();
     const tagInputAccessoryViewID = uuid.v4();
     const [correctTags, setCorrectTags] = React.useState([]);
@@ -75,6 +90,27 @@ const CreatePostScreen = ({navigation, route}) => {
         down = <BackDark width={24} height={24}/>
     }
 
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+          'keyboardDidShow',
+          () => {
+            setKeyboardVisible(true); // or some other action
+          }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+          'keyboardDidHide',
+          () => {
+            setKeyboardVisible(false); // or some other action
+          }
+        );
+    
+        return () => {
+          keyboardDidHideListener.remove();
+          keyboardDidShowListener.remove();
+        };
+      }, []);
+
     
     const fixTags = (tempTags) => {
         let newTags = tempTags.split(' ');
@@ -103,7 +139,7 @@ const CreatePostScreen = ({navigation, route}) => {
     }, []);
 
 
-    
+
     const bottomButtons = React.useCallback(() => (
         linkView ?
             <LinkInput
@@ -123,6 +159,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
             {/* Hashtags and mentions*/}
             <TextInput
+                nativeID={tagInputAccessoryViewID}
                 style={theme == 'light' ? styles.lightTagInput : styles.darkTagInput}
                 autoCapitalize="none"
                 autoCorrect
@@ -134,7 +171,7 @@ const CreatePostScreen = ({navigation, route}) => {
             />
 
             {/* line break */}
-            <View style={{borderBottomColor: '#DDDDDD', borderBottomWidth: 1, marginHorizontal: 5, marginBottom: 15}}/>
+            <View style={{borderBottomColor: theme == 'light' ? '#DDDDDD' : '#AAAAAA', borderBottomWidth: 1, marginHorizontal: 5, marginBottom: 14}}/>
         
             {/* Upload, Link, Create Meme Buttons */}
             <View style={{ flex: 1, flexDirection: 'row', marginBottom: 8}}>
@@ -199,7 +236,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
                 {/* Keyboard down button */}
                 <TouchableOpacity
-                    style={{flexDirection: 'row', paddingTop: 3, paddingRight: 15}}
+                    style={{flexDirection: 'row', paddingTop: 2, paddingRight: 15}}
                     onPress={() => Keyboard.dismiss()}
                 >
                     {down}
@@ -211,82 +248,126 @@ const CreatePostScreen = ({navigation, route}) => {
 
 
         </View>
+    ), [linkView, title, tempTags, theme]);
+
+
+    
+    const titleBottomButtons = React.useCallback(() => (
+
+        <View style={theme == 'light' ? styles.lightInputTopContainer : styles.darkInputTopContainer}>
+
+            {/* Hashtags and mentions*/}
+            <TextInput
+                nativeID={tagInputAccessoryViewID}
+                style={theme == 'light' ? styles.lightTagInput : styles.darkTagInput}
+                autoCapitalize="none"
+                autoCorrect
+                placeholder="@mentions #hashtags"
+                placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                value={tempTags}
+                onChangeText={(newValue) => setTempTags(newValue)}
+                onEndEditing={() => fixTags(tempTags)}
+            />
+
+            {/* line break */}
+            <View style={{borderBottomColor: theme == 'light' ? '#DDDDDD' : '#AAAAAA', borderBottomWidth: 1, marginHorizontal: 5, marginBottom: 10}}/>
+        
+            
+        </View>
     ), [linkView, imagePost, text, tempTags, currentSelection, theme]);
 
     const handleFocus = () => {
-        setInputInFocus(true);
+        console.log("keyboard visible");
+        setKeyboardVisible(true);
     };
 
     const handleBlur = () => {
-        setInputInFocus(false);
+        console.log("keyboard down");
+        setKeyboardVisible(false);
     };
 
-    // let content;
+
+    const onPostText = React.useCallback(async () => {
+        
+        await UploadTextPost(
+            title,
+            text,
+            correctTags
+        ).catch(function (error) {
+            console.log(error);
+        }).then(async (id) => {
+            console.log(" post ", id);
+            const newText = text;
+
+            // clear text
+            setText("");
+            setText("");
+            setTitle("");
+            setTempTags("");
+            setCorrectTags([]);
+
+            // navigate to Post screen with the new Post
+            navigation.dispatch(
+                StackActions.replace("Post", {
+                    postId: id,
+                    title: title,
+                    text: newText,
+                    tags: correctTags,
+                    likesCount: 0,
+                    commentsCount: 0,
+                    profile: auth.currentUser.uid,
+                    username: auth.currentUser.displayName,
+                    profilePic: auth.currentUser.photoURL,
+                })
+            );
+
+        });
+    }, [text])
 
 
+    const onPostImage = React.useCallback(async () => {
 
+        await UploadImagePost(
+            title,
+            text,
+            imagePost.uri,
+            imagePost.height,
+            imagePost.width,
+            correctTags
+        ).catch(function (error) {
+            // console.log(error);
+        }).then(async (id) => {
+            
+            const newText = text;
 
-    // if(imageUrl){
-    //     content = (
-    //         <>
-    //             {expandImage ?
-    //                 <TouchableOpacity
-    //                         style={{flexDirection: 'column',}}
-    //                         onPress={() => setExpandImage(!expandImage)}
-    //                 >
+            // clear text and image
+            setImagePost(null);
+            setText("");
+            setTitle("");
+            setTempTags("");
+            setCorrectTags([]);
+                                            
+            // navigate to Post screen with the new Post
+            navigation.dispatch(
+                StackActions.replace("Post", {
+                    postId: id,
+                    title: title,
+                    text: newText,
+                    imageUrl:  imagePost.uri,
+                    imageHeight: imagePost.height,
+                    imageWidth: imagePost.width,
+                    tags: correctTags,
+                    likesCount: 0,
+                    commentsCount: 0,
+                    profile: auth.currentUser.uid,
+                    username: auth.currentUser.displayName,
+                    profilePic: auth.currentUser.photoURL,
+                })
+            );
 
-    //                     <Image source={{ uri: imageUrl }} style={styles.imageExpanded} />
+        });
 
-    //                     <View style={{flexDirection: 'row', position:'absolute', marginLeft: 285, marginTop:30}}>
-    //                         <ShrinkImage width={26} height={26}/>
-    //                         <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 700,color: 'white'}}>
-    //                             Shrink
-    //                         </Text>
-    //                     </View>
-    //                 </TouchableOpacity>
-    //             :
-    //                 <TouchableOpacity
-    //                     style={{flexDirection: 'column',}}
-    //                     onPress={() => setExpandImage(!expandImage)}
-    //                 >
-                    
-    //                     <Image source={{ uri: imageUrl }} style={styles.imageShrinked}  width={395} height={350}/>
-
-    //                     <View style={{flexDirection: 'row', position:'absolute', marginLeft: 275, marginTop:30}}>
-    //                         <ExpandImage width={24} height={24}/>
-    //                         <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 700,color: 'white'}}>
-    //                             Expand
-    //                         </Text>
-    //                     </View>
-
-
-
-
-    //                 </TouchableOpacity>
-                    
-    //             }
-    //         </>
-    //     )
-    // }else{
-    //     content = <View style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}>
-
-    //         <TextInput
-    //             style={theme == 'light' ? styles.lightTextInput : styles.darkTextInput}
-    //             multiline
-    //             maxLength={10000}
-    //             blurOnSubmit={false}
-    //             autoCapitalize="none"
-    //             autoCorrect
-    //             placeholder="Type your post here..."
-    //             placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-    //             value={text}
-    //             onChangeText={(newValue) => setText(newValue)}
-    //         />
-
-    //     </View>
-    // }
-
-
+    }, [imagePost, text])
 
 
     return (
@@ -308,7 +389,7 @@ const CreatePostScreen = ({navigation, route}) => {
                         </TouchableOpacity>
 
 
-                        {/* Reply Button */}
+                        {/* Post Button */}
                         <TouchableOpacity
                              style={{flexDirection: 'row',borderWidth: 0, botderColor: "black"}}
                             onPress={ async () =>
@@ -321,11 +402,11 @@ const CreatePostScreen = ({navigation, route}) => {
 
                                         }else if(imagePost){
                                             
-                                            await onReplyWithImage();
+                                            await onPostImage();
 
                                         }else{
 
-                                            await onReplyWithText();
+                                            await onPostText();
 
                                         }
                                     }
@@ -337,13 +418,16 @@ const CreatePostScreen = ({navigation, route}) => {
 
                 {/* Title input text */}
                 <TextInput
+                    inputAccessoryViewID={titleInputAccessoryViewID}
                     style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
                     autoCapitalize="none"
                     multiline
                     blurOnSubmit
                     maxLength={80}
                     autoCorrect
-                    placeholder="Title *Optional*"
+                    handleFocus={handleFocus}
+                    handleBlur={handleBlur}
+                    placeholder={!imagePost ? "Title (optional)" : "Title"}
                     placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
                     value={title}
                     onChangeText={(newValue) => setTitle(newValue)}
@@ -351,34 +435,135 @@ const CreatePostScreen = ({navigation, route}) => {
 
 
                 {/* line break */}
-                <View style={{borderBottomColor: '#CCCCCC', borderBottomWidth: 1, marginHorizontal: 13, marginTop: 8}}/>
+                <View style={{borderBottomColor: theme == 'light' ? '#DDDDDD' : '#AAAAAA', borderBottomWidth: 1, alignSelf: 'center', width: "94%", marginTop: 8}}/>
 
 
 
 
                 {/* Content of the post, TextInput, Image */}
-                <View style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}>
+                {
+                // (showText || !(imagePost)) &&
+                    <View style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}>
 
-                    <TextInput
-                        inputAccessoryViewID={textInputAccessoryViewID}
-                        style={[theme == 'light' ? styles.lightTextInput : styles.darkTextInput, {height: inputInFocus ? Dimensions.get('window').height * 0.3 : Dimensions.get('window').height * 0.5}]}
-                        multiline
-                        maxLength={10000}
-                        onFocus={handleFocus}
-                        onBlur={handleBlur}
-                        blurOnSubmit={false}
-                        autoCapitalize="none"
-                        autoCorrect
-                        onSelectionChange={onSelectionChange}
-                        placeholder="Type your post here..."
-                        placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                        value={text}
-                        onChangeText={(newValue) => setText(newValue)}
+                        <TextInput
+                            inputAccessoryViewID={textInputAccessoryViewID}
+                            style={[theme == 'light' ? styles.lightTextInput : styles.darkTextInput, 
+                                {
+                                    height: isKeyboardVisible ?
+                                        Dimensions.get('window').height * 0.3
+                                    :
+                                        imagePost ? 'auto' : Dimensions.get('window').height * 0.5,
+                                    maxHeight: imagePost ? Dimensions.get('window').height * 0.5 : Dimensions.get('window').height * 0.5,
+                                }
+                            ]}
+                            multiline
+                            maxLength={10000}
+                            handleFocus={handleFocus}
+                            handleBlur={handleBlur}
+                            // blurOnSubmit={false}
+                            autoCapitalize="none"
+                            autoCorrect
+                            onSelectionChange={onSelectionChange}
+                            placeholder= {!imagePost ? "Type your post here..." : "Type here...(optional)"}
+                            placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                            value={text}
+                            onChangeText={(newValue) => setText(newValue)}
+                            
+                        />
+
+                    </View>
+                }
+
+
+
+
+                {
+                    (imagePost && !isKeyboardVisible) &&
+
+                    <ScrollView style={{alignSelf: 'center', flexDirection: 'column', marginTop: 10, marginBottom: 10}}>
                         
-                    />
+                        
 
+
+                        {/* Selected Image */}
+                        <TouchableOpacity
+                            onPress={() => 
+
+                                {   
+                                    navigation.navigate(imagePost.memeName ? 'EditMeme' : "EditImage", {
+                                        imageUrl: imagePost.undeditedUri,
+                                        height: imagePost.height,
+                                        width: imagePost.width,
+                                        imageState: imagePost.imageState,
+                                        forCommentOnComment: false,
+                                        forCommentOnPost: false,
+                                        forComment: false,
+                                        forPost: true,
+                                        cameraPic: false,
+                                        dontCompress: true,
+                                        replyMemeName: imagePost.memeName ? imagePost.memeName : null,
+                                        templateExists: imagePost.templateExists ? imagePost.templateExists : null,
+                                    })
+                                }
+
+                            }
+                        >
+                            <Image 
+                                source={{uri : imagePost.uri}}
+                                // resizeMode='contain'
+                                style={{
+                                    height:
+                                    imagePost.height < imagePost.width ?
+                                        (imagePost.height * (win.width / imagePost.width)) * 1
+                                    :
+                                        (imagePost.height * (win.width / imagePost.width)) * 1,
+
+                                    width:
+                                    imagePost.height < imagePost.width ?
+                                        win.width * 1
+                                    :
+                                        win.width * 1,
+
+                                    alignSelf: 'center',
+                                    borderRadius: 10,
+                                    // marginTop: 10,
+                                }}
+                            />
+                        </TouchableOpacity>
+
+                        {/* Delete Image */}
+                        <TouchableOpacity style={{ 
+                            // marginRight: 10, marginTop: 10,
+                            position: 'absolute', padding: 15,
+                            flexDirection: 'row', 
+                            // backgroundColor: 'black', 
+                            alignSelf: 'flex-end' }} 
+                            onPress={() => setImagePost(null)}
+                        >
+                            <DeleteImageLight height={30} width={30} />
+                            {/* <Text marginBottom={0} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                                Delete
+                            </Text> */}
+                        </TouchableOpacity>
+                    </ScrollView>
+                }
+
+
+
+                {/* Background color behind tags and bottom buttons, 
+                *needed so that an image being the background does not change the background of the tags & buttonse */}
+                {
+                // {/* <View style={{backgroundColor: 'white', alignSelf: 'center', width: "94%", height: 200, marginBottom: 8, position: 'absolute', bottom: 0}}/> */}
+
+                imagePost &&
+                <View style={{ alignSelf: 'center', width: "100%", height: 190, marginBottom: 8, position: 'absolute', bottom: 0}}>
+                    <BlurView
+                        tint = {theme == 'light' ?  "light" : "dark"}
+                        intensity={theme == 'light' ?  100 : 100}
+                        style={[StyleSheet.absoluteFill, ]}
+                    />
                 </View>
-                
+                }
 
 
                 {/* Hashtags and mentions*/}
@@ -387,8 +572,8 @@ const CreatePostScreen = ({navigation, route}) => {
                     style={theme == 'light' ? styles.lightBottomTagInput : styles.darkBottomTagInput}
                     autoCapitalize="none"
                     autoCorrect
-                    onFocus={handleFocus}
-                    onBlur={handleBlur}
+                    handleFocus={handleFocus}
+                    handleBlur={handleBlur}
                     placeholder="@mentions #hashtags"
                     placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
                     value={tempTags}
@@ -399,7 +584,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
 
                 {/* line break */}
-                <View style={{borderBottomColor: '#DDDDDD', borderBottomWidth: 1, width: "100%", marginHorizontal: 5, marginBottom: 8, position: 'absolute', bottom: 125}}/>
+                <View style={{borderBottomColor: theme == 'light' ? '#DDDDDD' : '#AAAAAA', borderBottomWidth: 1, alignSelf: 'center', width: "94%", marginBottom: 8, position: 'absolute', bottom: 125}}/>
 
                 
 
@@ -467,11 +652,13 @@ const CreatePostScreen = ({navigation, route}) => {
 
 
 
-
+                
 
 
 
                 {/* Top of keyboard with different options */}
+                
+                {/* For Text Input */}
                 <InputAccessoryView 
                     nativeID={textInputAccessoryViewID}
                     backgroundComponent={() =>
@@ -485,6 +672,8 @@ const CreatePostScreen = ({navigation, route}) => {
                     {bottomButtons()}
                 </InputAccessoryView>
                 
+
+                {/* For Tags Input */}
                 <InputAccessoryView 
                     nativeID={tagInputAccessoryViewID}
                     backgroundComponent={() =>
@@ -497,6 +686,22 @@ const CreatePostScreen = ({navigation, route}) => {
                 >
                     {bottomButtons()}
                 </InputAccessoryView>
+
+                {/* For Title Input */}
+                <InputAccessoryView 
+                    nativeID={titleInputAccessoryViewID}
+                    backgroundComponent={() =>
+                        <BlurView
+                            tint = {theme == 'light' ?  "light" : "dark"}
+                            intensity={theme == 'light' ?  100 : 100}
+                            style={[StyleSheet.absoluteFill, {borderRadius: 24}]}
+                        />
+                    }
+                >
+                    {titleBottomButtons()}
+                </InputAccessoryView>
+
+
         </View>
     );
 }
@@ -504,11 +709,12 @@ const CreatePostScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
     lightContainer: {
         flex: 1,
-        backgroundColor: '#FBFBFB',
+        backgroundColor: '#FFFFFF',
     },
     darkContainer: {
         flex: 1,
-        backgroundColor: '#181818',
+        // backgroundColor: '#181818',
+        backgroundColor: '#1C1C1C',
     },
     lightPostContainer: {
         marginTop: 70,
@@ -534,6 +740,7 @@ const styles = StyleSheet.create({
     },
     lightInputTopContainer: {
         flexDirection: 'column',
+        backgroundColor: '#FFFFFF',
         // backgroundColor: '#FFFFFF',
         // alignSelf: 'flex-end',
         // alignItems: 'center',
@@ -546,6 +753,7 @@ const styles = StyleSheet.create({
     },
     darkInputTopContainer: {
         flexDirection: 'column',
+        backgroundColor: '#1C1C1C',
         // alignSelf: 'flex-end',
         // alignItems: 'center',
         // alignContent: 'center',
@@ -560,14 +768,14 @@ const styles = StyleSheet.create({
     lightUsername: {
         fontSize: 18,
         width: 200,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#5F5F5F',
         alignSelf: 'center',
     },
     darkUsername: {
         fontSize: 18,
         width: 200,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#EEEEEE',
         alignSelf: 'center',
     },
@@ -577,31 +785,35 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginHorizontal: 15,
         fontSize: 24,
-        fontWeight: 500,
+        fontWeight: '500',
     },
     darkTitleInput: {
         color: '#EEEEEE',
         height: 40,
+        marginTop: 15,
         marginHorizontal: 15,
         fontSize: 24,
-        fontWeight: 500
+        fontWeight: '500'
     },
     lightTagInput: {
         width: "100%",
         color: '#555555',
         height: "auto",
         marginBottom: 10,
+        marginTop: 10,
         marginHorizontal: 10,
         fontSize: 22,
-        fontWeight: 500,
+        fontWeight: '500',
     },
     darkTagInput: {
         width: "100%",
         color: '#EEEEEE',
         height: "auto",
+        marginBottom: 10,
+        marginTop: 10,
         marginHorizontal: 10,
         fontSize: 22,
-        fontWeight: 500
+        fontWeight: '500'
     },
     lightBottomTagInput: {
         width: "100%",
@@ -610,8 +822,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 150,
         fontSize: 22,
-        fontWeight: 500,
-        marginHorizontal: 10,
+        fontWeight: '500',
+        marginHorizontal: 15,
     },
     darkBottomTagInput: {
         width: "100%",
@@ -620,8 +832,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 150,
         fontSize: 22,
-        fontWeight: 500,
-        marginHorizontal: 10,
+        fontWeight: '500',
+        marginHorizontal: 15,
     },
     lightTextContainer: {
         color: '#444444',
@@ -645,13 +857,13 @@ const styles = StyleSheet.create({
         color: '#666666',
         fontSize: 22,
         marginHorizontal: 10,
-        fontWeight: 500,
+        fontWeight: '500',
     },
     darkTextInput: {
         color: '#EEEEEE',
         fontSize: 22,
         marginHorizontal: 10,
-        fontWeight: 500,
+        fontWeight: '500',
     },
     imageShrinked: {
         alignSelf: "center",

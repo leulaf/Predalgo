@@ -27,7 +27,7 @@ export default function UploadScreen({navigation, route}) {
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
-  const { forCommentOnComment, forCommentOnPost, forMemeComment} = route.params;
+  const { forPost, forMemePost, forCommentOnComment, forCommentOnPost, forMemeComment} = route.params;
 
   
   // useEffect(() => {
@@ -74,6 +74,20 @@ export default function UploadScreen({navigation, route}) {
           })
         );
 
+      }else if(forPost){
+        navigation.dispatch(
+          StackActions.replace(forMemePost ? 'EditMeme' : 'EditImage', {
+            imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
+            height: result.assets[0].height,
+            width: result.assets[0].width,
+            forPost: true,
+            forCommentOnComment: false,
+            forCommentOnPost: false,
+            forMemeComment: false,
+            forMemePost: forMemePost ? forMemePost : false,
+            cameraPic: false
+          })
+        );
       }
       
     }
@@ -101,6 +115,21 @@ export default function UploadScreen({navigation, route}) {
             cameraPic: true
           })
         );
+      }else if(forPost){
+        navigation.dispatch(
+          StackActions.replace(forMemeComment ? 'EditMeme' : 'EditImage', {
+            imageUrl: `data:image/jpeg;base64,${picture.base64}`,
+            height: picture.height,
+            width: picture.width,
+            forPost: true,
+            forCommentOnComment: false,
+            forCommentOnPost: false,
+            forMemeComment: false,
+            forMemePost: forMemePost ? forMemePost : false,
+            cameraPic: true
+          })
+        );
+
       }
       
 
@@ -248,9 +277,10 @@ const styles = StyleSheet.create({
     height: "85%",
   },
   backButton: {
+    flex: 1,
     flexDirection: 'row',
     marginTop: 50,
-    marginLeft: 5
+    marginLeft: 10
   },
   buttonsContainer: {
     flex: 1,
@@ -265,12 +295,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   flashButton: {
-    flex: 1,
     flexDirection: 'row',
-    alignSelf: 'center',
-    alignItems: 'flex-start',
-    marginLeft: '65%',
+    // alignSelf: 'center',
+    // alignItems: 'flex-start',
+    // marginLeft: 10,
     marginTop: 50,
+    marginRight: 20,
 
   },
   takePhotoButton: {
@@ -287,7 +317,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 22,
     marginHorizontal: 5,
-    fontWeight: 700,
+    fontWeight: '700',
     color: 'white',
   },
   displayImage: {

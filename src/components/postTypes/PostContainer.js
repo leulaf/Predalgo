@@ -22,7 +22,7 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const onNavToComment =  (navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
     navigation.push('Post', {
         postId: postId,
         title: title,
@@ -182,7 +182,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={onNavToComment(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     style={{flex: 1, height: 40}}
                 />
 
@@ -202,11 +202,11 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             {/* title */}
             <TouchableOpacity
                 activeOpacity={1}
-                onPress={onNavToComment(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 {/* title */}
-                <TitleText text={title}/>
+                <TitleText title={title}/>
 
             </TouchableOpacity>
                 
@@ -214,7 +214,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             {/* Post content. Image, Text etc. */}
             <TouchableOpacity
                 activeOpacity={1}
-                onPress={onNavToComment(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 {content}
@@ -287,35 +287,35 @@ const styles = StyleSheet.create({
     },
     lightUsername: {
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#444444',
         textAlign: "left",
         // marginTop: 6,
     },
     darkUsername: {
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#DDDDDD',
         textAlign: "left",
         // marginTop: 6,
     },
     lightRepostUsername: {
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#777777',
         textAlign: "left",
         marginBottom: 4,
     },
     darkRepostUsername: {
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#BBBBBB',
         textAlign: "left",
         marginBottom: 4,
     },
     lightPostTitle: {
         fontSize: 22,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#333333',
         textAlign: "left",
         marginHorizontal: 12,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     },
     darkPostTitle: {
         fontSize: 22,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#DDDDDD',
         textAlign: "left",
         marginHorizontal: 12,
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     },
     overlayText: {
         fontSize: 22,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#000000',
         alignSelf: 'center',
         marginHorizontal: 10,

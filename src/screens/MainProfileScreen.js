@@ -10,7 +10,7 @@ import {ThemeContext} from '../../context-store/context';
 import {db, Firebase, firebase, storage} from '../config/firebase';
 import { getAuth, updateProfile } from "firebase/auth";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
+import {fetchUserPostsByRecent, fetchUserPostsByPopular, fetchMostRecentPost} from '../shared/GetUserPosts';
 
 import MainProfileTop from '../ScreenTop/MainProfileTop';
 
@@ -30,7 +30,7 @@ const navigateTo = (navigation, screen) => () => {
 
 const auth = getAuth();
 
-function MainProfileScreen ({navigation, ...props}) {
+function MainProfileScreen ({navigation, route, ...props }) {
     const {theme, setTheme} = useContext(ThemeContext);
     // const [user, setUser] = useState(null);
     const [followers, setFollowers] = useState(0);
@@ -44,6 +44,7 @@ function MainProfileScreen ({navigation, ...props}) {
     const [postList, setPostList] = useState([]);
     const [byNewPosts, setByNewPosts] = useState(true);
     const [byPopularPosts, setByPopularPosts] = useState(false);
+    // const [getLatestPost, setGetLatestPost] = useState(route?.params?.newPost || false);
 
     useEffect(() => {
         // Fetch user info
@@ -66,6 +67,13 @@ function MainProfileScreen ({navigation, ...props}) {
             header: () => <MainProfileTop />
         });
     }, []);
+
+    // useEffect(() => {
+    //     if(getLatestPost && postList.length > 0){
+    //         getMostRecentPost()
+    //     }
+    //     setGetLatestPost(false);
+    // }, [getLatestPost]);
 
 
     const uploadImage = React.useCallback(async(imageUrl) => {
@@ -161,9 +169,15 @@ function MainProfileScreen ({navigation, ...props}) {
         })
     }, []);
 
+    // const getMostRecentPost = React.useCallback(async () => {
+    //     const posts = await fetchMostRecentPost(firebase.auth().currentUser.uid);
+    //     setPostList(postList => [...posts, ...postList]);
+    // }, []);
+
     const populateInitialPosts = React.useCallback(async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
+        // setGetLatestPost(false);
         const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
         setPostList(posts);
     }, []);
@@ -391,12 +405,12 @@ const styles = StyleSheet.create({
    lightLabel: {
        color: '#666666',
        fontSize: 16,
-       fontWeight: 600,
+       fontWeight: '600',
    },
    darkLabel: {
        color: '#FFFFFF',
        fontSize: 16,
-       fontWeight: 500,
+       fontWeight: '500',
    },
    profilePicture: {
        width: 90,
@@ -419,7 +433,7 @@ const styles = StyleSheet.create({
    lightUsername: {
        fontSize: 18,
        color: '#222222',
-       fontWeight: 500,
+       fontWeight: '500',
        alignSelf: 'center',
        marginTop: 15,
        marginLeft: 10
@@ -427,7 +441,7 @@ const styles = StyleSheet.create({
    darkUsername: {
        fontSize: 20,
        color: '#f2f2f2',
-       fontWeight: 500,
+       fontWeight: '500',
        alignSelf: 'center',
        marginTop: 15,
        marginLeft: 10
@@ -435,22 +449,22 @@ const styles = StyleSheet.create({
    lightCountText: {
        fontSize: 18,
        color: '#222222',
-       fontWeight: 600,
+       fontWeight: '600',
    },
    darkCountText: {
        fontSize: 18,
        color: '#ffffff',
-       fontWeight: 600,
+       fontWeight: '600',
    },
    lightText: {
        fontSize: 16,
        color: '#222222',
-       fontWeight: 500,
+       fontWeight: '500',
    },
    darkText: {
        fontSize: 16,
        color: '#f4f4f4',
-       fontWeight: 500,
+       fontWeight: '500',
    },
    lightDoneButton: {
         borderRadius: 20,
@@ -492,13 +506,13 @@ const styles = StyleSheet.create({
    lightEditText: {
        fontSize: 18,
        color: '#333333',
-       fontWeight: 500,
+       fontWeight: '500',
        alignSelf: 'center'
    },
    darkEditText: {
        fontSize: 18,
        color: '#f8f8f8',
-       fontWeight: 600,
+       fontWeight: '600',
        alignSelf: 'center'
    },
    box: {

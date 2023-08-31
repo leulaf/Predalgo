@@ -394,14 +394,14 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         color: '#333333',
-        fontWeight: 600,
+        fontWeight: '600',
         marginTop: 15,
         marginBottom: 10,
     },
     askText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: 500,
+        fontWeight: '500',
         alignSelf: 'center',
         marginTop: 5,
         marginBottom: 15,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
    answerText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: 500,
+        fontWeight: '500',
         alignSelf: 'center'
     },
 });

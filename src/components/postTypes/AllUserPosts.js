@@ -80,6 +80,8 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                     repostProfile={item.repostProfile}
                     repostComment={item.repostComment}
                     imageUrl={item.imageUrl}
+                    imageHeight={item.imageHeight}
+                    imageWidth={item.imageWidth}
                     title={item.title}
                     tags={item.tags}
                     memeName={item.memeName}
@@ -261,14 +263,14 @@ const styles = StyleSheet.create({
     lightPopularText: {
         fontSize: 18,
         color: '#555555',
-        fontWeight: 600,
+        fontWeight: '600',
         alignSelf: 'center',
         marginTop: 4
     },
     darkPopularText: {
         fontSize: 18,
         color: '#EEEEEE',
-        fontWeight: 600,
+        fontWeight: '600',
         alignSelf: 'center',
         marginTop: 4
     },

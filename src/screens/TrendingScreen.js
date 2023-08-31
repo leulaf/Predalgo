@@ -29,7 +29,7 @@ export default function TrendingScreen({navigation}){
                             style={StyleSheet.absoluteFill}
                         />
                     ),
-                    tabBarLabelStyle: {fontSize: 18, fontWeight: 700, marginTop: 0},
+                    tabBarLabelStyle: {fontSize: 18, fontWeight: '700', marginTop: 0},
                     tabBarStyle: {
                         backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.7)', 
                         position: 'absolute', 
@@ -66,7 +66,7 @@ const CurrentScreen = ({navigation}) => {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme == 'light' ? '#F4F4F4' : "#282828" }}>
             <Text
                 onPress={() => navigation.navigate('Home')}
-                style={{ fontSize: 26, fontWeight: 700 }}>Trending Screen</Text>
+                style={{ fontSize: 26, fontWeight: '700' }}>Trending Screen</Text>
         </View>
     );
 }

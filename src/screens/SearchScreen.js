@@ -24,7 +24,7 @@ export default function SearchScreen({navigation}){
             />
             <Top_Tab.Navigator
                 screenOptions={{
-                tabBarLabelStyle: { fontSize: 18, fontWeight: 600, marginTop: 0 },
+                tabBarLabelStyle: { fontSize: 18, fontWeight: '600', marginTop: 0 },
                 tabBarStyle: {
                     // backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.90)' : 'rgba(0, 0, 0, 0.25)',
                     backgroundColor: theme == 'light' ? "#FFFFFF" : "#0C0C0C",

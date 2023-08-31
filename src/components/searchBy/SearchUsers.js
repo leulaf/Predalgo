@@ -130,14 +130,14 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 20,
         marginRight: 20,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#444444',
     },
     darkUsernameText: {
         flex: 1,
         fontSize: 20,
         marginRight: 20,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#EFEFEF',
     },
     lightRightIconStyle: {
@@ -207,13 +207,13 @@ const styles = StyleSheet.create({
     lightText: {
         fontSize: 22,
         marginRight: 20,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#555555',
     },
     darkText: {
         fontSize: 22,
         marginRight: 20,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#DDDDDD',
     },
 });

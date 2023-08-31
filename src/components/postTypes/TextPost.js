@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
 
     lightText: {
         fontSize: 20,
-        fontWeight: 400,
+        fontWeight: '400',
         color: '#222222',
         textAlign: "left",
         marginLeft: 10,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     },
     darkText: {
         fontSize: 20,
-        fontWeight: 400,
+        fontWeight: '400',
         color: '#F4F4F4',
         textAlign: "left",
         marginLeft: 10,

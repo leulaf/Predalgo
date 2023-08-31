@@ -152,13 +152,13 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
 const styles = StyleSheet.create({
     lightName: {
         fontSize: 22,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#444444',
         marginLeft: 10,
     },
     darkName: {
         fontSize: 22,
-        fontWeight: 600,
+        fontWeight: '600',
         color: '#EEEEEE',
         marginLeft: 10,
     },
@@ -172,13 +172,13 @@ const styles = StyleSheet.create({
     lightText: {
         fontSize: 20,
         marginRight: 20,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#444444',
     },
     darkText: {
         fontSize: 20,
         marginRight: 20,
-        fontWeight: 500,
+        fontWeight: '500',
         color: '#EEEEEE',
     },
     lightListItem: { 

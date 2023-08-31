@@ -16,9 +16,9 @@ import {
 const EditImageScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
 
-    const { imageReply, setImageReply } = useContext(AuthenticatedUserContext);
+    const { imageReply, setImageReply, imagePost, setImagePost } = useContext(AuthenticatedUserContext);
 
-    const { imageUrl, forCommentOnComment, forCommentOnPost, cameraPic, width, height, imageState } = route.params;
+    const { imageUrl, forPost, forCommentOnComment, forCommentOnPost, cameraPic, width, height, imageState } = route.params;
 
     const [image, setImage] = useState(imageUrl);
 
@@ -59,15 +59,26 @@ const EditImageScreen = ({ navigation, route }) => {
 
     const onGoBack = () => {
         if(imageState){
-            setImageReply({
-                uri: imageReply.uri,
-                undeditedUri: imageReply.undeditedUri,
-                height: height,
-                width: width,
-                forCommentOnComment: forCommentOnComment,
-                forCommentOnPost: forCommentOnPost,
-                imageState: imageState
-            });
+            if(forCommentOnComment || forCommentOnPost){
+                setImageReply({
+                    uri: imageReply.uri,
+                    undeditedUri: imageReply.undeditedUri,
+                    height: height,
+                    width: width,
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
+                    imageState: imageState
+                });
+            }else{
+                setImagePost({
+                    uri: imagePost.uri,
+                    undeditedUri: imagePost.undeditedUri,
+                    height: height,
+                    width: width,
+                    imageState: imageState
+                });
+            }
+            
             editorRef.current.editor.close();
             navigation.goBack(null);
         }else{
@@ -88,6 +99,18 @@ const EditImageScreen = ({ navigation, route }) => {
                 width: width,
                 forCommentOnComment: forCommentOnComment,
                 forCommentOnPost: forCommentOnPost,
+                imageState: storedImageState
+            });
+
+            setImageResult(null);
+            editorRef.current.editor.close();
+            navigation.goBack(null);
+        }else if(imageResult != null){
+            setImagePost({
+                uri: imageResult,
+                undeditedUri: imageUrl,
+                height: height,
+                width: width,
                 imageState: storedImageState
             });
 
@@ -196,7 +219,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         color: '#333333',
-        fontWeight: 600,
+        fontWeight: '600',
         marginTop: 15,
         marginBottom: 10,
     },

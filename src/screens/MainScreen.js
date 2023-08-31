@@ -39,7 +39,7 @@ export default function MainScreen({navigation, openDrawer}){
                                 style={StyleSheet.absoluteFill}
                             />
                         ),
-                        tabBarLabelStyle: {fontSize: 16, fontWeight: 700, marginBottom: 30},
+                        tabBarLabelStyle: {fontSize: 16, fontWeight: '700', marginBottom: 30},
                         tabBarStyle: theme == 'light' ? styles.lightTabBarStyle : styles.darkTabBarStyle,
                         tabBarIndicatorStyle: theme == 'light' ? styles.lightIndicatorStyle : styles.darkIndicatorStyle,
                         tabBarActiveTintColor: theme == 'light' ? '#2D2D2D' : '#F6F6F6',

@@ -136,12 +136,12 @@
 //    },
 //    lightText: {
 //        fontSize: 16,
-//        fontWeight: 500,
+//        fontWeight: '500',
 //        color: '#222222'
 //    },
 //    darkText: {
 //        fontSize: 16,
-//        fontWeight: 500,
+//        fontWeight: '500',
 //        color: '#EEEEEE'
 //    }
 // });

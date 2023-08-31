@@ -4,12 +4,13 @@ import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import PostContainer from './PostContainer';
 
-// import ImageContainer from '../ImageContainer';
+import ResizableImage from '../../shared/ResizableImage';
 
 import { useNavigation } from '@react-navigation/native';
 
+const windowWidth = Dimensions.get("screen").width;
 
-const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
+const ImagePost = ({ title, username = "", profilePic = "", imageUrl, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
     const navigation = useNavigation();
     const [profilePicState, setProfilePicState] = useState(profilePic);
     const [usernameState, setUsernameState] = useState(username);
@@ -58,6 +59,8 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, 
         <PostContainer 
             title={title}
             imageUrl={imageUrl}
+            imageHeight={imageHeight}
+            imageWidth={imageWidth}
             likesCount={likesCount}
             commentsCount={commentsCount}
             tags={tags}
@@ -71,10 +74,15 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, memeName, 
             navigation={navigation}
             
             content={
-                <View >
-                    <View style={{flexDirection: "row", alignSelf: 'center'}}>
-                        {/* <ImageContainer imageSource={{ uri: imageUrl }} /> */}
-                    </View>
+                <View style={{flexDirection: "row", alignSelf: 'center'}}>
+                    <ResizableImage 
+                        image={imageUrl}
+                        height={imageHeight}
+                        width={imageWidth}
+                        maxWidth={windowWidth-6}
+                        maxHeight={600}
+                        style={{ borderRadius: 10, alignSelf: 'center'}}
+                    />
                 </View>
             }
         />

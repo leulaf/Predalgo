@@ -39,11 +39,13 @@ const UploadTextPost = async (title, text, tags) => {
                 posts: increment(1)
             });
             
-            setUploading(false);
+
+            resolve(docRef.id);
 
             // Alert.alert("Post uploaded successfully!");
         }).catch(function (error) {
             // console.log(error);
+            
         });
 
     });
@@ -51,4 +53,4 @@ const UploadTextPost = async (title, text, tags) => {
 };
 
 
-export { UploadTextPost };
+export default UploadTextPost;

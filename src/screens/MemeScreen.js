@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     lightMemeName: {
         fontSize: 18,
         color: '#111111',
-        fontWeight: 500,
+        fontWeight: '500',
         // alignSelf: 'center',
         // marginHorizontal: 10,
         // marginTop: 5,
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     darkMemeName: {
         fontSize: 18,
         color: '#f2f2f2',
-        fontWeight: 500,
+        fontWeight: '500',
         // alignSelf: 'center',
         // marginHorizontal: 10,
         // marginTop: 5,
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     lightUploaderText: {
         fontSize: 18,
         color: '#222222',
-        fontWeight: 500,
+        fontWeight: '500',
         marginLeft: 7,
         marginTop: 10,
         // alignSelf: 'center',
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     darkUploaderText: {
         fontSize: 18,
         color: '#f2f2f2',
-        fontWeight: 500,
+        fontWeight: '500',
         marginLeft: 7,
         marginTop: 10,
         // alignSelf: 'center',
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     lightUseCountText: {
         fontSize: 16,
         color: '#222222',
-        fontWeight: 500,
+        fontWeight: '500',
         marginLeft: 7,
         marginTop: 10,
         // alignSelf: 'center',
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     darkUseCountText: {
         fontSize: 17,
         color: '#f2f2f2',
-        fontWeight: 500,
+        fontWeight: '500',
         marginLeft: 7,
         marginTop: 10,
         // alignSelf: 'center',
@@ -359,13 +359,13 @@ const styles = StyleSheet.create({
     lightUseTemplateText: {
         fontSize: 20,
         color: '#111111',
-        fontWeight: 500,
+        fontWeight: '500',
         alignSelf: 'center',
     },
     darkUseTemplateText: {
         fontSize: 20,
         color: '#F0F0F0',
-        fontWeight: 500,
+        fontWeight: '500',
         alignSelf: 'center',
     },
 });

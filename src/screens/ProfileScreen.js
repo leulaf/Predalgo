@@ -292,12 +292,12 @@ export default function ProfileScreen ({route, navigation}) {
     lightLabel: {
         color: '#666666',
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
     },
     darkLabel: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: '600',
     },
     profilePicture: {
         width: 100,
@@ -339,38 +339,38 @@ export default function ProfileScreen ({route, navigation}) {
     lightFollowText: {
         fontSize: 18,
         color: '#222222',
-        fontWeight: 600,
+        fontWeight: '600',
         alignSelf: 'center',
         marginTop: 1
     },
     darkFollowText: {
         fontSize: 18,
         color: '#ffffff',
-        fontWeight: 600,
+        fontWeight: '600',
         alignSelf: 'center',
         marginTop: 1
     },
     lightCountText: {
         fontSize: 18,
         color: '#222222',
-        fontWeight: 600,
+        fontWeight: '600',
         marginTop: 5,
     },
     darkCountText: {
         fontSize: 18,
         color: '#ffffff',
-        fontWeight: 600,
+        fontWeight: '600',
         marginTop: 5,
     },
     lightText: {
         fontSize: 16,
         color: '#222222',
-        fontWeight: 500,
+        fontWeight: '500',
     },
     darkText: {
         fontSize: 16,
         color: '#f4f4f4',
-        fontWeight: 500,
+        fontWeight: '500',
     },
     box: {
         height: 250,

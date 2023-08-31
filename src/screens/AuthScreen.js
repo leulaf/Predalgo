@@ -315,19 +315,19 @@ const styles = StyleSheet.create({
         marginLeft: 260
     },
     smallButtonText: {
-        fontWeight: 600,
+        fontWeight: '600',
         fontSize: 20,
         color: "#000000",
     },
     largeButtonText: {
-        fontWeight: 600,
+        fontWeight: '600',
         fontSize: 36,
         color: "#000000",
         alignSelf: 'center',
         marginBottom: 2,
     },
     skipButtonText: {
-        fontWeight: 600,
+        fontWeight: '600',
         fontSize: 20,
         color: "white",
         marginTop: 7,

@@ -1,35 +1,64 @@
 
 import {useContext} from 'react';
-import {Text} from 'react-native';
+import {Text, StyleSheet} from 'react-native';
 import { ThemeContext } from '../../../context-store/context';
 
 import SplitTitle from './methods/SplitTitle';
 
-const PostText = ({text, numberOfLines}) => {
-    if(!(text)) {
-        return null;
-    }
+const TitleText = ({title, numberOfLines}) => {
+    // if(!(title)) {
+    //     return null;
+    // }
 
     const {theme} = useContext(ThemeContext);
 
     return (
+        // <Text
+        //     numberOfLines={numberOfLines && numberOfLines}
+        //     style={{
+        //         marginHorizontal: 12.5,
+        //         marginTop: 4,
+        //         textAlign: 'auto',
+        //     }}
+        // >
+
+        //     {SplitTitle(title, theme).map((textPart, index) => {
+        //         // console.log(textPart);
+        //         return textPart;
+        //     })}
+            
+        // </Text>
+
         <Text
             numberOfLines={numberOfLines && numberOfLines}
-            style={{
-                marginHorizontal: 12.5,
-                marginTop: 4,
-                textAlign: 'auto',
-            }}
+            style={
+                theme == 'light' ? styles.lightPostTitle : styles.darkPostTitle
+            }
         >
-
-            {SplitTitle(text, theme).map((textPart, index) => {
-                // console.log(textPart);
-                return textPart;
-            })}
-            
+            {title}
         </Text>
+
+
     );
 }
 
+const styles = StyleSheet.create({
+    lightPostTitle: {
+        fontSize: 22,
+        fontWeight: '500',
+        color: '#333333',
+        textAlign: 'auto',
+        marginHorizontal: 12.5,
+        marginTop: 4,
+    },
+    darkPostTitle: {
+        fontSize: 22,
+        fontWeight: '500',
+        color: '#DDDDDD',
+        textAlign: 'auto',
+        marginHorizontal: 12.5,
+        marginTop: 4,
+    },
+})
 
-export default PostText;
+export default TitleText;

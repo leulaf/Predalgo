@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
     finishText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: 600,
+        fontWeight: '600',
     },
     text: {
         flex: 1,
         fontSize: 20,
         color: '#333333',
-        fontWeight: 600,
+        fontWeight: '600',
         textAlign: 'center', 
     },
     finishContainer: {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     finishText: {
         fontSize: 20,
         color: '#FFFFFF',
-        fontWeight: 600,
+        fontWeight: '600',
         alignSelf: 'center',
     }
 });

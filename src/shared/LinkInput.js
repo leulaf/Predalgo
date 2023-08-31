@@ -17,7 +17,7 @@ function isValidUrl(string) {
 // Format link url string to later parse and display as clickable link
 // (if link name is empty, just use link input) (if link input is empty, don't add link or link name)
 // final link string format: [link URL](link name)
-const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSelection, replyTextToPost, setReplyTextToPost, handleFocus}) => {
+const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSelection, replyTextToPost, setReplyTextToPost}) => {
     
     const [linkName, setLinkName] = React.useState(replyTextToPost.substring(currentSelection.start, currentSelection.end));
     const [linkInput, setLinkInput] = React.useState("");
@@ -98,7 +98,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     inputAccessoryViewID={linkNameViewID}
                     autoCapitalize="none"
                     autoCorrect={false}
-                    onFocus={() => handleFocus()}
+                    // onFocus={() => handleFocus()}
                     // onBlur={() =>  } // focus lost
                     blurOnSubmit={false}
                     maxLength={100}
@@ -145,7 +145,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     inputAccessoryViewID={linkViewID}
                     autoCapitalize="none"
                     autoCorrect={false}
-                    onFocus={() => handleFocus()}
+                    // onFocus={() => handleFocus()}
                     // onBlur={() => } // focus lost
                     blurOnSubmit={false}
                     maxLength={100}
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     lightInputStyle: {
         flex: 1,
         fontSize: 18,
-        fontWeight: 400,
+        fontWeight: '400',
         marginHorizontal: 7,
         alignSelf: 'center',
         color: '#222222',
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     darkInputStyle: {
         flex: 1,
         fontSize: 18,
-        fontWeight: 400,
+        fontWeight: '400',
         marginHorizontal: 7,
         alignSelf: 'center',
         color: '#F4F4F4',
@@ -292,14 +292,14 @@ const styles = StyleSheet.create({
    },
    lightDoneStyle: {
         fontSize: 18,
-        fontWeight: 500,
+        fontWeight: '500',
         alignSelf: 'center',
         color: '#FFFFFF',
         marginBottom: 1,
     },
     darkDoneStyle: {
         fontSize: 18,
-        fontWeight: 500,
+        fontWeight: '500',
         alignSelf: 'center',
         color: '#F4F4F4',
         marginBottom: 1,
