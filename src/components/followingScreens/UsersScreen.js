@@ -121,13 +121,13 @@ const styles = StyleSheet.create({
     lightText: {
         fontSize: 20,
         marginRight: 20,
-        fontWeight: '500',
+        fontWeight: 500,
         color: '#444444',
     },
     darkText: {
         fontSize: 20,
         marginRight: 20,
-        fontWeight: '500',
+        fontWeight: 500,
         color: '#EEEEEE',
     },
     lightListItem: { 

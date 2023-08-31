@@ -49,8 +49,6 @@ const EditMemeScreen = ({ navigation, route }) => {
     };
 
 
-    console.log( imageUrl);
-
     useEffect(() => {
         navigation.setOptions({
             header: () => <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} navigation={navigation}/>,
@@ -222,7 +220,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                 stickers={Emojis}
                 markupEditorToolStyles={createMarkupEditorToolStyles({
                     text: createMarkupEditorToolStyle("text", {
-                        fontSize: "10%",
+                        fontSize: 75,
                     }),
                 })}
                 markupEditorToolbar={[
@@ -396,14 +394,14 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         color: '#333333',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 15,
         marginBottom: 10,
     },
     askText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: '500',
+        fontWeight: 500,
         alignSelf: 'center',
         marginTop: 5,
         marginBottom: 15,
@@ -425,7 +423,7 @@ const styles = StyleSheet.create({
    answerText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: '500',
+        fontWeight: 500,
         alignSelf: 'center'
     },
 });

@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     lightText: {
         fontSize: 20,
         color: '#444444',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 51,
         marginLeft: 5,
         marginRight: 10
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     darkText: {
         fontSize: 20,
         color: '#E4E4E4',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 51,
         marginLeft: 5,
         marginRight: 10
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     lightFavoriteText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 51,
         marginLeft: 5,
         marginRight: 10
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     darkFavoriteText: {
         fontSize: 20,
         color: '#f2f2f2',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 51,
         marginLeft: 5,
         marginRight: 10

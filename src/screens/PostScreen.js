@@ -133,7 +133,7 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
             <View style={{marginBottom: 8}}>
 
                     {/* title */}
-                    <TitleText text={title}/>
+                    {title && <TitleText text={title}/>}
 
                     <PostText text={text}/>
 
@@ -519,27 +519,27 @@ const styles = StyleSheet.create({
     },
     lightUsername: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: 600,
         color: '#444444',
         textAlign: "left",
         marginBottom: 1,
     },
     darkUsername: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: 600,
         color: '#DDDDDD',
         textAlign: "left",
         marginBottom: 1,
     },
     lightRepostUsername: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: 600,
         color: '#777777',
         textAlign: "left",
     },
     darkRepostUsername: {
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: 600,
         color: '#BBBBBB',
         textAlign: "left",
     },
@@ -605,28 +605,28 @@ const styles = StyleSheet.create({
     lightFollowText: {
         fontSize: 17,
         color: '#FFFFFF',
-        fontWeight: '600',
+        fontWeight: 600,
         alignSelf: 'center',
         marginBottom: 1
     },
     darkFollowText: {
         fontSize: 17,
         color: '#ffffff',
-        fontWeight: '600',
+        fontWeight: 600,
         alignSelf: 'center',
         marginBottom: 1
     },
     lightFollowingText: {
         fontSize: 17,
         color: '#ffffff',
-        fontWeight: '600',
+        fontWeight: 600,
         alignSelf: 'center',
         marginBottom: 1
     },
     darkFollowingText: {
         fontSize: 17,
         color: '#000000',
-        fontWeight: '600',
+        fontWeight: 600,
         alignSelf: 'center',
         marginBottom: 1
     },

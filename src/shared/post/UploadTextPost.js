@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { db } from '../../../config/firebase';
+import { db } from '../../config/firebase';
 import { doc, collection, addDoc, updateDoc, increment } from "firebase/firestore";
 
 import firebase from 'firebase/compat/app';

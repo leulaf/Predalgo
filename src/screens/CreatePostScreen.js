@@ -1,27 +1,34 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TextInput, ScrollView, Image, Dimensions, TouchableOpacity, Alert} from 'react-native';
-import {ThemeContext} from '../../context-store/context';
-import { db, storage } from '../config/firebase';
-import { manipulateAsync } from 'expo-image-manipulator';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { doc, setDoc, getDoc, collection, addDoc, updateDoc, increment } from "firebase/firestore";
+import {View, Text, StyleSheet, TextInput, ScrollView, Image, Dimensions, InputAccessoryView, Keyboard, TouchableOpacity, Alert} from 'react-native';
+
+import Constants from 'expo-constants';
 
 import uuid from 'react-native-uuid';
 
-import firebase from 'firebase/compat/app';
+import LinkInput from '../shared/LinkInput';
+
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
+
+import UploadImagePost from '../shared/post/UploadImagePost';
+import UploadTextPost from '../shared/post/UploadTextPost';
+import {SaveMemePostData} from '../shared/post/UploadMemePost';
+
 require('firebase/firestore');
 
+
 // light mode icons
-import ExitIconLight from '../../assets/exit_light.svg';
+import BackLight from '../../assets/down_light.svg';
+import ExitIconLight from '../../assets/xLight.svg';
 import UploadLight from '../../assets/upload_light.svg';
 import LinkLight from '../../assets/link_light.svg';
 import CreateMemeLight from '../../assets/meme_create_light.svg';
 import PostButtonLight from '../../assets/post_button_light.svg';
-import ExpandImage from '../../assets/expand_image.svg';
-import ShrinkImage from '../../assets/shrink_image.svg';
+// import ExpandImage from '../../assets/expand_image.svg';
+// import ShrinkImage from '../../assets/shrink_image.svg';
 
 // dark mode icons
-import ExitIconDark from '../../assets/exit_dark.svg';
+import BackDark from '../../assets/back_light.svg';
+import ExitIconDark from '../../assets/xDark.svg';
 import UploadDark from '../../assets/upload_dark.svg';
 import LinkDark from '../../assets/link_dark.svg';
 import CreateMemeDark from '../../assets/meme_create_dark.svg';
@@ -29,212 +36,46 @@ import PostButtonDark from '../../assets/post_button_dark.svg';
 
 const CreatePostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
+    const {imagePost, setImagePost} = React.useContext(AuthenticatedUserContext);
+    const [inputInFocus, setInputInFocus] = React.useState(false);
+    const [currentSelection, setCurrentSelection] = React.useState({start: 0, end: 0});
     const [title, setTitle] = React.useState('');
     const [text, setText] = React.useState('');
     const {imageUrl, memeName, imageUrls, newTemplate, newTemplateImage} = route.params;
+    const [linkView, setLinkView] = React.useState(false);
     const [tempTags, setTempTags] = React.useState('');
-    const [uploading, setUploading] = useState(false)
+    const textInputAccessoryViewID = uuid.v4();
+    const tagInputAccessoryViewID = uuid.v4();
     const [correctTags, setCorrectTags] = React.useState([]);
-    const [expandImage, setExpandImage] = React.useState(false);
+    // const [expandImage, setExpandImage] = React.useState(false);
 
-    const getHeightAndWidth = async (image) => {
-        const manipResult = await manipulateAsync(image, [], {});
-        return {height: manipResult.height, width: manipResult.width};
-    };
+    
+    let exitIcon, upload, link, createMeme, postButton, down, largeUpload, largeLink, largeCreateMeme;
 
-    const addNewTemplate = async (newUrl) => {
-        const userRef = doc(db, "users", firebase.auth().currentUser.uid);
-        const userSnap = await getDoc(userRef);
-        const username = userSnap.data().username;
-        const {height, width} = await getHeightAndWidth(newUrl);
-        
-        const addTemplateRef = await addDoc(collection(db, "imageTemplates"), {
-            name: memeName,
-            uploader: username,
-            url: newUrl,
-            height: height,
-            width: width,
-            useCount: 1,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-        });
-
-        return "success";
+    // icons
+    if(theme == 'light'){
+        exitIcon = <ExitIconLight width={22} height={22} style={{marginLeft: 16}} />;
+        link = <LinkLight width={31} height={31} marginLeft={8} marginRight={7} />;
+        largeLink = <LinkLight width={32} height={32} marginRight={2} />;
+        createMeme = <CreateMemeLight width={28} height={28} marginRight={7}/>;
+        largeCreateMeme = <CreateMemeLight width={32} height={32} marginRight={8}/>;
+        upload = <UploadLight width={29} height={29} marginRight={17}/>;
+        largeUpload = <UploadLight width={30} height={30} marginRight={7} />;
+        postButton = <PostButtonLight width={95} height={40} style={{ marginRight: 8 }}/>;
+        down = <BackLight width={20} height={20}/>
+    }else{
+        exitIcon = <ExitIconDark width={22} height={22} style={{marginLeft: 16}}/>;
+        link = <LinkDark width={31} height={31} marginLeft={8} marginRight={8.5} />;
+        largeLink = <LinkDark width={32} height={32} marginRight={2} />;
+        createMeme = <CreateMemeDark width={28} height={28} marginRight={7}/>;
+        largeCreateMeme = <CreateMemeDark width={32} height={32} marginRight={8}/>;
+        upload = <UploadDark width={29} height={29} marginRight={17} />;
+        largeUpload = <UploadDark width={30} height={30} marginRight={7} />;
+        postButton = <PostButtonDark width={95} height={40} style={{ marginRight: 8 }}/>;
+        down = <BackDark width={24} height={24}/>
     }
+
     
-    async function uploadImagePost() {
-        setUploading(true)
-        Alert.alert("Post being uploaded, please wait...");
-        
-        // Convert image to blob format(array of bytes)
-        const response = await fetch(imageUrl);
-        const blob = await response.blob();
-
-        const filename = uuid.v4();
-        const childPath = `posts/users/${firebase.auth().currentUser.uid}/${filename}`;
-
-        const metadata = {
-            cacheControl: 'public,max-age=31536000',
-        };
-        
-        const storageRef = ref(storage, childPath);
-        const uploadTask = uploadBytesResumable(storageRef, blob, metadata)
-        .catch ((e) => {
-            // console.log(e);
-        });
-        
-        await uploadTask.then(async(snapshot) => {
-            // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
-            // console.log('File metadata:', snapshot.metadata);
-            
-            // Let's get a download URL for the file.
-            
-            getDownloadURL(snapshot.ref).then(async (url) => {
-                // console.log(imageUrl);
-                // console.log('File available at', url);
-                
-                if(memeName == null || memeName == undefined || memeName == ''){
-                    saveImagePostData(url);
-                }else{
-                    if(newTemplate){
-                        // upload new template image to storage imageTemplates folder
-                        
-                         // Convert image to blob format(array of bytes)
-                        const newResponse = await fetch(newTemplateImage);
-                        const newBlob = await newResponse.blob();
-
-                        const newFilename = uuid.v4();
-                        const newChildPath = `imageTemplates/${newFilename}`;
-
-                        const metadata = {
-                            cacheControl: 'public,max-age=31536000',
-                        };
-                        
-                        const newStorageRef = ref(storage, newChildPath);
-                        
-                        const newUploadTask = uploadBytesResumable(newStorageRef, newBlob, metadata)
-                        .catch ((e) => {
-                            // console.log(e);
-                        });
-
-                        await newUploadTask.then(async(snapshot) => {
-                            // console.log('Uploaded', snapshot.totalBytes, 'bytes.');
-                            // console.log('File metadata:', snapshot.metadata);
-                            
-                            // Let's get a download URL for the file.
-                            getDownloadURL(snapshot.ref).then(async (newUrl) => {
-                                // console.log(imageUrl);
-                                // console.log('File available at', url);
-                                await addNewTemplate(newUrl).then(async () => {
-                                    await saveMemePostData(url);
-                                })
-                            }).catch((error) => {
-                                // console.error('Upload failed', error);
-                                // ...
-                            });
-
-
-                        }).catch((error) => {
-                            // console.error('Upload failed', error);
-                            // ...
-                        });
-                    }else{
-                        saveMemePostData(url);
-                    }
-                }
-            });
-        }).catch((error) => {
-            // console.error('Upload failed', error);
-            // ...
-        });
-    };
-    
-
-    const saveImagePostData = async (url) => {
-        const {height, width} = await getHeightAndWidth(url);
-        // add text post to database
-        await addDoc(collection(db, "allPosts"), {
-            title: title,
-            imageUrl: url,
-            height: height,
-            width: width,
-            tags: correctTags,
-            likesCount: 0,
-            commentsCount: 0,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            profile: firebase.auth().currentUser.uid
-        }).then(async (docRef) => {
-            // update posts count for current user
-            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
-
-            await updateDoc(currentUserRef, {
-                posts: increment(1)
-            });
-            
-            setUploading(false);
-            Alert.alert("Post uploaded successfully!");
-            navigation.goBack();
-        }).catch(function (error) {
-                // console.log(error);
-        });
-    };
-
-    const saveMemePostData = async (url) => {
-        const {height, width} = await getHeightAndWidth(url);
-        // add text post to database
-        await addDoc(collection(db, "allPosts"), {
-            title: title,
-            imageUrl: url,
-            height: height,
-            width: width,
-            memeName: memeName,
-            tags: correctTags,
-            likesCount: 0,
-            commentsCount: 0,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            profile: firebase.auth().currentUser.uid
-        }).then(async (docRef) => {
-            // update posts count for current user
-            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
-
-            await updateDoc(currentUserRef, {
-                posts: increment(1)
-            });
-            
-            setUploading(false);
-            Alert.alert("Post uploaded successfully!");
-            navigation.goBack();
-        }).catch(function (error) {
-                // console.log(error);
-        });
-    };
-
-
-    const uploadTextPost = async () => {
-        // add text post to database
-        await addDoc(collection(db, "allPosts"), {
-            title: title,
-            text: text,
-            tags: correctTags,
-            likesCount: 0,
-            commentsCount: 0,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            profile: firebase.auth().currentUser.uid
-        }).then(async (docRef) => {
-            // update posts count for current user
-            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
-
-            updateDoc(currentUserRef, {
-                posts: increment(1)
-            });
-
-            setUploading(false);
-            Alert.alert("Post uploaded successfully!");
-            navigation.goBack();
-        }).catch(function (error) {
-            // console.log(error);
-        });
-    };
-
     const fixTags = (tempTags) => {
         let newTags = tempTags.split(' ');
         let tags = [];
@@ -251,232 +92,411 @@ const CreatePostScreen = ({navigation, route}) => {
     };
 
 
+    const onSelectionChange = React.useCallback(({ nativeEvent: { selection, text } }) => {
+        // console.log(
+        //   "change selection to",
+        //   selection,
+        //   "for value",
+        //   replyTextToPost.substring(selection.start, selection.end)
+        // );
+        setCurrentSelection(selection);
+    }, []);
 
 
-    let exitIcon, upload, link, createMeme, postButton;
-
-
-
-
-    if(theme == 'light'){
-        exitIcon = <ExitIconLight width={50} height={50}  style={{marginLeft: 90, position: 'absolute'}} />;
-        upload = <UploadLight width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-        link = <LinkLight width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-        createMeme = <CreateMemeLight width={33} height={33} style={{ marginLeft: 10, marginRight: 5, marginTop:5}}/>;
-        postButton = <PostButtonLight width={115} height={40} style={{ marginLeft: 22, marginTop:2}}/>;
-    }else{
-        exitIcon = <ExitIconDark width={50} height={50} style={{marginLeft: 90, position: 'absolute'}}/>;
-        upload = <UploadDark width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-        link = <LinkDark width={35} height={35} style={{ marginLeft: 15, marginTop:4}}/>;
-        createMeme = <CreateMemeDark width={33} height={33} style={{ marginLeft: 10, marginRight: 5, marginTop:5}}/>;
-        postButton = <PostButtonDark width={115} height={40} style={{ marginLeft: 22, marginTop:2}}/>;
-    }
-
-
-
-
-    let content;
-
-
-
-
-    if(imageUrl){
-        content = (
-            <>
-                {expandImage ?
-                    <TouchableOpacity
-                            style={{flexDirection: 'column',}}
-                            onPress={() => setExpandImage(!expandImage)}
-                    >
-
-                        <Image source={{ uri: imageUrl }} style={styles.imageExpanded} />
-
-                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 285, marginTop:30}}>
-                            <ShrinkImage width={26} height={26}/>
-                            <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white'}}>
-                                Shrink
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                :
-                    <TouchableOpacity
-                        style={{flexDirection: 'column',}}
-                        onPress={() => setExpandImage(!expandImage)}
-                    >
-                    
-                        <Image source={{ uri: imageUrl }} style={styles.imageShrinked}  width={395} height={350}/>
-
-                        <View style={{flexDirection: 'row', position:'absolute', marginLeft: 275, marginTop:30}}>
-                            <ExpandImage width={24} height={24}/>
-                            <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 'bold',color: 'white'}}>
-                                Expand
-                            </Text>
-                        </View>
-
-
-
-
-                    </TouchableOpacity>
-                    
-                }
-            </>
-        )
-    }else{
-        content = <View style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}>
-
-            <TextInput
-                style={theme == 'light' ? styles.lightTextInput : styles.darkTextInput}
-                multiline
-                maxLength={10000}
-                blurOnSubmit
-                autoCapitalize="none"
-                autoCorrect
-                placeholder="Type your post here..."
-                placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                value={text}
-                onChangeText={(newValue) => setText(newValue)}
+    
+    const bottomButtons = React.useCallback(() => (
+        linkView ?
+            <LinkInput
+                // handleFocus={handleFocus}
+                theme={theme}
+                linkView={linkView}
+                setLinkView={setLinkView}
+                currentSelection={currentSelection}
+                setCurrentSelection={setCurrentSelection}
+                replyTextToPost={text}
+                setReplyTextToPost={setText}
             />
 
+        :
+
+        <View style={theme == 'light' ? styles.lightInputTopContainer : styles.darkInputTopContainer}>
+
+            {/* Hashtags and mentions*/}
+            <TextInput
+                style={theme == 'light' ? styles.lightTagInput : styles.darkTagInput}
+                autoCapitalize="none"
+                autoCorrect
+                placeholder="@mentions #hashtags"
+                placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                value={tempTags}
+                onChangeText={(newValue) => setTempTags(newValue)}
+                onEndEditing={() => fixTags(tempTags)}
+            />
+
+            {/* line break */}
+            <View style={{borderBottomColor: '#DDDDDD', borderBottomWidth: 1, marginHorizontal: 5, marginBottom: 15}}/>
+        
+            {/* Upload, Link, Create Meme Buttons */}
+            <View style={{ flex: 1, flexDirection: 'row', marginBottom: 8}}>
+                
+
+                
+                
+                {/* Link Button */}
+                <TouchableOpacity
+                        // style={{flexDirection: 'row',}}
+                        onPress={() => setLinkView(true)}
+                    >
+                    {link}
+                </TouchableOpacity>
+
+
+
+
+                {/* Upload Image Button */}
+                <TouchableOpacity
+                        // style={{flexDirection: 'row',}}
+                        onPress={() => 
+                            {
+                                setImagePost(null)
+                                navigation.navigate("Upload", {
+                                    forCommentOnComment: false,
+                                    forCommentOnPost: false,
+                                    forPost: true,
+                                })
+                            }
+                        }
+                    >
+                    {upload}
+                </TouchableOpacity>   
+                
+                
+
+
+
+                {/* Create Meme Button */}
+                <TouchableOpacity
+                    style={{flexDirection: 'row',  flex: 1 }}
+                    onPress={() => 
+                        {
+                            setImagePost(null)
+                            navigation.navigate("AddPost", {
+                                forCommentOnComment: false,
+                                forCommentOnPost: false,
+                                forPost: true,
+                            })
+                        }
+                    }
+                >
+                    {createMeme}
+                    
+                    <Text marginBottom={0} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                        Memes
+                    </Text>
+
+                </TouchableOpacity>
+                
+
+                {/* Keyboard down button */}
+                <TouchableOpacity
+                    style={{flexDirection: 'row', paddingTop: 3, paddingRight: 15}}
+                    onPress={() => Keyboard.dismiss()}
+                >
+                    {down}
+                </TouchableOpacity>
+
+
+            </View>
+            
+
+
         </View>
-    }
+    ), [linkView, imagePost, text, tempTags, currentSelection, theme]);
+
+    const handleFocus = () => {
+        setInputInFocus(true);
+    };
+
+    const handleBlur = () => {
+        setInputInFocus(false);
+    };
+
+    // let content;
+
+
+
+
+    // if(imageUrl){
+    //     content = (
+    //         <>
+    //             {expandImage ?
+    //                 <TouchableOpacity
+    //                         style={{flexDirection: 'column',}}
+    //                         onPress={() => setExpandImage(!expandImage)}
+    //                 >
+
+    //                     <Image source={{ uri: imageUrl }} style={styles.imageExpanded} />
+
+    //                     <View style={{flexDirection: 'row', position:'absolute', marginLeft: 285, marginTop:30}}>
+    //                         <ShrinkImage width={26} height={26}/>
+    //                         <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 700,color: 'white'}}>
+    //                             Shrink
+    //                         </Text>
+    //                     </View>
+    //                 </TouchableOpacity>
+    //             :
+    //                 <TouchableOpacity
+    //                     style={{flexDirection: 'column',}}
+    //                     onPress={() => setExpandImage(!expandImage)}
+    //                 >
+                    
+    //                     <Image source={{ uri: imageUrl }} style={styles.imageShrinked}  width={395} height={350}/>
+
+    //                     <View style={{flexDirection: 'row', position:'absolute', marginLeft: 275, marginTop:30}}>
+    //                         <ExpandImage width={24} height={24}/>
+    //                         <Text style={{fontSize: 22, marginHorizontal: 10, fontWeight: 700,color: 'white'}}>
+    //                             Expand
+    //                         </Text>
+    //                     </View>
+
+
+
+
+    //                 </TouchableOpacity>
+                    
+    //             }
+    //         </>
+    //     )
+    // }else{
+    //     content = <View style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}>
+
+    //         <TextInput
+    //             style={theme == 'light' ? styles.lightTextInput : styles.darkTextInput}
+    //             multiline
+    //             maxLength={10000}
+    //             blurOnSubmit={false}
+    //             autoCapitalize="none"
+    //             autoCorrect
+    //             placeholder="Type your post here..."
+    //             placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+    //             value={text}
+    //             onChangeText={(newValue) => setText(newValue)}
+    //         />
+
+    //     </View>
+    // }
 
 
 
 
     return (
         <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-            <View style={theme == 'light' ? styles.lightPostContainer : styles.darkPostContainer}>
-                <ScrollView automaticallyAdjustKeyboardInsets={true} style={{}}>
-                    
-                    <View style={{flexDirection: 'row'}}>
-
-                        {/* Profile image and @Username  */}
-                        <Image source={require('../../assets/profile_default.png')} style={{width: 40, height: 40, margin: 10}}/>
-                        <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
-                            @Username
-                        </Text>
-                        
+                
+                <View style={{
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignContent: 'center',
+                        alignItems: 'center',
+                        marginTop: Constants.statusBarHeight
+                    }}>
                         {/* Exit Icon */}
                         <TouchableOpacity
+                            style={{flex: 1, borderWidth: 0, botderColor: "black"}}
                             onPress={() => navigation.goBack()}
                         >
                             {exitIcon}
                         </TouchableOpacity>
-                        
-                    </View>
+
+
+                        {/* Reply Button */}
+                        <TouchableOpacity
+                             style={{flexDirection: 'row',borderWidth: 0, botderColor: "black"}}
+                            onPress={ async () =>
+                                    {
+                                        Keyboard.dismiss();
+
+                                        if(imagePost && imagePost.template){
+                                            
+                                            await onReplyWithMeme();
+
+                                        }else if(imagePost){
+                                            
+                                            await onReplyWithImage();
+
+                                        }else{
+
+                                            await onReplyWithText();
+
+                                        }
+                                    }
+                                }
+                        >
+                            {postButton}
+                        </TouchableOpacity>
+                </View>
+
+                {/* Title input text */}
+                <TextInput
+                    style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
+                    autoCapitalize="none"
+                    multiline
+                    blurOnSubmit
+                    maxLength={80}
+                    autoCorrect
+                    placeholder="Title *Optional*"
+                    placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                    value={title}
+                    onChangeText={(newValue) => setTitle(newValue)}
+                />
+
+
+                {/* line break */}
+                <View style={{borderBottomColor: '#CCCCCC', borderBottomWidth: 1, marginHorizontal: 13, marginTop: 8}}/>
 
 
 
 
-                    {/* Title input text */}
+                {/* Content of the post, TextInput, Image */}
+                <View style={theme == 'light' ? styles.lightTextContainer : styles.darkTextContainer}>
+
                     <TextInput
-                        style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
-                        autoCapitalize="none"
+                        inputAccessoryViewID={textInputAccessoryViewID}
+                        style={[theme == 'light' ? styles.lightTextInput : styles.darkTextInput, {height: inputInFocus ? Dimensions.get('window').height * 0.3 : Dimensions.get('window').height * 0.5}]}
                         multiline
-                        blurOnSubmit
-                        maxLength={80}
-                        autoCorrect
-                        placeholder="Title *Optional*"
-                        placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                        value={title}
-                        onChangeText={(newValue) => setTitle(newValue)}
-                    />
-
-
-
-
-                    {/* line break */}
-                    <View style={{borderBottomColor: '#CCCCCC', borderBottomWidth: 1, marginHorizontal: 10,}}/>
-
-
-
-
-                    {/* Content of the post, TextInput, Image */}
-                    {content}
-
-
-
-
-                    {/* Hashtags and mentions*/}
-                    <TextInput
-                        style={theme == 'light' ? styles.lightTitleInput : styles.darkTitleInput}
+                        maxLength={10000}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                        blurOnSubmit={false}
                         autoCapitalize="none"
                         autoCorrect
-                        placeholder="@mentions #hashtags"
+                        onSelectionChange={onSelectionChange}
+                        placeholder="Type your post here..."
                         placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                        value={tempTags}
-                        onChangeText={(newValue) => setTempTags(newValue)}
-                        onEndEditing={() => fixTags(tempTags)}
+                        value={text}
+                        onChangeText={(newValue) => setText(newValue)}
+                        
                     />
 
+                </View>
+                
 
-                </ScrollView>
+
+                {/* Hashtags and mentions*/}
+                <TextInput
+                    inputAccessoryViewID={tagInputAccessoryViewID}
+                    style={theme == 'light' ? styles.lightBottomTagInput : styles.darkBottomTagInput}
+                    autoCapitalize="none"
+                    autoCorrect
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    placeholder="@mentions #hashtags"
+                    placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                    value={tempTags}
+                    onChangeText={(newValue) => setTempTags(newValue)}
+                    onEndEditing={() => fixTags(tempTags)}
+                />
+
+
+
+                {/* line break */}
+                <View style={{borderBottomColor: '#DDDDDD', borderBottomWidth: 1, width: "100%", marginHorizontal: 5, marginBottom: 8, position: 'absolute', bottom: 125}}/>
 
                 
 
-                <View style={theme == 'light' ? styles.lightBottomContainer : styles.darkBottomContainer}>
+                <View style={{flexDirection: 'row', width: "100%", position: 'absolute', bottom: 75, alignSelf: 'center', justifyContent: 'space-around',
+                    // , width: "100%", alignItems: 'center',  justifyContent: 'center', alignContent: 'center'
+                }}>
+                    
 
-
+                    {/* Upload Image Button */}
                     <TouchableOpacity
-                        style={{flexDirection: 'row',}}
-                        // onPress={onPress}
-
-
-
-
+                        style={{flexDirection: 'row'}}
+                        onPress={() => 
+                            {
+                                setImagePost(null)
+                                navigation.navigate("Upload", {
+                                    forCommentOnComment: false,
+                                    forCommentOnPost: false,
+                                    forPost: true,
+                                })
+                            }
+                        }
                     >
-                        {createMeme}
-                        <Text marginBottom={15} width={61} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                        {largeUpload}
+                        <Text style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                            Image
+                        </Text>
+                    </TouchableOpacity> 
+
+
+
+                    {/* Create Meme Button */}
+                    <TouchableOpacity
+                        style={{flexDirection: 'row'}}
+                        onPress={() => 
+                            {
+                                setImagePost(null)
+                                navigation.navigate("AddPost", {
+                                    forCommentOnComment: false,
+                                    forCommentOnPost: false,
+                                    forPost: true,
+                                })
+                            }
+                        }
+                    >
+                        {largeCreateMeme}
+                        <Text style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
                             Memes
                         </Text>
                     </TouchableOpacity>
 
+                    
 
-
-
+                    {/* Link Button */}
                     <TouchableOpacity
-                            style={{flexDirection: 'row',}}
-                            onPress={() => navigation.navigate("Upload")}
-                        >
-                        {upload}
-                    </TouchableOpacity>                
-
-
-
-
-                    <TouchableOpacity
-                        style={{flexDirection: 'row',}}
-                        // onPress={onPress}
-
-
-
-
+                        style={{flexDirection: 'row'}}
+                        onPress={() => setLinkView(true)}
                     >
-                        {link}
-                        <Text marginBottom={15} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                        {largeLink}
+                        <Text style={[theme == 'light' ? styles.lightBottomText : styles.darkBottomText, {marginRight: 6}]}>
                             Link
                         </Text>
                     </TouchableOpacity>
 
-
-
-                    <TouchableOpacity
-                        style={{flexDirection: 'row',}}
-                        onPress={ async() =>
-                                {
-                                    if(imageUrl){
-                                        await uploadImagePost()
-                                    }else{
-                                        await uploadTextPost()
-                                    }
-                                }
-                            }
-                    >
-                        {postButton}
-                    </TouchableOpacity>
-                    
                 </View>
-            </View>
+
+
+
+
+
+
+
+                {/* Top of keyboard with different options */}
+                <InputAccessoryView 
+                    nativeID={textInputAccessoryViewID}
+                    backgroundComponent={() =>
+                        <BlurView
+                            tint = {theme == 'light' ?  "light" : "dark"}
+                            intensity={theme == 'light' ?  100 : 100}
+                            style={[StyleSheet.absoluteFill, {borderRadius: 24}]}
+                        />
+                    }
+                >
+                    {bottomButtons()}
+                </InputAccessoryView>
+                
+                <InputAccessoryView 
+                    nativeID={tagInputAccessoryViewID}
+                    backgroundComponent={() =>
+                        <BlurView
+                            tint = {theme == 'light' ?  "light" : "dark"}
+                            intensity={theme == 'light' ?  100 : 100}
+                            style={[StyleSheet.absoluteFill, {borderRadius: 24}]}
+                        />
+                    }
+                >
+                    {bottomButtons()}
+                </InputAccessoryView>
         </View>
     );
 }
@@ -512,73 +532,126 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#333333',
     },
-    lightBottomContainer: {
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        marginBottom: 5,
+    lightInputTopContainer: {
+        flexDirection: 'column',
+        // backgroundColor: '#FFFFFF',
+        // alignSelf: 'flex-end',
+        // alignItems: 'center',
+        // alignContent: 'center',
+        // height: 100,
+        // marginVertical: 10,
+        // marginBottom: 3,
+        // marginTop: 6
+        // marginBottom: 4
     },
-    darkBottomContainer: {
-        flexDirection: 'row',
-        backgroundColor: '#1C1C1C',
-        marginBottom: 5,
+    darkInputTopContainer: {
+        flexDirection: 'column',
+        // alignSelf: 'flex-end',
+        // alignItems: 'center',
+        // alignContent: 'center',
+        // backgroundColor: '#141414',
+        // height: 40,
+        // backgroundColor: '#1C1C1C',
+        // marginVertical: 10,
+        // marginBottom: 3,
+        // marginTop: 6
+        // marginBottom: 4
     },
     lightUsername: {
         fontSize: 18,
         width: 200,
-        fontWeight: '500',
+        fontWeight: 500,
         color: '#5F5F5F',
         alignSelf: 'center',
     },
     darkUsername: {
         fontSize: 18,
         width: 200,
-        fontWeight: '500',
+        fontWeight: 500,
         color: '#EEEEEE',
         alignSelf: 'center',
     },
     lightTitleInput: {
         color: '#555555',
         height: 40,
-        marginHorizontal: 13,
+        marginTop: 15,
+        marginHorizontal: 15,
         fontSize: 24,
-        fontWeight: '500',
+        fontWeight: 500,
     },
     darkTitleInput: {
         color: '#EEEEEE',
         height: 40,
-        marginHorizontal: 13,
+        marginHorizontal: 15,
         fontSize: 24,
-        fontWeight: '500'
+        fontWeight: 500
+    },
+    lightTagInput: {
+        width: "100%",
+        color: '#555555',
+        height: "auto",
+        marginBottom: 10,
+        marginHorizontal: 10,
+        fontSize: 22,
+        fontWeight: 500,
+    },
+    darkTagInput: {
+        width: "100%",
+        color: '#EEEEEE',
+        height: "auto",
+        marginHorizontal: 10,
+        fontSize: 22,
+        fontWeight: 500
+    },
+    lightBottomTagInput: {
+        width: "100%",
+        color: '#555555',
+        height: "auto",
+        position: 'absolute',
+        bottom: 150,
+        fontSize: 22,
+        fontWeight: 500,
+        marginHorizontal: 10,
+    },
+    darkBottomTagInput: {
+        width: "100%",
+        color: '#EEEEEE',
+        height: "auto",
+        position: 'absolute',
+        bottom: 150,
+        fontSize: 22,
+        fontWeight: 500,
+        marginHorizontal: 10,
     },
     lightTextContainer: {
         color: '#444444',
-        height: 400,
-        margin: 7,
+        // height: 400,
+        marginTop: 10,
+        marginHorizontal: 5,
         borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#DDDDDD',
+        // borderWidth: 1,
+        // borderColor: '#DDDDDD',
     },
     darkTextContainer: {
         color: '#EEEEEE',
-        height: 400,
-        margin: 7,
+        // height: 400,
+        marginTop: 10,
+        marginHorizontal: 5,
         borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#333333'
+        // borderWidth: 1,
+        // borderColor: '#333333'
     },
     lightTextInput: {
         color: '#666666',
-        height: 400,
         fontSize: 22,
         marginHorizontal: 10,
-        fontWeight: '500',
+        fontWeight: 500,
     },
     darkTextInput: {
         color: '#EEEEEE',
-        height: 400,
         fontSize: 22,
         marginHorizontal: 10,
-        fontWeight: '500',
+        fontWeight: 500,
     },
     imageShrinked: {
         alignSelf: "center",
@@ -597,20 +670,23 @@ const styles = StyleSheet.create({
         height: 400,
     },
     lightBottomText: {
-        color: '#666666',
-        fontSize: 18,
+        // flex: 1,
+        color: '#5b5b5b',
+        fontSize: 21,
         fontWeight: '500',
-        alignSelf: 'center',
-        marginLeft: 5,
-        marginTop: 10,
+        // marginBottom: 6,
+        // alignSelf: 'center',
+        // marginRight: 8,
+        // marginTop: 10,
     },
     darkBottomText: {
-        color: '#DDDDDD',
-        fontSize: 18,
+        color: '#EEEEEE',
+        fontSize: 21,
         fontWeight: '500',
-        alignSelf: 'center',
-        marginLeft: 5,
-        marginTop: 10,
+        // alignSelf: 'center',
+        // marginBottom: 6,
+        // marginRight: 8,
+        // marginTop: 10,
     },
 });
 

@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         color: '#333333',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 15,
         marginBottom: 10,
     },

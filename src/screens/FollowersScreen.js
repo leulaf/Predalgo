@@ -100,12 +100,12 @@ export default function FollowersScreen({navigation, route}){
 const styles = StyleSheet.create({
     lightTitle: {
         fontSize: 22,
-        fontWeight: '600',
+        fontWeight: 600,
         color: '#444444',
     },
     darkTitle: {
         fontSize: 22,
-        fontWeight: '600',
+        fontWeight: 600,
         color: '#EEEEEE',
     },
     profilePicture: {
@@ -118,13 +118,13 @@ const styles = StyleSheet.create({
     lightText: {
         fontSize: 20,
         marginRight: 20,
-        fontWeight: '500',
+        fontWeight: 500,
         color: '#444444',
     },
     darkText: {
         fontSize: 20,
         marginRight: 20,
-        fontWeight: '500',
+        fontWeight: 500,
         color: '#EEEEEE',
     },
     lightListItem: { 

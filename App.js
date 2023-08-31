@@ -44,7 +44,7 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  if (!loaded) return null;
+
 
   if (!loggedIn) {
     return (
@@ -56,7 +56,8 @@ const App = () => {
         </NavigationContainer>
       </ThemeProvider>
     );
-  } else {
+  } 
+  else {
     return (
       <Provider store={store}>
         <ContentProvider>

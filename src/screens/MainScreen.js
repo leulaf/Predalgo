@@ -39,7 +39,7 @@ export default function MainScreen({navigation, openDrawer}){
                                 style={StyleSheet.absoluteFill}
                             />
                         ),
-                        tabBarLabelStyle: {fontSize: 16, fontWeight: 'bold', marginBottom: 30},
+                        tabBarLabelStyle: {fontSize: 16, fontWeight: 700, marginBottom: 30},
                         tabBarStyle: theme == 'light' ? styles.lightTabBarStyle : styles.darkTabBarStyle,
                         tabBarIndicatorStyle: theme == 'light' ? styles.lightIndicatorStyle : styles.darkIndicatorStyle,
                         tabBarActiveTintColor: theme == 'light' ? '#2D2D2D' : '#F6F6F6',
@@ -56,7 +56,7 @@ export default function MainScreen({navigation, openDrawer}){
                     }
                 }
                 >
-                    <Top_Tab.Screen name="Games" component={GamesScreen} />
+                    <Top_Tab.Screen name="Following" component={GamesScreen} />
                     <Top_Tab.Screen name="For You" component={HomeScreen} />
                     <Top_Tab.Screen name="Tv/Movies" component={TvMoviesScreen} />
                 </Top_Tab.Navigator>

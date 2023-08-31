@@ -261,14 +261,14 @@ const styles = StyleSheet.create({
     lightPopularText: {
         fontSize: 18,
         color: '#555555',
-        fontWeight: '600',
+        fontWeight: 600,
         alignSelf: 'center',
         marginTop: 4
     },
     darkPopularText: {
         fontSize: 18,
         color: '#EEEEEE',
-        fontWeight: '600',
+        fontWeight: 600,
         alignSelf: 'center',
         marginTop: 4
     },

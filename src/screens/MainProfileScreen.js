@@ -391,12 +391,12 @@ const styles = StyleSheet.create({
    lightLabel: {
        color: '#666666',
        fontSize: 16,
-       fontWeight: '600',
+       fontWeight: 600,
    },
    darkLabel: {
        color: '#FFFFFF',
        fontSize: 16,
-       fontWeight: '500',
+       fontWeight: 500,
    },
    profilePicture: {
        width: 90,
@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
    lightUsername: {
        fontSize: 18,
        color: '#222222',
-       fontWeight: '500',
+       fontWeight: 500,
        alignSelf: 'center',
        marginTop: 15,
        marginLeft: 10
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
    darkUsername: {
        fontSize: 20,
        color: '#f2f2f2',
-       fontWeight: '500',
+       fontWeight: 500,
        alignSelf: 'center',
        marginTop: 15,
        marginLeft: 10
@@ -435,22 +435,22 @@ const styles = StyleSheet.create({
    lightCountText: {
        fontSize: 18,
        color: '#222222',
-       fontWeight: '600',
+       fontWeight: 600,
    },
    darkCountText: {
        fontSize: 18,
        color: '#ffffff',
-       fontWeight: '600',
+       fontWeight: 600,
    },
    lightText: {
        fontSize: 16,
        color: '#222222',
-       fontWeight: '500',
+       fontWeight: 500,
    },
    darkText: {
        fontSize: 16,
        color: '#f4f4f4',
-       fontWeight: '500',
+       fontWeight: 500,
    },
    lightDoneButton: {
         borderRadius: 20,
@@ -492,13 +492,13 @@ const styles = StyleSheet.create({
    lightEditText: {
        fontSize: 18,
        color: '#333333',
-       fontWeight: '500',
+       fontWeight: 500,
        alignSelf: 'center'
    },
    darkEditText: {
        fontSize: 18,
        color: '#f8f8f8',
-       fontWeight: '600',
+       fontWeight: 600,
        alignSelf: 'center'
    },
    box: {

@@ -4,8 +4,8 @@ import uuid from 'react-native-uuid';
 
 import {BlurView} from 'expo-blur';
 
-import LinkLight from '../../../../assets/link_light.svg';
-import LinkDark from '../../../../assets/link_dark.svg';
+import LinkLight from '../../assets/link_light.svg';
+import LinkDark from '../../assets/link_dark.svg';
 
 function isValidUrl(string) {
     const urlRegexSafe = require('url-regex-safe');
@@ -17,7 +17,7 @@ function isValidUrl(string) {
 // Format link url string to later parse and display as clickable link
 // (if link name is empty, just use link input) (if link input is empty, don't add link or link name)
 // final link string format: [link URL](link name)
-const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSelection, replyTextToPost, setReplyTextToPost, handleFocus, bottomSheetRef}) => {
+const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSelection, replyTextToPost, setReplyTextToPost, handleFocus}) => {
     
     const [linkName, setLinkName] = React.useState(replyTextToPost.substring(currentSelection.start, currentSelection.end));
     const [linkInput, setLinkInput] = React.useState("");
@@ -36,18 +36,6 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
         link = <LinkDark width={26} height={26} marginLeft={2} marginRight={0} marginTop={4} />;
     }
 
-    React.useEffect(() => {
-        const keyboardDidHideListener = Keyboard.addListener(
-          'keyboardDidHide',
-          () => {
-            bottomSheetRef.current.snapToIndex(0); // or some other action
-          }
-        );
-    
-        return () => {
-          keyboardDidHideListener.remove();
-        };
-    }, []);
 
     const handleDone = () => () => {
         // if link name is empty, just display link URL as clickable link
@@ -111,7 +99,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     autoCapitalize="none"
                     autoCorrect={false}
                     onFocus={() => handleFocus()}
-                    onBlur={() =>  bottomSheetRef.current.snapToIndex(0)} // focus lost
+                    // onBlur={() =>  } // focus lost
                     blurOnSubmit={false}
                     maxLength={100}
                     multiline={false}
@@ -142,7 +130,6 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     //         replyToUsername,
                     //     ).then((comment) => {
                     //         
-                    //         bottomSheetRef.current.snapToIndex(0);
                     //     })
                     // }
                 />
@@ -159,7 +146,7 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     autoCapitalize="none"
                     autoCorrect={false}
                     onFocus={() => handleFocus()}
-                    onBlur={() => bottomSheetRef.current.snapToIndex(0)} // focus lost
+                    // onBlur={() => } // focus lost
                     blurOnSubmit={false}
                     maxLength={100}
                     multiline={false}
@@ -187,7 +174,6 @@ const LinkInput = ({theme, linkView, setLinkView, setCurrentSelection, currentSe
                     //         replyToUsername,
                     //     ).then((comment) => {
                     //         
-                    //         bottomSheetRef.current.snapToIndex(0);
                     //     })
                     // }
                 />
@@ -212,7 +198,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         height: 55,
-        // backgroundColor: '#FFFFFF',
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
         alignContent: 'center',
     },
@@ -220,7 +206,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         height: 55,
-        // backgroundColor: '#141414',
+        backgroundColor: '#141414',
         alignItems: 'center',
         alignContent: 'center',
     },

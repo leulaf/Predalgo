@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 22,
     marginHorizontal: 5,
-    fontWeight: 'bold',
+    fontWeight: 700,
     color: 'white',
   },
   displayImage: {

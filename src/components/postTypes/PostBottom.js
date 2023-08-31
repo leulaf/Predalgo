@@ -239,12 +239,12 @@ const styles = StyleSheet.create({
     },
     lightBottomText: {
         fontSize: 16,
-        fontWeight: "400",
+        fontWeight: 400,
         color: '#444444',
     },
     darkBottomText: {
         fontSize: 16,
-        fontWeight: "400",
+        fontWeight: 400,
         color: '#EEEEEE',
     },
 });

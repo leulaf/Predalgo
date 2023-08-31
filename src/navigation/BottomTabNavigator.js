@@ -140,7 +140,7 @@ function BottomTabNavigator ({navigation}) {
                     borderTopWidth: 0,
                     height: 85
                 },
-                tabBarLabelStyle: { marginTop: 20, fontSize: 11 , fontWeight: '500'},
+                tabBarLabelStyle: { marginTop: 20, fontSize: 11 , fontWeight: 500},
             })}
             >
                 <Bottom_Tab.Screen name={homeName} component={MainScreen}

@@ -65,27 +65,27 @@ const styles = StyleSheet.create({
    lightUsernameText: {
         fontSize: 18,
         color: '#444444',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 63,
         marginLeft: 10,
     },
     darkUsernameText: {
         fontSize: 18,
         color: '#dddddd',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 63,
         marginLeft: 10,
     },
     lightAccountText: {
         fontSize: 18,
         color: '#444444',
-        fontWeight: '600',
+        fontWeight: 600,
         marginRight: 10,
     },
     darkAccountText: {
         fontSize: 18,
         color: '#dddddd',
-        fontWeight: '600',
+        fontWeight: 600,
         marginRight: 10,
     },
     setting: {

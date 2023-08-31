@@ -144,28 +144,28 @@ export default SplitPost = (text, theme) => {
 const styles = StyleSheet.create({
     lightCommentText: {
         fontSize: 18,
-        fontWeight: "400",
+        fontWeight: 400,
         color: '#222222',
         // textAlign: 'auto',
         // marginBottom: 6,
     },
     darkCommentText: {
         fontSize: 18,
-        fontWeight: "400",
+        fontWeight: 400,
         color: '#F4F4F4',
         textAlign: 'auto',
         // marginBottom: 6,
     },
     lightLinkText: {
         fontSize: 18,
-        fontWeight: "400",
+        fontWeight: 400,
         color: 'blue',
         // textAlign: 'auto',
         // marginBottom: 6,
     },
     darkLinkText: {
         fontSize: 18,
-        fontWeight: "400",
+        fontWeight: 400,
         color: '#0094FF',
         textAlign: 'auto',
         // marginBottom: 6,

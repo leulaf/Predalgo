@@ -474,33 +474,33 @@
 //     },
 //     lightUsername: {
 //         fontSize: 16,
-//         fontWeight: "600",
+//         fontWeight: 600,
 //         color: '#444444',
 //         textAlign: "left",
 //         marginBottom: 1,
 //     },
 //     darkUsername: {
 //         fontSize: 16,
-//         fontWeight: "600",
+//         fontWeight: 600,
 //         color: '#DDDDDD',
 //         textAlign: "left",
 //         marginBottom: 1,
 //     },
 //     lightRepostUsername: {
 //         fontSize: 16,
-//         fontWeight: "600",
+//         fontWeight: 600,
 //         color: '#777777',
 //         textAlign: "left",
 //     },
 //     darkRepostUsername: {
 //         fontSize: 16,
-//         fontWeight: "600",
+//         fontWeight: 600,
 //         color: '#BBBBBB',
 //         textAlign: "left",
 //     },
 //     lightPostTitle: {
 //         fontSize: 22,
-//         fontWeight: "600",
+//         fontWeight: 600,
 //         color: '#333333',
 //         textAlign: 'auto',
 //         marginHorizontal: 14,
@@ -510,7 +510,7 @@
 //     },
 //     darkPostTitle: {
 //         fontSize: 22,
-//         fontWeight: "600",
+//         fontWeight: 600,
 //         color: '#DDDDDD',
 //         textAlign: 'auto',
 //         marginHorizontal: 14,
@@ -545,20 +545,20 @@
 //     lightFollowText: {
 //         fontSize: 18,
 //         color: '#222222',
-//         fontWeight: '600',
+//         fontWeight: 600,
 //         alignSelf: 'center',
 //         marginTop: 1
 //     },
 //     darkFollowText: {
 //         fontSize: 18,
 //         color: '#ffffff',
-//         fontWeight: '600',
+//         fontWeight: 600,
 //         alignSelf: 'center',
 //         marginTop: 1
 //     },
 //     lightPostText: {
 //         fontSize: 18,
-//         fontWeight: "400",
+//         fontWeight: 400,
 //         color: '#222222',
 //         textAlign: 'auto',
 //         marginHorizontal: 13.5,
@@ -566,7 +566,7 @@
 //     },
 //     darkPostText: {
 //         fontSize: 18,
-//         fontWeight: "400",
+//         fontWeight: 400,
 //         color: '#F4F4F4',
 //         textAlign: 'auto',
 //         marginHorizontal: 13.5,

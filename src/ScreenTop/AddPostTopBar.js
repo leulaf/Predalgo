@@ -20,14 +20,14 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes, closeBottomSheet}) => 
         
         {/* back button */}
         <TouchableOpacity 
-            style={{flexDirection: 'row'}}
+            style={{flexDirection: 'row', }}
             onPress={() => {closeBottomSheet()}}
         >
             {
                 theme == 'light' ?
-                    <BackLight style={styles.backIcon} width={22} height={22}/>
+                    <BackLight style={styles.backIcon} width={24} height={24}/>
                 :
-                    <BackDark style={styles.backIcon} width={22} height={22}/>
+                    <BackDark style={styles.backIcon} width={24} height={24}/>
             }
             
         </TouchableOpacity>
@@ -119,18 +119,19 @@ const styles = StyleSheet.create({
         marginTop: 57,
         marginHorizontal: 10,
         padding: 10,
+        transform: [{ rotate: '270deg'}]
     },
     lightText: {
         fontSize: 20,
         color: '#333333',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 45,
         marginHorizontal: 5
     },
     darkText: {
         fontSize: 20,
         color: '#f2f2f2',
-        fontWeight: '600',
+        fontWeight: 600,
         marginTop: 45,
         marginLeft: 5
     },
