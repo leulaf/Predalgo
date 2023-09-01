@@ -4,18 +4,24 @@ import { firebase, storage, db } from '../../config/firebase';
 import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import PostContainer from './PostContainer';
 
+import CreateMeme from '../../shared/CreateMeme';
+
 import ResizableImage from '../../shared/ResizableImage';
 
 import { useNavigation } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get("screen").width;
 
-const ImagePost = ({ title, username = "", profilePic = "", imageUrl, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
+const ImagePost = ({ title, username = "", profilePic = "", imageUrl, template, templateState, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
     const navigation = useNavigation();
     const [profilePicState, setProfilePicState] = useState(profilePic);
     const [usernameState, setUsernameState] = useState(username);
     const [repostUsername, setRepostUsername] = useState(null);
     const [repostProfilePic, setRepostProfilePic] = useState(null);
+
+    const [image, setImage] = useState(imageUrl ? imageUrl : template);
+    console.log( template);
+    const [finished, setFinished] = React.useState(template ? false : true);
 
     useEffect(() => {
         if(repostProfile != null){
@@ -58,7 +64,9 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, imageHeigh
     return (
         <PostContainer 
             title={title}
-            imageUrl={imageUrl}
+            imageUrl={image}
+            // template={image}
+            // templateState={templateState}
             imageHeight={imageHeight}
             imageWidth={imageWidth}
             likesCount={likesCount}
@@ -75,8 +83,10 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, imageHeigh
             
             content={
                 <View style={{flexDirection: "row", alignSelf: 'center'}}>
+                    {/* Load Meme with template and template state */}
+                    {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
                     <ResizableImage 
-                        image={imageUrl}
+                        image={image}
                         height={imageHeight}
                         width={imageWidth}
                         maxWidth={windowWidth-6}

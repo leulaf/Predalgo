@@ -22,14 +22,15 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
-const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
     navigation.push('Post', {
         postId: postId,
         title: title,
         tags: tags,
-        imageUrl: image,
+        imageUrl: imageUrl,
         memeName: memeName,
         template: false,
+        templateState: null,
         imageHeight: imageHeight,
         imageWidth: imageWidth,
         text: text,
@@ -68,7 +69,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
 
-    const [image, setImage] = useState(template ? template : imageUrl);
+    const [image, setImage] = useState(imageUrl ? imageUrl : template);
 
 
     let threeDots
@@ -137,7 +138,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             entering={FadeIn} 
             style={theme == 'light' ? GlobalStyles.lightPostContainer: GlobalStyles.darkPostContainer}
         >
-            
+
 
             {/* profile pic, username and title*/}
             <View 
@@ -182,7 +183,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     style={{flex: 1, height: 40}}
                 />
 
@@ -202,7 +203,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             {/* title */}
             <TouchableOpacity
                 activeOpacity={1}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 {/* title */}
@@ -214,7 +215,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             {/* Post content. Image, Text etc. */}
             <TouchableOpacity
                 activeOpacity={1}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 {content}

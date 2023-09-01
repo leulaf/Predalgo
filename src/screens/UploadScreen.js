@@ -2,6 +2,8 @@ import { Camera, CameraType } from 'expo-camera';
 import { useState, useContext, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
+
 import * as ImagePicker from 'expo-image-picker';
 
 import { StackActions } from '@react-navigation/native';
@@ -18,7 +20,8 @@ import FlashOff from '../../assets/flash_off.svg';
 import MakeMeme from '../../assets/make_meme.svg';
 
 
-export default function UploadScreen({navigation, route}) {
+export default function UploadScreen({route}) {
+  const navigation = useNavigation();
   const [type, setType] = useState(CameraType.back);
   const [camera, setCamera] = useState(null);
   const [base64, setBase64] = useState(null);
@@ -117,7 +120,7 @@ export default function UploadScreen({navigation, route}) {
         );
       }else if(forPost){
         navigation.dispatch(
-          StackActions.replace(forMemeComment ? 'EditMeme' : 'EditImage', {
+          StackActions.replace(forMemePost ? 'EditMeme' : 'EditImage', {
             imageUrl: `data:image/jpeg;base64,${picture.base64}`,
             height: picture.height,
             width: picture.width,
@@ -141,7 +144,7 @@ export default function UploadScreen({navigation, route}) {
   }
 
   const onGoBack = () => {
-    if(forMemeComment){
+    if(forMemeComment || forMemePost){
       navigation.dispatch(
         StackActions.replace('AddPost', {
           forCommentOnComment: forCommentOnComment,
@@ -150,6 +153,7 @@ export default function UploadScreen({navigation, route}) {
       );
       // navigation.goBack(null);
     }else{
+      console.log('go back');
       navigation.goBack(null);
     }
   }

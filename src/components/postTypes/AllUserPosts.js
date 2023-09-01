@@ -8,7 +8,8 @@ import {ThemeContext} from '../../../context-store/context';
 import ImagePost from './ImagePost';
 import MultiImagePost from './MultiImagePost';
 import TextPost from './TextPost';
-import { set } from 'react-native-reanimated';
+
+import getItemType from '../../shared/GetItemType';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -16,6 +17,30 @@ const windowHeight = Dimensions.get('screen').height;
 const itemEquals = (prev, next) => {
     return true
 };
+
+// const MemoImagePost = React.memo(({item, theme, index, navigation})=>{
+//     return (
+//         <ImagePost
+//             key={index}
+//             repostProfile={item.repostProfile}
+//             repostComment={item.repostComment}
+//             imageUrl={item.imageUrl}
+//             imageHeight={item.imageHeight}
+//             imageWidth={item.imageWidth}
+//             template={item.template}
+//             templateState={item.templateState}
+//             title={item.title}
+//             tags={item.tags}
+//             memeName={item.memeName}
+//             profile={item.profile}
+//             username={username}
+//             profilePic={profilePic}
+//             postId={item.id}
+//             likesCount={item.likesCount}
+//             commentsCount={item.commentsCount}
+//         />
+//     )
+// })
 
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
@@ -73,15 +98,16 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
         
 
     const renderItem = React.useCallback(({ item, index }) => {
-        if(item.imageUrl){
+        if(item.imageUrl || item.template){
             return (
                 <ImagePost
-                    key={index}
                     repostProfile={item.repostProfile}
                     repostComment={item.repostComment}
                     imageUrl={item.imageUrl}
                     imageHeight={item.imageHeight}
                     imageWidth={item.imageWidth}
+                    template={item.template}
+                    templateState={item.templateState}
                     title={item.title}
                     tags={item.tags}
                     memeName={item.memeName}
@@ -96,7 +122,6 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
         }else if(item.imageUrls){
             return (
                 <MultiImagePost
-                    key={index}
                     repostProfile={item.repostProfile}
                     repostComment={item.repostComment}
                     title={item.title}
@@ -113,7 +138,6 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
         }else if(item.text){
             return (
                 <TextPost
-                    key={index}
                     repostProfile={item.repostProfile}
                     repostComment={item.repostComment}
                     title={item.title}
@@ -155,6 +179,10 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                 keyExtractor={keyExtractor}
                 ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top
                 renderItem={renderItem}
+
+                showsVerticalScrollIndicator={false}
+
+                getItemType={getItemType}
             />
         </View>
     );

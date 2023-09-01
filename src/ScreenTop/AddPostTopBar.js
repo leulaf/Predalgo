@@ -12,7 +12,7 @@ import BookmarkLight from '../../assets/saved.svg';
 import BackDark from '../../assets/back_light.svg';
 import BookmarkDark from '../../assets/saved_dark.svg';
 
-const AddPostTopBar = ({navToFavorites, navToSearchMemes, closeBottomSheet}) => {
+const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -21,7 +21,7 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes, closeBottomSheet}) => 
         {/* back button */}
         <TouchableOpacity 
             style={{flexDirection: 'row', }}
-            onPress={() => {closeBottomSheet()}}
+            onPress={() => {navigation.goBack()}}
         >
             {
                 theme == 'light' ?
@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
         marginTop: 57,
         marginHorizontal: 10,
         padding: 10,
-        transform: [{ rotate: '270deg'}]
     },
     lightText: {
         fontSize: 20,

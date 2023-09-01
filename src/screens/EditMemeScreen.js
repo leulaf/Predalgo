@@ -19,20 +19,20 @@ import {
 
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
-    const { imageUrl, memeName, replyMemeName, imageState, height, width, cameraPic, dontCompress, forMemeComment, forCommentOnPost, forCommentOnComment, templateExists} = route.params;
+    const { imageUrl, memeName, replyMemeName, imageState, height, width, cameraPic, dontCompress, forMemePost, forPost, forMemeComment, forCommentOnPost, forCommentOnComment, templateExists} = route.params;
     const [image, setImage] = useState(imageUrl);
     const [imageResult, setImageResult] = useState(null);
 
-    const { imageReply, setImageReply } = useContext(AuthenticatedUserContext);
+    const { imageReply, setImageReply, imagePost, setImagePost } = useContext(AuthenticatedUserContext);
     const [template, setTemplate] = useState( null);
 
     const [storedImageState, setStoredImageState] = useState(null);
 
-    const [compressTemplate, setCompressTemplate] = useState(imageReply ? false : true);
+    const [compressTemplate, setCompressTemplate] = useState(imageReply || imagePost ? false : true);
 
     const [overlayVisible, setOverlayVisible] = useState(false);
     const [newTemplate, setNewTemplate] = useState(false);
-    const [newMemeName, setNewMemeName] = useState(replyMemeName && replyMemeName != true ? replyMemeName : "");
+    const [newMemeName, setNewMemeName] = useState((replyMemeName && replyMemeName != true) ? replyMemeName : "");
 
     const editorRef = useRef(null);
     const templateRef = useRef(null);
@@ -55,13 +55,13 @@ const EditMemeScreen = ({ navigation, route }) => {
         });
     }, []);
 
-    const stringifyImageState = (imageState) => {
-        return JSON.stringify(imageState, (k, v) => (v === undefined ? null : v));
-    };
+    // const stringifyImageState = (imageState) => {
+    //     return JSON.stringify(imageState, (k, v) => (v === undefined ? null : v));
+    // };
     
-    const parseImageState = (str) => {
-        return JSON.parse(str);
-    };
+    // const parseImageState = (str) => {
+    //     return JSON.parse(str);
+    // };
 
     const handleEditorLoad = () => {
         // Add image state to history stack if it exists
@@ -79,27 +79,43 @@ const EditMemeScreen = ({ navigation, route }) => {
             // console.log(imageState);
             // console.log(imageReply);
             // console.log("**************************************");
-            setImageReply({
-                memeName: replyMemeName,
-                uri: imageReply.uri,
-                undeditedUri: imageReply.undeditedUri,
-                template: imageReply.template,
-                height: height,
-                width: width,
-                forCommentOnComment: forCommentOnComment,
-                forCommentOnPost: forCommentOnPost,
-                imageState: imageReply.imageState,
-                templateExists: imageReply.templateExists,
-            });
+            if(forPost){
+                setImagePost({
+                    memeName: replyMemeName,
+                    uri: imagePost.uri,
+                    undeditedUri: imagePost.undeditedUri,
+                    template: imagePost.template,
+                    height: height,
+                    width: width,
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
+                    imageState: imagePost.imageState,
+                    templateExists: imagePost.templateExists,
+                });
+            }else if(forCommentOnComment || forCommentOnPost){
+                setImageReply({
+                    memeName: replyMemeName,
+                    uri: imageReply.uri,
+                    undeditedUri: imageReply.undeditedUri,
+                    template: imageReply.template,
+                    height: height,
+                    width: width,
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
+                    imageState: imageReply.imageState,
+                    templateExists: imageReply.templateExists,
+                });
+            }
             editorRef.current.editor.close();
             setOverlayVisible(false);
             navigation.goBack(null);
-        }else if(forMemeComment){
+        }else if(forMemeComment || forMemePost){
             navigation.dispatch(
                 StackActions.replace('Upload', {
                     forCommentOnComment: forCommentOnComment,
                     forCommentOnPost: forCommentOnPost,
-                    forMemeComment: true,
+                    forMemeComment: forMemeComment,
+                    forMemePost: forMemePost,
                 })
             );
         }else{
@@ -119,7 +135,19 @@ const EditMemeScreen = ({ navigation, route }) => {
             return;
         }else if(replyMemeName && replyMemeName != true){
             addNewTemplate(template, memeName, height, width).then(() => {
-                if(forCommentOnPost || forCommentOnComment){
+                if(forPost){
+                    setImagePost({
+                        memeName: memeName,
+                        uri: imageResult,
+                        undeditedUri: imagePost.undeditedUri,
+                        template: imageState.template,
+                        height: height,
+                        width: width,
+                        forCommentOnComment: forCommentOnComment,
+                        forCommentOnPost: forCommentOnPost,
+                        imageState: storedImageState
+                    });
+                }else if(forCommentOnPost || forCommentOnComment){
                     setImageReply({
                         memeName: memeName,
                         uri: imageResult,
@@ -131,17 +159,27 @@ const EditMemeScreen = ({ navigation, route }) => {
                         forCommentOnPost: forCommentOnPost,
                         imageState: storedImageState
                     });
-        
-                    editorRef.current.editor.close();
-                    navigation.goBack(null);
-                    setOverlayVisible(false);
                 }
+                editorRef.current.editor.close();
+                navigation.goBack(null);
+                setOverlayVisible(false);
             })
         }else{
             uploadNewTemplate(template, memeName, height, width)
                 .then(async(newUrl) => {
-
-                    if(forCommentOnPost || forCommentOnComment){
+                    if(forPost){
+                        setImagePost({
+                            memeName: memeName,
+                            uri: imageResult,
+                            undeditedUri: imageUrl,
+                            template: newUrl,
+                            height: height,
+                            width: width,
+                            forCommentOnComment: forCommentOnComment,
+                            forCommentOnPost: forCommentOnPost,
+                            imageState: storedImageState
+                        });
+                    }else if(forCommentOnPost || forCommentOnComment){
                         setImageReply({
                             memeName: memeName,
                             uri: imageResult,
@@ -153,12 +191,11 @@ const EditMemeScreen = ({ navigation, route }) => {
                             forCommentOnPost: forCommentOnPost,
                             imageState: storedImageState
                         });
-            
-                        
-                        navigation.goBack(null);
-                        setOverlayVisible(false);
-                        editorRef.current.editor.close();
-                    }
+                    } 
+
+                    navigation.goBack(null);
+                    setOverlayVisible(false);
+                    editorRef.current.editor.close();
                 });
         }
 
@@ -167,18 +204,35 @@ const EditMemeScreen = ({ navigation, route }) => {
     }
 
     const navToReply = async (memeName, dest, imageState) => {
-        setImageReply({
-            memeName: memeName,
-            uri: dest,
-            undeditedUri: templateExists ? imageUrl : image,
-            template: templateExists ? imageUrl : null,
-            height: height,
-            width: width,
-            forCommentOnComment: forCommentOnComment,
-            forCommentOnPost: forCommentOnPost,
-            imageState: imageState,
-            templateExists: templateExists,
-        });
+        console.log("replyMemeName", replyMemeName, "memeName", memeName);
+        if(forPost){
+            setImagePost({
+                memeName: memeName,
+                uri: dest,
+                undeditedUri: templateExists ? imageUrl : image,
+                template: templateExists ? imageUrl : null,
+                height: height,
+                width: width,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
+                imageState: imageState,
+                templateExists: templateExists,
+            });
+        }else if(forCommentOnComment || forCommentOnPost){
+            setImageReply({
+                memeName: memeName,
+                uri: dest,
+                undeditedUri: templateExists ? imageUrl : image,
+                template: templateExists ? imageUrl : null,
+                height: height,
+                width: width,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
+                imageState: imageState,
+                templateExists: templateExists,
+            });
+        } 
+        
 
         editorRef.current.editor.close();
         setOverlayVisible(false);
@@ -249,7 +303,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                     // console.log("onProcess", imageState, "size", dest.length);
                     if(templateExists){
                         navToReply(replyMemeName, dest, imageState);
-                    }else if(forCommentOnComment || forCommentOnPost){
+                    }else if(forCommentOnComment || forCommentOnPost || forPost){
                         setImageResult(dest);
                         // setStoredImageState(stringifyImageState(imageState));
                         setStoredImageState(imageState);
@@ -326,7 +380,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                             <TouchableOpacity
                                 onPress={() =>
                                     { 
-                                        imageReply && JSON.stringify(storedImageState[0]) == JSON.stringify(imageReply.imageState[0]) && replyMemeName == newMemeName ?
+                                        (imageReply || imagePost) && JSON.stringify(storedImageState[0]) == JSON.stringify(imageReply ? imageReply.imageState[0] : imagePost.imageState[0]) && replyMemeName == newMemeName ?
                                             
                                             onGoBack()
                                         :
@@ -347,26 +401,27 @@ const EditMemeScreen = ({ navigation, route }) => {
             {/* Compresses the original template */}
             {
                 compressTemplate &&
-                    <PinturaEditor
-                        ref={templateRef}
-                        
-                        src={image}
-                        onLoaderror={(err) => {
-                        // console.log("onLoaderror", err);
-                        }}
-                        onLoad={({ size }) => {
-                            templateRef.current.editor.processImage();
-                        }}
-            
-                        {...editorDefaults}
-            
-                        onProcess={({ dest, imageState }) => {
-                            // dest is output file in dataURI format
-                            setTemplate(dest);
-                            setCompressTemplate(false);
-                            // templateRef.current.editor.close();
-                        }}
-                    />
+                
+                <PinturaEditor
+                    ref={templateRef}
+                    
+                    src={image}
+                    onLoaderror={(err) => {
+                    // console.log("onLoaderror", err);
+                    }}
+                    onLoad={({ size }) => {
+                        templateRef.current.editor.processImage();
+                    }}
+        
+                    {...editorDefaults}
+        
+                    onProcess={({ dest, imageState }) => {
+                        // dest is output file in dataURI format
+                        setTemplate(dest);
+                        setCompressTemplate(false);
+                        // templateRef.current.editor.close();
+                    }}
+                />
 
             }
         </View>

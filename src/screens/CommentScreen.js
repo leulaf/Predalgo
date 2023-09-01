@@ -221,7 +221,7 @@ const CommentScreen = ({navigation, route}) => {
 
 
     useEffect(() => {
-        commentsList.length > 2 ?  null : getFirstTenCommentsByPopular();
+        commentsList.length > 2 ?  null : commentsCount > 0 && getFirstTenCommentsByPopular();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     }, []);

@@ -243,7 +243,7 @@ const PostScreen = ({navigation, route}) => {
 
 
     React.useEffect(() => {
-        getFirstTenPostCommentsByPopular();
+        commentsCount > 0 && getFirstTenPostCommentsByPopular();
 
         LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
     }, []);
@@ -292,21 +292,6 @@ const PostScreen = ({navigation, route}) => {
     //     }
     // }, [extraPaddingTop]);
 
-    // Refresh onRelease function
-    function onRelease() {
-        // offsetY must be less than the refreshing height
-        // to trigger refresh
-        if (offsetY <= -refreshingHeight && !isRefreshing) {
-        // For this example, we will set refreshing to true
-        // and then set it to false after 3 seconds.
-        // In your app this is where the actual refreshing happens
-        setIsRefreshing(true);
-        setTimeout(() => {
-            setIsRefreshing(false);
-        }, 3000);
-        }
-    }
-
 
     const onGoBack = React.useCallback(() => {
         if(imageReply && imageReply.forCommentOnPost){
@@ -314,7 +299,6 @@ const PostScreen = ({navigation, route}) => {
         }
         navigation.goBack(null);
     }, [imageReply]);
-
 
     const renderItem = React.useCallback(({ item, index }) => {
         // index 0 is the header continng the profile pic, username, title and post content
@@ -366,15 +350,20 @@ const PostScreen = ({navigation, route}) => {
                     [styles.darkMainContainer, {backgroundColor: offsetY > 0 ? '#000000' : '#151515'}]
             }
         >
+            
+            
             {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
+            {!finished && <CreateMeme image={template} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
+
+            
+            
 
             {/* Top */}
             <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight}]}/>
 
-            {/* Refresh View */}
-            {}
+
             
+            {/* Refresh animation */}
             {
                 offsetY < 0 && <LottieView
                     ref={refreshViewRef}
@@ -385,11 +374,8 @@ const PostScreen = ({navigation, route}) => {
                 />
             }
 
-            {/* {
-                offsetY < -20 && 
-                <View style={{paddingBottom: 30}}/>
-            } */}
 
+            {/* List */}
             <FlashList
                 data={commentsList}
                 

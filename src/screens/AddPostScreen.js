@@ -27,73 +27,87 @@ import LightMemeCreate from '../../assets/post_meme_create_light.svg';
 const lightBackground = require('../../assets/AddPostBackgroundLight.png');
 const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 
-const navToUpload = (navigation, forCommentOnComment, forCommentOnPost) => () => {
-  navigation.dispatch(
-    StackActions.replace("Upload", {
-      forCommentOnComment: forCommentOnComment,
-      forCommentOnPost: forCommentOnPost,
-      forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
-    })
-  )
+const navToUpload = (navigation, forPost, forCommentOnComment, forCommentOnPost) => () => {
+  // navigation.dispatch(
+  //   StackActions.replace("Upload", {
+  //     forCommentOnComment: forCommentOnComment,
+  //     forCommentOnPost: forCommentOnPost,
+  //     forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
+  //   })
+  // )
+  navigation.navigate("Upload", {
+    forCommentOnComment: forCommentOnComment,
+    forCommentOnPost: forCommentOnPost,
+    forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
+    forMemePost: forPost,
+    forPost: forPost,
+  })
 }
 
-const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
-  if(forCommentOnComment || forCommentOnPost){
+const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnPost) => () => {
+  // console.log(item)
+  if(forCommentOnComment || forCommentOnPost || forPost){
     navigation.dispatch(
         StackActions.replace('EditMeme', {
           uploader: item.uploader,
-          memeName: item.name,
-          template: item.url,
+          replyMemeName: item.name,
+          imageUrl: item.url,
           height: item.height,
           width: item.width,
           templateExists: true,
           forCommentOnComment: forCommentOnComment,
           forCommentOnPost: forCommentOnPost,
+          forPost: forPost,
       })
     )
   }else{
     navigation.navigate('Meme', {
         uploader: item.uploader,
-        memeName: item.name,
-        template: item.url,
+        replyMemeName: item.name,
+        imageUrl: item.url,
         height: item.height,
         width: item.width,
         useCount: item.useCount,
         uploader: item.uploader,
         forCommentOnComment: forCommentOnComment,
         forCommentOnPost: forCommentOnPost,
+        forPost: forPost,
     })
   }
 }
 
-const navToSearchMemes = (navigation, forCommentOnComment, forCommentOnPost) => () => {
-  if(forCommentOnComment || forCommentOnPost){
+const navToSearchMemes = (navigation, forPost, forCommentOnComment, forCommentOnPost) => () => {
+  if(forCommentOnComment || forCommentOnPost || forPost){
     navigation.dispatch(
         StackActions.replace('SearchMemes', {
         forCommentOnComment: forCommentOnComment,
         forCommentOnPost: forCommentOnPost,
+        forPost: forPost,
       })
     )
   }else{
     navigation.navigate(('SearchMemes'), {
       forCommentOnComment: forCommentOnComment,
       forCommentOnPost: forCommentOnPost,
+      forPost: forPost,
     })
   }
 }
 
-const navToFavorites = (navigation, forCommentOnComment, forCommentOnPost) => () => {
-  if(forCommentOnComment || forCommentOnPost){
+const navToFavorites = (navigation, forPost, forCommentOnComment, forCommentOnPost) => () => {
+  if(forCommentOnComment || forCommentOnPost || forPost){
     navigation.dispatch(
         StackActions.replace('FavoriteTemplates', {
         forCommentOnComment: forCommentOnComment,
         forCommentOnPost: forCommentOnPost,
+        forPost: forPost,
       })
     )
   }else{
     navigation.navigate(('FavoriteTemplates'), {
       forCommentOnComment: forCommentOnComment,
       forCommentOnPost: forCommentOnPost,
+      forPost: forPost,
     })
   }
 }
@@ -108,13 +122,14 @@ const AddPostScreen = ({navigation, route}) => {
 
     const {memeTemplates, setMemeTeplates} = useContext(AuthenticatedUserContext);
 
-    const { forCommentOnComment, forCommentOnPost, showBottomSheet, toggleBottomSheet } = route?.params;
+    const { forPost, forCommentOnComment, forCommentOnPost } = route?.params;
 
     const flashListRef = useRef(null);
 
+
     useEffect(() => {
-      memeTemplates.length == 2 && showBottomSheet && getFirstTenTemplates();
-    }, [showBottomSheet]);
+      memeTemplates.length == 2 && getFirstTenTemplates();
+    }, []);
 
 
 
@@ -170,7 +185,7 @@ const AddPostScreen = ({navigation, route}) => {
         >
           <TouchableOpacity
             activeOpacity={1}
-            onPress={navToMeme(navigation, item, forCommentOnComment, forCommentOnPost)}
+            onPress={navToMeme(navigation, item, forPost, forCommentOnComment, forCommentOnPost)}
             style={
               index % 2 == 1 ?
                 {marginLeft: 2, marginRight: 2, marginBottom: 6} 
@@ -191,10 +206,6 @@ const AddPostScreen = ({navigation, route}) => {
       );
     }, [])
 
-    if(!showBottomSheet){
-      return null
-    }
-
 
     return (
       <Animated.View
@@ -212,15 +223,14 @@ const AddPostScreen = ({navigation, route}) => {
         >
           
           <AddPostTopBar
-            navToFavorites={navToFavorites(navigation, forCommentOnComment, forCommentOnPost)}
-            navToSearchMemes={navToSearchMemes(navigation, forCommentOnComment, forCommentOnPost)}
-            closeBottomSheet={() => 
-              toggleBottomSheet()
-            }
+            navToFavorites={navToFavorites(navigation, forPost, forCommentOnComment, forCommentOnPost)}
+            navToSearchMemes={navToSearchMemes(navigation, forPost, forCommentOnComment, forCommentOnPost)}
+            // closeBottomSheet={() => 
+            //   toggleBottomSheet()
+            // }
           />
 
           {
-            // showBottomSheet &&
           
             <MasonryFlashList
               ref={flashListRef}
@@ -267,17 +277,17 @@ const AddPostScreen = ({navigation, route}) => {
 
               keyExtractor={keyExtractor}
 
-              refreshControl={
-                <RefreshControl 
-                    // refreshing={isRefreshing}
-                    onRefresh={() => {
-                        toggleBottomSheet()
-                    }}
-                    // progressViewOffset={progress}
-                    tintColor={'rgba(255, 255, 255, 0.0)'}
-                    // progressViewOffset={0}
-                />
-              }
+              // refreshControl={
+              //   <RefreshControl 
+              //       // refreshing={isRefreshing}
+              //       onRefresh={() => {
+              //           toggleBottomSheet()
+              //       }}
+              //       // progressViewOffset={progress}
+              //       tintColor={'rgba(255, 255, 255, 0.0)'}
+              //       // progressViewOffset={0}
+              //   />
+              // }
             />
           }
             
@@ -286,7 +296,7 @@ const AddPostScreen = ({navigation, route}) => {
           {/* Add template button */}
           <TouchableOpacity
               style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
-              onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
+              onPress={navToUpload(navigation, forPost, forCommentOnComment, forCommentOnPost)}
           >
             {/* <BlurView
               tint = {theme == 'light' ?  "light" : "dark"}
@@ -319,7 +329,7 @@ const AddPostScreen = ({navigation, route}) => {
 
           {/* <TouchableOpacity
                 style={theme == 'light' ? styles.lightAddTemplateButton : styles.darkAddTemplateButton}
-                onPress={navToUpload(navigation, forCommentOnComment, forCommentOnPost)}
+                onPress={navToUpload(navigation, forPost, forCommentOnComment, forCommentOnPost)}
             >
               {theme == "light" ?
                   <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
@@ -369,7 +379,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginTop: 12,
     marginBottom: 12,
-    borderWidth: 1.5,
+    borderWidth: 1.3,
     borderColor: "#E8E8E8",
   },
   darkMemeTemplateContainer: {

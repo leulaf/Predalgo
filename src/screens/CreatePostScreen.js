@@ -353,9 +353,59 @@ const CreatePostScreen = ({navigation, route}) => {
                     postId: id,
                     title: title,
                     text: newText,
-                    imageUrl:  imagePost.uri,
+                    imageUrl: imagePost.uri,
                     imageHeight: imagePost.height,
                     imageWidth: imagePost.width,
+                    tags: correctTags,
+                    likesCount: 0,
+                    commentsCount: 0,
+                    profile: auth.currentUser.uid,
+                    username: auth.currentUser.displayName,
+                    profilePic: auth.currentUser.photoURL,
+                })
+            );
+
+        });
+
+    }, [imagePost, text])
+
+
+    const onPostMeme = React.useCallback(async () => {
+
+        await SaveMemePostData(
+            title,
+            text,
+            imagePost.memeName,
+            imagePost.template,
+            imagePost.imageState,
+            imagePost.height,
+            imagePost.width,
+            correctTags
+        ).catch(function (error) {
+            // console.log(error);
+        }).then(async (id) => {
+            
+            const newText = text;
+
+            // clear reply text and image
+            setImagePost(null);
+            setText("");
+            setTitle("");
+            setTempTags("");
+            setCorrectTags([]);
+
+            // navigate to Post screen with the new Post
+            navigation.dispatch(
+                StackActions.replace("Post", {
+                    postId: id,
+                    title: title,
+                    memeName: imagePost.memeName,
+                    template: imagePost.template,
+                    templateState: imagePost.imageState,
+                    imageUrl: imagePost.uri,
+                    imageHeight: imagePost.height,
+                    imageWidth: imagePost.width,
+                    text: newText,
                     tags: correctTags,
                     likesCount: 0,
                     commentsCount: 0,
@@ -398,7 +448,7 @@ const CreatePostScreen = ({navigation, route}) => {
 
                                         if(imagePost && imagePost.template){
                                             
-                                            await onReplyWithMeme();
+                                            await onPostMeme();
 
                                         }else if(imagePost){
                                             
@@ -553,16 +603,16 @@ const CreatePostScreen = ({navigation, route}) => {
                 {/* Background color behind tags and bottom buttons, 
                 *needed so that an image being the background does not change the background of the tags & buttonse */}
                 {
-                // {/* <View style={{backgroundColor: 'white', alignSelf: 'center', width: "94%", height: 200, marginBottom: 8, position: 'absolute', bottom: 0}}/> */}
+                // {/* <View style={{backgroundColor: 'white', alignSelf: 'center', width: "100%", height: 190, marginBottom: 8, position: 'absolute', bottom: 0}}/> */}
 
-                imagePost &&
-                <View style={{ alignSelf: 'center', width: "100%", height: 190, marginBottom: 8, position: 'absolute', bottom: 0}}>
-                    <BlurView
-                        tint = {theme == 'light' ?  "light" : "dark"}
-                        intensity={theme == 'light' ?  100 : 100}
-                        style={[StyleSheet.absoluteFill, ]}
-                    />
-                </View>
+                imagePost && <View style={{backgroundColor: theme == 'light' ? '#FFFFFF' : '#1C1C1C', alignSelf: 'center', width: "100%", height: 190, marginBottom: 8, position: 'absolute', bottom: 0}}/>
+                // <View style={{ alignSelf: 'center', width: "100%", height: 190, marginBottom: 8, position: 'absolute', bottom: 0}}>
+                //     <BlurView
+                //         tint = {theme == 'light' ?  "light" : "dark"}
+                //         intensity={theme == 'light' ?  100 : 100}
+                //         style={[StyleSheet.absoluteFill, ]}
+                //     />
+                // </View>
                 }
 
 

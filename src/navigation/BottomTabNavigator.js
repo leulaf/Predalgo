@@ -50,9 +50,9 @@ const addPostName = ' ';
 
 function BottomTabNavigator ({navigation}) {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [showBottomSheet, setShowBottomSheet] = useState(false);
-    const bottomSheetRef = React.useRef(null);
-    const snapPoints = React.useMemo(() => ['1', '100%'], []);
+    // const [showBottomSheet, setShowBottomSheet] = useState(false);
+    // const bottomSheetRef = React.useRef(null);
+    // const snapPoints = React.useMemo(() => ['1', '100%'], []);
 
     // const navigation =  
     let home, homeInactive, trend, trendInactive, post, saved, savedInactive, profile, profileInactive
@@ -90,10 +90,10 @@ function BottomTabNavigator ({navigation}) {
     }
 
 
-    const toggleBottomSheet = () => {
-        bottomSheetRef.current.snapToIndex(showBottomSheet ? 0 : 1);
-        setShowBottomSheet(!showBottomSheet);
-    }
+    // const toggleBottomSheet = () => {
+    //     bottomSheetRef.current.snapToIndex(showBottomSheet ? 0 : 1);
+    //     setShowBottomSheet(!showBottomSheet);
+    // }
 
 
     const DummyScreen = () =>
@@ -184,7 +184,11 @@ function BottomTabNavigator ({navigation}) {
                     tabBarButton: props => (
                         <TouchableOpacity {...props}
                             onPress={() => 
-                                toggleBottomSheet()
+                                navigation.navigate("AddPost", {
+                                    forCommentOnComment: false,
+                                    forCommentOnPost: false,
+                                    forPost: false,
+                                })
                             } 
                         />
                     ),
@@ -212,7 +216,7 @@ function BottomTabNavigator ({navigation}) {
             </Bottom_Tab.Navigator>
             
 
-            <BottomSheet
+            {/* <BottomSheet
                 ref={bottomSheetRef}
                 index={0}
                 snapPoints={snapPoints}
@@ -247,7 +251,7 @@ function BottomTabNavigator ({navigation}) {
             >
                 <AddPostScreen navigation={navigation} route={{ params: { showBottomSheet: showBottomSheet, toggleBottomSheet: toggleBottomSheet, forCommentOnComment: false, forCommentOnPost: false} }}/>
 
-            </BottomSheet>
+            </BottomSheet> */}
 
 
         </>
