@@ -63,8 +63,8 @@ const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnP
   }else{
     navigation.navigate('Meme', {
         uploader: item.uploader,
-        replyMemeName: item.name,
-        imageUrl: item.url,
+        memeName: item.name,
+        template: item.url,
         height: item.height,
         width: item.width,
         useCount: item.useCount,
@@ -214,6 +214,8 @@ const AddPostScreen = ({navigation, route}) => {
           {flex: 1}
         ]}
       >
+        
+        
         <ImageBackground 
           source={theme == 'light' ? lightBackground : darkBackground} 
           resizeMode="cover"
@@ -231,64 +233,63 @@ const AddPostScreen = ({navigation, route}) => {
           />
 
           {
-          
-            <MasonryFlashList
-              ref={flashListRef}
-              data={memeTemplates}
-              numColumns={2}
+              <MasonryFlashList
+                ref={flashListRef}
+                data={memeTemplates}
+                numColumns={2}
 
-              // optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
+                // optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
 
-              onEndReached={memeTemplates[memeTemplates.length-1]?.snap && getNextTenTemplates() }
-              onEndReachedThreshold={1} //need to implement infinite scroll
-              
-              renderItem={renderItem}
-              // extraData={[]}
+                onEndReached={memeTemplates[memeTemplates.length-1]?.snap && getNextTenTemplates() }
+                onEndReachedThreshold={1} //need to implement infinite scroll
+                
+                renderItem={renderItem}
+                // extraData={[]}
 
-              removeClippedSubviews={true}
+                removeClippedSubviews={true}
 
-              estimatedItemSize={200}
-              estimatedListSize={{height: windowHeight, width: windowWidth}}
+                estimatedItemSize={200}
+                estimatedListSize={{height: windowHeight, width: windowWidth}}
 
-              showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
 
-              // overrideItemLayout={(layout, item) =>{
-              //   layout.span = windowWidth/2 - 8;
-              //   // layout.size = item.imageHeight * (layout.span/item.imageWidth);
-              // }}
+                // overrideItemLayout={(layout, item) =>{
+                //   layout.span = windowWidth/2 - 8;
+                //   // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+                // }}
 
-              ListHeaderComponent={
-                <View>
-                  {!(forCommentOnComment || forCommentOnPost) &&
-                    <PostBar/>
-                  }
+                ListHeaderComponent={
+                  <View>
+                    {!(forCommentOnComment || forCommentOnPost) &&
+                      <PostBar/>
+                    }
 
-                  <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
-                    <Text style={theme == 'light' ? styles.lightMemeTemplateText : styles.darkMemeTemplateText}>
-                        Meme Templates
-                    </Text>
+                    <View style={theme == 'light' ? styles.lightMemeTemplateContainer : styles.darkMemeTemplateContainer}>
+                      <Text style={theme == 'light' ? styles.lightMemeTemplateText : styles.darkMemeTemplateText}>
+                          Meme Templates
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              }
+                }
 
-              ListFooterComponent={
-                  <View style={{height: 100}}/>
-              }
+                ListFooterComponent={
+                    <View style={{height: 100}}/>
+                }
 
-              keyExtractor={keyExtractor}
+                keyExtractor={keyExtractor}
 
-              // refreshControl={
-              //   <RefreshControl 
-              //       // refreshing={isRefreshing}
-              //       onRefresh={() => {
-              //           toggleBottomSheet()
-              //       }}
-              //       // progressViewOffset={progress}
-              //       tintColor={'rgba(255, 255, 255, 0.0)'}
-              //       // progressViewOffset={0}
-              //   />
-              // }
-            />
+                // refreshControl={
+                //   <RefreshControl 
+                //       // refreshing={isRefreshing}
+                //       onRefresh={() => {
+                //           toggleBottomSheet()
+                //       }}
+                //       // progressViewOffset={progress}
+                //       tintColor={'rgba(255, 255, 255, 0.0)'}
+                //       // progressViewOffset={0}
+                //   />
+                // }
+              />
           }
             
 

@@ -1,18 +1,16 @@
 import React, {useContext} from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {ThemeContext} from '../../context-store/context';
 import { Feather } from '@expo/vector-icons';
 
 // light mode icons
 import BackLight from '../../assets/back.svg';
-import BookmarkLight from '../../assets/saved.svg';
 
 // dark mode icons
 import BackDark from '../../assets/back_light.svg';
-import BookmarkDark from '../../assets/saved_dark.svg';
 
-const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
+const FavoriteTemplatesTopBar = ({navToSearchMemes}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -45,21 +43,6 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
 
         </TouchableOpacity>
 
-        {/* bookmark button */}
-        <TouchableOpacity 
-            style={{flexDirection: 'row'}}
-            onPress={navToFavorites}
-        >
-            {
-                theme == 'light' ?
-                    <BookmarkLight style={styles.saveIcon} width={24} height={24}/>
-                :
-                    <BookmarkDark style={styles.saveIcon} width={24} height={24}/>
-            }
-
-            
-        </TouchableOpacity>
-
     </View>
 }
 
@@ -80,10 +63,9 @@ const styles = StyleSheet.create({
     },
     lightBar: {
         height: 38,
-        // width: 315,
         flex: 1,
         borderRadius: 20,
-        marginRight: 10,
+        marginRight: 15,
         marginTop: 40,
         marginBottom: 0,
         flexDirection: 'row',
@@ -94,10 +76,9 @@ const styles = StyleSheet.create({
     },
     darkBar: {
         height: 38,
-        // width: 315,
         flex: 1,
         borderRadius: 20,
-        marginRight: 10,
+        marginRight: 15,
         marginTop: 40,
         marginBottom: 0,
         flexDirection: 'row',
@@ -109,12 +90,6 @@ const styles = StyleSheet.create({
     backButton: {
         marginTop: 55,
         marginLeft: 10,
-        padding: 5,
-    },
-    saveIcon: {
-        marginTop: 54,
-        marginLeft: 5,
-        marginRight: 20,
         padding: 5,
     },
     backIcon: {
@@ -164,5 +139,5 @@ const styles = StyleSheet.create({
     
 });
 
-export default AddPostTopBar;
+export default FavoriteTemplatesTopBar;
  

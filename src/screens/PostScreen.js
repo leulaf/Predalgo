@@ -223,8 +223,7 @@ const PostScreen = ({navigation, route}) => {
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl : template);
     
-    const [finished, setFinished] = React.useState(template ? false : true);
-
+    const [finished, setFinished] = React.useState(template && !(imageUrl) ? false : true);
 
     const [isRefreshing, setIsRefreshing] = React.useState(false);
 

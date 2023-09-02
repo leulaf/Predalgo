@@ -1,14 +1,16 @@
 import React, {useContext, useRef, useState, useEffect,} from 'react';
-import {View, Text, StyleSheet, Button, TouchableOpacity, Dimensions} from 'react-native';
+import {View, Text, StyleSheet, ImageBackground, TouchableOpacity, Dimensions} from 'react-native';
+
 import TextTicker from 'react-native-text-ticker';
 
 import { StackActions } from '@react-navigation/native';
 
+import DisplayMeme from '../shared/DisplayMeme';
+
 import Animated, {FadeIn} from 'react-native-reanimated';
 
-import { MasonryFlashList } from '@shopify/flash-list';
+import { MasonryFlashList, FlashList } from '@shopify/flash-list';
 
-import { Image } from 'expo-image';
 import ResizableImage from '../shared/ResizableImage';
 
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
@@ -18,11 +20,52 @@ import { collection, addDoc, query, where, orderBy, limit, getDocs, } from "fire
 import GlobalStyles from '../constants/GlobalStyles';
 import MemeTopBar from '../ScreenTop/MemeTopBar'
 
-import DarkMemeCreate from '../../assets/post_meme_create_light.svg';
-import LightMemeCreate from '../../assets/post_meme_create_dark.svg';
+import DarkMemeCreate from '../../assets/post_meme_create_dark.svg';
+import LightMemeCreate from '../../assets/post_meme_create_light.svg';
+
+const lightBackground = require('../../assets/AddPostBackgroundLight.png');
+const darkBackground = require('../../assets/AddPostBackgroundDark.png');
+
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
+
+
+// const srenderItem = ({item, index}) => {
+//     // console.log(
+//     //     "-----------------------template---------------",
+//     //     item.template,
+//     //     "*******************state*******************",
+//     //     item.templateState)
+//     return (
+//         <Animated.View
+//             entering={FadeIn}
+//             style={
+//                 [
+//                     index % 2 == 1 ?
+//                         {marginLeft: 2, marginRight: 4, marginBottom: 6, } 
+//                     :
+//                         {marginLeft: 4, marginRight: 2, marginBottom: 6, }
+//                 ]
+//             }
+//         >
+
+//             <DisplayMeme
+//                 // navigation={navigation}
+//                 item={item}
+//                 style={{borderRadius: 10}}
+//                 maxHeight={500}
+//                 maxWidth={windowWidth/2 - 8}
+//                 template={item.template}
+//                 templateState={item.templateState}
+//             />
+
+//         </Animated.View>
+//     );
+// }
+
+
+
 
 const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
     if(forCommentOnComment || forCommentOnPost){
@@ -51,7 +94,8 @@ const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => ()
             forMemeComment: forCommentOnComment
         })
     }
-  }
+}
+
 
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
@@ -60,16 +104,12 @@ const MemeScreen = ({ navigation, route }) => {
 
     const [memeTemplates, setMemeTeplates] = useState([{id : "fir"}, {id: "sec"}]);
 
-    const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost } = route.params;
+    const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost, fromFavoriteTemplates } = route.params;
 
     const flashListRef = useRef(null);
    
     useEffect(() => {
-        useCount > 0 && getFirstTenMemes();
-
-        navigation.setOptions({
-            header: () => <MemeTopBar name={memeName} url={template} height={height} width={width} />,
-        });
+        (useCount > 0 || fromFavoriteTemplates)&& getFirstTenMemes();
     }, []);
 
     // console.log(template)
@@ -84,8 +124,10 @@ const MemeScreen = ({ navigation, route }) => {
         
         await getDocs(q)
         .then((snapshot) => {
+             
             let templates = snapshot.docs.map(doc => {
                 const data = doc.data();
+                // console.log(data)
                 const id = doc.id;
                 return { id, ...data }
             })
@@ -94,135 +136,156 @@ const MemeScreen = ({ navigation, route }) => {
         });
     }, []);
 
+    const renderItem = ({ item, index }) => {
+        if(item.id == "fir" || item.id == "sec"){
+            return null;
+        }
 
-
-    const renderItem = React.useCallback(({item, index}) => {
         return (
             <Animated.View
                 entering={FadeIn}
+                style={
+                    [
+                        index % 2 == 1 ?
+                            {marginLeft: 2, marginRight: 4, marginBottom: 6, } 
+                        :
+                            {marginLeft: 4, marginRight: 2, marginBottom: 6, }
+                    ]
+                }
             >
-                <TouchableOpacity
-                    activeOpacity={1}
-                    // onPress={navToMeme(item)}
-                    style={
-                    index % 2 == 1 ?
-                        {marginLeft: 2, marginRight: 4, marginBottom: 6} 
-                    :
-                        {marginLeft: 4, marginRight: 2, marginBottom: 6} 
-                    }
-                >
-                    <ResizableImage
-                        image={item.url}
-                        maxWidth={windowWidth/2 - 8}
-                        height={item.height}
-                        width={item.width}
-                        style={{borderRadius: 10}}
-                    />
-                </TouchableOpacity>
+
+                <DisplayMeme
+                    // navigation={navigation}
+                    theme={theme}
+                    item={item}
+                    style={{borderRadius: 10}}
+                    maxHeight={500}
+                    maxWidth={windowWidth - 4}
+                    template={item.template}
+                    templateState={item.templateState}
+                />
+
             </Animated.View>
         );
-    }, [])
 
+    };
 
     return (
         <Animated.View
             entering={FadeIn}
-            onTouchStart={e=> this.touchX = e.nativeEvent.pageX}
-            onTouchEnd={e => {
-            if (e.nativeEvent.pageX - this.touchX > 150)
-                // console.log('Swiped Right')
-                navigation.goBack()
-            }}
             style={theme == 'light' ? styles.lightContainer : styles.darkContainer}
         >
-                    
-                
-            {/* Memes */}
-            <MasonryFlashList
-                ref={flashListRef}
-                data={memeTemplates}
-                numColumns={2}
-                
-                optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
 
-                // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
-                // onEndReachedThreshold={1} //need to implement infinite scroll
-                
-                renderItem={renderItem}
-                // extraData={[]}
 
-                removeClippedSubviews={true}
+            <ImageBackground 
+                source={theme == 'light' ? lightBackground : darkBackground} 
+                resizeMode="cover"
+                // height={windowHeight}
+                // width={windowWidth}
+                style={theme == 'light' ? styles.lightBackground : styles.darkBackground}
+            >
 
-                estimatedItemSize={200}
-                estimatedListSize={{height: windowHeight, width: windowWidth}}
 
-                showsVerticalScrollIndicator={false}
+                {/* Memes */}
+                <FlashList
+                    ref={flashListRef}
+                    data={memeTemplates}
 
-                overrideItemLayout={(layout, item) =>{
-                    layout.span = windowWidth/2 - 8;
-                    // layout.size = item.imageHeight * (layout.span/item.imageWidth);
-                }}
+                    // extraData={[]}
 
-                ListHeaderComponent={
-                    // template image, meme name, uploader, use count
-                    <View style={theme == 'light' ? styles.lightMemeInfoContainer: styles.darkMemeInfoContainer}>
+                    renderItem={renderItem}
 
-                        <Image source={{uri: template}} style={styles.image} cachePolicy='disk'/>
+                    // onEndReached={commentsList[commentsList.length-1].snap && getNextTenComments }
+                    // onEndReachedThreshold={1} //need to implement infinite scroll
 
-                        <View style={{flexDirection: 'column', marginLeft: 10}}>
-                            {/* meme name */}
-                            <View style={styles.memeName}>
-                                {theme == "light" ?
-                                    <LightMemeCreate width={25} height={25} marginHorizontal={7} marginTop={1}/>
-                                    :
-                                    <DarkMemeCreate width={25} height={25} marginHorizontal={7} marginTop={1}/>
-                                }
+                    removeClippedSubviews={true}
 
-                                <TextTicker
-                                    style={theme == 'light' ? styles.lightMemeName: styles.darkMemeName}
-                                    duration={12000}
-                                    loop
-                                    // bounce
-                                    repeatSpacer={50}
-                                    marqueeDelay={1000}
-                                >
-                                    {memeName}
-                                </TextTicker>
+                    estimatedItemSize={400}
+                    estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+                    keyExtractor={keyExtractor}
+
+                    ListHeaderComponent={
+                        // template image, meme name, uploader, use count
+                        <View style={theme == 'light' ? styles.lightMemeInfoContainer: styles.darkMemeInfoContainer}>
+
+                            <ResizableImage
+                                image={template}
+                                height={height}
+                                width={width}
+                                maxHeight={300}
+                                maxWidth={windowWidth/2 - 8}
+                                style={styles.image}
+                            />
+
+                            <View style={{flexDirection: 'column', marginLeft: 10, marginTop: 90}}>
+                                {/* meme name */}
+                                <View style={styles.memeName}>
+                                    {theme == "light" ?
+                                        <LightMemeCreate width={25} height={25} marginHorizontal={7} marginTop={1}/>
+                                        :
+                                        <DarkMemeCreate width={25} height={25} marginHorizontal={7} marginTop={1}/>
+                                    }
+
+                                    <TextTicker
+                                        style={theme == 'light' ? styles.lightMemeName: styles.darkMemeName}
+                                        duration={12000}
+                                        loop
+                                        // bounce
+                                        repeatSpacer={50}
+                                        marqueeDelay={1000}
+                                    >
+                                        {memeName}
+                                    </TextTicker>
+                                </View>
+                                
+                                {/* @Uploader */}
+                                <Text style={theme == 'light' ? styles.lightUploaderText : styles.darkUploaderText}>
+                                    By @{uploader}
+                                </Text>
+
+                                {/* use count */}
+                                <Text style={theme == 'light' ? styles.lightUseCountText : styles.darkUseCountText}>
+                                    {useCount} memes
+                                </Text>
                             </View>
+
                             
-                            {/* @Uploader */}
-                            <Text style={theme == 'light' ? styles.lightUploaderText : styles.darkUploaderText}>
-                                By @{uploader}
-                            </Text>
-
-                            {/* use count */}
-                            <Text style={theme == 'light' ? styles.lightUseCountText : styles.darkUseCountText}>
-                                {useCount} memes
-                            </Text>
                         </View>
-                    </View>
-                }
+                    }
 
-                ListFooterComponent={
-                    <View style={{height: 100}}/>
-                }
+                    ListFooterComponent={
+                        <View style={{height: 200}}/>
+                    }
 
-                keyExtractor={keyExtractor}
-            />
+                    showsVerticalScrollIndicator={false}
+
+                    getItemType={getItemType}
+                />
+
+
+                
+
+            </ImageBackground>
+
+
+            <MemeTopBar navigation={navigation} theme={theme} name={memeName} url={template} height={height} width={width} fromFavoriteTemplates={fromFavoriteTemplates}/>
 
 
             {/* create meme button */}
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightUseTemplateButton : styles.darkUseTemplateButton}
-                onPress={navToEdit(navigation, {
-                    uploader: uploader,
-                    name: memeName,
-                    template: template,
-                    height: height,
-                    width: width,
-                    forCommentOnComment: forCommentOnComment,
-                    forCommentOnPost: forCommentOnPost,
-                }, forCommentOnComment, forCommentOnPost)}
+                onPress={
+                    navToEdit(navigation, {
+                        uploader: uploader,
+                        name: memeName,
+                        template: template,
+                        height: height,
+                        width: width,
+                        forCommentOnComment: forCommentOnComment,
+                        forCommentOnPost: forCommentOnPost,
+                    }, forCommentOnComment, forCommentOnPost)
+                }
             >
                 {theme == "light" ?
                     <LightMemeCreate width={28} height={28} alignSelf={'center'} marginRight={5} marginTop={4}/>
@@ -242,32 +305,46 @@ const MemeScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     lightContainer: {
         flex: 1,
-        backgroundColor: '#FAFAFA',
+        backgroundColor: '#FFFFFF',
     },
     darkContainer: {
         flex: 1,
-        backgroundColor: '#161616',
+        backgroundColor: 'rgba(20, 20, 20, 1)',
+    },
+    darkBackground: {
+        flex: 1,
+        height: windowHeight*1.7,
+        // justifyContent: 'center',
+    },
+    lightBackground: {
+        flex: 1,
+        height: windowHeight*1.6,
+        // justifyContent: 'center',
     },
     lightMemeInfoContainer: {
         flexDirection: 'row',
+        // marginTop: 100,
+        marginBottom: 15,
         borderRadius: 20,
-        borderBottomWidth: 1.5,
-        borderColor: '#DDDDDD'
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        // borderBottomWidth: 1.5,
+        // borderColor: '#DDDDDD'
     },
     darkMemeInfoContainer: {
         flexDirection: 'row',
+        // marginTop: 100,
+        marginBottom: 15,
         borderRadius: 20,
-        borderBottomWidth: 1,
-        borderBottomWidth: 1.5,
-        borderColor: '#2f2f2f'
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        // borderBottomWidth: 1,
+        // borderBottomWidth: 1.5,
+        // borderColor: '#2f2f2f'
     },
     image: {
         marginLeft: 7,
-        marginTop: 15,
+        marginTop: 100,
         marginBottom: 25,
         borderRadius: 20,
-        width: 150,
-        height: 150,
     },
     memeName: {
         width: 225,
@@ -335,8 +412,8 @@ const styles = StyleSheet.create({
         height: 55,
         borderRadius: 100,
         flexDirection: 'row',
-        marginTop: 700,
         position: 'absolute',
+        bottom: 70,
         backgroundColor: '#FFFFFF',
         alignSelf: 'center',
         justifyContent: 'center',
@@ -348,8 +425,8 @@ const styles = StyleSheet.create({
         height: 55,
         borderRadius: 100,
         flexDirection: 'row',
-        marginTop: 700,
         position: 'absolute',
+        bottom: 70,
         backgroundColor: '#151515',
         alignSelf: 'center',
         justifyContent: 'center',
@@ -371,3 +448,84 @@ const styles = StyleSheet.create({
 });
 
 export default MemeScreen;
+
+// "<MasonryFlashList
+// ref={flashListRef}
+// data={memeTemplates}
+// numColumns={2}
+
+// optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
+
+// // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+// // onEndReachedThreshold={1} //need to implement infinite scroll
+
+// renderItem={renderItem}
+// // extraData={[]}
+
+// removeClippedSubviews={true}
+
+// estimatedItemSize={200}
+// estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+// showsVerticalScrollIndicator={false}
+
+// overrideItemLayout={(layout, item) =>{
+//     layout.span = windowWidth/2 - 8;
+//     // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+// }}
+
+// ListHeaderComponent={
+//     // template image, meme name, uploader, use count
+//     // <View style={theme == 'light' ? styles.lightMemeInfoContainer: styles.darkMemeInfoContainer}>
+
+//     //     <ResizableImage
+//     //         image={template}
+//     //         height={height}
+//     //         width={width}
+//     //         maxHeight={300}
+//     //         maxWidth={windowWidth/2 - 8}
+//     //         style={styles.image}
+//     //     />
+
+//     //     <View style={{flexDirection: 'column', marginLeft: 10, marginTop: 90}}>
+//     //         {/* meme name */}
+//     //         <View style={styles.memeName}>
+//     //             {theme == "light" ?
+//     //                 <LightMemeCreate width={25} height={25} marginHorizontal={7} marginTop={1}/>
+//     //                 :
+//     //                 <DarkMemeCreate width={25} height={25} marginHorizontal={7} marginTop={1}/>
+//     //             }
+
+//     //             <TextTicker
+//     //                 style={theme == 'light' ? styles.lightMemeName: styles.darkMemeName}
+//     //                 duration={12000}
+//     //                 loop
+//     //                 // bounce
+//     //                 repeatSpacer={50}
+//     //                 marqueeDelay={1000}
+//     //             >
+//     //                 {memeName}
+//     //             </TextTicker>
+//     //         </View>
+            
+//     //         {/* @Uploader */}
+//     //         <Text style={theme == 'light' ? styles.lightUploaderText : styles.darkUploaderText}>
+//     //             By @{uploader}
+//     //         </Text>
+
+//     //         {/* use count */}
+//     //         <Text style={theme == 'light' ? styles.lightUseCountText : styles.darkUseCountText}>
+//     //             {useCount} memes
+//     //         </Text>
+//     //     </View>
+
+        
+//     // </View>
+// }
+
+// ListFooterComponent={
+//     // <View style={{height: 100}}/>
+// }
+
+// keyExtractor={keyExtractor}
+// />"

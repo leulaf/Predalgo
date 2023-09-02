@@ -20,8 +20,8 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, template, 
     const [repostProfilePic, setRepostProfilePic] = useState(null);
 
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
-    console.log( template);
-    const [finished, setFinished] = React.useState(template ? false : true);
+
+    const [finished, setFinished] = React.useState(template  && !(imageUrl) ? false : true);
 
     useEffect(() => {
         if(repostProfile != null){

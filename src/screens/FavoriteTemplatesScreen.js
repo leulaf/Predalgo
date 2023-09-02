@@ -1,12 +1,12 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {View, Image, Text, StyleSheet, TouchableOpacity, FlatList, Dimensions} from 'react-native';
+import {View, Image, Text, StyleSheet, ImageBackground, TouchableOpacity, FlatList, Dimensions} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import {ThemeContext} from '../../context-store/context';
 import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
-import SimpleTopBar from '../ScreenTop/SimpleTopBar';
+import FavoriteTemplatesTopBar from '../ScreenTop/FavoriteTemplatesTopBar';
 
 import { StackActions } from '@react-navigation/native';
 
@@ -17,10 +17,12 @@ import { MasonryFlashList } from '@shopify/flash-list';
 import ResizableImage from '../shared/ResizableImage';
 
 
-const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
-  if(forCommentOnComment || forCommentOnPost){
-    navigation.dispatch(
-        StackActions.replace('EditMeme', {
+const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnPost) => () => {
+    console.log(item)
+    if(forCommentOnComment || forCommentOnPost || forPost){
+      navigation.dispatch(
+          StackActions.replace('EditMeme', {
+            uploader: item.uploader,
             replyMemeName: item.name,
             imageUrl: item.url,
             height: item.height,
@@ -28,22 +30,45 @@ const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => (
             templateExists: true,
             forCommentOnComment: forCommentOnComment,
             forCommentOnPost: forCommentOnPost,
-            forMemeComment: forCommentOnComment
+            forPost: forPost,
+        })
+      )
+    }else{
+      navigation.navigate('Meme', {
+          uploader: item.uploader,
+          memeName: item.name,
+          template: item.url,
+          height: item.height,
+          width: item.width,
+          useCount: item.useCount,
+          uploader: item.uploader,
+          forCommentOnComment: forCommentOnComment,
+          forCommentOnPost: forCommentOnPost,
+          forPost: forPost,
+          fromFavoriteTemplates: true,
       })
-    )
-  }else{
-    navigation.navigate('Meme', {
-        memeName: item.name,
-        template: item.url,
-        height: item.height,
-        width: item.width,
-        useCount: item.useCount,
-        uploader: item.uploader,
+    }
+  }
+const navToSearchMemes = (navigation, forPost, forCommentOnComment, forCommentOnPost) => () => {
+    if(forCommentOnComment || forCommentOnPost || forPost){
+      navigation.dispatch(
+          StackActions.replace('SearchMemes', {
+          forCommentOnComment: forCommentOnComment,
+          forCommentOnPost: forCommentOnPost,
+          forPost: forPost,
+        })
+      )
+    }else{
+      navigation.navigate(('SearchMemes'), {
         forCommentOnComment: forCommentOnComment,
         forCommentOnPost: forCommentOnPost,
-    })
+        forPost: forPost,
+      })
+    }
   }
-}
+
+const lightBackground = require('../../assets/AddPostBackgroundLight.png');
+const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -52,17 +77,12 @@ const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString(
 
 const FavoriteTemplatesScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [memeTemplates, setMemeTemplates] = useState([{id: "fir"}]);
+    const [memeTemplates, setMemeTemplates] = useState([{id : "fir"}, {id: "sec"}]);
 
-    const {forCommentOnComment, forCommentOnPost} = route?.params;
+    const {forCommentOnComment, forCommentOnPost, forPost} = route?.params;
 
     useEffect(() => {
         getFirstFourTemplates();
-
-        // Sets the header to the SimpleTopBar component
-        navigation.setOptions({
-            header: () => <SimpleTopBar title={"Favorite Templates"}/>
-        });
     }, []);
 
     const getFirstFourTemplates = React.useCallback(async () => {
@@ -73,7 +93,9 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
         
         await getDocs(q)
         .then((snapshot) => {
+            
             let templates = snapshot.docs.map(doc => {
+                
                 const data = doc.data();
                 const id = doc.id;
                 return { id, ...data }
@@ -83,36 +105,37 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
     }, []);
 
     const renderItem = React.useCallback(({item, index}) => {
+
         return (
             <Animated.View
                 entering={FadeIn}
             >
-                <TouchableOpacity
-                    activeOpacity={1}
-                    onPress={navToMeme(navigation, item, forCommentOnComment, forCommentOnPost)}
-                    style={
-                    index % 2 == 1 ?
-                        {marginLeft: 2, marginRight: 4, marginBottom: 6} 
-                    :
-                        {marginLeft: 4, marginRight: 2, marginBottom: 6} 
-                    }
-                >   
-                    {/* Meme name */}
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={navToMeme(navigation, item, forPost, forCommentOnComment, forCommentOnPost)}
+                style={
+                  index % 2 == 1 ?
+                    {marginLeft: 2, marginRight: 2, marginBottom: 6} 
+                  :
+                    {marginLeft: 2, marginRight: 2, marginBottom: 6} 
+                }
+              >
+                {/* Meme name
                     <Text style={theme == 'light' ? styles.lightName : styles.darkName}>
                         {item.name}
-                    </Text>
+                    </Text> */}
 
-                    <ResizableImage
-                        image={item.url}
-                        maxWidth={windowWidth/2 - 8}
-                        maxHeight={500}
-                        height={item.height}
-                        width={item.width}
-                        style={{borderRadius: 10}}
-                    />
-                </TouchableOpacity>
+                <ResizableImage
+                  image={item.url}
+                  maxWidth={windowWidth/2 - 8}
+                  maxHeight={500}
+                  height={item.height}
+                  width={item.width}
+                  style={{borderRadius: 10}}
+                />
+              </TouchableOpacity>
             </Animated.View>
-        );
+          );
     }, [])
 
     
@@ -122,34 +145,60 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
             style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, {flex: 1}]}
         >
 
-            <MasonryFlashList
-                // ref={flashListRef}
-                data={memeTemplates}
-                numColumns={2}
+            <ImageBackground 
+                source={theme == 'light' ? lightBackground : darkBackground} 
+                resizeMode="cover"
+                // height={windowHeight}
+                // width={windowWidth}
+                style={theme == 'light' ? styles.lightBackground : styles.darkBackground}
+            >
 
-                // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
-                // onEndReachedThreshold={1} //need to implement infinite scroll
+                <FavoriteTemplatesTopBar
+                    navToSearchMemes={navToSearchMemes(navigation, forPost, forCommentOnComment, forCommentOnPost)}
+                    // closeBottomSheet={() => 
+                    //   toggleBottomSheet()
+                    // }
+                />
+
+                <MasonryFlashList
+                    // ref={flashListRef}
+                    data={memeTemplates}
+                    numColumns={2}
+
+                    // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+                    // onEndReachedThreshold={1} //need to implement infinite scroll
+                    
+                    renderItem={renderItem}
+                    // extraData={[]}
+
+                    removeClippedSubviews={true}
+
+                    estimatedItemSize={200}
+                    estimatedListSize={{height: windowHeight, width: windowWidth}}
+
+                    showsVerticalScrollIndicator={false}
+
+                    contentContainerStyle={{paddingTop: 5}}
+
+                    keyExtractor={keyExtractor}
+                />
+            </ImageBackground>
                 
-                renderItem={renderItem}
-                extraData={[memeTemplates]}
-
-                removeClippedSubviews={true}
-
-                estimatedItemSize={200}
-                estimatedListSize={{height: windowHeight, width: windowWidth}}
-
-                showsVerticalScrollIndicator={false}
-
-                contentContainerStyle={{paddingTop: 5}}
-
-                keyExtractor={keyExtractor}
-            />
-
       </Animated.View>
     );
 }
 
 const styles = StyleSheet.create({
+    darkBackground: {
+        flex: 1,
+        height: windowHeight*1.7,
+        // justifyContent: 'center',
+    },
+        lightBackground: {
+        flex: 1,
+        height: windowHeight*1.6,
+        // justifyContent: 'center',
+    },
     lightName: {
         fontSize: 22,
         fontWeight: '600',

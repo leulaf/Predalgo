@@ -5,6 +5,8 @@ import {ThemeContext} from '../../context-store/context';
 import { firebase, db, storage } from '../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc } from "firebase/firestore"; 
 
+import { getAuth } from 'firebase/auth';
+
 // light mode icons
 import BackLight from '../../assets/back.svg';
 import BookmarkLight from '../../assets/saved_inactive.svg';
@@ -17,49 +19,91 @@ import BookmarkedDark from '../../assets/saved_dark.svg';
 
 const windowWidth = Dimensions.get('window').width;
 
-const favoriteTemplate = async (name, url, height, width) => {
+const auth = getAuth();
 
-    const templateRef = doc(db, "favoriteImageTemplates", firebase.auth().currentUser.uid, "templates", name);
-    const templateSnapshot = await getDoc(templateRef);
-    
-    if (!templateSnapshot.exists()) {
+const favoriteTemplate = async (name, url, height, width) => {
+    return new Promise(async (resolve, reject) => {
+        const templateRef = doc(db, "favoriteImageTemplates", firebase.auth().currentUser.uid, "templates", name);
+        
         // add post to likes collection
         await setDoc(templateRef, {
+            uploader: auth.currentUser.displayName,
             name: name,
             url: url,
             height,
             width
         }).then(() => {
-            Alert.alert('Added to favorites');
-        })
-    }else{
-        deleteFavoriteTemplate(name);
-    }
-
-}
-
-const deleteFavoriteTemplate = async (name) => {
-    const templateRef = doc(db, 'favoriteImageTemplates', firebase.auth().currentUser.uid, "templates", name);
-
-    deleteDoc(templateRef).then(() => {
-        Alert.alert('Deleted from favorites');
-    }).catch((error) => {
-        console.log(error);
+            // Alert.alert('Added to favorites');
+            resolve(true);
+        }).catch((error) => {
+            // console.log(error);
+            reject(false);
+        });
     });
 }
 
-const MemeTopBar = ({name, url, height, width}) => {
-    const navigation = useNavigation();
-    const {theme,setTheme} = useContext(ThemeContext);
+const deleteFavoriteTemplate = async (name) => {
+    return new Promise(async (resolve, reject) => {
+        const templateRef = doc(db, 'favoriteImageTemplates', firebase.auth().currentUser.uid, "templates", name);
+
+        deleteDoc(templateRef).then(() => {
+            // Alert.alert('Deleted from favorites');
+            resolve(true);
+        }).catch((error) => {
+            // console.log(error);
+            reject(false);
+        });
+    });
+}
+
+const MemeTopBar = ({navigation, theme, name, url, height, width, fromFavoriteTemplates}) => {
+    const [bookmarked, setBookmarked] = useState(fromFavoriteTemplates ? fromFavoriteTemplates : false);
+
+    const toggleBookmark =  () => async()  => {
+        if(bookmarked){
+            setBookmarked(false);
+
+            await deleteFavoriteTemplate(name)
+            .then((result) => {
+                !result && setBookmarked(true);
+            })
+            .catch((error) => {
+                // console.log(error);
+                setBookmarked(true)
+            })
+        }else{
+            setBookmarked(true);
+
+            await favoriteTemplate(name, url, height, width)
+            .then((result) => {
+                !result && setBookmarked(false);
+            })
+            .catch((error) => {
+                // console.log(error);
+                setBookmarked(false)
+            })
+        }
+    }
+
+    let bookmarkIcon, bookmarkedIcon;
+    if(theme == 'light'){
+        bookmarkIcon = <BookmarkLight style={styles.backIcon} width={23} height={23}/>;
+        bookmarkedIcon = <BookmarkedLight style={styles.backIcon} width={23} height={23}/>;
+    }else{
+        bookmarkIcon = <BookmarkDark style={styles.backIcon} width={23} height={23}/>;
+        bookmarkedIcon = <BookmarkedDark style={styles.backIcon} width={23} height={23}/>;
+    }
+
 
     return (
         <View style={theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer}>
 
 
             {/* back button */}
-            <TouchableOpacity 
-                        style={{flex: 1, flexDirection: 'row'}}
-                        onPress={() => {navigation.goBack()}}
+            <TouchableOpacity
+                activeOpacity={0.9}
+                style={{flex: 1, flexDirection: 'row'}}
+                onPress={() => {navigation.goBack()}}
             >
                 {
                     theme == 'light' ?
@@ -69,7 +113,7 @@ const MemeTopBar = ({name, url, height, width}) => {
                 }
 
                 <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                    {name.substring(0, Math.min(name.length, 12)) + '...'}
+                    {name.substring(0, Math.min(name.length, 12)) + (name.length >= 12 ? '...' : '')}
                 </Text>
                 
             </TouchableOpacity>
@@ -77,14 +121,15 @@ const MemeTopBar = ({name, url, height, width}) => {
 
             {/* bookmark button */}
             <TouchableOpacity 
-                        style={{flexDirection: 'row'}}
-                        onPress={() => {favoriteTemplate(name, url, height, width)}}
+                activeOpacity={0.3}
+                style={{flexDirection: 'row'}}
+                onPress={toggleBookmark()}
             >
                 {
-                    theme == 'light' ?
-                        <BookmarkLight style={styles.backIcon} width={23} height={23}/>
+                    bookmarked ?
+                        bookmarkedIcon
                     :
-                        <BookmarkDark style={styles.backIcon} width={23} height={23}/>
+                        bookmarkIcon
                 }
                 
                 <Text style={theme == 'light' ? styles.lightFavoriteText : styles.darkFavoriteText}>
@@ -100,18 +145,24 @@ const MemeTopBar = ({name, url, height, width}) => {
 
 const styles = StyleSheet.create({
     lightTopContainer: {
-        backgroundColor: '#FCFCFC',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
         height: 90,
+        width: "100%",
         flexDirection: 'row',
-        borderBottomWidth: 1.5,
-        borderColor: '#DDDDDD'
+        // borderBottomWidth: 1.5,
+        // borderColor: '#DDDDDD',
+        position: 'absolute',
+        top: 0,
     },
     darkTopContainer: {
-        backgroundColor: '#0C0C0C',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
         height: 90,
+        width: "100%",
         flexDirection: 'row',
-        borderBottomWidth: 1.5,
-        borderColor: '#2f2f2f'
+        // borderBottomWidth: 1.5,
+        // borderColor: '#2f2f2f',
+        position: 'absolute',
+        top: 0,
     },
     backIcon: {
         // alignSelf: 'center',

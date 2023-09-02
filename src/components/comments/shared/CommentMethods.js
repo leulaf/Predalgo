@@ -94,7 +94,7 @@ const onLike = async (replyToPostId, commentId) => {
 
 
 const onSelectMood = async (replyToPostId, commentId, mood) => {
-    console.log(replyToPostId, "  ", commentId, "  ", mood)
+    // console.log(replyToPostId, "  ", commentId, "  ", mood)
     return new Promise(async (resolve, reject) => {
 
         // update like count for Comment
@@ -132,7 +132,7 @@ const onSelectMood = async (replyToPostId, commentId, mood) => {
 
 
 const onUnselectMood = async (replyToPostId, commentId, mood) => {
-    console.log(replyToPostId, "  ", commentId, "  ", mood)
+    // console.log(replyToPostId, "  ", commentId, "  ", mood)
     return new Promise(async (resolve, reject) => {
 
         // update like count for Comment

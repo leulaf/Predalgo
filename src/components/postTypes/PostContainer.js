@@ -69,8 +69,6 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
     const [deleted, setDeleted] = useState(false);
     const [overlayVisible, setOverlayVisible] = useState(false);
 
-    const [image, setImage] = useState(imageUrl ? imageUrl : template);
-
 
     let threeDots
     
@@ -93,7 +91,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
         data = postSnapshot.data();
 
         if (postSnapshot.exists) {
-            await deleteDoc(commentRef).then(async () => {
+            await deleteDoc(postRef).then(async () => {
                 
                 Alert.alert('Post deleted!');
                 setDeleted(true);
@@ -117,6 +115,12 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                     }).catch((error) => {
                         // Uh-oh, an error occurred!
                         // console.log(error);
+                    });
+                } else if (data.memeName) {
+                    const templateRef = doc(db, "imageTemplates", data.memeName);
+
+                    await updateDoc(templateRef, {
+                        useCount: increment(1)
                     });
                 }
 

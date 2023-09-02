@@ -14,8 +14,61 @@ import getItemType from '../../shared/GetItemType';
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
-const itemEquals = (prev, next) => {
-    return true
+const renderItem = ({ item, index }) => {
+    if(item.imageUrl || item.template){
+        return (
+            <ImagePost
+                repostProfile={item.repostProfile}
+                repostComment={item.repostComment}
+                imageUrl={item.imageUrl}
+                imageHeight={item.imageHeight}
+                imageWidth={item.imageWidth}
+                template={item.template}
+                templateState={item.templateState}
+                title={item.title}
+                tags={item.tags}
+                memeName={item.memeName}
+                profile={item.profile}
+                username={item.username}
+                profilePic={item.profilePic}
+                postId={item.id}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
+            />
+        )
+    }else if(item.imageUrls){
+        return (
+            <MultiImagePost
+                repostProfile={item.repostProfile}
+                repostComment={item.repostComment}
+                title={item.title}
+                imageUrls={item.imageUrls}
+                tags={item.tags}
+                profile={item.profile}
+                username={item.username}
+                profilePic={item.profilePic}
+                postId={item.id}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
+            />
+        )
+    }else if(item.text){
+        return (
+            <TextPost
+                repostProfile={item.repostProfile}
+                repostComment={item.repostComment}
+                title={item.title}
+                text={item.text}
+                tags={item.tags}
+                profile={item.profile}
+                username={username}
+                profilePic={profilePic}
+                postId={item.id}
+                likesCount={item.likesCount}
+                commentsCount={item.commentsCount}
+            />
+        )
+    }
 };
 
 // const MemoImagePost = React.memo(({item, theme, index, navigation})=>{
@@ -95,64 +148,6 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
             }
         </View>
     , [byNewPosts, byPopularPosts, theme]);
-        
-
-    const renderItem = React.useCallback(({ item, index }) => {
-        if(item.imageUrl || item.template){
-            return (
-                <ImagePost
-                    repostProfile={item.repostProfile}
-                    repostComment={item.repostComment}
-                    imageUrl={item.imageUrl}
-                    imageHeight={item.imageHeight}
-                    imageWidth={item.imageWidth}
-                    template={item.template}
-                    templateState={item.templateState}
-                    title={item.title}
-                    tags={item.tags}
-                    memeName={item.memeName}
-                    profile={item.profile}
-                    username={username}
-                    profilePic={profilePic}
-                    postId={item.id}
-                    likesCount={item.likesCount}
-                    commentsCount={item.commentsCount}
-                />
-            )
-        }else if(item.imageUrls){
-            return (
-                <MultiImagePost
-                    repostProfile={item.repostProfile}
-                    repostComment={item.repostComment}
-                    title={item.title}
-                    imageUrls={item.imageUrls}
-                    tags={item.tags}
-                    profile={item.profile}
-                    username={username}
-                    profilePic={profilePic}
-                    postId={item.id}
-                    likesCount={item.likesCount}
-                    commentsCount={item.commentsCount}
-                />
-            )
-        }else if(item.text){
-            return (
-                <TextPost
-                    repostProfile={item.repostProfile}
-                    repostComment={item.repostComment}
-                    title={item.title}
-                    text={item.text}
-                    tags={item.tags}
-                    profile={item.profile}
-                    username={username}
-                    profilePic={profilePic}
-                    postId={item.id}
-                    likesCount={item.likesCount}
-                    commentsCount={item.commentsCount}
-                />
-            )
-        }
-    }, []);
 
 
     return (

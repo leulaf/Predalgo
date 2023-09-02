@@ -14,15 +14,15 @@ export default CreateMeme = ({image, templateState, setFinished, setImage}) => {
         <PinturaEditor
             ref={editorRef}
             
-            // src={image}
+            src={image}
             // onClose={() => console.log('closed')}
             // onDestroy={() => console.log('destroyed')}
-            // onLoad={() => 
-            //     editorRef.current.editor.processImage(templateState)
-            // }
-            onInit={() => 
-                editorRef.current.editor.processImage(image, templateState)
+            onLoad={() => 
+                editorRef.current.editor.processImage(templateState)
             }
+            // onInit={() => 
+            //     editorRef.current.editor.processImage(image, templateState)
+            // }
             onProcess={async({ dest }) => {
                 manipulateAsync(dest, [], ).then((res) => {
                     setFinished(true);

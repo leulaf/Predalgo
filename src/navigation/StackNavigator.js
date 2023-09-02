@@ -106,7 +106,8 @@ const MainStackNavigator = ({}) => {
         />
         <Stack.Screen name="Meme" component={MemeScreen}
             options={{
-                // headerShown: false,
+                headerShown: false,
+                gestureResponseDistance: windowWidth,
             }}
         />
         <Stack.Screen name="SearchMemes" component={SearchMemesScreen}
@@ -117,7 +118,7 @@ const MainStackNavigator = ({}) => {
         />
         <Stack.Screen name="FavoriteTemplates" component={FavoriteTemplatesScreen}
             options={{
-                // headerShown: false,
+                headerShown: false,
                 gestureResponseDistance: windowWidth,
             }}
         />

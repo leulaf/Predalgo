@@ -217,7 +217,7 @@ const CommentScreen = ({navigation, route}) => {
     const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
 
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
-    const [finished, setFinished] = useState(template ? false : true);
+    const [finished, setFinished] = useState(template  && !(imageUrl)? false : true);
 
 
     useEffect(() => {

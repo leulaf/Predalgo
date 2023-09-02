@@ -93,6 +93,12 @@ const SaveMemePostData = async (title, text, memeName, templateUrl, imageState, 
                 posts: increment(1)
             });
 
+            const templateRef = doc(db, "imageTemplates", memeName);
+
+            await updateDoc(templateRef, {
+                useCount: increment(1)
+            });
+
             resolve(docRef.id);
             // Alert.alert("Post uploaded successfully!");
         }).catch(function (error) {
