@@ -60,35 +60,51 @@ const intToString = (commentCount) => {
     }
 };
 
+
 // update like count and add post to liked collection
 const onLike = async (replyToPostId, commentId) => {
     return new Promise(async (resolve, reject) => {
         const likedRef = doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId);
-        const likedSnapshot = await getDoc(likedRef);
-    
-        if (!likedSnapshot.exists()) {
 
-            // add post to likes collection
-            await setDoc(likedRef, {});
-            
-            // update like count for Comment
-            const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        // add post to likes collection
+        await setDoc(likedRef, {});
+        
+        // update like count for Comment
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
 
-            await updateDoc(commentRef, {
-                likesCount: increment(1)
-            })
-            .then(() => {
-                resolve(true);
-            })
-            .catch((error) => {
-                console.log(error);
-                resolve(false);
-            });
-
-
-        }else{
+        await updateDoc(commentRef, {
+            likesCount: increment(1)
+        })
+        .then(() => {
             resolve(true);
-        }
+        })
+        .catch((error) => {
+            // console.log(error);
+            resolve(false);
+        });
+    });
+};
+
+
+// update like count and add post to liked collection
+const onDisike = async (replyToPostId, commentId) => {
+    return new Promise(async (resolve, reject) => {
+        // delete comment from likedComments collection
+        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
+
+        // update like count for Comment
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+
+        await updateDoc(commentRef, {
+            likesCount: increment(-1)
+        })
+        .then(() => {
+            resolve(true);
+        })
+        .catch((error) => {
+            // console.log(error);
+            resolve(false);
+        });
     });
 };
 
@@ -167,26 +183,6 @@ const onUnselectMood = async (replyToPostId, commentId, mood) => {
 )};
 
 
-// update like count and add post to liked collection
-const onDisike = async (replyToPostId, commentId) => {
-    return new Promise(async (resolve, reject) => {
-        // delete comment from likedComments collection
-        await deleteDoc(doc(db, "likedComments", firebase.auth().currentUser.uid, "comments", commentId))
 
-        // update like count for Comment
-        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
-
-        await updateDoc(commentRef, {
-            likesCount: increment(-1)
-        })
-        .then(() => {
-            resolve(true);
-        })
-        .catch((error) => {
-            // console.log(error);
-            resolve(false);
-        });
-    });
-};
 
 export { onNavToComment, onReply, intToString, onDisike, onLike, onSelectMood, onUnselectMood };

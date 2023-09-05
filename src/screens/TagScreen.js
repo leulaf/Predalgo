@@ -7,7 +7,7 @@ import { db, storage } from '../config/firebase';
 import { collection, query, where, orderBy, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
-import AllTagPosts from '../components/postTypes/AllTagPosts';
+import AllTagPosts from '../components/posts/AllTagPosts';
 
 export default function TagScreen({navigation, route}){
     const {theme,setTheme} = useContext(ThemeContext);

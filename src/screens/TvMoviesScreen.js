@@ -5,7 +5,7 @@ import GlobalStyles from '../constants/GlobalStyles';
 import Carousel from 'react-native-reanimated-carousel';
 import TextPost from '../components/postTypes/TextPost';
 import PostBar from '../components/PostBar';
-import AllPosts from '../components/postTypes/AllPosts';
+import AllPosts from '../components/posts/AllPosts';
 
 const posts = [
     {

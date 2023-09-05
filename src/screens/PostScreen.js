@@ -16,11 +16,11 @@ import { FlashList } from '@shopify/flash-list';
 import LottieView from 'lottie-react-native';
 
 import { Image } from 'expo-image';
-import ResizableImage from '../shared/ResizableImage';
+import ResizableImage from '../shared/functions/ResizableImage';
 
 import { fetchFirstTenPostCommentsByRecent, fetchFirstTenPostCommentsByPopular, fetchNextTenPopularComments } from '../shared/post/GetPostComments';
 
-import CreateMeme from '../shared/CreateMeme';
+import CreateMeme from '../shared/functions/CreateMeme';
 
 import ContentBottom from '../components/postTypes/ContentBottom';
 
@@ -30,8 +30,8 @@ import ReplyBottomSheet from '../components/replyBottom/comments/PostReplyBottom
 
 import MainComment from '../components/comments/mainComment/MainComment';
 
-import getItemType from '../shared/GetItemType'
-import overrideItemLayout from '../shared/OverrideItemLayout'
+import getItemType from '../shared/functions/GetItemType'
+import overrideItemLayout from '../shared/functions/OverrideItemLayout'
 
 
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
@@ -110,17 +110,17 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                 activeOpacity={1}
                     style={
                         theme == 'light' ? 
-                            !following ? styles.lightFollowButton : styles.lightFollowingButton
+                            !following ? styles.lightFollowButton : styles.lightFollowButton
                         :
-                            !following ? styles.darkFollowButton : styles.darkFollowingButton
+                            !following ? styles.darkFollowButton : styles.darkFollowButton
                     }
                     onPress={toggleFollowing()}
                 >
                     <Text style={
                         theme == 'light' ?
-                            !following ? styles.lightFollowText : styles.lightFollowingText
+                            !following ? styles.lightFollowText : styles.lightFollowText
                         :
-                            !following ? styles.darkFollowText : styles.darkFollowingText
+                            !following ? styles.darkFollowText : styles.darkFollowText
                         }
                     >
                         {following ? 'Following' : 'Follow'}
@@ -539,49 +539,21 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#3d3d3d',
         borderRadius: 20,
-        width: 75,
+        width: "auto",
         height: 37,
         marginRight: 6,
         marginBottom: 4,
-        // borderWidth: 1.2,
-        // borderColor: '#555555',
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
     },
     darkFollowButton: {
         flexDirection: 'column',
-        backgroundColor: '#333333',
-        borderRadius: 20,
-        width: 75,
-        height: 37,
-        marginRight: 6,
-        marginBottom: 4,
-        borderWidth: 1.3,
-        borderColor: '#555555',
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-    },
-    lightFollowingButton: {
-        flexDirection: 'column',
-        backgroundColor: '#3d3d3d',
-        borderRadius: 20,
-        width: 95,
-        height: 37,
-        marginRight: 5,
-        marginBottom: 4,
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-    },
-    darkFollowingButton: {
-        flexDirection: 'column',
         backgroundColor: '#EAEAEA',
         borderRadius: 20,
-        width: 95,
+        width: "auto",
         height: 37,
-        marginRight: 5,
+        marginRight: 6,
         marginBottom: 4,
         alignItems: 'center',
         alignContent: 'center',
@@ -592,28 +564,16 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontWeight: '600',
         alignSelf: 'center',
-        marginBottom: 1
+        marginBottom: 1,
+        marginHorizontal: 12,
     },
     darkFollowText: {
-        fontSize: 17,
-        color: '#ffffff',
-        fontWeight: '600',
-        alignSelf: 'center',
-        marginBottom: 1
-    },
-    lightFollowingText: {
-        fontSize: 17,
-        color: '#ffffff',
-        fontWeight: '600',
-        alignSelf: 'center',
-        marginBottom: 1
-    },
-    darkFollowingText: {
         fontSize: 17,
         color: '#000000',
         fontWeight: '600',
         alignSelf: 'center',
-        marginBottom: 1
+        marginBottom: 1,
+        marginHorizontal: 12,
     },
  
 });

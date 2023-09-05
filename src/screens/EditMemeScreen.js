@@ -1,7 +1,9 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
-import {View, Text, TextInput, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import {View, Text, TextInput, ImageBackground, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
 import { Overlay } from 'react-native-elements';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
+
+import { BlurView } from 'expo-blur';
 
 import Emojis from '../constants/EmojiStickers';
 
@@ -9,13 +11,19 @@ import EditImageTopBar from '../ScreenTop/EditImageTopBar';
 
 import { StackActions } from '@react-navigation/native';
 
-import {uploadNewTemplate, addNewTemplate} from '../shared/AddNewTemplate';
+import {uploadNewTemplate, addNewTemplate} from '../shared/functions/AddNewTemplate';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
 import {
     createMarkupEditorToolStyle,
     createMarkupEditorToolStyles,
 } from "@pqina/pintura";
+
+const windowWidth = Dimensions.get('screen').width;
+const windowHeight = Dimensions.get('screen').height;
+
+const lightBackground = require('../../assets/AddPostBackgroundLight.png');
+const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
@@ -50,9 +58,9 @@ const EditMemeScreen = ({ navigation, route }) => {
 
 
     useEffect(() => {
-        navigation.setOptions({
-            header: () => <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} navigation={navigation}/>,
-        });
+        // navigation.setOptions({
+        //     header: () => <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} navigation={navigation}/>,
+        // });
     }, []);
 
     // const stringifyImageState = (imageState) => {
@@ -204,7 +212,7 @@ const EditMemeScreen = ({ navigation, route }) => {
     }
 
     const navToReply = async (memeName, dest, imageState) => {
-        console.log("replyMemeName", replyMemeName, "memeName", memeName);
+        // console.log("replyMemeName", replyMemeName, "memeName", memeName);
         if(forPost){
             setImagePost({
                 memeName: memeName,
@@ -218,6 +226,10 @@ const EditMemeScreen = ({ navigation, route }) => {
                 imageState: imageState,
                 templateExists: templateExists,
             });
+
+            editorRef.current.editor.close();
+            setOverlayVisible(false);
+            navigation.goBack(null);
         }else if(forCommentOnComment || forCommentOnPost){
             setImageReply({
                 memeName: memeName,
@@ -231,97 +243,204 @@ const EditMemeScreen = ({ navigation, route }) => {
                 imageState: imageState,
                 templateExists: templateExists,
             });
-        } 
+
+            editorRef.current.editor.close();
+            setOverlayVisible(false);
+            navigation.goBack(null);
+        }else{
+            setImagePost({
+                memeName: memeName,
+                uri: dest,
+                undeditedUri: templateExists ? imageUrl : image,
+                template: templateExists ? imageUrl : null,
+                height: height,
+                width: width,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
+                imageState: imageState,
+                templateExists: templateExists,
+            });
+            navigation.dispatch(
+                StackActions.replace('CreatePost', {
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
+                    forMemeComment: forMemeComment,
+                    forMemePost: forMemePost,
+                })
+            );
+        }
         
 
-        editorRef.current.editor.close();
-        setOverlayVisible(false);
-        navigation.goBack(null);
+        
     }
 
 
     return (
-        <View style={styles.container}>
+        <View style={theme == 'light' ? styles.lightBackground : styles.darkBackground}>
 
-            <PinturaEditor
-                ref={editorRef}
-                {...editorDefaults}
-                style={{
-                    width: "100%",
-                    height: "95%",
-                    borderWidth: 1,
-                    borderColor: "#fff",
-                    marginTop: 5
-                }}
-                styleRules={`
-                    .pintura-editor {
-                        --color-background: 255, 255, 255;
-                        --color-foreground: 0, 0, 0;
-                    }
-                `}
-                util={'annotate'}
-                utils={[
-                    'annotate',
-                    'filter',
-                    'finetune',
-                    'crop',
-                    'sticker',
-                    // 'decorate',
-                    'frame',
-                    'redact',
-                    // 'resize',
-                ]}
-                stickers={Emojis}
-                markupEditorToolStyles={createMarkupEditorToolStyles({
-                    text: createMarkupEditorToolStyle("text", {
-                        fontSize: 75,
-                    }),
-                })}
-                markupEditorToolbar={[
-                    ['text', 'Text', { disabled: false }],
-                    ['sharpie', 'Sharpie', { disabled: false }],
-                    ['eraser', 'Eraser', { disabled: false }],
-                    ['arrow', 'Arrow', { disabled: false }],
-                    ['ellipse', 'Ellipse', { disabled: false }],
-                    ['rectangle', 'Rectangle', { disabled: false }],
-                    ['line', 'Line', { disabled: false }],
-                    ['path', 'Path', { disabled: false }],
-                    ['preset', 'Preset', { disabled: false }],
-                ]}
-                imageFrame={{
-                    // current style properties
-                    frameColor: [0, 0, 0],
-                }}
-                // imageCropAspectRatio={1}
-                src={image}
-                onLoaderror={(err) => {
-                    // console.log("onLoaderror", err);
-                }}
-                onLoad={handleEditorLoad}
-                onProcess={({ dest, imageState }) => {
-                    // dest is output file in dataURI format
-                    // console.log("onProcess", imageState, "size", dest.length);
-                    if(templateExists){
-                        navToReply(replyMemeName, dest, imageState);
-                    }else if(forCommentOnComment || forCommentOnPost || forPost){
-                        setImageResult(dest);
-                        // setStoredImageState(stringifyImageState(imageState));
-                        setStoredImageState(imageState);
-                        setOverlayVisible(true);
-                    }else if(memeName){
-                        // navigation.navigate('CreatePost', {imageUrl: dest, memeName: memeName});
-                    }
-                    
-                }}
-            />
-
+            <ImageBackground 
+                source={theme == 'light' ? lightBackground : darkBackground} 
+                resizeMode="cover"
+                // height={windowHeight}
+                // width={windowWidth}
+                style={theme == 'light' ? styles.lightBackground : styles.darkBackground}
+            >
                 
+                {/* <BlurView
+                    tint = {theme == 'light' ?  "light" : "dark"}
+                    intensity={theme == 'light' ?  10 : 6}
+                    style={[StyleSheet.absoluteFill, {position: 'absolute', height: 175, top: 0, }]}
+                />
+
+                <BlurView
+                    tint = {theme == 'light' ?  "light" : "dark"}
+                    intensity={theme == 'light' ?  10 : 6}
+                    style={[StyleSheet.absoluteFill, {position: 'absolute', height: 225, top: windowHeight - 225, left: 0, right: 0}]}
+                /> */}
+
+                <View
+                    // tint = {theme == 'light' ?  "light" : "dark"}
+                    // intensity={theme == 'light' ?  10 : 5}
+                    style={[{backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.75)' : 'rgba(20, 20, 20, 0.83)',
+                        position: 'absolute', height: "17%", top: 0, left: 0, right: 0}]}
+                />
+
+                <View
+                    // tint = {theme == 'light' ?  "light" : "dark"}
+                    // intensity={theme == 'light' ?  5 : 5}
+                    style={[{backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.75)' : 'rgba(20, 20, 20, 0.83)',
+                        position: 'absolute', height: "21%", top: "79%", left: 0, right: 0}]}
+                />
+                
+
+
+                {/* <View
+                    // tint = {theme == 'light' ?  "light" : "dark"}
+                    // intensity={theme == 'light' ?  5 : 5}
+                    style={[{backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(20, 20, 20, 0.5)',
+                        position: 'absolute', height: "100%", top: 0, left: 0, right: 0}]}
+                /> */}
+
+
+                {/* Top bar with back and finish button */}
+                <EditImageTopBar forMeme={true} onSave={() => editorRef.current.editor.processImage()} onGoBack={() => onGoBack()} theme={theme} navigation={navigation}/>
+
+                <PinturaEditor
+                    ref={editorRef}
+                    {...editorDefaults}
+                    style={{
+                        width: "100%",
+                        height: "88%",
+                        // borderWidth: 1,
+                        // borderColor: "#fff",
+                        marginTop: 5,
+                    }}
+                    enableButtonRevert={false} // removes the revert button
+                    enableButtonExport={false} // removes the finished editing button with check mark
+                    styleRules={theme == 'light' ? 
+                        `
+                            .pintura-editor {
+                                --color-background: 255, 255, 255;
+                                --color-foreground: 0, 0, 0;
+                                --font-size: 18px;
+                            }
+                            .pintura-editor {
+                                --color-focus: 255, 255, 255;
+                            }
+                            .pintura-editor {
+                                --color-primary: #000000;
+                                --color-primary-dark: #000000;
+                                --color-primary-text: #000000;
+                                --color-secondary: #000000;
+                                --color-secondary-dark: #000000;
+                            }
+                        ` 
+                    : 
+                        `
+                            .pintura-editor {
+                                --color-background: 0, 0, 0;
+                                --color-foreground: 255, 255, 255;
+                                --font-size: 18px;
+                            }
+                            .pintura-editor {
+                                --color-focus: 0, 0, 0;
+                            }
+                            .pintura-editor {
+                                --color-primary: #ffffff;
+                                --color-primary-dark: #ffffff;
+                                --color-primary-text: #ffffff;
+                                --color-secondary: #ffffff;
+                                --color-secondary-dark: #ffffff;
+                            }
+                        ` 
+                    }
+                    util={'annotate'}
+                    utils={[
+                        'annotate',
+                        'filter',
+                        'finetune',
+                        'crop',
+                        'sticker',
+                        // 'decorate',
+                        'frame',
+                        'redact',
+                        // 'resize',
+                    ]}
+                    stickers={Emojis}
+                    markupEditorToolStyles={createMarkupEditorToolStyles({
+                        text: createMarkupEditorToolStyle("text", {
+                            fontSize: 70,
+                            // color: theme == 'light' ? [0, 0, 0] : [255, 255, 255],
+                        }),
+                    })}
+                    enableCanvasAlpha={true}
+                    markupEditorToolbar={[
+                        ['text', 'Text', { disabled: false }],
+                        ['sharpie', 'Sharpie', { disabled: false }],
+                        ['eraser', 'Eraser', { disabled: false }],
+                        ['arrow', 'Arrow', { disabled: false }],
+                        ['ellipse', 'Ellipse', { disabled: false }],
+                        ['rectangle', 'Rectangle', { disabled: false }],
+                        ['line', 'Line', { disabled: false }],
+                        ['path', 'Path', { disabled: false }],
+                        ['preset', 'Preset', { disabled: false }],
+                    ]}
+                    imageFrame={{
+                        // current style properties
+                        frameColor: theme == 'light' ? [0, 0, 0] : [255, 255, 255],
+                    }}
+                    // imageCropAspectRatio={1}
+                    src={image}
+                    onLoaderror={(err) => {
+                        // console.log("onLoaderror", err);
+                    }}
+                    
+                    onLoad={handleEditorLoad}
+                    onProcess={({ dest, imageState }) => {
+                        // dest is output file in dataURI format
+                        // console.log("onProcess", imageState, "size", dest.length);
+                        if(templateExists){
+                            navToReply(replyMemeName, dest, imageState);
+                        }else if(forCommentOnComment || forCommentOnPost || forPost){
+                            setImageResult(dest);
+                            // setStoredImageState(stringifyImageState(imageState));
+                            setStoredImageState(imageState);
+                            setOverlayVisible(true);
+                        }else if(memeName){
+                            // navigation.navigate('CreatePost', {imageUrl: dest, memeName: memeName});
+                        }
+                        
+                    }}
+                />
+
+            </ImageBackground>
+
 
             {/* Ask user to upload template */}
             {/* Edit profile bio */}
             <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
 
-               
+            
                     { !(replyMemeName && replyMemeName != true) &&
                         <View>
                             <Text style={styles.askText}>Can other users use the original image to create memes?</Text>
@@ -424,6 +543,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                 />
 
             }
+
         </View>
   );
 };
@@ -431,9 +551,21 @@ const EditMemeScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        // backgroundColor: "#fff",
         alignItems: "center",
         // justifyContent: "center",
+    },
+    darkBackground: {
+        flex: 1,
+        height: windowHeight*1.7,
+        backgroundColor: "#000",
+        // justifyContent: 'center',
+    },
+    lightBackground: {
+        flex: 1,
+        height: windowHeight*1.6,
+        backgroundColor: "#fff",
+        // justifyContent: 'center',
     },
     image: {
         // flex: 1,

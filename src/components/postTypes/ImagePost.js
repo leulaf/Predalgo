@@ -1,65 +1,65 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { } from 'react';
 import { View, StyleSheet, Dimensions} from 'react-native';
-import { firebase, storage, db } from '../../config/firebase';
-import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+// import { firebase, storage, db } from '../../config/firebase';
+// import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import PostContainer from './PostContainer';
 
-import CreateMeme from '../../shared/CreateMeme';
+import CreateMeme from '../../shared/functions/CreateMeme';
 
-import ResizableImage from '../../shared/ResizableImage';
+import ResizableImage from '../../shared/functions/ResizableImage';
 
 import { useNavigation } from '@react-navigation/native';
 
 const windowWidth = Dimensions.get("screen").width;
 
-const ImagePost = ({ title, username = "", profilePic = "", imageUrl, template, templateState, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
+const ImagePost = ({ title, username, profilePic, imageUrl, template, templateState, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
     const navigation = useNavigation();
-    const [profilePicState, setProfilePicState] = useState(profilePic);
-    const [usernameState, setUsernameState] = useState(username);
-    const [repostUsername, setRepostUsername] = useState(null);
-    const [repostProfilePic, setRepostProfilePic] = useState(null);
+    // const [profilePicState, setProfilePicState] = useState(profilePic);
+    // const [usernameState, setUsernameState] = useState(username);
+    // const [repostUsername, setRepostUsername] = useState(null);
+    // const [repostProfilePic, setRepostProfilePic] = useState(null);
 
-    const [image, setImage] = useState(imageUrl ? imageUrl : template);
+    const [image, setImage] = React.useState(imageUrl ? imageUrl : template);
 
     const [finished, setFinished] = React.useState(template  && !(imageUrl) ? false : true);
 
-    useEffect(() => {
-        if(repostProfile != null){
-            const userRef = doc(db, 'users', repostProfile);
-            const userSnapshot = getDoc(userRef);
+    React.useEffect(() => {
+        // if(repostProfile != null){
+        //     const userRef = doc(db, 'users', repostProfile);
+        //     const userSnapshot = getDoc(userRef);
 
-            userSnapshot.then((snapshot) => {
-                if (snapshot.exists) {
-                    setRepostUsername(snapshot.data().username);
-                    setRepostProfilePic(snapshot.data().profilePic);
-                } else {
-                    // console.log("No such document!");
-                }
-            }).catch((error) => {
-                // console.log("Error getting document:", error);
-            });
-        }
+        //     userSnapshot.then((snapshot) => {
+        //         if (snapshot.exists) {
+        //             setRepostUsername(snapshot.data().username);
+        //             setRepostProfilePic(snapshot.data().profilePic);
+        //         } else {
+        //             // console.log("No such document!");
+        //         }
+        //     }).catch((error) => {
+        //         // console.log("Error getting document:", error);
+        //     });
+        // }
         
-        if(usernameState == ""){
-            const userRef = doc(db, 'users', profile);
-            const userSnapshot = getDoc(userRef);
+        // if(usernameState == ""){
+        //     const userRef = doc(db, 'users', profile);
+        //     const userSnapshot = getDoc(userRef);
 
-            userSnapshot.then((snapshot) => {
-                if (snapshot.exists) {
-                    setProfilePicState(snapshot.data().profilePic);
-                    setUsernameState(snapshot.data().username);
-                } else {
-                    // console.log("No such document!");
-                }
-            }).catch((error) => {
-                // console.log("Error getting document:", error);
-            });
-        }
+        //     userSnapshot.then((snapshot) => {
+        //         if (snapshot.exists) {
+        //             setProfilePicState(snapshot.data().profilePic);
+        //             setUsernameState(snapshot.data().username);
+        //         } else {
+        //             // console.log("No such document!");
+        //         }
+        //     }).catch((error) => {
+        //         // console.log("Error getting document:", error);
+        //     });
+        // }
     }, []);
 
-    if (usernameState === "") {
-        return null;
-    }
+    // if (usernameState === "") {
+    //     return null;
+    // }
     
     return (
         <PostContainer 
@@ -75,9 +75,9 @@ const ImagePost = ({ title, username = "", profilePic = "", imageUrl, template, 
             memeName={memeName}
             profile={profile}
             postId={postId}
-            profilePic={profilePicState}
-            username={usernameState}
-            repostUsername={repostUsername}
+            profilePic={profilePic}
+            username={username}
+            // repostUsername={repostUsername && repostUsername}
 
             navigation={navigation}
             

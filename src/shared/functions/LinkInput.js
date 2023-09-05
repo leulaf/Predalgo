@@ -4,8 +4,8 @@ import uuid from 'react-native-uuid';
 
 import {BlurView} from 'expo-blur';
 
-import LinkLight from '../../assets/link_light.svg';
-import LinkDark from '../../assets/link_dark.svg';
+import LinkLight from '../../../assets/link_light.svg';
+import LinkDark from '../../../assets/link_dark.svg';
 
 function isValidUrl(string) {
     const urlRegexSafe = require('url-regex-safe');

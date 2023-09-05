@@ -8,7 +8,7 @@ const auth = getAuth();
 // update like count and add post to liked collection
 const onLikePost = async (postId) => {
     return new Promise(async (resolve, reject) => {
-        const likedRef = doc(db, "likedPosts", auth.currentUser.uid, postId, postId);
+        const likedRef = doc(db, "likedPosts", auth.currentUser.uid, "posts", postId);
 
         // add post to likes collection
         await setDoc(likedRef, {})
@@ -19,10 +19,10 @@ const onLikePost = async (postId) => {
         await updateDoc(postRef, {
             likesCount: increment(1)
         }).then(() => {
-            console.log("liked");
+            // console.log("liked")
             resolve(true);
         }).catch((error) => {
-            console.log(error);
+            // console.log(error);
             reject(false);
         });
 
@@ -33,7 +33,7 @@ const onLikePost = async (postId) => {
 const onDisikePost = async (postId) => {
     return new Promise(async (resolve, reject) => {
         // delete post from likes collection
-        await deleteDoc(doc(db, "likedPosts", auth.currentUser.uid, postId, postId))
+        await deleteDoc(doc(db, "likedPosts", auth.currentUser.uid, "posts", postId))
 
         // update like count for post
         const postRef = doc(db, 'allPosts', postId);
@@ -41,7 +41,7 @@ const onDisikePost = async (postId) => {
         await updateDoc(postRef, {
             likesCount: increment(-1)
         }).then(() => {
-            console.log("disliked");
+            // console.log("disliked")
             resolve(true);
         }).catch((error) => {
             // console.log(error);

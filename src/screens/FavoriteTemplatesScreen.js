@@ -14,7 +14,7 @@ import Animated, {FadeIn} from 'react-native-reanimated';
 
 import { MasonryFlashList } from '@shopify/flash-list';
 
-import ResizableImage from '../shared/ResizableImage';
+import ResizableImage from '../shared/functions/ResizableImage';
 
 
 const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnPost) => () => {

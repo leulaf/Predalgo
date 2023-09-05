@@ -3,9 +3,9 @@ import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, 
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
-import ImagePost from './ImagePost';
-import MultiImagePost from './MultiImagePost';
-import TextPost from './TextPost';
+import ImagePost from '../postTypes/ImagePost';
+import MultiImagePost from '../postTypes/MultiImagePost';
+import TextPost from '../postTypes/TextPost';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { useNavigation } from '@react-navigation/native';
@@ -18,12 +18,15 @@ const windowHeight = Dimensions.get('screen').height;
 const renderItem = ({ item, index }) => {
     let post;
 
-    if(item.imageUrl){
+    if(item.imageUrl || item.template){
         post = <ImagePost
-            key={index}
+            username={item.username}
+            profilePic={item.profilePic}
             repostProfile={item.repostProfile}
             repostComment={item.repostComment}
             imageUrl={item.imageUrl}
+            template={item.template}
+            templateState={item.templateState}
             imageHeight={item.imageHeight}
             imageWidth={item.imageWidth}
             title={item.title}
@@ -36,7 +39,8 @@ const renderItem = ({ item, index }) => {
         />
     }else if(item.imageUrls){
         post = <MultiImagePost
-            key={index}
+            username={item.username}
+            profilePic={item.profilePic}
             repostProfile={item.repostProfile}
             repostComment={item.repostComment}
             title={item.title}
@@ -49,7 +53,8 @@ const renderItem = ({ item, index }) => {
         />
     }else if(item.text){
         post = <TextPost
-            key={index}
+            username={item.username}
+            profilePic={item.profilePic}
             repostProfile={item.repostProfile}
             repostComment={item.repostComment}
             title={item.title}
@@ -256,6 +261,8 @@ const AllTagPosts = ({ tag }) => {
                 ListFooterComponent={
                     <View style={{height: 200}}/>
                 }
+
+                showsVerticalScrollIndicator={false}
             />
         </View>
     );

@@ -134,6 +134,7 @@ const EditImageScreen = ({ navigation, route }) => {
             <PinturaEditor
                 ref={editorRef}
                 {...editorDefaults}
+                enableButtonRevert={false} // removes the revert button
                 style={{
                     width: "100%",
                     height: "95%",

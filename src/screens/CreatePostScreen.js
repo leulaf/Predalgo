@@ -11,7 +11,7 @@ import uuid from 'react-native-uuid';
 
 import { Image } from 'expo-image';
 
-import LinkInput from '../shared/LinkInput';
+import LinkInput from '../shared/functions/LinkInput';
 
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 

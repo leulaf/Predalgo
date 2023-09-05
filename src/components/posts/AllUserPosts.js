@@ -5,11 +5,11 @@ import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, wh
 import GlobalStyles from '../../constants/GlobalStyles';
 import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
-import ImagePost from './ImagePost';
-import MultiImagePost from './MultiImagePost';
-import TextPost from './TextPost';
+import ImagePost from '../postTypes/ImagePost';
+import MultiImagePost from '../postTypes/MultiImagePost';
+import TextPost from '../postTypes/TextPost';
 
-import getItemType from '../../shared/GetItemType';
+import getItemType from '../../shared/functions/GetItemType';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -61,8 +61,8 @@ const renderItem = ({ item, index }) => {
                 text={item.text}
                 tags={item.tags}
                 profile={item.profile}
-                username={username}
-                profilePic={profilePic}
+                username={item.username}
+                profilePic={item.profilePic}
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}

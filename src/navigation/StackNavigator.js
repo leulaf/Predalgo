@@ -74,12 +74,14 @@ const MainStackNavigator = ({}) => {
         />
         <Stack.Screen name="EditMeme" component={EditMemeScreen}
             options={{
-                // headerShown: false,
+                headerShown: false,
+                gestureResponseDistance: 0, // disables swipe back gesture
             }}
         />
         <Stack.Screen name="EditImage" component={EditImageScreen}
             options={{
                 // headerShown: false,
+                gestureResponseDistance: 0, // disables swipe back gesture
             }}
         />
         <Stack.Screen name="Following" component={FollowingScreen}

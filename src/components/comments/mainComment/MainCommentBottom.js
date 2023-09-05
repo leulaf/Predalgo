@@ -10,8 +10,8 @@ import MemeName from '../shared/MemeName';
 
 import { intToString, onLike, onDisike } from '../shared/CommentMethods';
 
-import overrideItemLayout from '../../../shared/OverrideItemLayout';
-import getItemType from '../../../shared/GetItemType';
+import overrideItemLayout from '../../../shared/functions/OverrideItemLayout';
+import getItemType from '../../../shared/functions/GetItemType';
 
 import { fetchFirstFiveCommentsByPopular, fetchNextFiveCommentsByPopular } from '../../../shared/comment/GetComments';
 import { FlashList } from '@shopify/flash-list';

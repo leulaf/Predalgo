@@ -3,7 +3,7 @@ import {TouchableOpacity, View, Text, StyleSheet, FlatList, Dimensions} from 're
 import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
 import GlobalStyles from '../../constants/GlobalStyles';
-import ResizableImage from  '../../shared/ResizableImage';
+import ResizableImage from  '../../shared/functions/ResizableImage';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;

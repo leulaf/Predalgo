@@ -2,7 +2,7 @@ import PinturaEditor from "@pqina/react-native-expo-pintura";
 
 import React from 'react';
 
-import {onLikePost, onDisikePost} from './post/LikeDislikePost';
+import {onLikePost, onDisikePost} from '../post/LikeDislikePost';
 
 import { Image } from "expo-image";
 
@@ -18,12 +18,12 @@ import ResizableImage from "./ResizableImage";
 
 
 // light mode icons
-import Likes from '../../assets/likes.svg';
-import Liked from '../../assets/liked.svg';
+import Likes from '../../../assets/likes.svg';
+import Liked from '../../../assets/liked.svg';
 
 // dark mode icons
-import LikesDark from '../../assets/likes_dark.svg';
-import LikedDark from '../../assets/liked_dark.svg';
+import LikesDark from '../../../assets/likes_dark.svg';
+import LikedDark from '../../../assets/liked_dark.svg';
 
 const goToProfile = (navigation, profile, username, profilePic) => () => {
     navigation.push('Profile', {
@@ -109,7 +109,7 @@ export default DisplayMeme = React.memo(({ theme, item, maxHeight, maxWidth, sty
                     {item.profilePic != "" ? (
                         <Image source={{ uri: item.profilePic }} style={styles.profileImage}/>
                     ) : (
-                        <Image source={require('../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
+                        <Image source={require('../../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
                     )}
                 </TouchableOpacity>
                 

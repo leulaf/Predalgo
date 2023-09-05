@@ -1,4 +1,4 @@
-import { db, storage } from '../config/firebase';
+import { db, storage } from '../../config/firebase';
 import { collection, doc, setDoc, getDoc, query, where, limit, getDocs } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import firebase from 'firebase/compat/app';

@@ -10,7 +10,7 @@ import GlobalStyles from '../../constants/GlobalStyles';
 import DarkMemeCreate from '../../../assets/post_meme_create_dark.svg';
 import LightMemeCreate from '../../../assets/post_meme_create_light.svg';
 
-const ContentBottom = ({ tags, memeName }) => {
+const ContentBottom = ({ tags, memeName, navToPost }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
 
@@ -124,14 +124,56 @@ const ContentBottom = ({ tags, memeName }) => {
 
     
 
-    return contentBottom;
+    // return contentBottom;
+
+    return (
+        <View flexDirection={"row"}>
+            {   memeName &&
+                 <TouchableOpacity
+                    onPress={() => navigation.push('Meme', {memeName: memeName})}
+                    style={styles.memeName}
+                >
+                    
+                    {theme == "light" ?
+                        <LightMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={5}/>
+                        :
+                        <DarkMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={5}/>
+                    }
+                    
+                    <TextTicker
+                        style={theme == 'light' ? GlobalStyles.lightMemeName: GlobalStyles.darkMemeName}
+                        duration={12000}
+                        loop
+                        // bounce
+                        repeatSpacer={50}
+                        marqueeDelay={1000}
+                    >
+                        {memeName}
+                    </TextTicker>
+                    
+                </TouchableOpacity>
+            }
+            {   tags &&
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={5} paddingRight={10}>
+                    {bottomTags}
+                </ScrollView>
+            }
+
+            <TouchableOpacity 
+                onPress={() => navToPost()}  
+                style={{flex: 1, height: 'auto'}}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
     memeName: {
-        width: 170,
+        minWidth: 50,
+        maxWidth: 170,
         marginTop: 8,
-        marginLeft: 0,
+        marginLeft: 5,
+        paddingRight: 10,
         flexDirection: 'row',
     },
 });

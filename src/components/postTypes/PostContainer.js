@@ -1,11 +1,11 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import { Image } from 'expo-image';
 import {ThemeContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
-import { firebase, storage, db, ref, deleteObject } from '../../config/firebase';
-import { doc, getDoc, getDocs, where, collection, query, deleteDoc, updateDoc, increment } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
+
+import deletePost from '../../shared/post/DeletePost';
 
 import TitleText from '../../shared/Text/TitleText';
 
@@ -21,6 +21,10 @@ import ReportIcon from '../../../assets/danger.svg';
 
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
+
+import { getAuth } from 'firebase/auth';
+
+const auth = getAuth();
 
 const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
     navigation.push('Post', {
@@ -49,25 +53,14 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
         profilePic: profilePic,
     })
 }
-const contentBottom = (memeName, tags) => (
-    <ContentBottom
-        memeName={memeName}
-        tags={tags}
-    />
-)
-const postBottom = (postId, likesCount, commentsCount) => (
-    <PostBottom
-        postId={postId}
-        likesCount={likesCount}
-        commentsCount={commentsCount}
-    />
-)
+
+
 const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateState, likesCount, commentsCount, tags, content, profile, postId, profilePic, username, repostUsername }) => {
     const navigation = useNavigation();
-    const {theme,setTheme} = useContext(ThemeContext);
+    const {theme,setTheme} = React.useContext(ThemeContext);
 
-    const [deleted, setDeleted] = useState(false);
-    const [overlayVisible, setOverlayVisible] = useState(false);
+    const [deleted, setDeleted] = React.useState(false);
+    const [overlayVisible, setOverlayVisible] = React.useState(false);
 
 
     let threeDots
@@ -84,53 +77,37 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
     }, [overlayVisible]);
 
 
-    const deletePost = React.useCallback(() => async() => {
+    const deleteCurrentPost = React.useCallback(() => async () => {
         setOverlayVisible(false);
-        const postRef = doc(db, 'allPosts', postId);
-        const postSnapshot = await getDoc(postRef);
-        data = postSnapshot.data();
 
-        if (postSnapshot.exists) {
-            await deleteDoc(postRef).then(async () => {
-                
-                Alert.alert('Post deleted!');
-                setDeleted(true);
-
-
-                // update posts count for current user
-                const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
-
-                await updateDoc(currentUserRef, {
-                    posts: increment(-1)
-                });
+        await deletePost(postId).then(() => {
+            Alert.alert("Post deleted!");
+            setDeleted(true);
+        })
+        .catch((error) => {
+            // console.log(error);
+            setOverlayVisible(true);
+        });
+    });
 
 
-                if (data.imageUrl) {
-                    const imageRef = ref(storage, data.imageUrl);
-
-                    // Delete the file
-                    await deleteObject(imageRef).then(() => {
-                        // File deleted successfully
-                        // console.log('Image deleted!');
-                    }).catch((error) => {
-                        // Uh-oh, an error occurred!
-                        // console.log(error);
-                    });
-                } else if (data.memeName) {
-                    const templateRef = doc(db, "imageTemplates", data.memeName);
-
-                    await updateDoc(templateRef, {
-                        useCount: increment(1)
-                    });
-                }
-
-            }).catch((error) => {
-                // console.log(error);
-            })
-        }
-    }, []);
-
-
+    const postBottom = (
+        <PostBottom
+            postId={postId}
+            likesCount={likesCount}
+            commentsCount={commentsCount}
+            navToPost={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+        />
+    )
+    
+    
+    const contentBottom = (
+        <ContentBottom
+            memeName={memeName}
+            tags={tags}
+            navToPost={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+        />
+    )
     // if post is deleted or content is null, don't show post
     if (deleted || content == null || content == undefined) {  
         return null;
@@ -228,11 +205,11 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 
 
             {/* tags and meme name */}
-            {contentBottom(memeName, tags)}
+            {contentBottom}
 
 
             {/* likes, comments, repost, share */}
-            {postBottom(postId, likesCount, commentsCount)}
+            {postBottom}
 
 
             {/* 
@@ -242,11 +219,11 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             */}
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay()}>
                 
-                {profile === firebase.auth().currentUser.uid ?
+                {profile === auth.currentUser.uid ?
                     <TouchableOpacity
                         activeOpacity={1}
                         style={{flexDirection: 'row'}}
-                        onPress={deletePost()}
+                        onPress={deleteCurrentPost()}
                     >
                         <DeleteIcon width={40} height={40} style={{marginLeft: 2}}/>
                         <Text style={styles.overlayText}>Delete Post</Text>

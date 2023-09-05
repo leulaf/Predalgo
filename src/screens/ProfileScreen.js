@@ -5,10 +5,9 @@ import { Tabs, MaterialTabBar } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../context-store/context';
 import { firebase, db, storage } from '../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
-import AllUserPosts from '../components/postTypes/AllUserPosts';
-import SimpleTopBar from '../ScreenTop/SimpleTopBar';
-import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
-import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/GetUserPosts';
+import AllUserPosts from '../components/posts/AllUserPosts';
+import AllUserMediaPosts from '../components/posts/AllUserMediaPosts';
+import {fetchUserPostsByRecent, fetchUserPostsByPopular} from '../shared/post/GetUserPosts';
 
 const navigateTo = (navigation, user) => () => {
     navigation.navigate("Followers", {profile: user})

@@ -1,9 +1,9 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlatList, Dimensions} from 'react-native';
 
-import ImagePost from './ImagePost';
-import MultiImagePost from './MultiImagePost';
-import TextPost from './TextPost';
+import ImagePost from '../postTypes/ImagePost';
+import MultiImagePost from '../postTypes/MultiImagePost';
+import TextPost from '../postTypes/TextPost';
 import Carousel from 'react-native-reanimated-carousel';
 const width = Dimensions.get('window').width;
 

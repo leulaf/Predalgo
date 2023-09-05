@@ -8,7 +8,7 @@ import { MasonryFlashList } from '@shopify/flash-list';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, getDoc, doc, query, where, orderBy, startAfter, limit, getDocs } from "firebase/firestore";
 
-import ResizableImage from '../shared/ResizableImage';
+import ResizableImage from '../shared/functions/ResizableImage';
 import { Image } from 'expo-image';
 
 import { BlurView } from 'expo-blur';

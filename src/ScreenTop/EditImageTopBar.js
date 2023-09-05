@@ -1,7 +1,7 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {ThemeContext} from '../../context-store/context';
+
 
 // light mode icons
 import BackLight from '../../assets/back.svg';
@@ -11,9 +11,9 @@ import BackDark from '../../assets/back_light.svg';
 
 const windowWidth = Dimensions.get('window').width;
 
-const EditMemeTopBar = ({ forMeme, onSave, onGoBack, navigation}) => {
+const EditMemeTopBar = ({ theme, forMeme, onSave, onGoBack, navigation}) => {
 
-    const {theme,setTheme} = useContext(ThemeContext);
+
 
     return (
             <View style={styles.container}>
@@ -24,12 +24,17 @@ const EditMemeTopBar = ({ forMeme, onSave, onGoBack, navigation}) => {
                                 style={{flexDirection: 'row'}}
                                 onPress={() => {onGoBack()}}
                     >
-                        <BackLight style={styles.backIcon} width={22} height={22}/>
+                        {
+                            theme == 'light' ?
+                                <BackLight style={styles.backIcon} width={22} height={22}/>
+                            :
+                                <BackDark style={styles.backIcon} width={22} height={22}/>
+                        }
                         
                     </TouchableOpacity>
 
                 { forMeme ?
-                        <Text style={styles.text}>
+                        <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
                             Tap and drag to add text
                         </Text>
                     :
@@ -39,14 +44,13 @@ const EditMemeTopBar = ({ forMeme, onSave, onGoBack, navigation}) => {
 
                     {/* Finish button */}
                     <TouchableOpacity 
-                                style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
+                                style={theme == 'light' ? styles.lightFinishContainer : styles.darkFinishContainer}
                                 onPress={() => onSave()}
                     >
-                        <View style={styles.finishContainer}>
-                            <Text style={styles.finishText}>
-                                Finish
-                            </Text>
-                        </View>
+
+                        <Text style={theme == 'light' ? styles.lightFinishText : styles.darkFinishText}>
+                            Finish
+                        </Text>
                         
                     </TouchableOpacity>
 
@@ -60,7 +64,7 @@ const EditMemeTopBar = ({ forMeme, onSave, onGoBack, navigation}) => {
 const styles = StyleSheet.create({
     container: {
         height: 90,
-        backgroundColor: 'white',
+        backgroundColor: 'rgba(255, 255, 255, 0.0)',
     },
     rowContainer: {
         flex: 1,
@@ -79,14 +83,21 @@ const styles = StyleSheet.create({
         color: '#222222',
         fontWeight: '600',
     },
-    text: {
+    lightText: {
         flex: 1,
         fontSize: 20,
-        color: '#333333',
+        color: '#444444',
         fontWeight: '600',
         textAlign: 'center', 
     },
-    finishContainer: {
+    darkText: {
+        flex: 1,
+        fontSize: 20,
+        color: '#FAFAFA',
+        fontWeight: '600',
+        textAlign: 'center', 
+    },
+    lightFinishContainer: {
         width: 80,
         height: 35,
         borderRadius: 100,
@@ -97,9 +108,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center', 
         alignContent: 'center'
     },
-    finishText: {
+    darkFinishContainer: {
+        width: 80,
+        height: 35,
+        borderRadius: 100,
+        // borderWidth: 2,
+        // borderColor: '#222222',
+        backgroundColor: '#FFFFFF',
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        alignContent: 'center'
+    },
+    lightFinishText: {
         fontSize: 20,
         color: '#FFFFFF',
+        fontWeight: '600',
+        alignSelf: 'center',
+    },
+    darkFinishText: {
+        fontSize: 20,
+        color: '#222222',
         fontWeight: '600',
         alignSelf: 'center',
     }

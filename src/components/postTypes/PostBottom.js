@@ -1,9 +1,11 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { } from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { firebase, storage, db } from '../../config/firebase';
-import { query, where, collection, getDocs, addDoc, doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+
 import {ThemeContext} from '../../../context-store/context';
+
+import { onLikePost, onDisikePost } from '../../shared/post/LikeDislikePost';
+
+import intToString from '../../shared/functions/intToString';
 
 // light mode icons
 import Likes from '../../../assets/likes.svg';
@@ -20,21 +22,9 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const PostBottom = ({ postId, likesCount, commentsCount }) => {
-    const {theme,setTheme} = useContext(ThemeContext);
-    const navigation = useNavigation();
-    const [likeCount, setLikeCount] = useState(likesCount);
-    const [likeString, setLikeString] = useState("");
-    const [commentCount, setCommentCount] = useState(commentsCount);
-    const [commentString, setCommentString] = useState("");
-    const [liked, setLiked] = useState(false);
-
-    useEffect(() => {
-        onUpdateLikeCount(likesCount); // update like count string
-        onUpdateCommentCount(commentsCount); // update comment count string
-    }, []);
-
-    let content
+const PostBottom = ({ postId, likesCount, commentsCount, navToPost }) => {
+    const {theme,setTheme} = React.useContext(ThemeContext);
+    const [liked, setLiked] = React.useState(false);
 
     let likes, alreadyLiked, comments, share, repost;
 
@@ -52,119 +42,51 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
         repost = <RepostDark width={19} height={19} style={{ marginRight: 7 }}/>;
     }
 
-    // if like count is above 999 then display it as count/1000k + k
-    // if like count is above 999999 then display it as count/1000000 + m
-    // round down to whole number
-    const onUpdateLikeCount = (likeCount) => {
-        if (likeCount === 0) {
-          setLikeString("0");
-        } else if (likeCount > 999 && likeCount < 1000000) {
-          setLikeString(Math.floor(likeCount / 1000) + "k");
-        } else if (likeCount > 999999) {
-          setLikeString(Math.floor(likeCount / 1000000) + "m");
-        } else {
-          setLikeString(likeCount);
-        }
-    };
 
-    // if comment count is above 999 then display it as count/1000k + k
-    // if comment count is above 999999 then display it as count/1000000 + m
-    // round down to whole number
-    const onUpdateCommentCount = (commentCount) => {
-        if (commentCount === 0) {
-          setCommentString("0");
-        } else if (commentCount > 999 && commentCount < 1000000) {
-          setCommentString(Math.floor(commentCount / 1000) + "k");
-        } else if (commentCount > 999999) {
-          setCommentString(Math.floor(commentCount / 1000000) + "m");
-        } else {
-          setCommentString(commentCount);
-        }
-    };
-
-    // update like count and add post to liked collection
-    const onLike = async () => {
-        const likedRef = doc(db, "likedPosts", firebase.auth().currentUser.uid, postId, postId);
-        const likedSnapshot = await getDoc(likedRef);
-      
-        if (!likedSnapshot.exists()) {
-          // add post to likes collection
-          await setDoc(likedRef, {});
-          // update like count for post
-          const postRef = doc(db, 'allPosts', postId);
-      
-          updateDoc(postRef, {
-            likesCount: increment(1)
-          }).then(() => {
-            onUpdateLikeCount(likeCount + 1);
-            setLikeCount(likeCount + 1);
-             // update like count string
-          });
-        }
-      
-        setLiked(true);
-    };
-
-    // update like count and add post to liked collection
-    const onDisike = async () => {
-        // delete post from likes collection
-        deleteDoc(doc(db, "likedPosts", firebase.auth().currentUser.uid, postId, postId))
-
-        // update like count for post
-        const postRef = doc(db, 'allPosts', postId);
-
-        if(likeCount - 1 >= 0){
-            updateDoc(postRef, {
-                likesCount: increment(-1)
-            }).then(() => {
-                onUpdateLikeCount(likeCount - 1);
-                setLikeCount(likeCount - 1);
+    const toggleLike = () => async() => {
+        if(liked){
+            setLiked(false);
+            await onDisikePost(postId)
+            .then((res) => {
+                !res && setLiked(true);
+            })
+            .catch((e) => {
+                setLiked(true);
+            })
+        }else{
+            setLiked(true);
+            await onLikePost(postId)
+            .then((res) => {
+                !res && setLiked(false);
+            })
+            .catch((e) => {
                 setLiked(false);
-            });
+            })
         }
-
-        
     }
 
-    // upload repost to database
-    const onRepost = async () => {
-        // add text post to database
-        await addDoc(collection(db, "allPosts"), {
-            repostPostId: postId,
-            creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-            profile: firebase.auth().currentUser.uid
-        }).then(async (docRef) => {
-            // update posts count for current user
-            const currentUserRef = doc(db, 'users', firebase.auth().currentUser.uid);
-
-            await updateDoc(currentUserRef, {
-                posts: increment(1)
-            });
-
-            Alert.alert("Reposted!");
-        }).catch(function (error) {
-            // console.log(error);
-        });
-    };
 
     return (
         <View style={{flex: 1, width: '100%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
+            
+            
             {/* Comments button */}
-            <View
-                style= {styles.commentsContainer}
+            <TouchableOpacity
+                style={styles.bottomButtonContainer}
+                onPress={navToPost}
             >
                     {comments}
 
                     <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                        {commentString}
+                        {intToString(commentsCount)}
                     </Text>
-            </View>
+            </TouchableOpacity>
 
             
             {/* Likes button */}
             <TouchableOpacity
                 style={styles.bottomButtonContainer}
-                onPress={() => liked ? onDisike() : onLike()}
+                onPress={toggleLike()}
             >
                 {liked ?
                     alreadyLiked
@@ -173,7 +95,7 @@ const PostBottom = ({ postId, likesCount, commentsCount }) => {
                 }
 
                 <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    {likeString}
+                    {liked ? intToString(likesCount + 1) : intToString(likesCount)}
                 </Text>
             </TouchableOpacity>
             

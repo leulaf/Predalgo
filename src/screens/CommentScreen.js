@@ -11,15 +11,15 @@ import Animated, {FadeIn} from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 
 import { Image } from 'expo-image';
-import ResizableImage from '../shared/ResizableImage';
+import ResizableImage from '../shared/functions/ResizableImage';
 
-import getItemType from '../shared/GetItemType'
-import overrideItemLayout from '../shared/OverrideItemLayout'
+import getItemType from '../shared/functions/GetItemType'
+import overrideItemLayout from '../shared/functions/OverrideItemLayout'
 
 import { fetchFirstTenCommentsByPopular, fetchNextTenPopularComments } from '../shared/comment/GetComments';
 
 
-import CreateMeme from '../shared/CreateMeme';
+import CreateMeme from '../shared/functions/CreateMeme';
 
 import ContentBottom from '../components/postTypes/ContentBottom';
 

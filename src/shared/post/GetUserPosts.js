@@ -1,4 +1,4 @@
-import { firebase, db, storage } from '../config/firebase';
+import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, limit, updateDoc, increment } from "firebase/firestore";
 
 const getRepost = async(repostPostId, profile) => {

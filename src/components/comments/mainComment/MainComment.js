@@ -8,9 +8,9 @@ import CommentText from '../../../shared/Text/CommentText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
-import ResizableImage from '../../../shared/ResizableImage';
+import ResizableImage from '../../../shared/functions/ResizableImage';
 
-import CreateMeme from '../../../shared/CreateMeme';
+import CreateMeme from '../../../shared/functions/CreateMeme';
 
 import MainCommentBottom from './MainCommentBottom';
 

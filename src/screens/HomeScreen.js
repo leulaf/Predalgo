@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { fetchUser } from '../../redux/actions/index';
 
-import AllPosts from '../components/postTypes/AllPosts';
+import AllPosts from '../components/posts/AllPosts';
 
 const posts = [
     {

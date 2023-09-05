@@ -2,7 +2,7 @@ import React, {useContext} from 'react';
 import {View, Text, StyleSheet, TextInput, Dimensions, FlatList} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
-import AllPosts from '../components/postTypes/AllPosts';
+import AllPosts from '../components/posts/AllPosts';
 import PostBar from '../components/PostBar';
 
 const posts = [

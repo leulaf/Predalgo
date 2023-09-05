@@ -5,13 +5,13 @@ import TextTicker from 'react-native-text-ticker';
 
 import { StackActions } from '@react-navigation/native';
 
-import DisplayMeme from '../shared/DisplayMeme';
+import DisplayMeme from '../shared/functions/DisplayMeme';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
 import { MasonryFlashList, FlashList } from '@shopify/flash-list';
 
-import ResizableImage from '../shared/ResizableImage';
+import ResizableImage from '../shared/functions/ResizableImage';
 
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {ThemeContext} from '../../context-store/context';
@@ -84,6 +84,7 @@ const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => ()
       )
     }else{
         navigation.navigate('EditMeme', {
+            uploader: item.uploader,
             replyMemeName: item.name,
             imageUrl: item.template,
             height: item.height,

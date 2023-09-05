@@ -10,7 +10,7 @@ import {ThemeContext} from '../../context-store/context';
 import {db, Firebase, firebase, storage} from '../config/firebase';
 import { getAuth, updateProfile } from "firebase/auth";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import {fetchUserPostsByRecent, fetchUserPostsByPopular, fetchMostRecentPost} from '../shared/GetUserPosts';
+import {fetchUserPostsByRecent, fetchUserPostsByPopular, fetchMostRecentPost} from '../shared/post/GetUserPosts';
 
 import MainProfileTop from '../ScreenTop/MainProfileTop';
 
@@ -21,8 +21,8 @@ import { fetchUser } from '../../redux/actions/index';
 import AddIconLight from '../../assets/add.svg';
 import AddIconDark from '../../assets/add_dark.svg';
 
-import AllUserPosts from '../components/postTypes/AllUserPosts';
-import AllUserMediaPosts from '../components/postTypes/AllUserMediaPosts';
+import AllUserPosts from '../components/posts/AllUserPosts';
+import AllUserMediaPosts from '../components/posts/AllUserMediaPosts';
 
 const navigateTo = (navigation, screen) => () => {
     navigation.navigate(screen, {profile: firebase.auth().currentUser.uid})
