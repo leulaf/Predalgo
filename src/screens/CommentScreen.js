@@ -138,17 +138,17 @@ const Header = React.memo(({theme, navigation, memeName, contentBottom, image, i
                 activeOpacity={1}
                     style={
                         theme == 'light' ? 
-                            !following ? styles.lightFollowButton : styles.lightFollowingButton
+                            styles.lightFollowButton
                         :
-                            !following ? styles.darkFollowButton : styles.darkFollowingButton
+                            styles.darkFollowButton
                     }
                     onPress={toggleFollowing()}
                 >
                     <Text style={
                         theme == 'light' ?
-                            !following ? styles.lightFollowText : styles.lightFollowingText
+                            styles.lightFollowText
                         :
-                            !following ? styles.darkFollowText : styles.darkFollowingText
+                            styles.darkFollowText
                         }
                     >
                         {following ? 'Following' : 'Follow'}
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flexDirection: 'row',
         marginTop: 10,
-        marginLeft: 13,
+        marginLeft: 12,
         marginBottom: 5,
         alignItems: 'center',
         alignContent: 'center',
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#151515',
         flexDirection: 'row',
         marginTop: 10,
-        marginLeft: 13,
+        marginLeft: 12,
         marginBottom: 5,
         alignItems: 'center',
         alignContent: 'center',
@@ -478,7 +478,8 @@ const styles = StyleSheet.create({
     lightUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#444444',
+        // color: '#444444',
+        color: '#000',
         textAlign: "left",
         marginBottom: 1,
     },
@@ -492,7 +493,8 @@ const styles = StyleSheet.create({
     lightRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#777777',
+        // color: '#777777',
+        color: '#000',
         textAlign: "left",
     },
     darkRepostUsername: {
@@ -503,9 +505,9 @@ const styles = StyleSheet.create({
     },
     lightFollowButton: {
         flexDirection: 'column',
-        backgroundColor: '#3d3d3d',
+        backgroundColor: '#222222',
         borderRadius: 20,
-        width: 75,
+        width: "auto",
         height: 37,
         marginRight: 6,
         marginBottom: 4,
@@ -519,7 +521,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: '#333333',
         borderRadius: 20,
-        width: 75,
+        width: "auto",
         height: 37,
         marginRight: 6,
         marginBottom: 4,
@@ -529,57 +531,21 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'center',
     },
-    lightFollowingButton: {
-        flexDirection: 'column',
-        backgroundColor: '#3d3d3d',
-        borderRadius: 20,
-        width: 95,
-        height: 37,
-        marginRight: 5,
-        marginBottom: 4,
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-    },
-    darkFollowingButton: {
-        flexDirection: 'column',
-        backgroundColor: '#EAEAEA',
-        borderRadius: 20,
-        width: 95,
-        height: 37,
-        marginRight: 5,
-        marginBottom: 4,
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
-    },
     lightFollowText: {
         fontSize: 17,
         color: '#FFFFFF',
         fontWeight: "600",
         alignSelf: 'center',
-        marginBottom: 1
+        marginBottom: 1,
+        marginHorizontal: 12,
     },
     darkFollowText: {
         fontSize: 17,
         color: '#ffffff',
         fontWeight: "600",
         alignSelf: 'center',
-        marginBottom: 1
-    },
-    lightFollowingText: {
-        fontSize: 17,
-        color: '#ffffff',
-        fontWeight: "600",
-        alignSelf: 'center',
-        marginBottom: 1
-    },
-    darkFollowingText: {
-        fontSize: 17,
-        color: '#000000',
-        fontWeight: "600",
-        alignSelf: 'center',
-        marginBottom: 1
+        marginBottom: 1,
+        marginHorizontal: 12,
     },
 });
 

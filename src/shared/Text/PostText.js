@@ -4,7 +4,7 @@ import { ThemeContext } from '../../../context-store/context';
 
 import SplitPost from './methods/SplitPost';
 
-const PostText = ({text, numberOfLines}) => {
+const PostText = ({text, numberOfLines, forPost}) => {
     if(text == undefined || text == null || text == '') {
         return null;
     }
@@ -18,6 +18,8 @@ const PostText = ({text, numberOfLines}) => {
                 marginHorizontal: 14,
                 marginTop: 6,
                 textAlign: 'auto',
+                marginBottom: forPost ? 10 : 0,
+                marginTop: forPost ? -8 : 0,
             }}
         >
 

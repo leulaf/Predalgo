@@ -79,9 +79,9 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
     let threeDots
     
     if(theme == 'light'){
-        threeDots = <ThreeDotsLight width={40} height={40} style={styles.threeDots}/>
+        threeDots = <ThreeDotsLight width={40} height={40} style={styles.lightThreeDots}/>
     }else{
-        threeDots = <ThreeDotsDark width={40} height={40} style={styles.threeDots}/>
+        threeDots = <ThreeDotsDark width={40} height={40} style={styles.darkThreeDots}/>
     }
 
     
@@ -261,8 +261,18 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 }
 
 const styles = StyleSheet.create({
-    threeDots: {
+    lightThreeDots: {
         // marginLeft: 365,
+        color: '#000',
+        padding: 10,
+        marginTop: -20,
+        marginLeft: 5,
+        marginRight: 10,
+        // marginHorizontal: 10,
+    },
+    darkThreeDots: {
+        // marginLeft: 365,
+        color: '#FFF',
         padding: 10,
         marginTop: -20,
         marginLeft: 5,

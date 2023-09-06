@@ -1,7 +1,9 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, Dimensions} from 'react-native';
+import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, RefreshControl, Dimensions} from 'react-native';
+import Constants from 'expo-constants';
+import LottieView from 'lottie-react-native';
 import { firebase, db, storage } from '../../config/firebase';
-import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
+import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, startAfter, updateDoc, increment } from "firebase/firestore";
 import {ThemeContext} from '../../../context-store/context';
 import ImagePost from '../postTypes/ImagePost';
 import MultiImagePost from '../postTypes/MultiImagePost';
@@ -9,8 +11,14 @@ import TextPost from '../postTypes/TextPost';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import { useNavigation } from '@react-navigation/native';
+import TagScreenTopBar from '../../ScreenTop/TagScreenTopBar';
 
 import { FlashList } from '@shopify/flash-list';
+
+
+const refreshAnimationLight = require('../../../assets/animations/Refresh_Picalgo_light.json');
+const refreshAnimationDark = require('../../../assets/animations/Refresh_Picalgo_dark.json');
+const refreshingHeight = 100;
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -19,6 +27,7 @@ const renderItem = ({ item, index }) => {
     let post;
 
     if(item.imageUrl || item.template){
+        // console.log("here")
         post = <ImagePost
             username={item.username}
             profilePic={item.profilePic}
@@ -26,10 +35,11 @@ const renderItem = ({ item, index }) => {
             repostComment={item.repostComment}
             imageUrl={item.imageUrl}
             template={item.template}
-            templateUploader={item.templateUploader}
-            templateState={item.templateState}
             imageHeight={item.imageHeight}
             imageWidth={item.imageWidth}
+            templateUploader={item.templateUploader}
+            templateState={item.templateState}
+            text={item.text}
             title={item.title}
             tags={item.tags}
             memeName={item.memeName}
@@ -83,14 +93,42 @@ const AllTagPosts = ({ tag }) => {
     }
     const navigation = useNavigation();
     const {theme,setTheme} = useContext(ThemeContext);
-    const [postList, setPostList] = useState([{id: "fir"}]);
     const [newPosts, setNewPosts] = useState(true);
     const [popularPosts, setPopularPosts] = useState(false);
+    const [newPostsList, setNewPostsList] = useState([{id: "fir"}]);
+    const [popularPostsList, setPopularPostsList] = useState([{id: "fir"}]);
 
-    useEffect(() => {
+    const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+    const refreshViewRef = React.useRef(null);
+
+    // Used for tracking the scroll to make the refresh animation work correctly
+    const [offsetY, setOffsetY] = React.useState(0);
+
+
+    React.useEffect(() => {
 
         fetchPostsByRecent();
     }, []);
+
+
+    React.useEffect(() => {
+        if (isRefreshing) {
+        //   setExtraPaddingTop(true);
+
+          refreshViewRef.current.play();
+        } else {
+        //   setExtraPaddingTop(false);
+        }
+    }, [isRefreshing]);
+
+
+    function onScroll(event) {
+        const { nativeEvent } = event;
+        const { contentOffset } = nativeEvent;
+        const { y } = contentOffset;
+        setOffsetY(y);
+    }
 
     const getRepost = async(repostPostId, profile) => {
         const repostRef = doc(db, 'allPosts', repostPostId);
@@ -110,14 +148,26 @@ const AllTagPosts = ({ tag }) => {
 
 
     const fetchPostsByRecent = async() => {
-        const q = query(collection(db, "allPosts"), 
-            where("tags", "array-contains", tag), 
-            orderBy("creationDate", "desc")
-        );
+        let q
+
+        if(newPostsList[0].id == "fir"){
+            q = query(collection(db, "allPosts"), 
+                where("tags", "array-contains", tag), 
+                orderBy("creationDate", "desc")
+            );
+        }else{
+            const lastPost = newPostsList[newPostsList.length - 1];
+
+            q = query(collection(db, "allPosts"), 
+                where("tags", "array-contains", tag), 
+                orderBy("creationDate", "desc"),
+                startAfter(lastPost.snap)
+            );
+        }
         
         const snapshot = await getDocs(q);
 
-        const posts = snapshot.docs.map(async (doc) => {
+        const posts = snapshot.docs.map(async (doc, index) => {
             const data = doc.data();
             const id = doc.id;
 
@@ -130,7 +180,11 @@ const AllTagPosts = ({ tag }) => {
                 }
             }
             
-            return { id, ...data }
+            if(index == snapshot.docs.length - 1){
+                return { id, snap: doc, ...data, index };
+            }
+
+            return { id, ...data, index };
         });
             
     
@@ -138,18 +192,38 @@ const AllTagPosts = ({ tag }) => {
 
         // Wait for all promises to resolve before returning the resolved posts
         const resolvedPosts = await Promise.all(posts);
-        setPostList(resolvedPosts);
+
+        if(newPostsList[0].id == "fir"){
+            setNewPostsList(resolvedPosts);
+            return true;
+        }else{
+            newPostsList[newPostsList.length - 1].snap = null;
+            setNewPostsList([...newPostsList, ...resolvedPosts]);
+            return true;
+        }
     }
     
     const fetchPostsByPopular = async() => {
-        const q = query(collection(db, "allPosts"), 
-            where("tags", "array-contains", tag), 
-            orderBy("likesCount", "desc")
-        );
-    
-        const snapshot = await getDocs(q);
+        let q
 
-        const posts = snapshot.docs.map(async (doc) => {
+        if(popularPostsList[0].id == "fir"){
+            q = query(collection(db, "allPosts"), 
+                where("tags", "array-contains", tag), 
+                orderBy("likesCount", "desc")
+            );
+        }else{
+            const lastPost = popularPostsList[popularPostsList.length - 1];
+
+            q = query(collection(db, "allPosts"), 
+                where("tags", "array-contains", tag), 
+                orderBy("likesCount", "desc"),
+                startAfter(lastPost.snap)
+            );
+        }
+    
+        const snapshot = await getDocs(q)
+
+        const posts = snapshot.docs.map(async (doc, index) => {
             const data = doc.data();
             const id = doc.id;
 
@@ -162,7 +236,11 @@ const AllTagPosts = ({ tag }) => {
                 }
             }
             
-            return { id, ...data }
+            if(index == snapshot.docs.length - 1){
+                return { id, snap: doc, ...data, index };
+            }
+
+            return { id, ...data, index };
         });
             
     
@@ -170,84 +248,135 @@ const AllTagPosts = ({ tag }) => {
 
         // Wait for all promises to resolve before returning the resolved posts
         const resolvedPosts = await Promise.all(posts);
-        setPostList(resolvedPosts);
+
+        if(popularPostsList[0].id == "fir"){
+            setPopularPostsList(resolvedPosts);
+            return true;
+        }else{
+            popularPostsList[popularPostsList.length - 1].snap = null;
+            setPopularPostsList([...popularPostsList, ...resolvedPosts]);
+            return true;
+        }
+
     }
 
     {/* New/Popular/Refresh button */}
-    const topButtons = React.memo(() =>
-        <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 10}}>
-            {/* New button */}
-            {
-                newPosts ?
-                    <TouchableOpacity
-                        style={theme == 'light' ? styles.lightNewButtonActive : styles.darkNewButtonActive}
-                        onPress={() => { 
-                            setNewPosts(true);
-                            setPopularPosts(false);
-                            fetchPostsByRecent(); 
-                        }}
-                    >
-                        <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
-                            New
-                        </Text>
-                    </TouchableOpacity>
-                :
-                    <TouchableOpacity
-                        style={theme == 'light' ? styles.lightNewButtonInactive : styles.darkNewButtonInactive}
-                        onPress={() => { 
-                            setNewPosts(true);
-                            setPopularPosts(false);
-                            fetchPostsByRecent(); 
-                        }}
-                    >
-                        <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
-                            New
-                        </Text>
-                    </TouchableOpacity>
-            }
-            
-            {/* Popular button */}
-            {
-                popularPosts ?
-                    <TouchableOpacity
-                        style={theme == 'light' ? styles.lightPopularButtonActive : styles.darkPopularButtonActive}
-                        onPress={() => { 
-                            setPopularPosts(true);
-                            setNewPosts(false);
-                            fetchPostsByPopular(); 
-                        }}
-                    >
-                        <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
-                            Popular
-                        </Text>
-                    </TouchableOpacity>
-                :
-                    <TouchableOpacity
-                        style={theme == 'light' ? styles.lightPopularButtonInactive : styles.darkPopularButtonInactive}
-                        onPress={() => { 
-                            setPopularPosts(true);
-                            setNewPosts(false);
-                            fetchPostsByPopular(); 
-                        }}
-                    >
-                        <Text style={theme == 'light' ? styles.lightPopularText : styles.darkPopularText}>
-                            Popular
-                        </Text>
-                    </TouchableOpacity>
-            }
+    const filterButtons = React.memo(() =>
+        <View style={[{backgroundColor: theme == 'light' ? 'white' : '#151515'},
+            isRefreshing ?
+                {
+                    marginTop: 30, 
+                    backgroundColor: theme == 'light' ? 'white' : '#151515'
+                }
+            :
+                {}
+        ]}>
+            <TagScreenTopBar tag={tag} theme={theme} navigation={navigation}/>
 
-            
+            <View style={{flexDirection: 'row', marginBottom: 15, marginTop: 15}}>
+
+
+                {/* New button */}
+                <TouchableOpacity
+                    style={[
+                        theme == 'light' ? 
+                            newPosts ? styles.lightActiveButton : styles.lightInactiveButton
+                        : 
+                            newPosts ? styles.darkActiveButton : styles.darkInactiveButton
+                        ,
+                        {marginHorizontal: 10}
+                    ]}
+                    onPress={
+                        !newPosts ?
+
+                            () => { 
+                                setNewPosts(true);
+                                setPopularPosts(false);
+                                fetchPostsByRecent(); 
+                            }
+                        :
+                            () => {}
+                    }
+                >
+                    <Text 
+                        style={theme == 'light' ? 
+                            newPosts ? styles.lightActiveFilterText : styles.lightInactiveFilterText
+                        : 
+                            newPosts ? styles.darkActiveFilterText : styles.darkInactiveFilterText
+                        }
+                    >
+                        New
+                    </Text>
+                </TouchableOpacity>
+
+
+                {/* Popular button */}
+                <TouchableOpacity
+                    style={
+                        theme == 'light' ? 
+                            popularPosts ? styles.lightActiveButton : styles.lightInactiveButton
+                        : 
+                            popularPosts ? styles.darkActiveButton : styles.darkInactiveButton
+                    }
+                    onPress={
+                        !popularPosts ?
+
+                            () => { 
+                                setPopularPosts(true);
+                                setNewPosts(false);
+                                fetchPostsByPopular(); 
+                            }
+                        :
+                            () => {}
+                    }
+                >
+                    <Text 
+                        style={theme == 'light' ? 
+                            popularPosts ? styles.lightActiveFilterText : styles.lightInactiveFilterText
+                        : 
+                            popularPosts ? styles.darkActiveFilterText : styles.darkInactiveFilterText
+                        }
+                    >
+                        Popular
+                    </Text>
+                </TouchableOpacity>
+
+                
+            </View>
         </View>
-    , [newPosts, popularPosts]);
+        
+    , [newPosts, popularPosts, isRefreshing, theme]);
     
 
     return (
         <View 
-            style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}
+            style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 },
+            // isRefreshing ?
+            //     {
+            //         backgroundColor: theme == 'light' ? 'white' : '#151515'
+            //     }
+            // :
+            //     { }
+        
+        ]}
         >
+
+            <View style={{height: Constants.statusBarHeight-10, backgroundColor: theme == 'light' ? 'white' : '#151515'}}/>
+
+            {/* Refresh animation */}
+            {
+                offsetY < 0 && <LottieView
+                    ref={refreshViewRef}
+                    autoPlay
+                    style={[styles.lottieView]}
+                    source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
+                    // progress={progress}
+                />
+            }
+
             <FlashList
-                data={postList}
-                extraData={[postList]}
+                data={newPosts ? newPostsList : popularPostsList}
+                // extraData={[newPosts, popularPosts]}
 
                 renderItem={renderItem}
 
@@ -258,10 +387,34 @@ const AllTagPosts = ({ tag }) => {
                 
                 keyExtractor={keyExtractor}
                 
-                ListHeaderComponent={topButtons}  // Use ListHeaderComponent to render buttons at the top
+                ListHeaderComponent={filterButtons}  // Use ListHeaderComponent to render buttons at the top
                 ListFooterComponent={
                     <View style={{height: 200}}/>
                 }
+
+                refreshControl={
+                    <RefreshControl 
+                        refreshing={isRefreshing}
+                        onRefresh={() => {
+                            setIsRefreshing(true);
+
+                            if(newPosts){
+                                fetchPostsByRecent().then(() => {
+                                    setIsRefreshing(false);
+                                });
+                            }else if(popularPosts){
+                                fetchPostsByPopular().then(() => {
+                                    setIsRefreshing(false);
+                                });
+                            }
+                        }}
+                        // progressViewOffset={progress}
+                        tintColor={'rgba(255, 255, 255, 0.0)'}
+                        // progressViewOffset={0}
+                    />
+                }
+
+                onScroll={onScroll}
 
                 showsVerticalScrollIndicator={false}
             />
@@ -279,109 +432,97 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#F6F6F6",
     },
-    // Popular button
-    lightPopularButtonActive: {
-        flexDirection: 'column',
-        backgroundColor: '#ffffff',
-        borderRadius: 20,
-        width: 95,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#BBBBBB'
+    // lightMainContainer: {
+    //     flex: 1,
+    //     backgroundColor: '#F4F4F4',
+    // },
+    // darkMainContainer: {
+    //     flex: 1,
+    //     // backgroundColor: '#0C0C0C',
+    //     backgroundColor: '#000000',
+    // },
+    lottieView: {
+        height: refreshingHeight,
+        position: 'absolute',
+        top: 10,
+        left: 0,
+        right: 9,
     },
-    darkPopularButtonActive: {
+    lightActiveButton: {
         flexDirection: 'column',
-        backgroundColor: '#121212',
+        backgroundColor: '#000',
         borderRadius: 20,
-        width: 95,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#393939'
+        width: 'auto',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // marginLeft: 5,
+        // marginBottom: 5,
     },
-    lightPopularButtonInactive: {
+    lightInactiveButton: {
         flexDirection: 'column',
-        backgroundColor: '#FAFAFA',
+        backgroundColor: '#EEEEEE',
         borderRadius: 20,
-        width: 95,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#BBBBBB'
+        width: 'auto',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // marginLeft: 5,
+        // marginBottom: 5,
+        // borderWidth: 1,
+        // borderColor: '#BBBBBB'
     },
-    darkPopularButtonInactive: {
+    darkActiveButton: {
         flexDirection: 'column',
-        backgroundColor: '#1F1F1F',
+        backgroundColor: '#FFF',
         borderRadius: 20,
-        width: 95,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#393939'
+        width: 'auto',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // marginLeft: 5,
+        // marginBottom: 5,
+        // borderWidth: 1,
+        // borderColor: '#393939'
     },
-    // New button
-    lightNewButtonActive: {
+    darkInactiveButton: {
         flexDirection: 'column',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#3d3d3d',
         borderRadius: 20,
-        width: 70,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#BBBBBB'
+        width: 'auto',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // marginLeft: 5,
+        // marginBottom: 5,
     },
-    darkNewButtonActive: {
-        flexDirection: 'column',
-        backgroundColor: '#121212',
-        borderRadius: 20,
-        width: 70,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#393939'
-    },
-    lightNewButtonInactive: {
-        flexDirection: 'column',
-        backgroundColor: '#FAFAFA',
-        borderRadius: 20,
-        width: 70,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#BBBBBB'
-    },
-    darkNewButtonInactive: {
-        flexDirection: 'column',
-        backgroundColor: '#1F1F1F',
-        borderRadius: 20,
-        width: 70,
-        height: 35,
-        marginLeft: 5,
-        marginBottom: 5,
-        borderWidth: 1,
-        borderColor: '#3B3B3B'
-    },
-    lightPopularText: {
+    lightActiveFilterText: {
         fontSize: 18,
-        color: '#555555',
+        color: '#FFFFFF',
         fontWeight: "600",
-        alignSelf: 'center',
-        marginTop: 4
+        marginHorizontal: 15,
+        marginBottom: 1
     },
-    darkPopularText: {
+    darkActiveFilterText: {
         fontSize: 18,
-        color: '#EEEEEE',
+        color: '#000',
         fontWeight: "600",
-        alignSelf: 'center',
-        marginTop: 4
+        marginHorizontal: 15,
+        marginBottom: 1
+    },
+    lightInactiveFilterText: {
+        fontSize: 18,
+        color: '#444444',
+        fontWeight: "600",
+        marginHorizontal: 15,
+        marginBottom: 1
+    },
+    darkInactiveFilterText: {
+        fontSize: 18,
+        color: '#F4F4F4',
+        fontWeight: "600",
+        marginHorizontal: 15,
+        marginBottom: 1
     },
 });
 

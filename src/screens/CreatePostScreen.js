@@ -61,7 +61,6 @@ const CreatePostScreen = ({navigation, route}) => {
     const titleInputAccessoryViewID = uuid.v4();
     const textInputAccessoryViewID = uuid.v4();
     const tagInputAccessoryViewID = uuid.v4();
-    const [correctTags, setCorrectTags] = React.useState([]);
     // const [expandImage, setExpandImage] = React.useState(false);
 
     
@@ -111,9 +110,11 @@ const CreatePostScreen = ({navigation, route}) => {
         };
       }, []);
 
-    
+
     const fixTags = (tempTags) => {
+        // console.log(tempTags)
         let newTags = tempTags.split(' ');
+        // console.log(newTags)
         let tags = [];
         newTags.forEach((tag) => {
             if(tag[0] == '@' && tag.length > 1){
@@ -123,8 +124,8 @@ const CreatePostScreen = ({navigation, route}) => {
             }
         })
 
-        setTempTags(tags.join(' '));
-        setCorrectTags(tags);
+        return tags
+        // setCorrectTags(tags);
     };
 
 
@@ -167,7 +168,7 @@ const CreatePostScreen = ({navigation, route}) => {
                 placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
                 value={tempTags}
                 onChangeText={(newValue) => setTempTags(newValue)}
-                onEndEditing={() => fixTags(tempTags)}
+                // onEndEditing={() => fixTags(tempTags)}
             />
 
             {/* line break */}
@@ -250,7 +251,6 @@ const CreatePostScreen = ({navigation, route}) => {
         </View>
     ), [linkView, title, tempTags, theme]);
 
-
     
     const titleBottomButtons = React.useCallback(() => (
 
@@ -266,7 +266,7 @@ const CreatePostScreen = ({navigation, route}) => {
                 placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
                 value={tempTags}
                 onChangeText={(newValue) => setTempTags(newValue)}
-                onEndEditing={() => fixTags(tempTags)}
+                // onEndEditing={() => fixTags(tempTags)}
             />
 
             {/* line break */}
@@ -277,26 +277,23 @@ const CreatePostScreen = ({navigation, route}) => {
     ), [linkView, imagePost, text, tempTags, currentSelection, theme]);
 
     const handleFocus = () => {
-        console.log("keyboard visible");
         setKeyboardVisible(true);
     };
 
     const handleBlur = () => {
-        console.log("keyboard down");
         setKeyboardVisible(false);
     };
 
 
-    const onPostText = React.useCallback(async () => {
+    const onPostText = React.useCallback(async (correctTags) => {
         
         await UploadTextPost(
             title,
             text,
             correctTags
         ).catch(function (error) {
-            console.log(error);
+            // console.log(error);
         }).then(async (id) => {
-            console.log(" post ", id);
             const newText = text;
 
             // clear text
@@ -304,7 +301,6 @@ const CreatePostScreen = ({navigation, route}) => {
             setText("");
             setTitle("");
             setTempTags("");
-            setCorrectTags([]);
 
             // navigate to Post screen with the new Post
             navigation.dispatch(
@@ -325,7 +321,7 @@ const CreatePostScreen = ({navigation, route}) => {
     }, [text])
 
 
-    const onPostImage = React.useCallback(async () => {
+    const onPostImage = React.useCallback(async (correctTags) => {
 
         await UploadImagePost(
             title,
@@ -345,7 +341,6 @@ const CreatePostScreen = ({navigation, route}) => {
             setText("");
             setTitle("");
             setTempTags("");
-            setCorrectTags([]);
                                             
             // navigate to Post screen with the new Post
             navigation.dispatch(
@@ -370,8 +365,8 @@ const CreatePostScreen = ({navigation, route}) => {
     }, [imagePost, text])
 
 
-    const onPostMeme = React.useCallback(async () => {
-
+    const onPostMeme = React.useCallback(async (correctTags) => {
+        console.log(correctTags)
         await SaveMemePostData(
             title,
             text,
@@ -393,7 +388,6 @@ const CreatePostScreen = ({navigation, route}) => {
             setText("");
             setTitle("");
             setTempTags("");
-            setCorrectTags([]);
 
             // navigate to Post screen with the new Post
             navigation.dispatch(
@@ -447,18 +441,20 @@ const CreatePostScreen = ({navigation, route}) => {
                             onPress={ async () =>
                                     {
                                         Keyboard.dismiss();
+                                        // console.log(tempTags)
+                                        // fixTags(tempTags);
 
                                         if(imagePost && imagePost.template){
                                             
-                                            await onPostMeme();
+                                            await onPostMeme(fixTags(tempTags));
 
                                         }else if(imagePost){
                                             
-                                            await onPostImage();
+                                            await onPostImage(fixTags(tempTags));
 
                                         }else{
 
-                                            await onPostText();
+                                            await onPostText(fixTags(tempTags));
 
                                         }
                                     }
@@ -631,7 +627,7 @@ const CreatePostScreen = ({navigation, route}) => {
                     placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
                     value={tempTags}
                     onChangeText={(newValue) => setTempTags(newValue)}
-                    onEndEditing={() => fixTags(tempTags)}
+                    // onEndEditing={() => fixTags(tempTags)}
                 />
 
 

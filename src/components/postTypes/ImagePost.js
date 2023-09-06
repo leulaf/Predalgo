@@ -2,6 +2,8 @@ import React, { } from 'react';
 import { View, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
 // import { firebase, storage, db } from '../../config/firebase';
 // import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+import PostText from '../../shared/Text/PostText';
+
 import PostContainer from './PostContainer';
 
 import CreateMeme from '../../shared/functions/CreateMeme';
@@ -118,10 +120,20 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                 <TouchableOpacity
                     activeOpacity={1}
                     onPress={() => setIsFocused(true)}
-                    style={{flexDirection: "row", alignSelf: 'center'}}
+                    style={{flexDirection: "column", alignSelf: 'center'}}
                 >
+                    
                     {/* Load Meme with template and template state */}
                     {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
+
+
+                    { text &&
+                        
+                        <PostText numberOfLines={5} text={text} forPost={true}/>
+
+                    }
+
+
                     <ResizableImage 
                         image={image}
                         height={imageHeight}
@@ -130,6 +142,7 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                         maxHeight={600}
                         style={{ borderRadius: 10, alignSelf: 'center'}}
                     />
+
 
                     {focused &&
                         <ImageView

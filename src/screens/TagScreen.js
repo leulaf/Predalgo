@@ -6,7 +6,7 @@ import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, orderBy, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
-import SimpleTopBar from '../ScreenTop/SimpleTopBar';
+import TagScreenTopBar from '../ScreenTop/TagScreenTopBar';
 import AllTagPosts from '../components/posts/AllTagPosts';
 
 export default function TagScreen({navigation, route}){
@@ -21,7 +21,7 @@ export default function TagScreen({navigation, route}){
     // Sets the header to the SimpleTopBar component
     useEffect(() => {
         navigation.setOptions({
-            header: () => <SimpleTopBar title={tag}/>
+            // header: () => <TagScreenTopBar tag={tag} theme={theme}/>
         });
     }, []);
 

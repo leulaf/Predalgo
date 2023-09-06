@@ -68,6 +68,7 @@ async function UploadMemePost(title, text, url, memeName, templateUrl, imageStat
 
 
 const SaveMemePostData = async (title, text, memeName, templateUrl, templateUploader, imageState, height, width, tags) => {
+    // console.log(tags)
     return new Promise(async (resolve, reject) => {
         // add text post to database
         await addDoc(collection(db, "allPosts"), {

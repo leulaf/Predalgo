@@ -26,6 +26,7 @@ const renderItem = ({ item, index }) => {
                 template={item.template}
                 templateUploader={item.templateUploader}
                 templateState={item.templateState}
+                text={item.text}
                 title={item.title}
                 tags={item.tags}
                 memeName={item.memeName}

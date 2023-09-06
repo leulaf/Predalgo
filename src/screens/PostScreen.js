@@ -143,17 +143,17 @@ const Header = React.memo(({theme, navigation, contentBottom, title, memeName, i
                 activeOpacity={1}
                     style={
                         theme == 'light' ? 
-                            !following ? styles.lightFollowButton : styles.lightFollowButton
+                            styles.lightFollowButton
                         :
-                            !following ? styles.darkFollowButton : styles.darkFollowButton
+                            styles.darkFollowButton
                     }
                     onPress={toggleFollowing()}
                 >
                     <Text style={
                         theme == 'light' ?
-                            !following ? styles.lightFollowText : styles.lightFollowText
+                            styles.lightFollowText
                         :
-                            !following ? styles.darkFollowText : styles.darkFollowText
+                            styles.darkFollowText
                         }
                     >
                         {following ? 'Following' : 'Follow'}
@@ -300,11 +300,11 @@ const PostScreen = ({navigation, route}) => {
         </View>
     )
 
-    let progress = 0;
+    // let progress = 0;
 
-    if (offsetY <= 0) {
-    progress = -offsetY / refreshingHeight;
-    }
+    // if (offsetY <= 0) {
+    //     progress = -offsetY / refreshingHeight;
+    // }
 
     const contentBottom = (
         <ContentBottom
@@ -565,7 +565,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flexDirection: 'row',
         marginTop: 10,
-        marginLeft: 13,
+        marginLeft: 12,
         marginBottom: 5,
         alignItems: 'center',
         alignContent: 'center',
@@ -575,7 +575,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#151515',
         flexDirection: 'row',
         marginTop: 10,
-        marginLeft: 13,
+        marginLeft: 12,
         marginBottom: 5,
         alignItems: 'center',
         alignContent: 'center',
@@ -584,7 +584,8 @@ const styles = StyleSheet.create({
     lightUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#444444',
+        // color: '#444444',
+        color: '#000',
         textAlign: "left",
         marginBottom: 1,
     },
@@ -598,7 +599,8 @@ const styles = StyleSheet.create({
     lightRepostUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#777777',
+        // color: '#777777',
+        color: '#000',
         textAlign: "left",
     },
     darkRepostUsername: {
@@ -616,7 +618,7 @@ const styles = StyleSheet.create({
     },
     lightFollowButton: {
         flexDirection: 'column',
-        backgroundColor: '#3d3d3d',
+        backgroundColor: '#222222',
         borderRadius: 20,
         width: "auto",
         height: 37,

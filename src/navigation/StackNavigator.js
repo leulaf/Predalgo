@@ -97,7 +97,7 @@ const MainStackNavigator = ({}) => {
         />
         <Stack.Screen name="Tag" component={TagScreen}
             options={{
-                // headerShown: false,
+                headerShown: false,
                 gestureResponseDistance: windowWidth,
             }}
         />
