@@ -232,6 +232,7 @@ const CommentReplyBottomSheet = ({navigation, theme, replyToPostId, replyToComme
         await saveMemeToComment(
             replyImageToPost.memeName,
             replyImageToPost.template,
+            replyImageToPost.templateUploader,
             replyImageToPost.imageState,
             replyTextToPost,
             replyToCommentId,
@@ -259,6 +260,7 @@ const CommentReplyBottomSheet = ({navigation, theme, replyToPostId, replyToComme
                 replyToUsername: replyToUsername,
                 memeName: replyImageToPost.memeName,
                 template: replyImageToPost.template,
+                templateUploader: replyImageToPost.templateUploader,
                 templateState: replyImageToPost.imageState,
                 imageUrl: replyImageToPost.uri,
                 imageHeight: replyImageToPost.height,
@@ -525,6 +527,7 @@ const CommentReplyBottomSheet = ({navigation, theme, replyToPostId, replyToComme
                                 {
                                     navigation.navigate(replyImageToPost.memeName ? 'EditMeme' : "EditImage", {
                                         imageUrl: replyImageToPost.undeditedUri,
+                                        uploader: replyImageToPost.templateUploader,
                                         height: replyImageToPost.height,
                                         width: replyImageToPost.width,
                                         imageState: replyImageToPost.imageState,

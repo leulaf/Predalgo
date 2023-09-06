@@ -27,7 +27,7 @@ import DownDark from '../../../../assets/down_dark.svg';
 
 
 // ******** React memo ********
-export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId, replyToCommentId, memeName, profile, likesCount, commentsCount, onNavToComment, onReply,}) => {
+export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId, replyToCommentId, memeName, profile, likesCount, commentsCount, onNavToComment, onReply, navToMeme}) => {
     
     const [emoji, setEmoji] = React.useState({
         id: commentId,
@@ -119,6 +119,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                     theme={theme}
                     memeName={memeName}
                     navigation={navigation}
+                    navToMeme={navToMeme}
                 />
             }
 

@@ -19,6 +19,10 @@ import {
     createMarkupEditorToolStyles,
 } from "@pqina/pintura";
 
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth();
+
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
@@ -27,7 +31,10 @@ const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
-    const { imageUrl, memeName, replyMemeName, imageState, height, width, cameraPic, dontCompress, forMemePost, forPost, forMemeComment, forCommentOnPost, forCommentOnComment, templateExists} = route.params;
+    const { imageUrl, uploader, memeName, replyMemeName, imageState, height, width, cameraPic, dontCompress, forMemePost, forPost, forMemeComment, forCommentOnPost, forCommentOnComment, templateExists} = route.params;
+    
+    const [templateUploader, setTemplateUploader] = useState(uploader);
+    
     const [image, setImage] = useState(imageUrl);
     const [imageResult, setImageResult] = useState(null);
 
@@ -93,6 +100,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                     uri: imagePost.uri,
                     undeditedUri: imagePost.undeditedUri,
                     template: imagePost.template,
+                    templateUploader: imagePost.templateUploader,
                     height: height,
                     width: width,
                     forCommentOnComment: forCommentOnComment,
@@ -106,6 +114,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                     uri: imageReply.uri,
                     undeditedUri: imageReply.undeditedUri,
                     template: imageReply.template,
+                    templateUploader: imageReply.templateUploader,
                     height: height,
                     width: width,
                     forCommentOnComment: forCommentOnComment,
@@ -142,6 +151,8 @@ const EditMemeScreen = ({ navigation, route }) => {
             Alert.alert("Please enter a name for the template.");
             return;
         }else if(replyMemeName && replyMemeName != true){
+            setTemplateUploader(auth.currentUser.displayName);
+
             addNewTemplate(template, memeName, height, width).then(() => {
                 if(forPost){
                     setImagePost({
@@ -149,6 +160,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                         uri: imageResult,
                         undeditedUri: imagePost.undeditedUri,
                         template: imageState.template,
+                        templateUploader: templateUploader,
                         height: height,
                         width: width,
                         forCommentOnComment: forCommentOnComment,
@@ -161,6 +173,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                         uri: imageResult,
                         undeditedUri: imageReply.undeditedUri,
                         template: imageState.template,
+                        templateUploader: templateUploader,
                         height: height,
                         width: width,
                         forCommentOnComment: forCommentOnComment,
@@ -173,6 +186,8 @@ const EditMemeScreen = ({ navigation, route }) => {
                 setOverlayVisible(false);
             })
         }else{
+            setTemplateUploader(auth.currentUser.displayName);
+            
             uploadNewTemplate(template, memeName, height, width)
                 .then(async(newUrl) => {
                     if(forPost){
@@ -181,6 +196,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                             uri: imageResult,
                             undeditedUri: imageUrl,
                             template: newUrl,
+                            templateUploader: templateUploader,
                             height: height,
                             width: width,
                             forCommentOnComment: forCommentOnComment,
@@ -193,6 +209,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                             uri: imageResult,
                             undeditedUri: imageUrl,
                             template: newUrl,
+                            templateUploader: templateUploader,
                             height: height,
                             width: width,
                             forCommentOnComment: forCommentOnComment,
@@ -219,6 +236,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                 uri: dest,
                 undeditedUri: templateExists ? imageUrl : image,
                 template: templateExists ? imageUrl : null,
+                templateUploader: templateUploader,
                 height: height,
                 width: width,
                 forCommentOnComment: forCommentOnComment,
@@ -236,6 +254,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                 uri: dest,
                 undeditedUri: templateExists ? imageUrl : image,
                 template: templateExists ? imageUrl : null,
+                templateUploader: templateUploader,
                 height: height,
                 width: width,
                 forCommentOnComment: forCommentOnComment,
@@ -253,6 +272,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                 uri: dest,
                 undeditedUri: templateExists ? imageUrl : image,
                 template: templateExists ? imageUrl : null,
+                templateUploader: templateUploader,
                 height: height,
                 width: width,
                 forCommentOnComment: forCommentOnComment,

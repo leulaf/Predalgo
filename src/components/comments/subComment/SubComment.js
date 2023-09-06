@@ -16,7 +16,11 @@ import SubCommentBottom from './SubCommentBottom';
 
 import SubCommentTop from './SubCommentTop';
 
-import { onNavToComment, onReply } from '../shared/CommentMethods';
+import CommentBottom from '../CommentBottom';
+
+import ImageView from "react-native-image-viewing";
+
+import { onNavToComment, onReply, navToMeme } from '../shared/CommentMethods';
 
 import Down from '../../../../assets/down_light.svg';
 
@@ -24,7 +28,7 @@ import DownDark from '../../../../assets/down_dark.svg';
 
 const windowWidth = Dimensions.get('screen').width;
 
-const navToComment =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+const navToComment =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
     navigation.push('Comment', {
         commentId: commentId,
         replyToPostId: replyToPostId,
@@ -33,7 +37,8 @@ const navToComment =  (navigation, commentId, replyToPostId, replyToCommentId, p
         replyToUsername: username,
         imageUrl: image,
         memeName: memeName,
-        template: false,
+        templateUploader: templateUploader,
+        template: template,
         imageHeight: imageHeight,
         imageWidth: imageWidth,
         text: text,
@@ -46,9 +51,11 @@ const navToComment =  (navigation, commentId, replyToPostId, replyToCommentId, p
 }
 
 
-const SubComment = ({ navigation, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount,}) => {
+const SubComment = ({ navigation, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, templateUploader, template, templateState, imageWidth, imageHeight, likesCount, commentsCount,}) => {
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl :  template);
+
+    const [visible, setIsVisible] = React.useState(false);
 
     // see if you can move to outside function that contains CreateMeme,
     // CreatMeme would only render is template is not null/undefined
@@ -60,6 +67,32 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
         console.log(finished)
         return null;
     }
+
+    // console.log(template && template)
+
+    const navToCommentFromImage = React.useCallback(() => () => {
+        setIsVisible(false);
+
+        navigation.push('Comment', {
+            commentId: commentId,
+            replyToPostId: replyToPostId,
+            replyToCommentId: replyToCommentId,
+            replyToProfile: profile,
+            replyToUsername: username,
+            imageUrl: image,
+            memeName: memeName,
+            templateUploader: templateUploader,
+            template: template,
+            imageHeight: imageHeight,
+            imageWidth: imageWidth,
+            text: text,
+            likesCount: likesCount,
+            commentsCount: commentsCount,
+            profile: profile,
+            username: username,
+            profilePic: profilePic,
+        })
+    })
 
 
     return (
@@ -79,7 +112,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                 replyToPostId={replyToPostId}
                 setFinished={setFinished}
                 navigation={navigation}
-                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 theme={theme}
                 profile={profile}
                 username={username}
@@ -92,7 +125,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
 
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
                     
@@ -108,7 +141,10 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                 <TouchableOpacity
                     activeOpacity={1}
                     style={{flexDirection: 'row', backgroundColor: 'black', marginTop: 11, borderRadius: 0, alignItems: 'center', justifyContent: 'center'}}
-                    onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress = {
+                        () => setIsVisible(true)
+                        // navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)
+                    }
                 >
                     <ResizableImage 
                         image={image}
@@ -117,6 +153,29 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                         maxHeight={550}
                         maxWidth={windowWidth - 10}
                         style={{borderRadius: 0}}
+                    />
+
+                    <ImageView
+                        images={[{uri: image}]}
+                        imageIndex={0}
+                        visible={visible}
+                        onRequestClose={() => setIsVisible(false)}
+                        animationType="fade"
+                        doubleTapToZoomEnabled={true}
+                        FooterComponent={({ imageIndex }) => (
+                            <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+                                <CommentBottom
+                                    commentID={commentId}
+                                    replyToCommentId={replyToCommentId}
+                                    replyToPostId={replyToPostId}
+                                    likesCount={likesCount}
+                                    commentsCount={commentsCount}
+                                    theme='dark'
+                                    navToComment={navToCommentFromImage()}
+                                />
+                            </View>
+                            
+                        )}
                     />
                 </TouchableOpacity>
             }
@@ -133,8 +192,9 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                 memeName={memeName}
                 likesCount={likesCount}
                 commentsCount={commentsCount}
-                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
+                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
             />
 
             {/* Comment Footer */}
@@ -151,7 +211,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                                 // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
                                 borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
                             }}
-                            onPress = {onNavToComment()}
+                            onPress = {onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                         >
                             
                             {/* might need too edit input to intToString */}

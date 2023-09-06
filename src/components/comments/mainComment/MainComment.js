@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { TouchableOpacity, Dimensions } from 'react-native';
+import { TouchableOpacity, View, Dimensions } from 'react-native';
 
 import styles from './Styles';
 
@@ -16,11 +16,15 @@ import MainCommentBottom from './MainCommentBottom';
 
 import MainCommentTop from './MainCommentTop';
 
-import { onNavToComment, onReply } from '../shared/CommentMethods';
+import CommentBottom from '../CommentBottom';
+
+import ImageView from "react-native-image-viewing";
+
+import { onNavToComment, onReply, navToMeme } from '../shared/CommentMethods';
 
 const windowWidth = Dimensions.get('window').width;
 
-const onNavToCommentWithComments = (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, commentsList) => () => {
+const onNavToCommentWithComments = (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount, commentsList) => () => {
     navigation.push('Comment', {
         commentId: commentId,
         comments: commentsList && commentsList,
@@ -30,6 +34,8 @@ const onNavToCommentWithComments = (navigation, commentId, replyToPostId, replyT
         replyToUsername: username,
         imageUrl: image,
         memeName: memeName,
+        template: template,
+        templateUploader: templateUploader,
         imageHeight: imageHeight,
         imageWidth: imageWidth,
         text: text,
@@ -43,15 +49,19 @@ const onNavToCommentWithComments = (navigation, commentId, replyToPostId, replyT
 
 
 // ******** React memo ********
-const MainComment = ({ navigation, index, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const MainComment = ({ navigation, index, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateUploader, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl :  template);
+
+    const [visible, setIsVisible] = React.useState(false);
 
     // Checks if the meme is finished loading
     // If finished == "deleted" then the comment is not rendered
     const [finished, setFinished] = React.useState(template ? false : true);
 
-    const navToCommentWithComments = React.useCallback((commentsList) =>{
+    const navToCommentWithComments = React.useCallback((commentsList) => () => {
+
+        setIsVisible(false);
 
         navigation.push('Comment', {
             commentId: commentId,
@@ -104,7 +114,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                 replyToPostId={replyToPostId}
                 setFinished={setFinished}
                 navigation={navigation}
-                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 theme={theme}
                 profile={profile}
                 username={username}
@@ -118,7 +128,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
 
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress = {onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress = {onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
                     
@@ -135,7 +145,10 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                 <TouchableOpacity
                     activeOpacity={1}
                     style={{backgroundColor: '#000000', marginTop: 9, marginBottom: 2}}
-                    onPress = {onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress = {
+                        // onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)
+                        () => setIsVisible(true)
+                    }
                 >
                     <ResizableImage 
                         image={image}
@@ -144,6 +157,29 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                         maxHeight={550}
                         maxWidth={windowWidth}
                         style={{borderRadius: 0}}
+                    />
+
+                    <ImageView
+                        images={[{uri: image}]}
+                        imageIndex={0}
+                        visible={visible}
+                        onRequestClose={() => setIsVisible(false)}
+                        animationType="fade"
+                        doubleTapToZoomEnabled={true}
+                        FooterComponent={({ imageIndex }) => (
+                            <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+                                <CommentBottom
+                                    commentID={commentId}
+                                    replyToCommentId={replyToCommentId}
+                                    replyToPostId={replyToPostId}
+                                    likesCount={likesCount}
+                                    commentsCount={commentsCount}
+                                    theme='dark'
+                                    navToComment={navToCommentWithComments}
+                                />
+                            </View>
+                            
+                        )}
                     />
                     
                 </TouchableOpacity>
@@ -161,9 +197,11 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                 likesCount={likesCount}
                 commentsCount={commentsCount}
                 memeName={memeName}
+                templateUploader={templateUploader}
+                navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
                 navToCommentWithComments={navToCommentWithComments}
-                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
             />
 
         </Animated.View>

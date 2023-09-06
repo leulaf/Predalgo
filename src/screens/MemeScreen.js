@@ -76,6 +76,7 @@ const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => ()
                 imageUrl: item.template,
                 height: item.height,
                 width: item.width,
+                // useCount: item.useCount,
                 templateExists: true,
                 forCommentOnComment: forCommentOnComment,
                 forCommentOnPost: forCommentOnPost,
@@ -89,6 +90,7 @@ const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => ()
             imageUrl: item.template,
             height: item.height,
             width: item.width,
+            // useCount: item.useCount,
             templateExists: true,
             forCommentOnComment: forCommentOnComment,
             forCommentOnPost: forCommentOnPost,
@@ -103,7 +105,7 @@ const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 const MemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
 
-    const [memeTemplates, setMemeTeplates] = useState([{id : "fir"}, {id: "sec"}]);
+    const [memeTemplates, setMemeTemplates] = useState([{id : "fir"}, {id: "sec"}]);
 
     const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost, fromFavoriteTemplates } = route.params;
 
@@ -133,7 +135,7 @@ const MemeScreen = ({ navigation, route }) => {
                 return { id, ...data }
             })
 
-            setMemeTeplates(templates);
+            setMemeTemplates(templates);
         });
     }, []);
 
@@ -164,6 +166,7 @@ const MemeScreen = ({ navigation, route }) => {
                     maxWidth={windowWidth - 4}
                     template={item.template}
                     templateState={item.templateState}
+                    templateUploader={uploader}
                 />
 
             </Animated.View>
@@ -246,9 +249,11 @@ const MemeScreen = ({ navigation, route }) => {
                                 </Text>
 
                                 {/* use count */}
-                                <Text style={theme == 'light' ? styles.lightUseCountText : styles.darkUseCountText}>
-                                    {useCount} memes
-                                </Text>
+                                {useCount &&
+                                    <Text style={theme == 'light' ? styles.lightUseCountText : styles.darkUseCountText}>
+                                        {useCount} memes
+                                    </Text>
+                                }
                             </View>
 
                             

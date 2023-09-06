@@ -1,5 +1,5 @@
 import React, { } from 'react';
-import { View, StyleSheet, Dimensions} from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
 // import { firebase, storage, db } from '../../config/firebase';
 // import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
 import PostContainer from './PostContainer';
@@ -10,9 +10,34 @@ import ResizableImage from '../../shared/functions/ResizableImage';
 
 import { useNavigation } from '@react-navigation/native';
 
+import ImageView from "react-native-image-viewing";
+
+import PostBottom from './PostBottom';
+
+const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, text, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount) => {
+    navigation.push('Post', {
+        postId: postId,
+        title: title,
+        tags: tags,
+        text: text,
+        imageUrl: imageUrl,
+        memeName: memeName,
+        template: template,
+        templateUploader: templateUploader ? templateUploader : null,
+        templateState: null,
+        imageHeight: imageHeight,
+        imageWidth: imageWidth,
+        likesCount: likesCount,
+        commentsCount: commentsCount,
+        profile: profile,
+        username: username,
+        profilePic: profilePic,
+    });
+}
+
 const windowWidth = Dimensions.get("screen").width;
 
-const ImagePost = ({ title, username, profilePic, imageUrl, template, templateState, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
+const ImagePost = ({ title, username, profilePic, text, imageUrl, template, templateUploader, templateState, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
     const navigation = useNavigation();
     // const [profilePicState, setProfilePicState] = useState(profilePic);
     // const [usernameState, setUsernameState] = useState(username);
@@ -22,6 +47,8 @@ const ImagePost = ({ title, username, profilePic, imageUrl, template, templateSt
     const [image, setImage] = React.useState(imageUrl ? imageUrl : template);
 
     const [finished, setFinished] = React.useState(template  && !(imageUrl) ? false : true);
+
+    const [focused, setIsFocused] = React.useState(false);
 
     React.useEffect(() => {
         // if(repostProfile != null){
@@ -60,12 +87,18 @@ const ImagePost = ({ title, username, profilePic, imageUrl, template, templateSt
     // if (usernameState === "") {
     //     return null;
     // }
+
+    const navToPostFromImage = React.useCallback(() => {
+        setIsFocused(false);
+        onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount);
+    })
     
     return (
         <PostContainer 
             title={title}
             imageUrl={image}
-            // template={image}
+            template={template}
+            templateUploader={templateUploader}
             // templateState={templateState}
             imageHeight={imageHeight}
             imageWidth={imageWidth}
@@ -82,7 +115,11 @@ const ImagePost = ({ title, username, profilePic, imageUrl, template, templateSt
             navigation={navigation}
             
             content={
-                <View style={{flexDirection: "row", alignSelf: 'center'}}>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={() => setIsFocused(true)}
+                    style={{flexDirection: "row", alignSelf: 'center'}}
+                >
                     {/* Load Meme with template and template state */}
                     {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
                     <ResizableImage 
@@ -93,7 +130,30 @@ const ImagePost = ({ title, username, profilePic, imageUrl, template, templateSt
                         maxHeight={600}
                         style={{ borderRadius: 10, alignSelf: 'center'}}
                     />
-                </View>
+
+                    {focused &&
+                        <ImageView
+                            images={[{uri: image}]}
+                            imageIndex={0}
+                            visible={focused}
+                            onRequestClose={() => setIsFocused(false)}
+                            animationType="fade"
+                            doubleTapToZoomEnabled={true}
+                            FooterComponent={({ imageIndex }) => (
+                                <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+                                    <PostBottom
+                                        postId={postId}
+                                        likesCount={likesCount}
+                                        commentsCount={commentsCount}
+                                        theme='imageFocused'
+                                        navToPost={navToPostFromImage}
+                                    />
+                                </View>
+                                
+                            )}
+                        />
+                    }
+                </TouchableOpacity>
             }
         />
     );

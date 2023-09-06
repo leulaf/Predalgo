@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} 
 import { useNavigation } from '@react-navigation/native';
 import { firebase, storage, db } from '../../config/firebase';
 import { query, where, collection, getDocs, addDoc, doc, getDoc, setDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
-import {ThemeContext} from '../../../context-store/context';
+
 
 // light mode icons
 import Likes from '../../../assets/likes.svg';
@@ -20,8 +20,8 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const CommentBottom = ({ commentId, replyToCommentId, replyToPostId,likesCount, commentsCount }) => {
-    const {theme,setTheme} = useContext(ThemeContext);
+const CommentBottom = ({ theme, commentId, replyToCommentId, replyToPostId, likesCount, commentsCount, navToComment }) => {
+
     const navigation = useNavigation();
     const [likeCount, setLikeCount] = useState(likesCount);
     const [likeString, setLikeString] = useState("");
@@ -39,17 +39,17 @@ const CommentBottom = ({ commentId, replyToCommentId, replyToPostId,likesCount, 
     let likes, alreadyLiked, comments, share, repost;
 
     if(theme == 'light'){
-        comments = <Comments width={24} height={24} style={{ marginRight: 7 }}/>;
-        likes = <Likes width={23} height={23} style={{ marginRight: 7 }}/>;
-        alreadyLiked = <Liked width={23} height={23} style={{ marginRight: 7 }}/>;
-        share = <Share width={21} height={21} style={{ marginRight: 7 }}/>;
-        repost = <Repost width={19} height={19} style={{ marginRight: 7 }}/>;
+        comments = <Comments width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
+        likes = <Likes width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
+        alreadyLiked = <Liked width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
+        share = <Share width={21} height={21} style={{ color: "#222222", marginRight: 8 }}/>;
+        repost = <Repost width={20} height={20} style={{ color: "#333333", marginRight: 9 }}/>;
     }else{
-        comments = <CommentsDark width={24} height={24} style={{ marginRight: 7 }}/>;
-        likes = <LikesDark width={24} height={24} style={{ marginRight: 7 }}/>;
-        alreadyLiked = <LikedDark width={24} height={24} style={{ marginRight: 7 }}/>;
-        share = <ShareDark width={21} height={21} style={{ marginRight: 7 }}/>;
-        repost = <RepostDark width={19} height={19} style={{ marginRight: 7 }}/>;
+        comments = <Comments width={24} height={24} style={{ color: "#D2D2D2", marginRight: 8 }}/>;
+        likes = <Likes width={23} height={23} style={{ color: "#D5D5D5", marginRight: 8 }}/>;
+        alreadyLiked = <Liked width={23} height={23} style={{ color: "#D5D5D5", marginRight: 8 }}/>;
+        share = <Share width={21} height={21} style={{ color: "#DDDDDD", marginRight: 8 }}/>;
+        repost = <Repost width={19} height={19} style={{ color: "#D2D2D2", marginRight: 9 }}/>;
     }
 
     // if like count is above 999 then display it as count/1000k + k
@@ -130,15 +130,16 @@ const CommentBottom = ({ commentId, replyToCommentId, replyToPostId,likesCount, 
     return (
         <View style={{flex: 1, width: '100%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
             {/* Comments button */}
-            <View
-                style= {styles.commentsContainer}
+            <TouchableOpacity
+                style = {styles.commentsContainer}
+                onPress ={navToComment()}
             >
                     {comments}
 
                     <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
                         {commentString}
                     </Text>
-            </View>
+            </TouchableOpacity>
 
             
             {/* Likes button */}
@@ -174,7 +175,7 @@ const CommentBottom = ({ commentId, replyToCommentId, replyToPostId,likesCount, 
             
             {/* Share button */}
             <TouchableOpacity
-                style={styles.shareButtonContainer}
+                style={[styles.bottomButtonContainer, {marginRight: 10}]}
                 // onPress={() => }
             >
                 {share}
@@ -198,9 +199,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
+        // borderWidth: 1,
+        // borderColor: '#fff',
     },
     commentsContainer: {
         height: 45,
+        width: 90,
         flexDirection:"row",
         alignSelf: 'flex-start',
         // marginLeft: 5,
@@ -208,14 +212,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignContent: "center", 
         justifyContent: "center",
-    },
-    shareButtonContainer: {
-        height: 45,
-        width: 100,
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
+        // borderWidth: 1,
+        // borderColor: '#fff',
     },
     lightBottomText: {
         fontSize: 16,

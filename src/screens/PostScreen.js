@@ -1,7 +1,7 @@
 
 
 import React, {} from 'react';
-import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions, RefreshControl, StatusBar } from 'react-native';
+import { View, LogBox, TouchableOpacity, Text, StyleSheet, Dimensions, RefreshControl, StatusBar, Touchable } from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
 import Constants from 'expo-constants';
@@ -19,6 +19,8 @@ import { Image } from 'expo-image';
 import ResizableImage from '../shared/functions/ResizableImage';
 
 import { fetchFirstTenPostCommentsByRecent, fetchFirstTenPostCommentsByPopular, fetchNextTenPopularComments } from '../shared/post/GetPostComments';
+
+import ImageView from "react-native-image-viewing";
 
 import CreateMeme from '../shared/functions/CreateMeme';
 
@@ -44,12 +46,39 @@ const refreshingHeight = 100;
 const windowWidth = Dimensions.get("screen").width;
 const windowHeight = Dimensions.get("screen").height;
 
-const contentBottom = (memeName, tags) => (
-    <ContentBottom
-        memeName={memeName}
-        tags={tags}
-    />
-);
+
+const navToMeme = (navigation, memeName, template, templateUploader, imageHeight, imageWidth) => () => {
+    navigation.navigate('Meme', {
+        uploader: templateUploader,
+        memeName: memeName,
+        template: template,
+        height: imageHeight,
+        width: imageWidth,
+    })
+}
+
+
+const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+    navigation.push('Post', {
+        postId: postId,
+        title: title,
+        tags: tags,
+        imageUrl: imageUrl,
+        memeName: memeName,
+        template: template,
+        templateUploader: templateUploader ? templateUploader : null,
+        templateState: null,
+        imageHeight: imageHeight,
+        imageWidth: imageWidth,
+        text: text,
+        likesCount: likesCount,
+        commentsCount: commentsCount,
+        profile: profile,
+        username: username,
+        profilePic: profilePic,
+    });
+}
+
 
 const replyBottomSheet = (navigation, theme, postId, profile, username) => (
     <ReplyBottomSheet
@@ -69,13 +98,17 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
     })
 }
 
-const Header = React.memo(({theme, navigation, title, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic }) => {
+const Header = React.memo(({theme, navigation, contentBottom, title, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic, ImageFocused }) => {
     const [following, setFollowing] = React.useState(false);
+
+    const [isImageFocused, setIsImageFocused] = React.useState(false);
 
     const toggleFollowing = React.useCallback(() => () => {
         // following ? onUnfollow() : onFollow();
         setFollowing(!following);
     }, [following]);
+
+
     return (
         <Animated.View
             entering={FadeIn}
@@ -137,18 +170,38 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
 
                     <PostText text={text}/>
 
-                    <ResizableImage 
-                        image={image}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxWidth={windowWidth-6}
-                        maxHeight={windowHeight}
-                        style={{marginTop: 5, borderRadius: 15, alignSelf: 'center'}}
-                    />
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={() => setIsImageFocused(!isImageFocused)}
+                    >
+                        <ResizableImage 
+                            image={image}
+                            height={imageHeight}
+                            width={imageWidth}
+                            maxWidth={windowWidth-6}
+                            maxHeight={windowHeight}
+                            style={{marginTop: 5, borderRadius: 15, alignSelf: 'center'}}
+                        />
+
+
+                        
+                        <ImageView
+                            images={[{uri: image}]}
+                            imageIndex={0}
+                            visible={isImageFocused}
+                            onRequestClose={() => setIsImageFocused(false)}
+                            animationType="fade"
+                            doubleTapToZoomEnabled={true}
+                            FooterComponent={({ imageIndex }) => 
+                                {ImageFocused}
+                            }
+                        />
+                    </TouchableOpacity>
+
                 
                 {/* Content bottom */}
                 <View style={{marginLeft: 5, marginTop: 5, marginBottom: 0}}>
-                    {contentBottom(memeName, tags)}
+                    {contentBottom}
                 </View>
 
             </View>
@@ -179,6 +232,7 @@ const ImagePost = React.memo(({item, theme, index, navigation})=>{
             // templateState={item.templateState && {"annotation": [{"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "31.2280701754386%", "id": "7fs6et27a", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": "0.15567325678682167", "textAlign": "left", "width": "41.31578947368421%", "x": "2.631578944757731%", "y": "0.17543859301029396%"}, {"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "33.33333333333333%", "id": "u8012jlbl", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": tempString.toString(), "textAlign": "left", "width": "40.26315789473684%", "x": "60.78947367898914%", "y": "0.1754386069339992%"}, {"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "32.28070175438596%", "id": "inhrf4onv", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": tempString.toString(), "textAlign": "left", "width": "41.8421052631579%", "x": "0.26315789082079816%", "y": "71.75438597535504%"}, {"color": [], "disableErase": true, "flipX": false, "flipY": false, "fontFamily": "sans-serif", "fontSize": "20%", "fontStyle": "normal", "fontVariant": "normal", "fontWeight": "normal", "format": "text", "height": "32.98245614035087%", "id": "6bki5dmuu", "isEditing": false, "isSelected": false, "lineHeight": "120%", "opacity": 1, "rotation": 0, "text": tempString.toString(), "textAlign": "left", "width": "38.421052631578945%", "x": "62.368421050020885%", "y": "72.80701753515734%"}], "backgroundColor": [0, 0, 0, 0], "crop": {"height": 3024, "width": 4032, "x": 0, "y": 0}, "cropLimitToImage": true, "cropMaxSize": {"height": 32768, "width": 32768}, "cropMinSize": {"height": 1, "width": 1}, "decoration": [], "flipX": false, "flipY": false, "frame": {"disableStyle": ["backgroundColor", "strokeColor", "strokeWidth"], "frameColor": [0, 0, 0], "height": "100%", "width": "100%", "x": 0, "y": 0}, "redaction": [], "rotation": 0}}
             templateState={item.templateState}
             template={item.template}
+            templateUploader={item.templateUploader}
             imageWidth={item.imageWidth}
             imageHeight={item.imageHeight}
             likesCount={item.likesCount}
@@ -217,7 +271,7 @@ const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 const PostScreen = ({navigation, route}) => {
     const {theme,setTheme} = React.useContext(ThemeContext);
     const [commentsList, setCommentsList] = React.useState([{id: "one"}, {id: "two"}]);
-    const {title, profile, likesCount, commentsCount, imageUrl, template, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags} = route.params;
+    const {title, profile, likesCount, commentsCount, imageUrl, template, templateUploader, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags, fromMemeScreen} = route.params;
 
     const {imageReply, setImageReply} = React.useContext(AuthenticatedUserContext);
 
@@ -234,11 +288,30 @@ const PostScreen = ({navigation, route}) => {
     // Used for tracking the scroll to make the refresh animation work correctly
     const [offsetY, setOffsetY] = React.useState(0);
 
+    const ImageFocused = (
+        <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+            <PostBottom
+                postId={postId}
+                likesCount={likesCount}
+                commentsCount={commentsCount}
+                theme='imageFocused'
+            />
+        </View>
+    )
+
     let progress = 0;
 
     if (offsetY <= 0) {
     progress = -offsetY / refreshingHeight;
     }
+
+    const contentBottom = (
+        <ContentBottom
+            memeName={memeName}
+            tags={tags}
+            navToMeme={!fromMemeScreen ? navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth) : () => navigation.goBack()}
+        />
+    );
 
 
     React.useEffect(() => {
@@ -316,6 +389,8 @@ const PostScreen = ({navigation, route}) => {
                     profile={profile}
                     username={username}
                     profilePic={profilePic}
+                    contentBottom={contentBottom}
+                    ImageFocused={ImageFocused}
                 />
             );
         }else if (index === 1) {
@@ -325,6 +400,8 @@ const PostScreen = ({navigation, route}) => {
                         postId={postId}
                         likesCount={likesCount}
                         commentsCount={commentsCount}
+                        theme={theme}
+                        navToPost={() => onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     />
                 </View>
             );

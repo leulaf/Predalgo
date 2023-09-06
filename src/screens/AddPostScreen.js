@@ -68,7 +68,6 @@ const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnP
         height: item.height,
         width: item.width,
         useCount: item.useCount,
-        uploader: item.uploader,
         forCommentOnComment: forCommentOnComment,
         forCommentOnPost: forCommentOnPost,
         forPost: forPost,

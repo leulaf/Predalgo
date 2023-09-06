@@ -33,17 +33,19 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
     })
 }
 
-const onNavToPost = (navigation, item, image) => () => {
+const onNavToPost = (navigation, item, templateUploader, image) => () => {
 
     navigation.push('Post', {
         postId: item.postId,
         title: item.title,
         tags: item.tags,
         imageUrl: image,
+        templateUploader: templateUploader,
         memeName: item.memeName,
+        fromMemeScreen: true,
         // template: item.template,
         // templateState: item.templateState,
-        template: false,
+        template: item.template,
         templateState: null,
         imageHeight: item.imageHeight,
         imageWidth: item.imageWidth,
@@ -57,7 +59,7 @@ const onNavToPost = (navigation, item, image) => () => {
 }
 
 // Load Meme with template and template state
-export default DisplayMeme = React.memo(({ theme, item, maxHeight, maxWidth, style }) => {
+export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHeight, maxWidth, style }) => {
     const navigation = useNavigation();
     const editorRef = React.useRef(null);
     const [image, setImage] = React.useState(null);
@@ -131,7 +133,7 @@ export default DisplayMeme = React.memo(({ theme, item, maxHeight, maxWidth, sty
                 
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={onNavToPost(navigation, item, image)}
+                    onPress={onNavToPost(navigation, item, templateUploader, image)}
                     style={{flex: 1, height: 40}}
                 />
 
@@ -155,7 +157,7 @@ export default DisplayMeme = React.memo(({ theme, item, maxHeight, maxWidth, sty
 
             <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={onNavToPost(navigation, item, image)}
+                onPress={onNavToPost(navigation, item, templateUploader, image)}
             >
 
                 <ResizableImage

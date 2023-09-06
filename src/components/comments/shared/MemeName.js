@@ -1,5 +1,5 @@
 import React, { } from 'react';
-import { StyleSheet, TouchableOpacity} from 'react-native';
+import { StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import TextTicker from 'react-native-text-ticker';
 import GlobalStyles from '../../../constants/GlobalStyles';
 
@@ -8,7 +8,9 @@ import DownDark from '../../../../assets/down_dark.svg';
 import DarkMemeCreate from '../../../../assets/meme_create_dark.svg';
 import LightMemeCreate from '../../../../assets/meme_create_light.svg';
 
-const MemeName = ({ memeName, theme, navigation }) => {
+const windowWidth = Dimensions.get('window').width;
+
+const MemeName = ({ memeName, templateUploader, theme, navToMeme }) => {
 
     let contentBottom = null;
 
@@ -16,7 +18,7 @@ const MemeName = ({ memeName, theme, navigation }) => {
         contentBottom =
             <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => navigation.push('Meme', {memeName: memeName})}
+                onPress={() => navToMeme()}
                 style={styles.memeName}
             >
                 
@@ -34,7 +36,7 @@ const MemeName = ({ memeName, theme, navigation }) => {
                     repeatSpacer={50}
                     marqueeDelay={1000}
                 >
-                    {memeName}
+                    {memeName + " - @" + templateUploader}
                 </TextTicker>
             </TouchableOpacity>
     }else {
@@ -46,9 +48,11 @@ const MemeName = ({ memeName, theme, navigation }) => {
 
 const styles = StyleSheet.create({
     memeName: {
-        maxWidth: 100,
+        maxWidth: windowWidth/2.3,
         flexDirection: 'row',
         paddingHorizontal: 5,
+        paddingRight: 20,
+        paddingVertical: 3,
     }
 });
 

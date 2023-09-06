@@ -73,7 +73,7 @@ async function commentMemeOnComment(imageUrl, memeName, text, replyToCommentId, 
 
 
 // Comment image on a post
-const saveMemeToComment = async (memeName, templateUrl, imageState, text, replyToCommentId, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth,) => {
+const saveMemeToComment = async (memeName, templateUrl, templateUploader, imageState, text, replyToCommentId, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth,) => {
     return new Promise(async (resolve, reject) => {
         // let id
 
@@ -86,6 +86,7 @@ const saveMemeToComment = async (memeName, templateUrl, imageState, text, replyT
             isMainComment: false,
             memeName: memeName,
             template: templateUrl,
+            templateUploader: templateUploader,
             templateState: imageState,
             imageHeight: imageHeight,
             imageWidth: imageWidth,

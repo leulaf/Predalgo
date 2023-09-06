@@ -24,6 +24,7 @@ const renderItem = ({ item, index }) => {
                 imageHeight={item.imageHeight}
                 imageWidth={item.imageWidth}
                 template={item.template}
+                templateUploader={item.templateUploader}
                 templateState={item.templateState}
                 title={item.title}
                 tags={item.tags}

@@ -53,6 +53,7 @@ const ImagePost = React.memo(({item, theme, navigation})=>{
             imageUrl={item.imageUrl}
             memeName={item.memeName}
             template={item.template}
+            templateUploader={item.templateUploader}
             templateState={item.templateState}
             imageWidth={item.imageWidth}
             imageHeight={item.imageHeight}
@@ -80,7 +81,6 @@ const TextPost = React.memo(({item, theme, navigation})=>{
             text={item.text}
             imageUrl={item.imageUrl}
             memeName={item.memeName}
-            template={item.template}
             templateState={item.templateState}
             imageWidth={item.imageWidth}
             imageHeight={item.imageHeight}
@@ -95,7 +95,7 @@ const TextPost = React.memo(({item, theme, navigation})=>{
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 // ******** React memo ********
-export default MainCommentBottom = ({navigation, index, theme, commentId, replyToPostId, memeName, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
+export default MainCommentBottom = ({navigation, index, theme, commentId, replyToPostId, navToMeme, memeName, templateUploader, profile, likesCount, commentsCount, navToCommentWithComments, onNavToComment, onReply,}) => {
     
     const [emoji, setEmoji] = React.useState({
         id: commentId,
@@ -219,7 +219,8 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                     <MemeName 
                         memeName={memeName}
                         theme={theme}
-                        navigation={navigation}
+                        navToMeme={navToMeme}
+                        templateUploader={templateUploader}
                     />
                 }
 
@@ -359,7 +360,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                             // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
                             borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
                         }}
-                        onPress = {commentsCount - commentsList.length > 0 && getFiveCommentsByPopular()}
+                        onPress = {commentsCount - commentsList.length > 0 ? getFiveCommentsByPopular() : navToCommentWithComments(commentsList)}
                     >
                         
                         {/* might need too edit input to intToString */}

@@ -67,7 +67,7 @@ async function UploadMemePost(title, text, url, memeName, templateUrl, imageStat
 };
 
 
-const SaveMemePostData = async (title, text, memeName, templateUrl, imageState, height, width, tags) => {
+const SaveMemePostData = async (title, text, memeName, templateUrl, templateUploader, imageState, height, width, tags) => {
     return new Promise(async (resolve, reject) => {
         // add text post to database
         await addDoc(collection(db, "allPosts"), {
@@ -75,6 +75,7 @@ const SaveMemePostData = async (title, text, memeName, templateUrl, imageState, 
             text: text,
             memeName: memeName,
             template: templateUrl,
+            templateUploader: templateUploader,
             templateState: imageState,
             imageHeight: height,
             imageWidth: width,

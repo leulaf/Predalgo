@@ -22,24 +22,29 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
-const PostBottom = ({ postId, likesCount, commentsCount, navToPost }) => {
-    const {theme,setTheme} = React.useContext(ThemeContext);
+const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => {
+
     const [liked, setLiked] = React.useState(false);
 
     let likes, alreadyLiked, comments, share, repost;
-
     if(theme == 'light'){
-        comments = <Comments width={23} height={23} style={{ marginRight: 7 }}/>;
-        likes = <Likes width={23} height={23} style={{ marginRight: 7 }}/>;
-        alreadyLiked = <Liked width={23} height={23} style={{ marginRight: 7 }}/>;
-        share = <Share width={21} height={21} style={{ marginRight: 7 }}/>;
-        repost = <Repost width={19} height={19} style={{ marginRight: 7 }}/>;
+        comments = <Comments width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
+        likes = <Likes width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
+        alreadyLiked = <Liked width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
+        share = <Share width={21} height={21} style={{ color: "#222222", marginRight: 8 }}/>;
+        repost = <Repost width={20} height={20} style={{ color: "#333333", marginRight: 9 }}/>;
+    }else if(theme == 'imageFocused'){
+        comments = <Comments width={24} height={24} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
+        likes = <Likes width={24} height={24} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
+        alreadyLiked = <Liked width={24} height={24} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
+        share = <Share width={21} height={21} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
+        repost = <Repost width={20} height={20} style={{ color: "#E4E4E4", marginRight: 9 }}/>;
     }else{
-        comments = <CommentsDark width={23} height={23} style={{ marginRight: 7 }}/>;
-        likes = <LikesDark width={24} height={24} style={{ marginRight: 7 }}/>;
-        alreadyLiked = <LikedDark width={24} height={24} style={{ marginRight: 7 }}/>;
-        share = <ShareDark width={21} height={21} style={{ marginRight: 7 }}/>;
-        repost = <RepostDark width={19} height={19} style={{ marginRight: 7 }}/>;
+        comments = <Comments width={24} height={24} style={{ color: "#D2D2D2", marginRight: 8 }}/>;
+        likes = <Likes width={23} height={23} style={{ color: "#D5D5D5", marginRight: 8 }}/>;
+        alreadyLiked = <Liked width={23} height={23} style={{ color: "#D5D5D5", marginRight: 8 }}/>;
+        share = <Share width={21} height={21} style={{ color: "#DDDDDD", marginRight: 8 }}/>;
+        repost = <Repost width={19} height={19} style={{ color: "#D2D2D2", marginRight: 9 }}/>;
     }
 
 
@@ -67,13 +72,13 @@ const PostBottom = ({ postId, likesCount, commentsCount, navToPost }) => {
 
 
     return (
-        <View style={{flex: 1, width: '100%', flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
+        <View style={{flex: 1, width: '100%', marginRight: 13, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
             
             
             {/* Comments button */}
             <TouchableOpacity
                 style={styles.bottomButtonContainer}
-                onPress={navToPost}
+                onPress={() => navToPost()}
             >
                     {comments}
 
@@ -116,7 +121,7 @@ const PostBottom = ({ postId, likesCount, commentsCount, navToPost }) => {
             
             {/* Share button */}
             <TouchableOpacity
-                style={styles.shareButtonContainer}
+                style={[styles.bottomButtonContainer, {marginRight: 10}]}
                 // onPress={() => }
             >
                 {share}
@@ -140,9 +145,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         alignContent: 'center',
         justifyContent: 'center',
+        // borderWidth: 1,
     },
     commentsContainer: {
         height: 45,
+        width: 90,
         flexDirection:"row",
         alignSelf: 'flex-start',
         // marginLeft: 5,
@@ -150,14 +157,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignContent: "center", 
         justifyContent: "center",
-    },
-    shareButtonContainer: {
-        height: 45,
-        width: 100,
-        flexDirection: 'row',
-        alignItems: 'center',
-        alignContent: 'center',
-        justifyContent: 'center',
     },
     lightBottomText: {
         fontSize: 16,
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
     darkBottomText: {
         fontSize: 16,
         fontWeight: '400',
-        color: '#EEEEEE',
+        color: '#E4E4E4',
     },
 });
 

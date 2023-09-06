@@ -26,14 +26,15 @@ import { getAuth } from 'firebase/auth';
 
 const auth = getAuth();
 
-const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
     navigation.push('Post', {
         postId: postId,
         title: title,
         tags: tags,
         imageUrl: imageUrl,
         memeName: memeName,
-        template: false,
+        template: template,
+        templateUploader: templateUploader ? templateUploader : null,
         templateState: null,
         imageHeight: imageHeight,
         imageWidth: imageWidth,
@@ -46,6 +47,18 @@ const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, user
     });
 }
 
+
+const navToMeme = (navigation, memeName, template, templateUploader, imageHeight, imageWidth) => () => {
+    navigation.navigate('Meme', {
+        uploader: templateUploader,
+        memeName: memeName,
+        template: template,
+        height: imageHeight,
+        width: imageWidth,
+    })
+}
+
+
 const goToProfile = (navigation, profile, username, profilePic) => () => {
     navigation.push('Profile', {
         user: profile,
@@ -55,7 +68,7 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 }
 
 
-const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateState, likesCount, commentsCount, tags, content, profile, postId, profilePic, username, repostUsername }) => {
+const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateUploader, templateState, likesCount, commentsCount, tags, content, profile, postId, profilePic, username, repostUsername }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = React.useContext(ThemeContext);
 
@@ -93,10 +106,11 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 
     const postBottom = (
         <PostBottom
+            theme={theme}
             postId={postId}
             likesCount={likesCount}
             commentsCount={commentsCount}
-            navToPost={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            navToPost={() => onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
         />
     )
     
@@ -105,7 +119,9 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
         <ContentBottom
             memeName={memeName}
             tags={tags}
-            navToPost={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            navToPost={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
+            templateUploader={templateUploader}
         />
     )
     // if post is deleted or content is null, don't show post
@@ -164,7 +180,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     style={{flex: 1, height: 40}}
                 />
 
@@ -184,7 +200,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             {/* title */}
             <TouchableOpacity
                 activeOpacity={1}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 {/* title */}
@@ -194,14 +210,14 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
             
             {/* Post content. Image, Text etc. */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 activeOpacity={1}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
-            >
+                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            > */}
 
                 {content}
 
-            </TouchableOpacity>
+            {/* </TouchableOpacity> */}
 
 
             {/* tags and meme name */}

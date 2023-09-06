@@ -26,6 +26,7 @@ const renderItem = ({ item, index }) => {
             repostComment={item.repostComment}
             imageUrl={item.imageUrl}
             template={item.template}
+            templateUploader={item.templateUploader}
             templateState={item.templateState}
             imageHeight={item.imageHeight}
             imageWidth={item.imageWidth}

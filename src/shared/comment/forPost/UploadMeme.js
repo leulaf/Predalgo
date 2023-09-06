@@ -78,7 +78,7 @@ async function commentMemeOnPost(imageUrl, memeName, text, replyToPostId, replyT
 
 
 // Comment image on a post
-const saveMemeToPost = async (memeName, templateUrl, imageState, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth ) => {
+const saveMemeToPost = async (memeName, templateUrl, templateUploader, imageState, text, replyToPostId, replyToProfile, replyToUsername, imageHeight, imageWidth ) => {
     return new Promise(async (resolve, reject) => {
 
         // add text post to database
@@ -89,6 +89,7 @@ const saveMemeToPost = async (memeName, templateUrl, imageState, text, replyToPo
             isMainComment: true,
             memeName: memeName,
             template: templateUrl,
+            templateUploader: templateUploader,
             templateState: imageState,
             imageHeight: imageHeight,
             imageWidth: imageWidth,

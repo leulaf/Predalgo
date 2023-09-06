@@ -1,14 +1,35 @@
 import React, { } from 'react';
 
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+import { useNavigation } from '@react-navigation/native';
+
 import PostContainer from './PostContainer';
 
 import PostText from '../../shared/Text/PostText';
 
-const TextPost = ({ navigation, title, username, profilePic, text, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
+
+
+const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, text, likesCount, commentsCount) => () => {
+    navigation.push('Post', {
+        postId: postId,
+        title: title,
+        tags: tags,
+        text: text,
+        likesCount: likesCount,
+        commentsCount: commentsCount,
+        profile: profile,
+        username: username,
+        profilePic: profilePic,
+    });
+}
+
+const TextPost = ({ title, username, profilePic, text, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
     // const {theme,setTheme} = useContext(ThemeContext);
     // const [profilePicState, setProfilePicState] = useState(profilePic);
     // const [usernameState, setUsernameState] = useState(username);
     // const [repostUsername, setRepostUsername] = useState(null);
+    const navigation = useNavigation();
 
     React.useEffect(() => {
         // if(repostProfile != null){
@@ -64,7 +85,12 @@ const TextPost = ({ navigation, title, username, profilePic, text, tags, profile
             navigation={navigation}
 
             content={
-                <PostText numberOfLines={15} text={text}/>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, likesCount, commentsCount)}
+                >
+                    <PostText numberOfLines={15} text={text}/>
+                </TouchableOpacity>
             }
         />
     );

@@ -377,6 +377,7 @@ const CreatePostScreen = ({navigation, route}) => {
             text,
             imagePost.memeName,
             imagePost.template,
+            imagePost.templateUploader,
             imagePost.imageState,
             imagePost.height,
             imagePost.width,
@@ -401,6 +402,7 @@ const CreatePostScreen = ({navigation, route}) => {
                     title: title,
                     memeName: imagePost.memeName,
                     template: imagePost.template,
+                    templateUploader: imagePost.templateUploader,
                     templateState: imagePost.imageState,
                     imageUrl: imagePost.uri,
                     imageHeight: imagePost.height,
@@ -542,6 +544,7 @@ const CreatePostScreen = ({navigation, route}) => {
                                 {   
                                     navigation.navigate(imagePost.memeName ? 'EditMeme' : "EditImage", {
                                         imageUrl: imagePost.undeditedUri,
+                                        templateUploader: imagePost.templateUploader,
                                         height: imagePost.height,
                                         width: imagePost.width,
                                         imageState: imagePost.imageState,

@@ -1,7 +1,7 @@
 import { firebase, db } from '../../../config/firebase';
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 
-const onNavToComment =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => () => {
+const onNavToComment =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount) => () => () => {
     navigation.push('Comment', {
         commentId: commentId,
         replyToPostId: replyToPostId,
@@ -10,7 +10,8 @@ const onNavToComment =  (navigation, commentId, replyToPostId, replyToCommentId,
         replyToUsername: username,
         imageUrl: image,
         memeName: memeName,
-        template: false,
+        template: template,
+        templateUploader: templateUploader,
         imageHeight: imageHeight,
         imageWidth: imageWidth,
         text: text,
@@ -22,7 +23,7 @@ const onNavToComment =  (navigation, commentId, replyToPostId, replyToCommentId,
     })
 }
 
-const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => () => {
+const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount) => () => () => {
     navigation.push('Comment', {
         commentId: commentId,
         replyToPostId: replyToPostId,
@@ -31,6 +32,8 @@ const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profil
         replyToUsername: username,
         imageUrl: image,
         memeName: memeName,
+        template: template,
+        templateUploader: templateUploader,
         imageHeight: imageHeight,
         imageWidth: imageWidth,
         text: text,
@@ -42,6 +45,20 @@ const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profil
         profilePic: profilePic,
     })
 }
+
+
+
+const navToMeme = (navigation, memeName, template, templateUploader, imageHeight, imageWidth) => () => {
+    console.log(memeName)
+    navigation.navigate('Meme', {
+        uploader: templateUploader,
+        memeName: memeName,
+        template: template,
+        height: imageHeight,
+        width: imageWidth,
+    })
+}
+
 
 //React.memo???????????????????????
 const intToString = (commentCount) => {
@@ -185,4 +202,4 @@ const onUnselectMood = async (replyToPostId, commentId, mood) => {
 
 
 
-export { onNavToComment, onReply, intToString, onDisike, onLike, onSelectMood, onUnselectMood };
+export { onNavToComment, onReply, navToMeme, intToString, onDisike, onLike, onSelectMood, onUnselectMood };

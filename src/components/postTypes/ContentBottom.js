@@ -1,104 +1,20 @@
 import React, {useContext, useState, useEffect} from 'react';
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
 import TextTicker from 'react-native-text-ticker'
 import {ThemeContext} from '../../../context-store/context';
 import { firebase, storage, db } from '../../config/firebase';
-import { doc, getDoc, getDocs, where, collection, query } from "firebase/firestore";
+import { doc, getDoc, updateDoc, getDocs, where, collection, query } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../../constants/GlobalStyles';
 
 import DarkMemeCreate from '../../../assets/post_meme_create_dark.svg';
 import LightMemeCreate from '../../../assets/post_meme_create_light.svg';
 
-const ContentBottom = ({ tags, memeName, navToPost }) => {
-    const navigation = useNavigation();
-    const {theme,setTheme} = useContext(ThemeContext);
 
-    let contentBottom = null;
-    let bottomTags
-
-    if(tags){
-        bottomTags = tags.map((d, index) => 
-            <TouchableOpacity
-                key={index}
-                onPress={() => navigateToTag(tags[index])}
-            >
-                <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>
-                    {tags[index]}
-                </Text>
-            </TouchableOpacity>
-        );
-    }
-
-    if (memeName && tags) {
-        contentBottom =  <View flexDirection={"row"}>
-            <TouchableOpacity
-                onPress={() => navigation.push('Meme', {memeName: memeName})}
-                style={styles.memeName}
-            >
-                
-                {theme == "light" ?
-                    <LightMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={5}/>
-                    :
-                    <DarkMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={5}/>
-                }
-                
-                <TextTicker
-                    style={theme == 'light' ? GlobalStyles.lightMemeName: GlobalStyles.darkMemeName}
-                    duration={12000}
-                    loop
-                    // bounce
-                    repeatSpacer={50}
-                    marqueeDelay={1000}
-                >
-                    {memeName}
-                </TextTicker>
-                
-            </TouchableOpacity>
-            
-            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={30} >
-                {bottomTags}
-            </ScrollView>
-        </View>
-    } else if (memeName) {
-        contentBottom =
-            <TouchableOpacity 
-                onPress={() => navigation.push('Meme', {memeName: memeName})}
-                style={styles.memeName}
-            >
-                
-                {theme == "light" ?
-                    <LightMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={5}/>
-                    :
-                    <DarkMemeCreate width={22} height={22} marginHorizontal={5} marginVertical={5}/>
-                }
-
-                <TextTicker
-                    style={theme == 'light' ? GlobalStyles.lightMemeName: GlobalStyles.darkMemeName}
-                    duration={12000}
-                    loop
-                    // bounce
-                    repeatSpacer={50}
-                    marqueeDelay={1000}
-                >
-                    {memeName}
-                </TextTicker>
-            </TouchableOpacity>
-    }else if (tags) {
-        contentBottom = <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={5}>
-                    {bottomTags}
-                </ScrollView>;
-    } else {
-        contentBottom = null;
-    }
-
-    // if post is deleted or content is null, don't show post
-    if (contentBottom == null) {  
-        return null;
-    }
+const windowWidth = Dimensions.get('window').width;
 
 
-    const navigateToTag = async(tag) => {
+const navigateToTag = (navigation, tag) => async () => {
         if(tag.charAt(0) == '#'){
             navigation.push('Tag', {tag: tag});
         }else if(tag.charAt(0) == '@'){
@@ -120,7 +36,50 @@ const ContentBottom = ({ tags, memeName, navToPost }) => {
             }
 
         }
+        // const q = query(
+        //     collection(db, "comments", "pjYXUKPOEH24C9Jkjjkw", "comments"),
+        //     where("memeName", "!=", "")
+        // );
+        
+        // await getDocs(q)
+        //     .then(async (snapshot) => {
+        //         let templates = snapshot.docs.map(doc => {
+        //             const data = doc.data();
+        //             const id = doc.id;
+        //             // Add a new document in collection "cities"
+        //             addName(id);
+        //         })
+        //     });
+        // }
+
+        // const addName = async(id) => {
+        // updateDoc(doc(db, "comments", "pjYXUKPOEH24C9Jkjjkw", "comments", id), {
+        //     templateUploader: "Leul"
+        // });
+}
+
+const ContentBottom = ({ tags, memeName, templateUploader, navToPost, navToMeme }) => {
+    const navigation = useNavigation();
+    const {theme,setTheme} = useContext(ThemeContext);
+
+    
+    let bottomTags
+
+    if(tags){
+        bottomTags = tags.map((d, index) => 
+            <TouchableOpacity
+                key={index}
+                onPress={navigateToTag(navigation, tags[index])}
+            >
+                <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>
+                    {tags[index]}
+                </Text>
+            </TouchableOpacity>
+        );
     }
+
+
+    
 
     
 
@@ -130,7 +89,7 @@ const ContentBottom = ({ tags, memeName, navToPost }) => {
         <View flexDirection={"row"}>
             {   memeName &&
                  <TouchableOpacity
-                    onPress={() => navigation.push('Meme', {memeName: memeName})}
+                    onPress={navToMeme}
                     style={styles.memeName}
                 >
                     
@@ -148,7 +107,7 @@ const ContentBottom = ({ tags, memeName, navToPost }) => {
                         repeatSpacer={50}
                         marqueeDelay={1000}
                     >
-                        {memeName}
+                        {memeName + " - @" + templateUploader}
                     </TextTicker>
                     
                 </TouchableOpacity>
@@ -169,12 +128,12 @@ const ContentBottom = ({ tags, memeName, navToPost }) => {
 
 const styles = StyleSheet.create({
     memeName: {
-        minWidth: 50,
-        maxWidth: 170,
-        marginTop: 8,
-        marginLeft: 5,
-        paddingRight: 10,
+        maxWidth: windowWidth/2.3,
         flexDirection: 'row',
+        paddingLeft: 5,
+        paddingRight: 20,
+        paddingBottom: 0,
+        paddingTop: 8,
     },
 });
 
