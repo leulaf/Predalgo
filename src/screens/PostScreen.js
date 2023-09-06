@@ -191,6 +191,7 @@ const Header = React.memo(({theme, navigation, contentBottom, title, memeName, i
                             visible={isImageFocused}
                             onRequestClose={() => setIsImageFocused(false)}
                             animationType="fade"
+                            presentationStyle="overFullScreen"
                             doubleTapToZoomEnabled={true}
                             FooterComponent={({ imageIndex }) => 
                                 {ImageFocused}
@@ -310,6 +311,7 @@ const PostScreen = ({navigation, route}) => {
             memeName={memeName}
             tags={tags}
             navToMeme={!fromMemeScreen ? navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth) : () => navigation.goBack()}
+            templateUploader={templateUploader}
         />
     );
 

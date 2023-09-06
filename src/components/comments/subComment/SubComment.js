@@ -70,7 +70,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
 
     // console.log(template && template)
 
-    const navToCommentFromImage = React.useCallback(() => () => {
+    const navToCommentFromImage = React.useCallback(() => () => () => {
         setIsVisible(false);
 
         navigation.push('Comment', {
@@ -192,6 +192,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                 memeName={memeName}
                 likesCount={likesCount}
                 commentsCount={commentsCount}
+                templateUploader={templateUploader}
                 navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
                 onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}

@@ -23,7 +23,14 @@ import { MainStackNavigator } from './src/navigation/StackNavigator';
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const Stack = createStackNavigator();
-
+// "extra": {
+//   "eas": {
+//     "projectId": "758f7ef7-14d1-49ea-8306-e527c93c1f17"
+//   }
+// },
+// "plugins": [
+//   "expo-build-properties"
+// ]
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
