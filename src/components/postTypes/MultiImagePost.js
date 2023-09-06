@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     },
     indicatorText: {
         fontSize: 20,
-        fontWeight: '500',
+        fontWeight: "500",
         color: '#333333',
         textAlign: "center",
         marginVertical: 5,

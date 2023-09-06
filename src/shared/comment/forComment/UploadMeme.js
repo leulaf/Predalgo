@@ -100,7 +100,14 @@ const saveMemeToComment = async (memeName, templateUrl, templateUploader, imageS
         }).then(async (docRef) => {
             // navigate to comment screen with the new comment
             // id = docRef.id;
-            resolve(docRef.id);
+            // increment comments count on comment
+            const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+
+            await updateDoc(commentRef, {
+                commentsCount: increment(1)
+            }).then(() => {
+                resolve(docRef.id);
+            });
         }).catch(function (error) {
             // console.log(error);
         });

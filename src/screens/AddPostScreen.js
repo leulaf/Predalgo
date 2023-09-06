@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   lightMemeTemplateText: {
     fontSize: 24,
     color: '#444444',
-    fontWeight: '600',
+    fontWeight: "600",
     alignSelf: 'center',
     marginHorizontal: 12,
     marginBottom: 6,
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   darkMemeTemplateText: {
     fontSize: 24,
     color: '#f2f2f2',
-    fontWeight: '600',
+    fontWeight: "600",
     alignSelf: 'center',
     marginHorizontal: 12,
     marginBottom: 6,
@@ -447,21 +447,21 @@ const styles = StyleSheet.create({
   lightAddTemplateText: {
       fontSize: 23.5,
       color: '#000000',
-      fontWeight: '600',
+      fontWeight: "600",
       alignSelf: 'center',
       marginRight: 3
   },
   darkAddTemplateText: {
       fontSize: 24,
       color: '#F0F0F0',
-      fontWeight: '500',
+      fontWeight: "500",
       alignSelf: 'center',
       marginRight: 3
   },
   askText: {
     fontSize: 20,
     color: '#222222',
-    fontWeight: '500',
+    fontWeight: "500",
     alignSelf: 'center',
     marginTop: 5,
     marginBottom: 15,
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   answerText: {
       fontSize: 20,
       color: '#222222',
-      fontWeight: '500',
+      fontWeight: "500",
       alignSelf: 'center'
   },
 });

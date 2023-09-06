@@ -821,14 +821,14 @@ const styles = StyleSheet.create({
     lightUsername: {
         fontSize: 18,
         width: 200,
-        fontWeight: '500',
+        fontWeight: "500",
         color: '#5F5F5F',
         alignSelf: 'center',
     },
     darkUsername: {
         fontSize: 18,
         width: 200,
-        fontWeight: '500',
+        fontWeight: "500",
         color: '#EEEEEE',
         alignSelf: 'center',
     },
@@ -838,7 +838,7 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginHorizontal: 15,
         fontSize: 24,
-        fontWeight: '500',
+        fontWeight: "500",
     },
     darkTitleInput: {
         color: '#EEEEEE',
@@ -846,7 +846,7 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginHorizontal: 15,
         fontSize: 24,
-        fontWeight: '500'
+        fontWeight: "500"
     },
     lightTagInput: {
         width: "100%",
@@ -856,7 +856,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginHorizontal: 10,
         fontSize: 22,
-        fontWeight: '500',
+        fontWeight: "500",
     },
     darkTagInput: {
         width: "100%",
@@ -866,7 +866,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginHorizontal: 10,
         fontSize: 22,
-        fontWeight: '500'
+        fontWeight: "500"
     },
     lightBottomTagInput: {
         width: "100%",
@@ -875,7 +875,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 150,
         fontSize: 22,
-        fontWeight: '500',
+        fontWeight: "500",
         marginHorizontal: 15,
     },
     darkBottomTagInput: {
@@ -885,7 +885,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 150,
         fontSize: 22,
-        fontWeight: '500',
+        fontWeight: "500",
         marginHorizontal: 15,
     },
     lightTextContainer: {
@@ -910,13 +910,13 @@ const styles = StyleSheet.create({
         color: '#666666',
         fontSize: 22,
         marginHorizontal: 10,
-        fontWeight: '500',
+        fontWeight: "500",
     },
     darkTextInput: {
         color: '#EEEEEE',
         fontSize: 22,
         marginHorizontal: 10,
-        fontWeight: '500',
+        fontWeight: "500",
     },
     imageShrinked: {
         alignSelf: "center",
@@ -938,7 +938,7 @@ const styles = StyleSheet.create({
         // flex: 1,
         color: '#5b5b5b',
         fontSize: 21,
-        fontWeight: '500',
+        fontWeight: "500",
         // marginBottom: 6,
         // alignSelf: 'center',
         // marginRight: 8,
@@ -947,7 +947,7 @@ const styles = StyleSheet.create({
     darkBottomText: {
         color: '#EEEEEE',
         fontSize: 21,
-        fontWeight: '500',
+        fontWeight: "500",
         // alignSelf: 'center',
         // marginBottom: 6,
         // marginRight: 8,

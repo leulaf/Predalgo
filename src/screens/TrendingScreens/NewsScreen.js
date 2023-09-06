@@ -9,7 +9,7 @@ const NewsScreen = ({navigation}) => {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme == 'light' ? '#F4F4F4' : "#282828" }}>
             <Text
                 onPress={() => navigation.navigate('Home')}
-                style={{ fontSize: 26, fontWeight: '700' }}>Chat Screen</Text>
+                style={{ fontSize: 26, fontWeight: "700" }}>Chat Screen</Text>
         </View>
     );
 }

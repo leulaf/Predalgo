@@ -147,13 +147,13 @@ const styles = StyleSheet.create({
    lightText:{
        marginLeft: 10,
        fontSize: 16,
-       fontWeight: '400',
+       fontWeight: "400",
        color: "#444444",
    },
    darkText:{
        marginLeft: 10,
        fontSize: 16,
-       fontWeight: '400',
+       fontWeight: "400",
        color: "#EEEEEE",
    }
 });

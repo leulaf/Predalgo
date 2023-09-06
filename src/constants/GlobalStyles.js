@@ -61,7 +61,7 @@ const GlobalStyles = StyleSheet.create({
     },
     lightPostText: {
         fontSize: 18,
-        fontWeight: '400',
+        fontWeight: "400",
         color: '#222222',
         textAlign: "auto",
         marginHorizontal: 13,
@@ -70,7 +70,7 @@ const GlobalStyles = StyleSheet.create({
     },
     darkPostText: {
         fontSize: 18,
-        fontWeight: '400',
+        fontWeight: "400",
         color: '#F4F4F4',
         textAlign: "auto",
         marginHorizontal: 13,
@@ -79,14 +79,14 @@ const GlobalStyles = StyleSheet.create({
     },
     lightMemeName: {
         fontSize: 16,
-        fontWeight: '400',
+        fontWeight: "400",
         color: '#444444',
         marginVertical: 5,
         // alignSelf: 'center',
     },
     darkMemeName: {
         fontSize: 16,
-        fontWeight: '400',
+        fontWeight: "400",
         color: '#EEEEEE',
         marginVertical: 5,
         
@@ -94,7 +94,7 @@ const GlobalStyles = StyleSheet.create({
     },
     lightPostBottomText: {
         fontSize: 20, 
-        fontWeight: '400', 
+        fontWeight: "400", 
         color: '#0029FF', 
         marginTop: 8, 
         marginBottom: 2,
@@ -102,7 +102,7 @@ const GlobalStyles = StyleSheet.create({
     },
     darkPostBottomText: {
         fontSize: 20, 
-        fontWeight: '400', 
+        fontWeight: "400", 
         color: '#6BA3FF', 
         marginTop: 8, 
         marginBottom: 2,

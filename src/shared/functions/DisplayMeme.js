@@ -6,6 +6,10 @@ import {onLikePost, onDisikePost} from '../post/LikeDislikePost';
 
 import { Image } from "expo-image";
 
+import ImageView from "react-native-image-viewing";
+
+import PostBottom from '../../components/postTypes/PostBottom';
+
 import { useNavigation } from '@react-navigation/native';
 
 import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
@@ -33,17 +37,18 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
     })
 }
 
-const onNavToPost = (navigation, item, templateUploader, image) => () => {
+const onNavToPost = (navigation, item, templateUploader, image, setIsImageFocused) => () => {
+    setIsImageFocused(false);
 
     navigation.push('Post', {
-        postId: item.postId,
+        postId: item.id,
         title: item.title,
         tags: item.tags,
         imageUrl: image,
         templateUploader: templateUploader,
         memeName: item.memeName,
         fromMemeScreen: true,
-        // template: item.template,
+        template: item.template,
         // templateState: item.templateState,
         template: item.template,
         templateState: null,
@@ -64,6 +69,8 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
     const editorRef = React.useRef(null);
     const [image, setImage] = React.useState(null);
     const [liked, setLiked] = React.useState(false);
+    const [isImageFocused, setIsImageFocused] = React.useState(false);
+
 
     let likes, alreadyLiked;
 
@@ -133,7 +140,7 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
                 
                 <TouchableOpacity
                     activeOpacity={1}
-                    onPress={onNavToPost(navigation, item, templateUploader, image)}
+                    onPress={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
                     style={{flex: 1, height: 40}}
                 />
 
@@ -155,7 +162,7 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
 
             </View>
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 activeOpacity={0.9}
                 onPress={onNavToPost(navigation, item, templateUploader, image)}
             >
@@ -168,33 +175,67 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
                     maxHeight={maxHeight}
                     maxWidth={maxWidth}
                 />
-                
 
-            {
-                    !(image) &&
+            </TouchableOpacity> */}
 
-                    <PinturaEditor
-                        ref={editorRef}
-                        
-                        src={item.template}
-                        // onClose={() => console.log('closed')}
-                        // onDestroy={() => console.log('destroyed')}
-                        onLoad={() => 
-                            editorRef.current.editor.processImage(item.templateState)
-                        }
-                        // onInit={() => {
-                        //     editorRef.current.editor.processImage(template, templateState)
-                        // }}
-                        onProcess={async({ dest }) => {
-                            manipulateAsync(dest, [], ).then((res) => {
-                                setImage(res.uri);
-                                // console.log(res.uri)
-                            })
-                        }}
-                    /> 
-                }
+            <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => setIsImageFocused(!isImageFocused)}
+            >
+                <ResizableImage 
+                    image={image ? image : item.template}
+                    style={style}
+                    height={item.imageHeight}
+                    width={item.imageWidth}
+                    maxHeight={maxHeight}
+                    maxWidth={maxWidth}
+                />
 
+                <ImageView
+                    images={[{uri: image ? image : item.template}]}
+                    imageIndex={0}
+                    visible={isImageFocused}
+                    onRequestClose={() => setIsImageFocused(false)}
+                    animationType="fade"
+                    presentationStyle="overFullScreen"
+                    doubleTapToZoomEnabled={true}
+                    FooterComponent={({ imageIndex }) => 
+                        <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+                            <PostBottom
+                                postId={item.id}
+                                likesCount={item.likesCount}
+                                commentsCount={item.commentsCount}
+                                templateUploader={templateUploader}
+                                navToPost={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
+                                theme='imageFocused'
+                            />
+                        </View>
+                    }
+                />
             </TouchableOpacity>
+            {
+                !(image) &&
+
+                <PinturaEditor
+                    ref={editorRef}
+                    
+                    src={item.template}
+                    // onClose={() => console.log('closed')}
+                    // onDestroy={() => console.log('destroyed')}
+                    onLoad={() => 
+                        editorRef.current.editor.processImage(item.templateState)
+                    }
+                    // onInit={() => {
+                    //     editorRef.current.editor.processImage(template, templateState)
+                    // }}
+                    onProcess={async({ dest }) => {
+                        manipulateAsync(dest, [], ).then((res) => {
+                            setImage(res.uri);
+                            // console.log(res.uri)
+                        })
+                    }}
+                /> 
+            }
         </View>
     )
 }, itemEquals);
@@ -215,14 +256,14 @@ const styles = StyleSheet.create({
     },
     lightUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#444444',
         textAlign: "left",
         // marginTop: 6,
     },
     darkUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
         // marginTop: 6,
@@ -239,12 +280,12 @@ const styles = StyleSheet.create({
     },
     lightLikeCountText: {
         fontSize: 16,
-        fontWeight: '400',
+        fontWeight: "400",
         color: '#444444',
     },
     darkLikeCountText: {
         fontSize: 16,
-        fontWeight: '400',
+        fontWeight: "400",
         color: '#EEEEEE',
     },
 });

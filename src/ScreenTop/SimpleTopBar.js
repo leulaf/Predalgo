@@ -121,20 +121,20 @@ const styles = StyleSheet.create({
     lightText: {
         fontSize: 20,
         color: '#3D3D3D',
-        fontWeight: '600',
+        fontWeight: "600",
         marginTop: 1,
         marginLeft: 15
     },
     darkText: {
         fontSize: 20,
         color: '#f2f2f2',
-        fontWeight: '600',
+        fontWeight: "600",
         marginTop: 1,
         marginLeft: 15
     },
     lightLinkText: {
         fontSize: 20,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#1062FF',
         marginTop: 1,
         marginLeft: 15
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     },
     darkLinkText: {
         fontSize: 20,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#0094FF',
         marginTop: 1,
         marginLeft: 15
@@ -159,27 +159,27 @@ const styles = StyleSheet.create({
     },
     lightUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#444444',
         textAlign: "left",
         marginBottom: 1,
     },
     darkUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
         marginBottom: 1,
     },
     lightRepostUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#777777',
         textAlign: "left",
     },
     darkRepostUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#BBBBBB',
         textAlign: "left",
     },

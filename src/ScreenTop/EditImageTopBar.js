@@ -81,20 +81,20 @@ const styles = StyleSheet.create({
     finishText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: '600',
+        fontWeight: "600",
     },
     lightText: {
         flex: 1,
         fontSize: 20,
         color: '#444444',
-        fontWeight: '600',
+        fontWeight: "600",
         textAlign: 'center', 
     },
     darkText: {
         flex: 1,
         fontSize: 20,
         color: '#FAFAFA',
-        fontWeight: '600',
+        fontWeight: "600",
         textAlign: 'center', 
     },
     lightFinishContainer: {
@@ -122,13 +122,13 @@ const styles = StyleSheet.create({
     lightFinishText: {
         fontSize: 20,
         color: '#FFFFFF',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
     },
     darkFinishText: {
         fontSize: 20,
         color: '#222222',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
     }
 });

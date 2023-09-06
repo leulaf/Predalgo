@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     lightInputStyle: {
         flex: 1,
         fontSize: 18,
-        fontWeight: '400',
+        fontWeight: "400",
         marginHorizontal: 7,
         alignSelf: 'center',
         color: '#222222',
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     darkInputStyle: {
         flex: 1,
         fontSize: 18,
-        fontWeight: '400',
+        fontWeight: "400",
         marginHorizontal: 7,
         alignSelf: 'center',
         color: '#F4F4F4',
@@ -292,14 +292,14 @@ const styles = StyleSheet.create({
    },
    lightDoneStyle: {
         fontSize: 18,
-        fontWeight: '500',
+        fontWeight: "500",
         alignSelf: 'center',
         color: '#FFFFFF',
         marginBottom: 1,
     },
     darkDoneStyle: {
         fontSize: 18,
-        fontWeight: '500',
+        fontWeight: "500",
         alignSelf: 'center',
         color: '#F4F4F4',
         marginBottom: 1,

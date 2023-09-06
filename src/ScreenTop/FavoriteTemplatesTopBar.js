@@ -101,14 +101,14 @@ const styles = StyleSheet.create({
     lightText: {
         fontSize: 20,
         color: '#333333',
-        fontWeight: '600',
+        fontWeight: "600",
         marginTop: 45,
         marginHorizontal: 5
     },
     darkText: {
         fontSize: 20,
         color: '#f2f2f2',
-        fontWeight: '600',
+        fontWeight: "600",
         marginTop: 45,
         marginLeft: 5
     },

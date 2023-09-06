@@ -143,26 +143,26 @@ export default SplitPost = (text, theme) => {
 const styles = StyleSheet.create({
     lightPostTitle: {
         fontSize: 22,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#333333',
         textAlign: 'auto',
     },
     darkPostTitle: {
         fontSize: 22,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#DDDDDD',
         textAlign: 'auto',
     },
     lightLinkText: {
         fontSize: 22,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#0029FF',
         textAlign: 'auto',
         // marginBottom: 6,
     },
     darkLinkText: {
         fontSize: 22,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#0094FF',
         textAlign: 'auto',
     }

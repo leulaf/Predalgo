@@ -1,17 +1,21 @@
 import React from 'react';
 import { Text, Linking } from 'react-native';
+import {openBrowserAsync}  from 'expo-web-browser';
+
 
 const OpenURLButton = ({url, name, style}) => {
     
-    const handleClick = () => {
-        Linking.canOpenURL("https://" + url).then(supported => {
-            if (supported) {
-                console.log(name)
-                Linking.openURL("https://" + url);
-            } else {
-                console.log("Don't know how to open URI: " + url);
-            }
-        });
+    const handleClick = async() => {
+        // Linking.canOpenURL("https://" + url).then(async supported => {
+        //     if (supported) {
+        //         await WebBrowser.openBrowserAsync("https://" + url);
+        //         // console.log(name)
+        //         // Linking.openURL("https://" + url);
+        //     } else {
+        //         // console.log("Don't know how to open URI: " + url);
+        //     }
+        // });
+        await openBrowserAsync("https://" + url);
     };
 
     return (

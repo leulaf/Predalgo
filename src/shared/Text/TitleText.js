@@ -45,7 +45,7 @@ const TitleText = ({title, numberOfLines}) => {
 const styles = StyleSheet.create({
     lightPostTitle: {
         fontSize: 22,
-        fontWeight: '500',
+        fontWeight: "500",
         color: '#333333',
         textAlign: 'auto',
         marginHorizontal: 12.5,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     },
     darkPostTitle: {
         fontSize: 22,
-        fontWeight: '500',
+        fontWeight: "500",
         color: '#DDDDDD',
         textAlign: 'auto',
         marginHorizontal: 12.5,

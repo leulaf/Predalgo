@@ -422,27 +422,27 @@ const styles = StyleSheet.create({
     },
     lightUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#444444',
         textAlign: "left",
         marginBottom: 1,
     },
     darkUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#DDDDDD',
         textAlign: "left",
         marginBottom: 1,
     },
     lightRepostUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#777777',
         textAlign: "left",
     },
     darkRepostUsername: {
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: "600",
         color: '#BBBBBB',
         textAlign: "left",
     },
@@ -501,42 +501,42 @@ const styles = StyleSheet.create({
     lightFollowText: {
         fontSize: 17,
         color: '#222222',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
         marginBottom: 1
     },
     darkFollowText: {
         fontSize: 17,
         color: '#ffffff',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
         marginBottom: 1
     },
     lightFollowingText: {
         fontSize: 17,
         color: '#ffffff',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
         marginBottom: 1
     },
     darkFollowingText: {
         fontSize: 17,
         color: '#000000',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
         marginBottom: 1
     },
     lightNoPostText: {
         fontSize: 22,
         color: '#ffffff',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
         // marginBottom: 1
     },
     darkNoPostText: {
         fontSize: 22,
         color: '#000000',
-        fontWeight: '600',
+        fontWeight: "600",
         alignSelf: 'center',
         // marginBottom: 1
     },
