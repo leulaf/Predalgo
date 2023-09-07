@@ -12,7 +12,7 @@ import BookmarkLight from '../../assets/saved.svg';
 import BackDark from '../../assets/back_light.svg';
 import BookmarkDark from '../../assets/saved_dark.svg';
 
-const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
+const AddPostTopBar = ({navToSavedTemplates, navToSearchMemes}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -48,7 +48,7 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
         {/* bookmark button */}
         <TouchableOpacity 
             style={{flexDirection: 'row'}}
-            onPress={navToFavorites}
+            onPress={navToSavedTemplates}
         >
             {
                 theme == 'light' ?

@@ -21,9 +21,9 @@ const windowWidth = Dimensions.get('window').width;
 
 const auth = getAuth();
 
-const favoriteTemplate = async (name, url, height, width) => {
+const SaveTemplate = async (name, url, height, width) => {
     return new Promise(async (resolve, reject) => {
-        const templateRef = doc(db, "favoriteImageTemplates", firebase.auth().currentUser.uid, "templates", name);
+        const templateRef = doc(db, "savedImageTemplates", firebase.auth().currentUser.uid, "templates", name);
         
         // add post to likes collection
         await setDoc(templateRef, {
@@ -33,7 +33,7 @@ const favoriteTemplate = async (name, url, height, width) => {
             height,
             width
         }).then(() => {
-            // Alert.alert('Added to favorites');
+            // Alert.alert('Saved template');
             resolve(true);
         }).catch((error) => {
             // console.log(error);
@@ -42,12 +42,12 @@ const favoriteTemplate = async (name, url, height, width) => {
     });
 }
 
-const deleteFavoriteTemplate = async (name) => {
+const deleteSaveTemplate = async (name) => {
     return new Promise(async (resolve, reject) => {
-        const templateRef = doc(db, 'favoriteImageTemplates', firebase.auth().currentUser.uid, "templates", name);
+        const templateRef = doc(db, 'savedImageTemplates', firebase.auth().currentUser.uid, "templates", name);
 
         deleteDoc(templateRef).then(() => {
-            // Alert.alert('Deleted from favorites');
+            // Alert.alert('Unsaved template');
             resolve(true);
         }).catch((error) => {
             // console.log(error);
@@ -56,14 +56,14 @@ const deleteFavoriteTemplate = async (name) => {
     });
 }
 
-const MemeTopBar = ({navigation, theme, name, url, height, width, fromFavoriteTemplates}) => {
-    const [bookmarked, setBookmarked] = useState(fromFavoriteTemplates ? fromFavoriteTemplates : false);
+const MemeTopBar = ({navigation, theme, name, url, height, width, fromSavedTemplates}) => {
+    const [bookmarked, setBookmarked] = useState(fromSavedTemplates ? fromSavedTemplates : false);
 
     const toggleBookmark =  () => async()  => {
         if(bookmarked){
             setBookmarked(false);
 
-            await deleteFavoriteTemplate(name)
+            await deleteSaveTemplate(name)
             .then((result) => {
                 !result && setBookmarked(true);
             })
@@ -74,7 +74,7 @@ const MemeTopBar = ({navigation, theme, name, url, height, width, fromFavoriteTe
         }else{
             setBookmarked(true);
 
-            await favoriteTemplate(name, url, height, width)
+            await SaveTemplate(name, url, height, width)
             .then((result) => {
                 !result && setBookmarked(false);
             })
@@ -132,8 +132,13 @@ const MemeTopBar = ({navigation, theme, name, url, height, width, fromFavoriteTe
                         bookmarkIcon
                 }
                 
-                <Text style={theme == 'light' ? styles.lightFavoriteText : styles.darkFavoriteText}>
-                    Favorite
+                <Text style={theme == 'light' ? styles.lightSaveText : styles.darkSaveText}>
+                    {
+                        bookmarked ?
+                            "Saved"
+                        :
+                            "Save"
+                    }
                 </Text>
                 
             </TouchableOpacity>
@@ -186,7 +191,7 @@ const styles = StyleSheet.create({
     },
     lightText: {
         fontSize: 20,
-        color: '#444444',
+        color: '#222222',
         fontWeight: "600",
         marginTop: 51,
         marginLeft: 5,
@@ -200,7 +205,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginRight: 10
     },
-    lightFavoriteText: {
+    lightSaveText: {
         fontSize: 20,
         color: '#222222',
         fontWeight: "600",
@@ -208,7 +213,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginRight: 10
     },
-    darkFavoriteText: {
+    darkSaveText: {
         fontSize: 20,
         color: '#f2f2f2',
         fontWeight: "600",

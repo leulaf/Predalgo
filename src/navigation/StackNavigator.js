@@ -21,7 +21,7 @@ import TagScreen from '../screens/TagScreen';
 import SearchTagScreen from '../screens/SearchTagScreen';
 import MemeScreen from '../screens/MemeScreen';
 import SearchMemesScreen from '../screens/SearchMemesScreen';
-import FavoriteTemplatesScreen from '../screens/FavoriteTemplatesScreen';
+import SavedTemplatesScreen from '../screens/SavedTemplatesScreen';
 import PostScreen from '../screens/PostScreen';
 import CommentScreen from '../screens/CommentScreen';
 
@@ -119,7 +119,7 @@ const MainStackNavigator = ({}) => {
                 gestureResponseDistance: windowWidth,
             }}
         />
-        <Stack.Screen name="FavoriteTemplates" component={FavoriteTemplatesScreen}
+        <Stack.Screen name="SavedTemplates" component={SavedTemplatesScreen}
             options={{
                 headerShown: false,
                 gestureResponseDistance: windowWidth,

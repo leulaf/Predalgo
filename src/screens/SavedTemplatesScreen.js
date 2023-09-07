@@ -6,7 +6,7 @@ import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, limit, getDocs, getDoc, doc } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
-import FavoriteTemplatesTopBar from '../ScreenTop/FavoriteTemplatesTopBar';
+import SavedTemplatesTopBar from '../ScreenTop/SavedTemplatesTopBar';
 
 import { StackActions } from '@react-navigation/native';
 
@@ -45,7 +45,7 @@ const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnP
           forCommentOnComment: forCommentOnComment,
           forCommentOnPost: forCommentOnPost,
           forPost: forPost,
-          fromFavoriteTemplates: true,
+          fromSavedTemplates: true,
       })
     }
   }
@@ -75,7 +75,7 @@ const windowHeight = Dimensions.get('screen').height;
 
 const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
 
-const FavoriteTemplatesScreen = ({navigation, route}) => {
+const SavedTemplatesScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [memeTemplates, setMemeTemplates] = useState([{id : "fir"}, {id: "sec"}]);
 
@@ -87,7 +87,7 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
 
     const getFirstFourTemplates = React.useCallback(async () => {
         const q = query(
-            collection(db, "favoriteImageTemplates", firebase.auth().currentUser.uid, "templates"),
+            collection(db, "savedImageTemplates", firebase.auth().currentUser.uid, "templates"),
             limit(8)
         );
         
@@ -153,7 +153,7 @@ const FavoriteTemplatesScreen = ({navigation, route}) => {
                 style={theme == 'light' ? styles.lightBackground : styles.darkBackground}
             >
 
-                <FavoriteTemplatesTopBar
+                <SavedTemplatesTopBar
                     navToSearchMemes={navToSearchMemes(navigation, forPost, forCommentOnComment, forCommentOnPost)}
                     // closeBottomSheet={() => 
                     //   toggleBottomSheet()
@@ -256,4 +256,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default FavoriteTemplatesScreen;
+export default SavedTemplatesScreen;

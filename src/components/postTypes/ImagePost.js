@@ -16,13 +16,13 @@ import ImageView from "react-native-image-viewing";
 
 import PostBottom from './PostBottom';
 
-const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, text, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount) => {
+const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, text, image, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount) => {
     navigation.push('Post', {
         postId: postId,
         title: title,
         tags: tags,
         text: text,
-        imageUrl: imageUrl,
+        imageUrl: image,
         memeName: memeName,
         template: template,
         templateUploader: templateUploader ? templateUploader : null,
@@ -36,6 +36,7 @@ const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, user
         profilePic: profilePic,
     });
 }
+
 
 const windowWidth = Dimensions.get("screen").width;
 
@@ -92,7 +93,7 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
 
     const navToPostFromImage = React.useCallback(() => {
         setIsFocused(false);
-        onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount);
+        onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, image, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount);
     })
     
     return (
@@ -122,7 +123,7 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                         text &&
                         <TouchableOpacity
                             activeOpacity={1}
-                            onPress={() => onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount)}
+                            onPress={navToPostFromImage}
                             style={{flexDirection: "column", alignSelf: 'center'}}
                         >
                             <PostText numberOfLines={5} text={text} forPost={true}/>
@@ -136,10 +137,7 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                         
                         {/* Load Meme with template and template state */}
                         {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage} id={postId}/>}
-
-
                         
-
 
                         <ResizableImage 
                             image={image}
@@ -161,6 +159,8 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                                 doubleTapToZoomEnabled={true}
                                 FooterComponent={({ imageIndex }) => (
                                     <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+
+
                                         <PostBottom
                                             postId={postId}
                                             likesCount={likesCount}
@@ -168,6 +168,8 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                                             theme='imageFocused'
                                             navToPost={navToPostFromImage}
                                         />
+
+
                                     </View>
                                     
                                 )}

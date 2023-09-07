@@ -93,17 +93,17 @@ const navToSearchMemes = (navigation, forPost, forCommentOnComment, forCommentOn
   }
 }
 
-const navToFavorites = (navigation, forPost, forCommentOnComment, forCommentOnPost) => () => {
+const navToSavedTemplates = (navigation, forPost, forCommentOnComment, forCommentOnPost) => () => {
   if(forCommentOnComment || forCommentOnPost || forPost){
     navigation.dispatch(
-        StackActions.replace('FavoriteTemplates', {
+        StackActions.replace('SavedTemplates', {
         forCommentOnComment: forCommentOnComment,
         forCommentOnPost: forCommentOnPost,
         forPost: forPost,
       })
     )
   }else{
-    navigation.navigate(('FavoriteTemplates'), {
+    navigation.navigate(('SavedTemplates'), {
       forCommentOnComment: forCommentOnComment,
       forCommentOnPost: forCommentOnPost,
       forPost: forPost,
@@ -224,7 +224,7 @@ const AddPostScreen = ({navigation, route}) => {
         >
           
           <AddPostTopBar
-            navToFavorites={navToFavorites(navigation, forPost, forCommentOnComment, forCommentOnPost)}
+            navToSavedTemplates={navToSavedTemplates(navigation, forPost, forCommentOnComment, forCommentOnPost)}
             navToSearchMemes={navToSearchMemes(navigation, forPost, forCommentOnComment, forCommentOnPost)}
             // closeBottomSheet={() => 
             //   toggleBottomSheet()

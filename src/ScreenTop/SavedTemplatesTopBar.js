@@ -10,7 +10,7 @@ import BackLight from '../../assets/back.svg';
 // dark mode icons
 import BackDark from '../../assets/back_light.svg';
 
-const FavoriteTemplatesTopBar = ({navToSearchMemes}) => {
+const SavedTemplatesTopBar = ({navToSearchMemes}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
@@ -146,5 +146,5 @@ const styles = StyleSheet.create({
     
 });
 
-export default FavoriteTemplatesTopBar;
+export default SavedTemplatesTopBar;
  

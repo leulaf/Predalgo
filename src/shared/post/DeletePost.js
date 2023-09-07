@@ -1,5 +1,5 @@
 import { firebase, storage, db, ref, deleteObject } from '../../config/firebase';
-import { doc, getDoc, getDocs, where, collection, query, deleteDoc, updateDoc, increment } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 
 export default deletePost = async(postId)  => {
     return new Promise(async (resolve, reject) => {
@@ -17,6 +17,14 @@ export default deletePost = async(postId)  => {
                     posts: increment(-1)
                 });
 
+                const deletedDocRef = doc(db, 'deletedPosts', postId);
+
+
+                // ~~~~~~~ maybe add a image comment(both main and subcomments) counter ~~~~~~~~~
+                if(data.commentsCount > 5){
+                    await setDoc(deletedDocRef, {id : postId});
+                }
+                
 
                 if (data.imageUrl) {
                     const imageRef = ref(storage, data.imageUrl);

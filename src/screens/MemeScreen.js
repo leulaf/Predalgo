@@ -107,12 +107,12 @@ const MemeScreen = ({ navigation, route }) => {
 
     const [memeTemplates, setMemeTemplates] = useState([{id : "fir"}, {id: "sec"}]);
 
-    const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost, fromFavoriteTemplates } = route.params;
+    const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost, fromSavedTemplates } = route.params;
 
     const flashListRef = useRef(null);
    
     useEffect(() => {
-        (useCount > 0 || fromFavoriteTemplates || !(useCount))&& getFirstTenMemes();
+        (useCount > 0 || fromSavedTemplates || !(useCount))&& getFirstTenMemes();
     }, []);
 
     // console.log(template)
@@ -275,7 +275,7 @@ const MemeScreen = ({ navigation, route }) => {
             </ImageBackground>
 
 
-            <MemeTopBar navigation={navigation} theme={theme} name={memeName} url={template} height={height} width={width} fromFavoriteTemplates={fromFavoriteTemplates}/>
+            <MemeTopBar navigation={navigation} theme={theme} name={memeName} url={template} height={height} width={width} fromSavedTemplates={fromSavedTemplates}/>
 
 
             {/* create meme button */}

@@ -16,8 +16,7 @@ import TagScreenTopBar from '../../ScreenTop/TagScreenTopBar';
 import { FlashList } from '@shopify/flash-list';
 
 
-const refreshAnimationLight = require('../../../assets/animations/Refresh_Picalgo_light.json');
-const refreshAnimationDark = require('../../../assets/animations/Refresh_Picalgo_dark.json');
+const refreshAnimation = require('../../../assets/animations/Refreshing.json');
 const refreshingHeight = 100;
 
 const windowWidth = Dimensions.get('screen').width;
@@ -369,8 +368,12 @@ const AllTagPosts = ({ tag }) => {
                     ref={refreshViewRef}
                     autoPlay
                     style={[styles.lottieView]}
-                    source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
+                    source={refreshAnimation}
                     // progress={progress}
+                    colorFilters={[
+                        { keypath: "Path", 
+                            color: theme == 'light' ? "#005fff" : "#FFF" },
+                    ]}
                 />
             }
 
