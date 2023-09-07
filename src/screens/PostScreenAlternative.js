@@ -334,7 +334,7 @@
 //             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
 //         >
 //             {/* Load Meme with template and template state */}
-//             {!finished && <CreateMeme image={image}/>}
+//             {!finished && <CreateMeme image={image} id={postId}/>}
             
 //             <FlatList
 //                 ref={flatListRef}
@@ -925,7 +925,7 @@
 //             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
 //         >
 //             {/* Load Meme with template and template state */}
-//             {!finished && <CreateMeme image={image}/>}
+//             {!finished && <CreateMeme image={image} id={postId}/>}
             
 //             <RecyclerListView
 //                 ref={ListRef}
@@ -1510,7 +1510,7 @@
 //                 >
                     
 //                     {/* Load Meme with template and template state */}
-//                     {/* {!this.state.finished && <CreateMeme image={this.state.imageUrl}/>} */}
+//                     {/* {!this.state.finished && <CreateMeme image={this.state.imageUrl} id={postId}/>} */}
 
 
 //                     <RecyclerListView

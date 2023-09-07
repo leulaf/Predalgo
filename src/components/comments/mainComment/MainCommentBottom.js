@@ -110,15 +110,15 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
     let likes, alreadyLiked, reply, down
 
     if(theme == 'light'){
-        likes = <Likes width={20} height={20} style={{ marginRight: 10 }}/>;
-        alreadyLiked = <Liked width={20} height={20} style={{ marginRight: 5 }}/>;
-        reply = <Reply width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <Down width={25} height={25} style={{ marginRight: 5 }}/>;
+        likes = <Likes width={20} height={20} style={{ color: '#000', marginRight: 10 }}/>;
+        alreadyLiked = <Liked width={20} height={20} style={{ color: '#000', marginRight: 5 }}/>;
+        reply = <Reply width={18} height={18} style={{ color: '#000', marginRight: 5 }}/>;
+        down = <Down width={25} height={25} style={{ color: '#000', marginRight: 5 }}/>;
     }else{
-        likes = <LikesDark width={21} height={21} style={{ marginRight: 10 }}/>;
-        alreadyLiked = <LikedDark width={21} height={21} style={{ marginRight: 5 }}/>;
-        reply = <ReplyDark width={18} height={18} style={{ marginRight: 5 }}/>;
-        down = <DownDark width={25} height={25} style={{ marginRight: 5 }}/>;
+        likes = <LikesDark width={21} height={21} style={{  color: '#FFF', marginRight: 10 }}/>;
+        alreadyLiked = <LikedDark width={21} height={21} style={{ color: '#FFF', marginRight: 5 }}/>;
+        reply = <ReplyDark width={18} height={18} style={{ color: '#FFF', marginRight: 5 }}/>;
+        down = <DownDark width={25} height={25} style={{ color: '#FFF', marginRight: 5 }}/>;
     }
 
     

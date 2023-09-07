@@ -39,8 +39,7 @@ import overrideItemLayout from '../shared/functions/OverrideItemLayout'
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
 
-const refreshAnimationLight = require('../../assets/animations/Refresh_Picalgo_light.json');
-const refreshAnimationDark = require('../../assets/animations/Refresh_Picalgo_dark.json');
+const refreshAnimation = require('../../assets/animations/Refreshing.json');
 const refreshingHeight = 100;
 
 const windowWidth = Dimensions.get("screen").width;
@@ -433,7 +432,7 @@ const PostScreen = ({navigation, route}) => {
             
             
             {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={template} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
+            {!finished && <CreateMeme image={template} templateState={templateState} setFinished={setFinished} setImage={setImage} id={postId}/>}
 
             
             
@@ -449,8 +448,13 @@ const PostScreen = ({navigation, route}) => {
                     ref={refreshViewRef}
                     autoPlay
                     style={[styles.lottieView]}
-                    source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
+                    // source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
+                    source={refreshAnimation}
                     // progress={progress}
+                    colorFilters={[
+                        { keypath: "Path", 
+                            color: theme == 'light' ? "#005fff" : "#FFF" },
+                    ]}
                 />
             }
 

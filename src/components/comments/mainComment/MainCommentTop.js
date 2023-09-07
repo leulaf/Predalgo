@@ -39,9 +39,9 @@ export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, s
     let threeDots
 
     if(theme == 'light'){
-        threeDots = <ThreeDotsLight width={33} height={33} style={{}}/>
+        threeDots = <ThreeDotsLight width={33} height={33} style={{color: '#000'}}/>
     }else{
-        threeDots = <ThreeDotsDark width={33} height={33} style={{}}/>
+        threeDots = <ThreeDotsDark width={33} height={33} style={{color: '#FFF'}}/>
     }
 
 

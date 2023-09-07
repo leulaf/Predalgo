@@ -59,6 +59,7 @@ const MainStackNavigator = ({}) => {
         />
         <Stack.Screen name="CreatePost" component={CreatePostScreen}
             options={{
+                gestureResponseDistance: windowWidth,
                 headerShown: false,
             }} 
         />

@@ -5,6 +5,8 @@ import { StackActions } from '@react-navigation/native';
 
 import {BlurView} from 'expo-blur';
 
+import LottieView from 'lottie-react-native';
+
 import Constants from 'expo-constants';
 
 import uuid from 'react-native-uuid';
@@ -48,6 +50,10 @@ import PostButtonDark from '../../assets/post_button_dark.svg';
 
 const win = Dimensions.get('window');
 
+const uploadingAnimation = require('../../assets/animations/Uploading.json');
+const refreshingHeight = win.width/2;
+
+
 const CreatePostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -58,6 +64,7 @@ const CreatePostScreen = ({navigation, route}) => {
     const {imageUrl, memeName, imageUrls, newTemplate, newTemplateImage} = route.params;
     const [linkView, setLinkView] = React.useState(false);
     const [tempTags, setTempTags] = React.useState('');
+    const [uploading, setUploading] = React.useState(false);
     const titleInputAccessoryViewID = uuid.v4();
     const textInputAccessoryViewID = uuid.v4();
     const tagInputAccessoryViewID = uuid.v4();
@@ -285,6 +292,100 @@ const CreatePostScreen = ({navigation, route}) => {
     };
 
 
+    
+
+
+    const initialBottomButtons = (
+        <>
+            {/* Hashtags and mentions*/}
+            <TextInput
+                inputAccessoryViewID={tagInputAccessoryViewID}
+                style={theme == 'light' ? styles.lightBottomTagInput : styles.darkBottomTagInput}
+                autoCapitalize="none"
+                autoCorrect
+                handleFocus={handleFocus}
+                handleBlur={handleBlur}
+                placeholder="@mentions #hashtags"
+                placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
+                value={tempTags}
+                onChangeText={(newValue) => setTempTags(newValue)}
+                // onEndEditing={() => fixTags(tempTags)}
+            />
+
+
+
+            {/* line break */}
+            <View style={{borderBottomColor: theme == 'light' ? '#DDDDDD' : '#AAAAAA', borderBottomWidth: 1, alignSelf: 'center', width: "94%", marginBottom: 8, position: 'absolute', bottom: 125}}/>
+
+            
+
+            <View style={{flexDirection: 'row', width: "100%", position: 'absolute', bottom: 75, alignSelf: 'center', justifyContent: 'space-around',
+                // , width: "100%", alignItems: 'center',  justifyContent: 'center', alignContent: 'center'
+            }}>
+                
+
+                {/* Upload Image Button */}
+                <TouchableOpacity
+                    style={{flexDirection: 'row'}}
+                    onPress={() => 
+                        {
+                            setImagePost(null)
+                            navigation.navigate("Upload", {
+                                forCommentOnComment: false,
+                                forCommentOnPost: false,
+                                forPost: true,
+                            })
+                        }
+                    }
+                >
+                    {largeUpload}
+                    <Text style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                        Image
+                    </Text>
+                </TouchableOpacity> 
+
+
+
+                {/* Create Meme Button */}
+                <TouchableOpacity
+                    style={{flexDirection: 'row'}}
+                    onPress={() => 
+                        {
+                            setImagePost(null)
+                            navigation.navigate("AddPost", {
+                                forCommentOnComment: false,
+                                forCommentOnPost: false,
+                                forPost: true,
+                            })
+                        }
+                    }
+                >
+                    {largeCreateMeme}
+                    <Text style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                        Memes
+                    </Text>
+                </TouchableOpacity>
+
+                
+
+                {/* Link Button */}
+                <TouchableOpacity
+                    style={{flexDirection: 'row'}}
+                    onPress={() => setLinkView(true)}
+                >
+                    {largeLink}
+                    <Text style={[theme == 'light' ? styles.lightBottomText : styles.darkBottomText, {marginRight: 6}]}>
+                        Link
+                    </Text>
+                </TouchableOpacity>
+
+            </View>
+
+        </>
+        
+    )
+
+    
     const onPostText = React.useCallback(async (correctTags) => {
         
         await UploadTextPost(
@@ -293,6 +394,7 @@ const CreatePostScreen = ({navigation, route}) => {
             correctTags
         ).catch(function (error) {
             // console.log(error);
+            setUploading(false);
         }).then(async (id) => {
             const newText = text;
 
@@ -301,6 +403,7 @@ const CreatePostScreen = ({navigation, route}) => {
             setText("");
             setTitle("");
             setTempTags("");
+            setUploading(false);
 
             // navigate to Post screen with the new Post
             navigation.dispatch(
@@ -332,6 +435,7 @@ const CreatePostScreen = ({navigation, route}) => {
             correctTags
         ).catch(function (error) {
             // console.log(error);
+            setUploading(false);
         }).then(async (id) => {
             
             const newText = text;
@@ -341,6 +445,7 @@ const CreatePostScreen = ({navigation, route}) => {
             setText("");
             setTitle("");
             setTempTags("");
+            setUploading(false);
                                             
             // navigate to Post screen with the new Post
             navigation.dispatch(
@@ -379,6 +484,7 @@ const CreatePostScreen = ({navigation, route}) => {
             correctTags
         ).catch(function (error) {
             // console.log(error);
+            setUploading(false);
         }).then(async (id) => {
             
             const newText = text;
@@ -388,6 +494,7 @@ const CreatePostScreen = ({navigation, route}) => {
             setText("");
             setTitle("");
             setTempTags("");
+            setUploading(false);
 
             // navigate to Post screen with the new Post
             navigation.dispatch(
@@ -416,9 +523,33 @@ const CreatePostScreen = ({navigation, route}) => {
     }, [imagePost, text])
 
 
+    const uploadingScreen = (
+        <View style={{
+            // position: 'absolute',
+            // top: 0, left: 0,
+            justifyContent: 'center', alignItems: 'center',
+            height: win.height, width: win.width,
+            backgroundColor: theme == 'light' ? '#FFF' : '#1C1C1C',
+            
+        }}>
+            <LottieView
+                    // ref={refreshViewRef}
+                    autoPlay
+                    style={[styles.lottieView]}
+                    source={theme == 'light' ? uploadingAnimation : uploadingAnimation}
+                    // progress={progress}
+                    colorFilters={[
+                        { keypath: "Shape Layer 1 Comp 1", 
+                            color: theme == 'light' ? "#2476FF" : "#FFF" },
+                    ]}
+                />
+        </View>
+    );
+
+
     return (
         <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-                
+                {uploading && uploadingScreen}
                 <View style={{
                         flexDirection: 'row',
                         justifyContent: 'center',
@@ -440,6 +571,7 @@ const CreatePostScreen = ({navigation, route}) => {
                              style={{flexDirection: 'row',borderWidth: 0, botderColor: "black"}}
                             onPress={ async () =>
                                     {
+                                        setUploading(true);
                                         Keyboard.dismiss();
                                         // console.log(tempTags)
                                         // fixTags(tempTags);
@@ -614,90 +746,8 @@ const CreatePostScreen = ({navigation, route}) => {
                 // </View>
                 }
 
-
-                {/* Hashtags and mentions*/}
-                <TextInput
-                    inputAccessoryViewID={tagInputAccessoryViewID}
-                    style={theme == 'light' ? styles.lightBottomTagInput : styles.darkBottomTagInput}
-                    autoCapitalize="none"
-                    autoCorrect
-                    handleFocus={handleFocus}
-                    handleBlur={handleBlur}
-                    placeholder="@mentions #hashtags"
-                    placeholderTextColor= { theme == 'light' ? "#888888" : "#CCCCCC"}
-                    value={tempTags}
-                    onChangeText={(newValue) => setTempTags(newValue)}
-                    // onEndEditing={() => fixTags(tempTags)}
-                />
-
-
-
-                {/* line break */}
-                <View style={{borderBottomColor: theme == 'light' ? '#DDDDDD' : '#AAAAAA', borderBottomWidth: 1, alignSelf: 'center', width: "94%", marginBottom: 8, position: 'absolute', bottom: 125}}/>
-
-                
-
-                <View style={{flexDirection: 'row', width: "100%", position: 'absolute', bottom: 75, alignSelf: 'center', justifyContent: 'space-around',
-                    // , width: "100%", alignItems: 'center',  justifyContent: 'center', alignContent: 'center'
-                }}>
-                    
-
-                    {/* Upload Image Button */}
-                    <TouchableOpacity
-                        style={{flexDirection: 'row'}}
-                        onPress={() => 
-                            {
-                                setImagePost(null)
-                                navigation.navigate("Upload", {
-                                    forCommentOnComment: false,
-                                    forCommentOnPost: false,
-                                    forPost: true,
-                                })
-                            }
-                        }
-                    >
-                        {largeUpload}
-                        <Text style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
-                            Image
-                        </Text>
-                    </TouchableOpacity> 
-
-
-
-                    {/* Create Meme Button */}
-                    <TouchableOpacity
-                        style={{flexDirection: 'row'}}
-                        onPress={() => 
-                            {
-                                setImagePost(null)
-                                navigation.navigate("AddPost", {
-                                    forCommentOnComment: false,
-                                    forCommentOnPost: false,
-                                    forPost: true,
-                                })
-                            }
-                        }
-                    >
-                        {largeCreateMeme}
-                        <Text style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
-                            Memes
-                        </Text>
-                    </TouchableOpacity>
-
-                    
-
-                    {/* Link Button */}
-                    <TouchableOpacity
-                        style={{flexDirection: 'row'}}
-                        onPress={() => setLinkView(true)}
-                    >
-                        {largeLink}
-                        <Text style={[theme == 'light' ? styles.lightBottomText : styles.darkBottomText, {marginRight: 6}]}>
-                            Link
-                        </Text>
-                    </TouchableOpacity>
-
-                </View>
+                {/* bottom buttons */}
+                {!uploading && initialBottomButtons}
 
 
 
@@ -786,6 +836,13 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderWidth: 1,
         borderColor: '#333333',
+    },
+    lottieView: {
+        height: refreshingHeight,
+        // position: 'absolute',
+        // top: 10,
+        // left: 0,
+        // right: 9,
     },
     lightInputTopContainer: {
         flexDirection: 'column',

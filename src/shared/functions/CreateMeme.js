@@ -7,7 +7,7 @@ import { manipulateAsync } from 'expo-image-manipulator';
 
 // React.memo??????????????????????
 // Load Meme with template and template state
-export default CreateMeme = ({image, templateState, setFinished, setImage}) => {
+export default CreateMeme = React.memo(({image, templateState, setFinished, setImage, id}) => {
     const editorRef = useRef(null);
 
     return (
@@ -38,4 +38,8 @@ export default CreateMeme = ({image, templateState, setFinished, setImage}) => {
         // </View>
         
     )
-};
+}, itemEquals);
+
+const itemEquals = (prevItem, nextItem) => {
+    return prevItem.id === nextItem.id;
+}

@@ -104,7 +104,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
         >
 
             {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
+            {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage} id={commentId}/>}
 
 
             {/* Comment Top */}
