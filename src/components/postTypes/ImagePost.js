@@ -117,56 +117,65 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
             navigation={navigation}
             
             content={
-                <TouchableOpacity
-                    activeOpacity={1}
-                    onPress={() => setIsFocused(true)}
-                    style={{flexDirection: "column", alignSelf: 'center'}}
-                >
-                    
-                    {/* Load Meme with template and template state */}
-                    {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
-
-
-                    { text &&
+                <View>
+                    {
+                        text &&
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={() => onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount)}
+                            style={{flexDirection: "column", alignSelf: 'center'}}
+                        >
+                            <PostText numberOfLines={5} text={text} forPost={true}/>
+                        </TouchableOpacity>
+                    }
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={() => setIsFocused(true)}
+                        style={{flexDirection: "column", alignSelf: 'center'}}
+                    >
                         
-                        <PostText numberOfLines={5} text={text} forPost={true}/>
-
-                    }
-
-
-                    <ResizableImage 
-                        image={image}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxWidth={windowWidth-6}
-                        maxHeight={600}
-                        style={{ borderRadius: 10, alignSelf: 'center'}}
-                    />
+                        {/* Load Meme with template and template state */}
+                        {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage}/>}
 
 
-                    {focused &&
-                        <ImageView
-                            images={[{uri: image}]}
-                            imageIndex={0}
-                            visible={focused}
-                            onRequestClose={() => setIsFocused(false)}
-                            animationType="fade"
-                            doubleTapToZoomEnabled={true}
-                            FooterComponent={({ imageIndex }) => (
-                                <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
-                                    <PostBottom
-                                        postId={postId}
-                                        likesCount={likesCount}
-                                        commentsCount={commentsCount}
-                                        theme='imageFocused'
-                                        navToPost={navToPostFromImage}
-                                    />
-                                </View>
-                                
-                            )}
+                        
+
+
+                        <ResizableImage 
+                            image={image}
+                            height={imageHeight}
+                            width={imageWidth}
+                            maxWidth={windowWidth-6}
+                            maxHeight={600}
+                            style={{ borderRadius: 10, alignSelf: 'center'}}
                         />
-                    }
-                </TouchableOpacity>
+
+
+                        {focused &&
+                            <ImageView
+                                images={[{uri: image}]}
+                                imageIndex={0}
+                                visible={focused}
+                                onRequestClose={() => setIsFocused(false)}
+                                animationType="fade"
+                                doubleTapToZoomEnabled={true}
+                                FooterComponent={({ imageIndex }) => (
+                                    <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+                                        <PostBottom
+                                            postId={postId}
+                                            likesCount={likesCount}
+                                            commentsCount={commentsCount}
+                                            theme='imageFocused'
+                                            navToPost={navToPostFromImage}
+                                        />
+                                    </View>
+                                    
+                                )}
+                            />
+                        }
+                    </TouchableOpacity>
+                </View>
+                
             }
         />
     );

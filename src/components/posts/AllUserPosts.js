@@ -1,7 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlashList, Dimensions} from 'react-native';
-import { firebase, db, storage } from '../../config/firebase';
-import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import GlobalStyles from '../../constants/GlobalStyles';
 import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';

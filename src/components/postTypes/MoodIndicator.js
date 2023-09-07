@@ -30,6 +30,20 @@ const crying = require('../../../assets/emojis/crying.json');
 const initialOffset = 1;
 const finalOffset = 50;
 
+const moods = [
+    "laughing",
+    "loving",
+    "shocked",
+    "lightBulb",
+    "confetti",
+    "wink",
+    "skeptical",
+    "eyeRoll",
+    "crying",
+    "sad",
+    "angry"
+];
+
 export default MoodIndicator = ({postId, emoji, setEmoji}) => {
     const jumpOffSet = useSharedValue(0);
 
@@ -191,7 +205,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         onPress={() => {
                             // emoji.chose != "lightBulb" && onSelectMood(replyToPostId, postId, "good")
                             // emoji.chose == "lightBulb" && onUnselectMood(replyToPostId, postId, "good")
-                            emoji.chose != "lightBulb" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            emoji.chose != "lightBulb" ?
+                                onSelectMood(postId, "lightBulb")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "lightBulb")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "lightBulb" ?
                                     {
@@ -233,6 +252,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         activeOpacity={1}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "confetti" ? 8 : 0, marginLeft: emoji.chose == "confetti" ?-1 : -6}}
                         onPress={() => {
+                            emoji.chose != "confetti" ?
+                                onSelectMood(postId, "confetti")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "confetti")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "confetti" ?
                                     {
@@ -270,6 +295,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         activeOpacity={1}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "laughing" ? 5 : 0, marginLeft: emoji.chose == "laughing" ? -7 : -12}}
                         onPress={() => {
+                            emoji.chose != "laughing" ?
+                                onSelectMood(postId, "laughing")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "laughing")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "laughing" ?
                                     {
@@ -306,6 +337,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         activeOpacity={1}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "loving" ? 13 : 0, marginLeft: emoji.chose == "loving" ? -2 : -8}}
                         onPress={() => {
+                            emoji.chose != "loving" ?
+                                onSelectMood(postId, "loving")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "loving")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "loving" ?
                                     {
@@ -343,6 +380,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         activeOpacity={1}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "wink" ? 10 : 0, marginLeft: emoji.chose == "wink" ? -3 : -7}}
                         onPress={() => {
+                            emoji.chose != "wink" ?
+                                onSelectMood(postId, "wink")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "wink")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "wink" ?
                                     {
@@ -381,6 +424,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         activeOpacity={1}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "shocked" ? 13 : 0, marginLeft: emoji.chose == "shocked" ? -2 : -7}}
                         onPress={() => {
+                            emoji.chose != "shocked" ?
+                                onSelectMood(postId, "shocked")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "shocked")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "shocked" ?
                                     {
@@ -416,6 +465,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "sad" ? 11 : 0, marginLeft: emoji.chose == "sad" ? -3 : -9}}
                         onPress={() => {
+                            emoji.chose != "sad" ?
+                                onSelectMood(postId, "sad")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "sad")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "sad" ?
                                     {
@@ -452,6 +507,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         activeOpacity={1}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "skeptical" ? 6 : 0, marginLeft: emoji.chose == "skeptical" ? -6 : -11}}
                         onPress={() => {
+                            emoji.chose != "skeptical" ?
+                                onSelectMood(postId, "skeptical")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "skeptical")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "skeptical" ?
                                     {
@@ -489,6 +550,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                         activeOpacity={1}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "eyeRoll" ? 10 : 0, marginLeft: emoji.chose == "eyeRoll" ? -2 : -6}}
                         onPress={() => {
+                            emoji.chose != "eyeRoll" ?
+                                onSelectMood(postId, "eyeRoll")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "eyeRoll")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "eyeRoll" ?
                                     {
@@ -525,6 +592,12 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1, marginRight: emoji.chose == "angry" ? -9 : 1, marginLeft: -2}]}>
                     <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "angry" ? 0 : 5, marginLeft: emoji.chose == "angry" ? -21 : -21}}
                         onPress={() => {
+                            emoji.chose != "angry" ?
+                                onSelectMood(postId, "angry")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            :
+                                onUnselectMood(postId, "angry")
+                                // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                             setEmoji(
                                 emoji.chose == "angry" ?
                                     {

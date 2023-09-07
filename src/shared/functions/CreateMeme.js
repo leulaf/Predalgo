@@ -11,18 +11,22 @@ export default CreateMeme = ({image, templateState, setFinished, setImage}) => {
     const editorRef = useRef(null);
 
     return (
-        <PinturaEditor
+        // <View style={{height: 0, width: 0}}>
+            <PinturaEditor
             ref={editorRef}
-            
-            src={image}
+            style={{
+                width: "0%",
+                height: "0%",
+            }}
+            // src={image}
             // onClose={() => console.log('closed')}
             // onDestroy={() => console.log('destroyed')}
-            onLoad={() => 
-                editorRef.current.editor.processImage(templateState)
-            }
-            // onInit={() => 
-            //     editorRef.current.editor.processImage(image, templateState)
+            // onLoad={() => 
+            //     editorRef.current.editor.processImage(templateState)
             // }
+            onInit={() => 
+                editorRef.current.editor.processImage(image, templateState)
+            }
             onProcess={async({ dest }) => {
                 manipulateAsync(dest, [], ).then((res) => {
                     setFinished(true);
@@ -31,5 +35,7 @@ export default CreateMeme = ({image, templateState, setFinished, setImage}) => {
                 })
             }}
         />    
+        // </View>
+        
     )
 };

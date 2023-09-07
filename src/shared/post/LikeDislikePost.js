@@ -11,13 +11,29 @@ const onLikePost = async (postId) => {
         const likedRef = doc(db, "likedPosts", auth.currentUser.uid, "posts", postId);
 
         // add post to likes collection
-        await setDoc(likedRef, {})
+        await setDoc(likedRef, {
+            emoji: "👍",
+            moodArray: []
+            // moodArray: [
+            //     "laughing",
+            //     "loving",
+            //     "shocked",
+            //     "lightBulb",
+            //     "confetti",
+            //     "wink",
+            //     "skeptical",
+            //     "eyeRoll",
+            //     "crying",
+            //     "sad",
+            //     "angry"
+            // ]
+        })
 
         // update like count for post
         const postRef = doc(db, 'allPosts', postId);
     
         await updateDoc(postRef, {
-            likesCount: increment(1)
+            likesCount: increment(1),
         }).then(() => {
             // console.log("liked")
             resolve(true);

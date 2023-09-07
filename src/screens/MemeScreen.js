@@ -112,7 +112,7 @@ const MemeScreen = ({ navigation, route }) => {
     const flashListRef = useRef(null);
    
     useEffect(() => {
-        (useCount > 0 || fromFavoriteTemplates)&& getFirstTenMemes();
+        (useCount > 0 || fromFavoriteTemplates || !(useCount))&& getFirstTenMemes();
     }, []);
 
     // console.log(template)

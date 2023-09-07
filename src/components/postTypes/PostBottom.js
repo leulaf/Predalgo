@@ -1,6 +1,12 @@
 import React, { } from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert} from 'react-native';
 
+import {  db } from '../../config/firebase';
+import {  doc, getDoc } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
+
+const auth = getAuth();
+
 import MoodIndicator from './MoodIndicator';
 
 import { onLikePost, onDisikePost } from '../../shared/post/LikeDislikePost';
@@ -77,15 +83,21 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
 
 
     const toggleLike = () => async() => {
-        // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        // if(emoji){
-        //     setEmoji(false);
-        //     await onDisike(replyToPostId, commentId).then((result) => {
-        //         setEmoji(!result)
-        //     })
-        // }else{
 
-            if(emoji.show == "notLiked"){
+        // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        
+
+        // if(emoji.show == "notLiked"){
+        //     const likedRef = doc(db, "likedPosts", auth.currentUser.uid, "posts", postId);
+        //     const likedDocSnap = await getDoc(likedRef);
+
+        //     if(likedDocSnap.exists()){
+        //         setEmoji({
+        //             id: postId,
+        //             show: false,
+        //             chose: likedDocSnap.data().emoji
+        //         });
+            // }else{
                 setEmoji({
                     id: postId,
                     show: false,
@@ -109,14 +121,13 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
                         chose: ""
                     });
                 });
-            }else{
-                setEmoji({
-                    id: postId,
-                    show: false,
-                    chose: ""
-                });
-            }
-            
+            // }
+        // }else{
+        //     setEmoji({
+        //         id: postId,
+        //         show: false,
+        //         chose: ""
+        //     });
         // }
     }
 
@@ -173,16 +184,16 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
                             }
                         </TouchableOpacity>
                     :
-                    <TouchableOpacity
-                        style={styles.bottomButtonContainer}
-                        onPress={toggleLike()}
-                    >
-                        {likes}
+                        <TouchableOpacity
+                            style={styles.bottomButtonContainer}
+                            onPress={toggleLike()}
+                        >
+                            {likes}
 
-                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                            {intToString(likesCount)}
-                        </Text> 
-                    </TouchableOpacity>
+                            <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                                {intToString(likesCount)}
+                            </Text> 
+                        </TouchableOpacity>
                 }
                 
                 
