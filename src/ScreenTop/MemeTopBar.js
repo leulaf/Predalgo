@@ -87,11 +87,11 @@ const MemeTopBar = ({navigation, theme, name, url, height, width, fromFavoriteTe
 
     let bookmarkIcon, bookmarkedIcon;
     if(theme == 'light'){
-        bookmarkIcon = <BookmarkLight style={styles.backIcon} width={23} height={23}/>;
-        bookmarkedIcon = <BookmarkedLight style={styles.backIcon} width={23} height={23}/>;
+        bookmarkIcon = <BookmarkLight style={styles.bookmarkIcon} width={23} height={23}/>;
+        bookmarkedIcon = <BookmarkedLight style={styles.bookmarkIcon} width={23} height={23}/>;
     }else{
-        bookmarkIcon = <BookmarkDark style={styles.backIcon} width={23} height={23}/>;
-        bookmarkedIcon = <BookmarkedDark style={styles.backIcon} width={23} height={23}/>;
+        bookmarkIcon = <BookmarkDark style={styles.bookmarkIcon} width={23} height={23}/>;
+        bookmarkedIcon = <BookmarkedDark style={styles.bookmarkIcon} width={23} height={23}/>;
     }
 
 
@@ -107,9 +107,9 @@ const MemeTopBar = ({navigation, theme, name, url, height, width, fromFavoriteTe
             >
                 {
                     theme == 'light' ?
-                        <BackLight style={styles.backIcon} width={22} height={22}/>
+                        <BackLight style={styles.lightBackIcon} width={22} height={22}/>
                     :
-                        <BackDark style={styles.backIcon} width={22} height={22}/>
+                        <BackDark style={styles.darkBackIcon} width={22} height={22}/>
                 }
 
                 <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
@@ -164,11 +164,25 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
     },
-    backIcon: {
+    bookmarkIcon: {
         // alignSelf: 'center',
         marginTop: 53,
         marginLeft: 10,
         padding: 10,
+    },
+    lightBackIcon: {
+        // alignSelf: 'center',
+        marginTop: 53,
+        marginLeft: 10,
+        padding: 10,
+        color: '#fff',
+    },
+    darkBackIcon: {
+        // alignSelf: 'center',
+        marginTop: 53,
+        marginLeft: 10,
+        padding: 10,
+        color: '#fff',
     },
     lightText: {
         fontSize: 20,

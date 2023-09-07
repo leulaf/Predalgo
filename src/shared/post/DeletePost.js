@@ -33,17 +33,17 @@ export default deletePost = async(postId)  => {
                     const templateRef = doc(db, "imageTemplates", data.memeName);
 
                     await updateDoc(templateRef, {
-                        useCount: increment(1)
+                        useCount: increment(-1)
                     });
                 }
 
             })
             .then(() => {
-                console.log("Post deleted!");
+                // console.log("Post deleted!");
                 resolve(true);
             })
             .catch((error) => {
-                console.log("Post not deleted!     ", error);
+                // console.log("Post not deleted!     ", error);
                 reject(false);
             })
         }

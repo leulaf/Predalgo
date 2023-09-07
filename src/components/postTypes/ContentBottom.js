@@ -86,7 +86,7 @@ const ContentBottom = ({ tags, memeName, templateUploader, navToPost, navToMeme 
     // return contentBottom;
 
     return (
-        <View flexDirection={"row"}>
+        <View flexDirection={"row"} marginBottom={-5} marginTop={0}>
             {   memeName &&
                  <TouchableOpacity
                     onPress={navToMeme}
@@ -113,7 +113,7 @@ const ContentBottom = ({ tags, memeName, templateUploader, navToPost, navToMeme 
                 </TouchableOpacity>
             }
             {   tags &&
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={5} paddingRight={10}>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} marginLeft={5} paddingRight={10} paddingTop={memeName && 6}>
                     {bottomTags}
                 </ScrollView>
             }
@@ -131,9 +131,9 @@ const styles = StyleSheet.create({
         maxWidth: windowWidth/2.3,
         flexDirection: 'row',
         paddingLeft: 5,
-        paddingRight: 20,
+        paddingRight: 5,
         paddingBottom: 0,
-        paddingTop: 8,
+        paddingTop: 12,
     },
 });
 

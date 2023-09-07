@@ -257,7 +257,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                 {/* Mood Indicator OR Like Button */}
                 {
                     emoji.show != "notLiked" && commentId == emoji.id ?
-                    <TouchableOpacity
+                        <TouchableOpacity
                             activeOpacity={1}
                             style={{paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
                             onPress={toggleLike()}

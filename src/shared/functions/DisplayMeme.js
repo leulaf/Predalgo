@@ -20,6 +20,8 @@ import intToString from "./intToString";
 
 import ResizableImage from "./ResizableImage";
 
+import PostText from "../Text/PostText";
+
 
 // light mode icons
 import Likes from '../../../assets/likes.svg';
@@ -75,11 +77,11 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
     let likes, alreadyLiked;
 
     if(theme == 'light'){
-        likes = <Likes width={23} height={23} style={{ marginRight: 7 }}/>;
-        alreadyLiked = <Liked width={23} height={23} style={{ marginRight: 7 }}/>;
+        likes = <Likes width={23} height={23} style={{ color: '#000', marginRight: 7 }}/>;
+        alreadyLiked = <Liked width={23} height={23} style={{ color: '#000', marginRight: 7 }}/>;
     }else{
-        likes = <LikesDark width={24} height={24} style={{ marginRight: 7 }}/>;
-        alreadyLiked = <LikedDark width={24} height={24} style={{ marginRight: 7 }}/>;
+        likes = <LikesDark width={24} height={24} style={{ color: '#000', marginRight: 7 }}/>;
+        alreadyLiked = <LikedDark width={24} height={24} style={{ color: '#000', marginRight: 7 }}/>;
     }
 
     const toggleLike = () => async() => {
@@ -113,6 +115,7 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
                 {/* profile pic */}
                 <TouchableOpacity
                     activeOpacity={1}
+                    style={{marginLeft: 5}}
                     onPress={goToProfile(navigation, item.profile, item.username, item.profilePic)}
                 >
                     {item.profilePic != "" ? (
@@ -182,6 +185,10 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
                 activeOpacity={1}
                 onPress={() => setIsImageFocused(!isImageFocused)}
             >
+                {
+                    item.text &&
+                    <PostText numberOfLines={5} text={item.text} forDisplayMeme={true}/>
+                }
                 <ResizableImage 
                     image={image ? image : item.template}
                     style={style}
@@ -282,10 +289,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "400",
         color: '#444444',
+        marginRight: 5
     },
     darkLikeCountText: {
         fontSize: 16,
         fontWeight: "400",
         color: '#EEEEEE',
+        marginRight: 5
     },
 });

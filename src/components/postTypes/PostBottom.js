@@ -1,7 +1,7 @@
 import React, { } from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert} from 'react-native';
 
-import {ThemeContext} from '../../../context-store/context';
+import MoodIndicator from './MoodIndicator';
 
 import { onLikePost, onDisikePost } from '../../shared/post/LikeDislikePost';
 
@@ -22,9 +22,14 @@ import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
 import RepostDark from '../../../assets/repost_dark.svg';
 
+
 const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => {
 
-    const [liked, setLiked] = React.useState(false);
+    const [emoji, setEmoji] = React.useState({
+        id: postId,
+        show: "notLiked",
+        chose: ""
+    });
 
     let likes, alreadyLiked, comments, share, repost;
     if(theme == 'light'){
@@ -48,89 +53,234 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
     }
 
 
+    // const toggleLike = () => async() => {
+    //     if(liked){
+    //         setLiked(false);
+    //         await onDisikePost(postId)
+    //         .then((res) => {
+    //             !res && setLiked(true);
+    //         })
+    //         .catch((e) => {
+    //             setLiked(true);
+    //         })
+    //     }else{
+    //         setLiked(true);
+    //         await onLikePost(postId)
+    //         .then((res) => {
+    //             !res && setLiked(false);
+    //         })
+    //         .catch((e) => {
+    //             setLiked(false);
+    //         })
+    //     }
+    // }
+
+
     const toggleLike = () => async() => {
-        if(liked){
-            setLiked(false);
-            await onDisikePost(postId)
-            .then((res) => {
-                !res && setLiked(true);
-            })
-            .catch((e) => {
-                setLiked(true);
-            })
-        }else{
-            setLiked(true);
-            await onLikePost(postId)
-            .then((res) => {
-                !res && setLiked(false);
-            })
-            .catch((e) => {
-                setLiked(false);
-            })
-        }
+        // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        // if(emoji){
+        //     setEmoji(false);
+        //     await onDisike(replyToPostId, commentId).then((result) => {
+        //         setEmoji(!result)
+        //     })
+        // }else{
+
+            if(emoji.show == "notLiked"){
+                setEmoji({
+                    id: postId,
+                    show: false,
+                    chose: ""
+                });
+                await onLikePost(postId)
+                .then((result) => {
+                        
+                    !result && 
+                    
+                    setEmoji({
+                        id: postId,
+                        show: "notLiked",
+                        chose: ""
+                    });
+                })
+                .catch((e) => {
+                    setEmoji({
+                        id: postId,
+                        show: "notLiked",
+                        chose: ""
+                    });
+                });
+            }else{
+                setEmoji({
+                    id: postId,
+                    show: false,
+                    chose: ""
+                });
+            }
+            
+        // }
     }
 
 
     return (
-        <View style={{flex: 1, width: '100%', marginRight: 13, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
-            
-            
-            {/* Comments button */}
-            <TouchableOpacity
-                style={styles.bottomButtonContainer}
-                onPress={() => navToPost()}
-            >
-                    {comments}
 
-                    <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                        {intToString(commentsCount)}
-                    </Text>
-            </TouchableOpacity>
-
+            <View style={{flex: 1, width: '100%', marginRight: 13, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
             
-            {/* Likes button */}
-            <TouchableOpacity
-                style={styles.bottomButtonContainer}
-                onPress={toggleLike()}
-            >
-                {liked ?
-                    alreadyLiked
-                :
-                    likes
+                {/* Comments button */}
+                {
+                    (emoji.show != false  || postId != emoji.id) &&
+                    <TouchableOpacity
+                        style={styles.bottomButtonContainer}
+                        onPress={() => navToPost()}
+                    >
+                            {comments}
+
+                            <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                                {intToString(commentsCount)}
+                            </Text>
+                    </TouchableOpacity>
                 }
+                
 
-                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    {liked ? intToString(likesCount + 1) : intToString(likesCount)}
-                </Text>
-            </TouchableOpacity>
-            
-            
-            {/* Repost button */}
-            <TouchableOpacity
-                style={styles.bottomButtonContainer}
-                // onPress={() => onRepost()}
-            >
-                {repost}
+                
+                {/* Mood Indicator OR Like Button */}
+                {
+                    emoji.show != "notLiked" && postId == emoji.id ?
+                        <TouchableOpacity
+                            style={{paddingLeft: 10, width: emoji.show != false ? 100 : 'auto', height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
+                            onPress={toggleLike()}
+                        >
+                            {/* {liked ?
+                                alreadyLiked
+                            :
+                                likes
+                            }
 
-                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    0
-                </Text>
-            </TouchableOpacity>
-            
-            
-            
-            {/* Share button */}
-            <TouchableOpacity
-                style={[styles.bottomButtonContainer, {marginRight: 10}]}
-                // onPress={() => }
-            >
-                {share}
+                            <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                                {liked ? intToString(likesCount + 1) : intToString(likesCount)}
+                            </Text> */}
+                            <MoodIndicator
+                                postId={postId}
+                                emoji={emoji}
+                                setEmoji={setEmoji}
+                            />
 
-                <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                    Share
-                </Text>
-            </TouchableOpacity>
-        </View>
+                            {
+                                emoji.show != false &&
+                                <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginLeft: -3}]}>
+                                    {intToString(likesCount + 1)}
+                                </Text>
+                                
+                            }
+                        </TouchableOpacity>
+                    :
+                    <TouchableOpacity
+                        style={styles.bottomButtonContainer}
+                        onPress={toggleLike()}
+                    >
+                        {likes}
+
+                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                            {intToString(likesCount)}
+                        </Text> 
+                    </TouchableOpacity>
+                }
+                
+                
+                {/* Repost button */}
+                {
+                    (emoji.show != false  || postId != emoji.id) &&
+                    <TouchableOpacity
+                        style={styles.bottomButtonContainer}
+                        // onPress={() => onRepost()}
+                    >
+                        {repost}
+
+                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                            0
+                        </Text>
+                    </TouchableOpacity>
+                }
+                    
+                
+                
+                
+                {/* Share button */}
+                {
+                    (emoji.show != false  || postId != emoji.id) &&
+                    <TouchableOpacity
+                        style={[styles.bottomButtonContainer, {marginRight: 10}]}
+                        // onPress={() => }
+                    >
+                        {share}
+
+                        <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+                            Share
+                        </Text>
+                    </TouchableOpacity>
+                }
+                    
+            </View>
+        // <View style={{flex: 1, width: '100%', marginRight: 13, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
+            
+            
+        //     {/* Comments button */}
+        //     <TouchableOpacity
+        //         style={styles.bottomButtonContainer}
+        //         onPress={() => navToPost()}
+        //     >
+        //             {comments}
+
+        //             <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+        //                 {intToString(commentsCount)}
+        //             </Text>
+        //     </TouchableOpacity>
+
+            
+        //     {/* Likes button */}
+        //     { emoji.show == "notLiked" &&
+        //         <TouchableOpacity
+        //             style={styles.bottomButtonContainer}
+        //             onPress={toggleLike()}
+        //         >
+        //             {/* {liked ?
+        //                 alreadyLiked
+        //             :
+        //                 likes
+        //             }
+
+        //             <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+        //                 {liked ? intToString(likesCount + 1) : intToString(likesCount)}
+        //             </Text> */}
+        //         </TouchableOpacity>
+        //     }
+            
+            
+        //     {/* Repost button */}
+        //     <TouchableOpacity
+        //         style={styles.bottomButtonContainer}
+        //         // onPress={() => onRepost()}
+        //     >
+        //         {repost}
+
+        //         <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+        //             0
+        //         </Text>
+        //     </TouchableOpacity>
+            
+            
+            
+        //     {/* Share button */}
+        //     <TouchableOpacity
+        //         style={[styles.bottomButtonContainer, {marginRight: 10}]}
+        //         // onPress={() => }
+        //     >
+        //         {share}
+
+        //         <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
+        //             Share
+        //         </Text>
+        //     </TouchableOpacity>
+        // </View>
     );
 }
 

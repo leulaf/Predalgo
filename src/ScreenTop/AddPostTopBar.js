@@ -25,9 +25,9 @@ const AddPostTopBar = ({navToFavorites, navToSearchMemes}) => {
         >
             {
                 theme == 'light' ?
-                    <BackLight style={styles.backIcon} width={24} height={24}/>
+                    <BackLight style={styles.lightBackIcon} width={24} height={24}/>
                 :
-                    <BackDark style={styles.backIcon} width={24} height={24}/>
+                    <BackDark style={styles.darkBackIcon} width={24} height={24}/>
             }
             
         </TouchableOpacity>
@@ -117,11 +117,19 @@ const styles = StyleSheet.create({
         marginRight: 20,
         padding: 5,
     },
-    backIcon: {
+    lightBackIcon: {
         // alignSelf: 'center',
-        marginTop: 57,
-        marginHorizontal: 10,
+        marginTop: 53,
+        marginLeft: 10,
         padding: 10,
+        color: '#fff',
+    },
+    darkBackIcon: {
+        // alignSelf: 'center',
+        marginTop: 53,
+        marginLeft: 10,
+        padding: 10,
+        color: '#fff',
     },
     lightText: {
         fontSize: 20,

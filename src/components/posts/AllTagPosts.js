@@ -361,7 +361,7 @@ const AllTagPosts = ({ tag }) => {
         ]}
         >
 
-            <View style={{height: Constants.statusBarHeight-10, backgroundColor: theme == 'light' ? 'white' : '#151515'}}/>
+            <View style={{height: Constants.statusBarHeight-5, backgroundColor: theme == 'light' ? 'white' : '#151515'}}/>
 
             {/* Refresh animation */}
             {

@@ -31,7 +31,7 @@ const GlobalStyles = StyleSheet.create({
         borderColor: "#262626",
         borderWidth: 1,
         borderRadius: 15,
-        marginBottom: 8,
+        marginBottom: 10,
         // width: '100%',
         // height: 300,
         // maxHeight: 350,
