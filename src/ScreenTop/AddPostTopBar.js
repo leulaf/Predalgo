@@ -16,51 +16,55 @@ const AddPostTopBar = ({navToSavedTemplates, navToSearchMemes}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const navigation = useNavigation();
 
-    return <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-        
-        {/* back button */}
-        <TouchableOpacity 
-            style={{flexDirection: 'row', }}
-            onPress={() => {navigation.goBack()}}
-        >
-            {
-                theme == 'light' ?
-                    <BackDark style={styles.lightBackIcon} width={24} height={24}/>
-                :
-                    <BackDark style={styles.darkBackIcon} width={24} height={24}/>
-            }
+    return (
+        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
             
-        </TouchableOpacity>
+            <View style={styles.buttonsContainer}>
+                {/* back button */}
+                <TouchableOpacity 
+                    style={{flexDirection: 'row', }}
+                    onPress={() => {navigation.goBack()}}
+                >
+                    {
+                        theme == 'light' ?
+                            <BackDark style={styles.lightBackIcon} width={24} height={24}/>
+                        :
+                            <BackDark style={styles.darkBackIcon} width={24} height={24}/>
+                    }
+                    
+                </TouchableOpacity>
 
-        <TouchableOpacity 
-            style={theme == 'light' ? styles.lightBar : styles.darkBar}
-            onPress={navToSearchMemes}
-        >
-            
-            <Feather name="search" style={theme == "light" ? styles.lightIconStyle : styles.darkIconStyle}/>
+                <TouchableOpacity 
+                    style={theme == 'light' ? styles.lightBar : styles.darkBar}
+                    onPress={navToSearchMemes}
+                >
+                    
+                    <Feather name="search" style={theme == "light" ? styles.lightIconStyle : styles.darkIconStyle}/>
 
-            <Text style={theme == "light" ? styles.lightTextStyle : styles.darkTextStyle}>
-                Search
-            </Text>
+                    <Text style={theme == "light" ? styles.lightTextStyle : styles.darkTextStyle}>
+                        Search
+                    </Text>
 
-        </TouchableOpacity>
+                </TouchableOpacity>
 
-        {/* bookmark button */}
-        <TouchableOpacity 
-            style={{flexDirection: 'row'}}
-            onPress={navToSavedTemplates}
-        >
-            {
-                theme == 'light' ?
-                    <BookmarkLight style={styles.saveIcon} width={24} height={24}/>
-                :
-                    <BookmarkDark style={styles.saveIcon} width={24} height={24}/>
-            }
+                {/* bookmark button */}
+                <TouchableOpacity 
+                    style={{flexDirection: 'row'}}
+                    onPress={navToSavedTemplates}
+                >
+                    {
+                        theme == 'light' ?
+                            <BookmarkLight style={styles.saveIcon} width={24} height={24}/>
+                        :
+                            <BookmarkDark style={styles.saveIcon} width={24} height={24}/>
+                    }
 
-            
-        </TouchableOpacity>
+                    
+                </TouchableOpacity>
+            </View>
 
-    </View>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -70,6 +74,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         postition: 'absolute',
         top: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     darkContainer: {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -77,14 +83,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         postition: 'absolute',
         top: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonsContainer: {
+        flexDirection: 'row',
+        marginTop: 44,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     lightBar: {
-        height: 38,
+        height: 40,
         // width: 315,
         flex: 1,
         borderRadius: 20,
         marginRight: 10,
-        marginTop: 40,
+        // marginTop: 40,
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -93,12 +107,12 @@ const styles = StyleSheet.create({
         borderColor: '#E8E8E8',
     },
     darkBar: {
-        height: 38,
+        height: 40,
         // width: 315,
         flex: 1,
         borderRadius: 20,
         marginRight: 10,
-        marginTop: 40,
+        // marginTop: 40,
         marginBottom: 0,
         flexDirection: 'row',
         alignSelf: 'center',
@@ -106,27 +120,24 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: '#2d2d2d',
     },
-    backButton: {
-        marginTop: 55,
-        marginLeft: 10,
-        padding: 5,
-    },
     saveIcon: {
-        marginTop: 54,
+        // marginTop: 54,
         marginLeft: 5,
         marginRight: 20,
-        padding: 5,
+        padding: 10,
+        marginBottom: 3,
     },
     lightBackIcon: {
         // alignSelf: 'center',
-        marginTop: 53,
+        // marginTop: 53,
         marginLeft: 10,
+        marginRight: 5,
         padding: 10,
         color: '#000',
     },
     darkBackIcon: {
         // alignSelf: 'center',
-        marginTop: 53,
+        // marginTop: 53,
         marginLeft: 10,
         padding: 10,
         color: '#fff',
@@ -135,14 +146,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: '#333333',
         fontWeight: "600",
-        marginTop: 45,
+        // marginTop: 45,
         marginHorizontal: 5
     },
     darkText: {
         fontSize: 20,
         color: '#f2f2f2',
         fontWeight: "600",
-        marginTop: 45,
+        // marginTop: 45,
         marginLeft: 5
     },
     darkTextStyle: {

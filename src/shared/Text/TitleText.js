@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
         textAlign: 'auto',
         marginHorizontal: 12.5,
         marginTop: 4,
+        letterSpacing: 0.5,
     },
     darkPostTitle: {
         fontSize: 22,
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
         textAlign: 'auto',
         marginHorizontal: 12.5,
         marginTop: 4,
+        letterSpacing: 0.5,
     },
 })
 

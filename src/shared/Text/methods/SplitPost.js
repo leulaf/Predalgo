@@ -148,17 +148,20 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#222222',
         textAlign: 'auto',
+        letterSpacing: 0.4,
     },
     darkPostText: {
         fontSize: 18,
         fontWeight: "400",
         color: '#F4F4F4',
         textAlign: 'auto',
+        letterSpacing: 0.4,
     },
     lightLinkText: {
         fontSize: 19,
         fontWeight: "400",
         color: '#0029FF',
+        letterSpacing: 0.4,
         // textAlign: 'auto',
         // marginBottom: 6,
     },
@@ -167,6 +170,7 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#0094FF',
         textAlign: 'auto',
+        letterSpacing: 0.4,
         // marginBottom: 6,
     }
 })

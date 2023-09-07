@@ -146,18 +146,21 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: '#333333',
         textAlign: 'auto',
+        letterSpacing: 0.5,
     },
     darkPostTitle: {
         fontSize: 22,
         fontWeight: "600",
         color: '#DDDDDD',
         textAlign: 'auto',
+        letterSpacing: 0.5,
     },
     lightLinkText: {
         fontSize: 22,
         fontWeight: "600",
         color: '#0029FF',
         textAlign: 'auto',
+        letterSpacing: 0.5,
         // marginBottom: 6,
     },
     darkLinkText: {
@@ -165,5 +168,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: '#0094FF',
         textAlign: 'auto',
+        letterSpacing: 0.5,
     }
 })

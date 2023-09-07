@@ -14,7 +14,7 @@ const CommentText = ({text}) => {
         <Text
             numberOfLines={15}
             style={{
-                marginHorizontal: 10,
+                marginHorizontal: 12,
                 marginTop: 7,
                 textAlign: 'auto',
             }}

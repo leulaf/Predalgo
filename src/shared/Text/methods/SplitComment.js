@@ -146,6 +146,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "400",
         color: '#222222',
+        textAlign: 'auto',
+        letterSpacing: 0.5,
         // textAlign: 'auto',
         // marginBottom: 6,
     },
@@ -154,12 +156,15 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#F4F4F4',
         textAlign: 'auto',
+        letterSpacing: 0.5,
         // marginBottom: 6,
     },
     lightLinkText: {
         fontSize: 18,
         fontWeight: "400",
         color: '#0029FF',
+        textAlign: 'auto',
+        letterSpacing: 0.5,
         // textAlign: 'auto',
         // marginBottom: 6,
     },
@@ -168,6 +173,7 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         color: '#0094FF',
         textAlign: 'auto',
+        letterSpacing: 0.5,
         // marginBottom: 6,
     }
 })
