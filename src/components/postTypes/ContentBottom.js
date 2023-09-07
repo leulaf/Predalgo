@@ -119,7 +119,12 @@ const ContentBottom = ({ tags, memeName, templateUploader, navToPost, navToMeme 
             }
 
             <TouchableOpacity 
-                onPress={() => navToPost()}  
+                onPress={
+                    navToPost ?
+                        () => navToPost()
+                    :
+                        () =>{}
+                }  
                 style={{flex: 1, height: 'auto'}}
             />
         </View>

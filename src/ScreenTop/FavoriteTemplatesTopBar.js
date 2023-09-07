@@ -23,9 +23,9 @@ const FavoriteTemplatesTopBar = ({navToSearchMemes}) => {
         >
             {
                 theme == 'light' ?
-                    <BackLight style={styles.backIcon} width={24} height={24}/>
+                    <BackDark style={styles.lightBackButton} width={24} height={24}/>
                 :
-                    <BackDark style={styles.backIcon} width={24} height={24}/>
+                    <BackDark style={styles.darkBackButton} width={24} height={24}/>
             }
             
         </TouchableOpacity>
@@ -87,10 +87,17 @@ const styles = StyleSheet.create({
         borderWidth: 1.5,
         borderColor: '#2d2d2d',
     },
-    backButton: {
+    lightBackButton: {
         marginTop: 55,
         marginLeft: 10,
         padding: 5,
+        color: '#000',
+    },
+    darkBackButton: {
+        marginTop: 55,
+        marginLeft: 10,
+        padding: 5,
+        color: '#fff',
     },
     backIcon: {
         // alignSelf: 'center',

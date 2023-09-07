@@ -26,7 +26,7 @@ const EditMemeTopBar = ({ theme, forMeme, onSave, onGoBack, navigation}) => {
                     >
                         {
                             theme == 'light' ?
-                                <BackLight style={styles.lightBackIcon} width={22} height={22}/>
+                                <BackDark style={styles.lightBackIcon} width={22} height={22}/>
                             :
                                 <BackDark style={styles.darkBackIcon} width={22} height={22}/>
                         }
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     lightBackIcon: {
         // alignSelf: 'center',
         padding: 10,
-        color: '#fff',
+        color: '#000',
     },
     darkBackIcon: {
         // alignSelf: 'center',

@@ -107,7 +107,7 @@ const MemeTopBar = ({navigation, theme, name, url, height, width, fromFavoriteTe
             >
                 {
                     theme == 'light' ?
-                        <BackLight style={styles.lightBackIcon} width={22} height={22}/>
+                        <BackDark style={styles.lightBackIcon} width={22} height={22}/>
                     :
                         <BackDark style={styles.darkBackIcon} width={22} height={22}/>
                 }
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
         marginTop: 53,
         marginLeft: 10,
         padding: 10,
-        color: '#fff',
+        color: '#000',
     },
     darkBackIcon: {
         // alignSelf: 'center',

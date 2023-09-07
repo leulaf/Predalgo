@@ -422,10 +422,12 @@ const PostScreen = ({navigation, route}) => {
     return (
         <View
             style={
-                theme == 'light' ? 
-                    [styles.lightMainContainer, {backgroundColor: offsetY > 0 ? '#F4F4F4' : '#FFFFFF'}]
+                theme == 'light' ?
+                    styles.lightMainContainer
+                    // [styles.lightMainContainer, {backgroundColor: offsetY > 0 ? '#F4F4F4' : '#FFFFFF'}]
                 :
-                    [styles.darkMainContainer, {backgroundColor: offsetY > 0 ? '#000000' : '#151515'}]
+                    styles.darkMainContainer
+                    // [styles.darkMainContainer, {backgroundColor: offsetY > 0 ? '#000000' : '#151515'}]
             }
         >
             
