@@ -46,7 +46,8 @@ const styles = StyleSheet.create({
     lightPostTitle: {
         fontSize: 22,
         fontWeight: "500",
-        color: '#333333',
+        // color: '#333333',
+        color: '#000',
         textAlign: 'auto',
         marginHorizontal: 12.5,
         marginTop: 4,
@@ -55,7 +56,8 @@ const styles = StyleSheet.create({
     darkPostTitle: {
         fontSize: 22,
         fontWeight: "500",
-        color: '#DDDDDD',
+        // color: '#DDDDDD',
+        color: '#FFF',
         textAlign: 'auto',
         marginHorizontal: 12.5,
         marginTop: 4,

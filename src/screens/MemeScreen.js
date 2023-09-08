@@ -110,9 +110,19 @@ const MemeScreen = ({ navigation, route }) => {
     const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost, fromSavedTemplates } = route.params;
 
     const flashListRef = useRef(null);
-   
+
+    var templateUri;
+
     useEffect(() => {
         (useCount > 0 || fromSavedTemplates || !(useCount))&& getFirstTenMemes();
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', template, true);
+        xhr.onload = function(e) {
+            if (this.status == 200) {
+                templateUri = new File([this.response],'fileName');
+            }
+        };
     }, []);
 
     // console.log(template)
@@ -164,7 +174,7 @@ const MemeScreen = ({ navigation, route }) => {
                     style={{borderRadius: 10}}
                     maxHeight={500}
                     maxWidth={windowWidth - 4}
-                    template={item.template}
+                    template={templateUri}
                     templateState={item.templateState}
                     templateUploader={uploader}
                 />

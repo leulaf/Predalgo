@@ -80,15 +80,19 @@ const GlobalStyles = StyleSheet.create({
     lightMemeName: {
         fontSize: 16,
         fontWeight: "400",
-        color: '#111111',
+        // color: '#111111',
+        color: '#000',
         marginVertical: 5,
+        letterSpacing: 0.5,
         // alignSelf: 'center',
     },
     darkMemeName: {
         fontSize: 16,
         fontWeight: "400",
-        color: '#EEEEEE',
+        // color: '#EEEEEE',
+        color: '#FFF',
         marginVertical: 5,
+        letterSpacing: 0.5,
         
         // alignSelf: 'center',
     },
@@ -97,16 +101,18 @@ const GlobalStyles = StyleSheet.create({
         fontWeight: "400", 
         color: '#0029FF', 
         marginTop: 8, 
-        marginBottom: 2,
-        marginHorizontal: 9
+        marginBottom: 5,
+        marginHorizontal: 9,
+        letterSpacing: 0.5,
     },
     darkPostBottomText: {
         fontSize: 20, 
         fontWeight: "400", 
-        color: '#6BA3FF', 
+        color: '#69A1FF', 
         marginTop: 8, 
-        marginBottom: 2,
-        marginHorizontal: 9
+        marginBottom: 5,
+        marginHorizontal: 9,
+        letterSpacing: 0.5,
     },
 });
 

@@ -144,14 +144,16 @@ const styles = StyleSheet.create({
     lightPostTitle: {
         fontSize: 22,
         fontWeight: "600",
-        color: '#333333',
+        // color: '#333333',
+        color: '#000',
         textAlign: 'auto',
         letterSpacing: 0.5,
     },
     darkPostTitle: {
         fontSize: 22,
         fontWeight: "600",
-        color: '#DDDDDD',
+        // color: '#DDDDDD',
+        color: '#FFF',
         textAlign: 'auto',
         letterSpacing: 0.5,
     },

@@ -146,14 +146,16 @@ const styles = StyleSheet.create({
     lightPostText: {
         fontSize: 18,
         fontWeight: "400",
-        color: '#222222',
+        // color: '#222222',
+        color: '#000',
         textAlign: 'auto',
         letterSpacing: 0.4,
     },
     darkPostText: {
         fontSize: 18,
         fontWeight: "400",
-        color: '#F4F4F4',
+        // color: '#F4F4F4',
+        color: '#FFF',
         textAlign: 'auto',
         letterSpacing: 0.4,
     },

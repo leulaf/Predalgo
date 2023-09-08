@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     lightCommentText: {
         fontSize: 18,
         fontWeight: "400",
-        color: '#222222',
+        color: '#000',
         textAlign: 'auto',
         letterSpacing: 0.5,
         // textAlign: 'auto',
@@ -154,7 +154,8 @@ const styles = StyleSheet.create({
     darkCommentText: {
         fontSize: 18,
         fontWeight: "400",
-        color: '#F4F4F4',
+        // color: '#F4F4F4',
+        color: '#FFF',
         textAlign: 'auto',
         letterSpacing: 0.5,
         // marginBottom: 6,
