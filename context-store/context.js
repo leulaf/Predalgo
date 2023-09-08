@@ -57,6 +57,7 @@ const AuthenticatedUserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [imageReply, setImageReply] = useState(null);
     const [imagePost, setImagePost] = useState(null);
+    const [commentOptions, setCommentOptions] = useState(false);
     const [memeTemplates, setMemeTeplates] = useState([{id : "fir"}, {id: "sec"}]);
 
     return (
@@ -70,6 +71,8 @@ const AuthenticatedUserProvider = ({ children }) => {
             memeTemplates,
             setMemeTeplates,
             setUser,
+            commentOptions,
+            setCommentOptions,
             login: async (email, password) => {
                 try {
                     if (email !== '' && password !== '') {

@@ -13,6 +13,8 @@ import Animated, {FadeIn} from 'react-native-reanimated';
 
 import { FlashList } from '@shopify/flash-list';
 
+import ThreeDotsSheet from '../components/comments/shared/ThreeDotsSheet';
+
 import LottieView from 'lottie-react-native';
 
 import { Image } from 'expo-image';
@@ -273,7 +275,7 @@ const PostScreen = ({navigation, route}) => {
     const [commentsList, setCommentsList] = React.useState([{id: "one"}, {id: "two"}]);
     const {title, profile, likesCount, commentsCount, imageUrl, template, templateUploader, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags, fromMemeScreen} = route.params;
 
-    const {imageReply, setImageReply} = React.useContext(AuthenticatedUserContext);
+    const {imageReply, setImageReply, commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl : template);
     
@@ -287,6 +289,7 @@ const PostScreen = ({navigation, route}) => {
 
     // Used for tracking the scroll to make the refresh animation work correctly
     const [offsetY, setOffsetY] = React.useState(0);
+    
 
     const ImageFocused = (
         <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
@@ -538,6 +541,24 @@ const PostScreen = ({navigation, route}) => {
             />
 
             {replyBottomSheet(navigation, theme, postId, profile, username)}
+
+            {
+                commentOptions !== false && 
+                
+                // <CommentOverlay 
+                //     commentId={commentId}
+                //     replyToCommentId={replyToCommentId}
+                //     replyToPostId={replyToPostId}
+                //     setFinished={setFinished}
+                //     profile={profile}
+                //     toggleOverlay={toggleOverlay}
+                //     theme={theme}
+                // />
+                <ThreeDotsSheet
+                    commentId={commentOptions.commentId}
+                    theme={theme}
+                />
+            }
         </View>
     );
 };

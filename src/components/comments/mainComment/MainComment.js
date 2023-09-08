@@ -21,6 +21,7 @@ import CommentBottom from '../CommentBottom';
 import ImageView from "react-native-image-viewing";
 
 import { onNavToComment, onReply, navToMeme } from '../shared/CommentMethods';
+// import { overlay } from 'react-native-paper';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -49,7 +50,7 @@ const onNavToCommentWithComments = (navigation, commentId, replyToPostId, replyT
 
 
 // ******** React memo ********
-const MainComment = ({ navigation, index, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateUploader, templateState, imageWidth, imageHeight, likesCount, commentsCount }) => {
+const MainComment = ({ navigation, index, theme, profile, username, profilePic, commentId, replyToCommentId, replyToPostId, text, imageUrl, memeName, template, templateUploader, templateState, imageWidth, imageHeight, likesCount, commentsCount, }) => {
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl :  template);
 

@@ -6,6 +6,7 @@ import styles from './Styles';
 
 import { TouchableOpacity, View, Text } from 'react-native';
 
+import { AuthenticatedUserContext } from '../../../../context-store/context';
 
 import CommentOverlay from '../shared/CommentOverlay';
 
@@ -26,14 +27,26 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 
 
 // ******** React memo ********
-export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, setFinished, navigation, theme, profile, username, profilePic, onNavToComment}) => {
-    const [overlayVisible, setOverlayVisible] = React.useState(false);
+export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, setFinished, navigation, theme, profile, username, profilePic, onNavToComment, }) => {
+    // const [commentOptions, setCommentOptions] = React.useState(false);
+
+    // const toggleOverlay = React.useCallback(() => () => {
+    //     setCommentOptions(!commentOptions);
+    // }, [commentOptions]);
+
+    const {commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
 
     const toggleOverlay = React.useCallback(() => () => {
-        setOverlayVisible(!overlayVisible);
-    }, [overlayVisible]);
-
-
+        if(commentOptions?.commentId !== commentId){
+            console.log('commentOptions is false');
+            setCommentOptions({
+                commentId: commentId,
+            });
+        }else{
+            console.log('commentOptions is not false');
+            setCommentOptions(false);
+        }
+    }, [commentOptions]);
 
 
     let threeDots
@@ -85,7 +98,7 @@ export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, s
             {/* Three Dots */}
             <TouchableOpacity 
                 activeOpacity={1}
-                style={{flexDirection: 'row', marginTop: -15, marginRight: 10}}
+                style={{flexDirection: 'row', marginTop: -5, paddingBottom: 5, paddingLeft: 15, paddingRight: 10}}
                 onPress= {toggleOverlay()}
             >
                 {threeDots}
@@ -94,17 +107,17 @@ export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, s
 
             {/* Overlay */}
             {
-                overlayVisible && 
+                // commentOptions && 
                 
-                <CommentOverlay 
-                    commentId={commentId}
-                    replyToCommentId={replyToCommentId}
-                    replyToPostId={replyToPostId}
-                    setFinished={setFinished}
-                    profile={profile}
-                    toggleOverlay={toggleOverlay}
-                    theme={theme}
-                />
+                // <CommentOverlay 
+                //     commentId={commentId}
+                //     replyToCommentId={replyToCommentId}
+                //     replyToPostId={replyToPostId}
+                //     setFinished={setFinished}
+                //     profile={profile}
+                //     toggleOverlay={toggleOverlay}
+                //     theme={theme}
+                // />
             }
         
         </View>
