@@ -61,6 +61,7 @@ const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnP
       })
     )
   }else{
+    console.log(item)
     navigation.navigate('Meme', {
         uploader: item.uploader,
         memeName: item.name,
@@ -183,7 +184,7 @@ const AddPostScreen = ({navigation, route}) => {
             entering={FadeIn}
         >
           <TouchableOpacity
-            activeOpacity={1}
+            activeOpacity={0.9}
             onPress={navToMeme(navigation, item, forPost, forCommentOnComment, forCommentOnPost)}
             style={
               index % 2 == 1 ?

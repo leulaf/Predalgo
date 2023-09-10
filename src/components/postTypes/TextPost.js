@@ -86,7 +86,7 @@ const TextPost = ({ title, username, profilePic, text, tags, profile, postId, li
 
             content={
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, likesCount, commentsCount)}
                 >
                     <PostText numberOfLines={15} text={text}/>

@@ -98,7 +98,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                 (commentsCount > 0 && !(memeName)) &&
 
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{ margin: 2, width: 150, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center', marginLeft: 0 }}
                     onPress = {onNavToComment()}
                 > 
@@ -127,7 +127,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
 
             {/* Spacer */}
             <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                 style={{flex: 1, height: 40, }}
                 onPress={onNavToComment()}
             ></TouchableOpacity>
@@ -135,7 +135,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
 
             {/* Reply */}
             <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                 style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                 onPress={onReply()}
             >
@@ -152,7 +152,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                     emoji.show != "notLiked" ?
 
                         <TouchableOpacity
-                            activeOpacity={1}
+                            activeOpacity={0.9}
                             style={{paddingLeft: 0, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
                             onPress={toggleLike()}
                         >
@@ -178,7 +178,7 @@ export default SubCommentBottom = ({navigation, theme, commentId, replyToPostId,
                     
                         // Like Button
                         <TouchableOpacity 
-                            activeOpacity={1}
+                            activeOpacity={0.9}
                             style={{ paddingRight: 10,  paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                             onPress={toggleLike()}
                         >

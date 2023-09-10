@@ -265,14 +265,14 @@ const ListCommentBottom = ({ profile, username, profilePic, commentId, replyToCo
 
                 {/* Spacer */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flex: 1, height: 40, }}
                     onPress={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 ></TouchableOpacity>
 
                 {/* Reply */}
                 <TouchableOpacity 
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                     onPress={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 >
@@ -285,7 +285,7 @@ const ListCommentBottom = ({ profile, username, profilePic, commentId, replyToCo
                 
                 {/* Like Button */}
                 <TouchableOpacity 
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{  width: 110, paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                     onPress={toggleLike()}
                 >
@@ -352,7 +352,7 @@ const ListCommentBottom = ({ profile, username, profilePic, commentId, replyToCo
             {
                 commentCount > 0 &&
                     <TouchableOpacity 
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{
                             backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
                             // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',

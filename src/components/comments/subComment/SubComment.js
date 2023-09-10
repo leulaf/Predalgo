@@ -124,7 +124,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                 text &&
 
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
@@ -139,7 +139,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                 imageHeight &&
             
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flexDirection: 'row', backgroundColor: 'black', marginTop: 11, borderRadius: 0, alignItems: 'center', justifyContent: 'center'}}
                     onPress = {
                         () => setIsVisible(true)
@@ -206,7 +206,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                         <View style={{height: 5, backgroundColor: theme == 'light' ? '#F2F2F2' : '#000000'}}/>
                         
                         <TouchableOpacity 
-                            activeOpacity={1}
+                            activeOpacity={0.9}
                             style={{
                                 backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
                                 // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
@@ -232,7 +232,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                         </TouchableOpacity>
                     </View>
                         // <TouchableOpacity 
-                        //     activeOpacity={1}
+                        //     activeOpacity={0.9}
                         //     style={{
                         //         backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
                         //         // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',

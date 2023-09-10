@@ -122,7 +122,7 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                     {
                         text &&
                         <TouchableOpacity
-                            activeOpacity={1}
+                            activeOpacity={0.9}
                             onPress={navToPostFromImage}
                             style={{flexDirection: "column", alignSelf: 'center'}}
                         >
@@ -130,7 +130,7 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                         </TouchableOpacity>
                     }
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         onPress={() => setIsFocused(true)}
                         style={{flexDirection: "column", alignSelf: 'center'}}
                     >

@@ -120,7 +120,7 @@ const Header = React.memo(({theme, navigation, contentBottom, title, memeName, i
             >
                 {/* profile pic */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                     {profilePic != "" &&
@@ -130,7 +130,7 @@ const Header = React.memo(({theme, navigation, contentBottom, title, memeName, i
                 
                 {/* username */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flex: 1, flexDirection: 'column'}}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
@@ -141,7 +141,7 @@ const Header = React.memo(({theme, navigation, contentBottom, title, memeName, i
 
                 {/* Follow/Following button */}
                 <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                     style={
                         theme == 'light' ? 
                             styles.lightFollowButton
@@ -172,7 +172,7 @@ const Header = React.memo(({theme, navigation, contentBottom, title, memeName, i
                     <PostText text={text}/>
 
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         onPress={() => setIsImageFocused(!isImageFocused)}
                     >
                         <ResizableImage 
@@ -538,6 +538,8 @@ const PostScreen = ({navigation, route}) => {
                 // overrideItemLayout={overrideItemLayout}
                 
                 keyExtractor={keyExtractor}
+
+                contentContainerStyle={{backgroundColor: theme == 'light' ? '#F4F4F4' : '#151515'}}
             />
 
             {replyBottomSheet(navigation, theme, postId, profile, username)}
@@ -575,12 +577,14 @@ const styles = StyleSheet.create({
     },
     lightMainContainer: {
         flex: 1,
-        backgroundColor: '#F4F4F4',
+        // backgroundColor: '#F4F4F4',
+        backgroundColor: '#FFF',
     },
     darkMainContainer: {
         flex: 1,
         // backgroundColor: '#0C0C0C',
-        backgroundColor: '#000000',
+        // backgroundColor: '#000000',
+        backgroundColor: '#151515',
     },
     lightContainer: {
         backgroundColor: 'white',

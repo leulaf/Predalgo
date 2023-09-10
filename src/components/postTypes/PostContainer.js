@@ -143,7 +143,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             >
                 {/* profile pic */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                     {profilePic != "" ? (
@@ -155,7 +155,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
                 {/* username */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
 
                     style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
@@ -179,7 +179,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 </TouchableOpacity>
                 
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     style={{flex: 1, height: 40}}
                 />
@@ -188,7 +188,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
                 {/* three dots */}
                 <TouchableOpacity 
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flexDirection: 'row'}}
                     onPress= {toggleOverlay()}
                 >
@@ -199,7 +199,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 
             {/* title */}
             <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                 onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
@@ -211,7 +211,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             
             {/* Post content. Image, Text etc. */}
             {/* <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                 onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             > */}
 
@@ -237,7 +237,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
                 {profile === auth.currentUser.uid ?
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{flexDirection: 'row'}}
                         onPress={deleteCurrentPost()}
                     >
@@ -246,7 +246,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                     </TouchableOpacity>
                 :
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{flexDirection: 'row'}}
                         onPress={toggleOverlay()}
                     >

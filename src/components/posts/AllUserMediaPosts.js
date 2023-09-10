@@ -14,7 +14,7 @@ const renderItem = ({ item, index }) => {
 
   return (
     <TouchableOpacity
-      activeOpacity={1}
+      activeOpacity={0.9}
       style={
         index % 2 == 1 ?
           {marginLeft: 2, marginRight: 4, marginBottom: 6} 

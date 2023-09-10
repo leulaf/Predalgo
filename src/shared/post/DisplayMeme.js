@@ -2,7 +2,7 @@ import PinturaEditor from "@pqina/react-native-expo-pintura";
 
 import React from 'react';
 
-import {onLikePost, onDisikePost} from '../post/LikeDislikePost';
+import {onLikePost, onDisikePost} from './LikeDislikePost';
 
 import { Image } from "expo-image";
 
@@ -16,9 +16,9 @@ import { TouchableOpacity, View, StyleSheet, Text } from "react-native";
 
 import { manipulateAsync } from 'expo-image-manipulator';
 
-import intToString from "./intToString";
+import intToString from "../functions/intToString";
 
-import ResizableImage from "./ResizableImage";
+import ResizableImage from "../functions/ResizableImage";
 
 import PostText from "../Text/PostText";
 
@@ -114,7 +114,7 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
             >
                 {/* profile pic */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{marginLeft: 5}}
                     onPress={goToProfile(navigation, item.profile, item.username, item.profilePic)}
                 >
@@ -127,7 +127,7 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
                 
                 {/* username */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={goToProfile(navigation, item.profile, item.username, item.profilePic)}
 
                     style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
@@ -142,7 +142,7 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
                 </TouchableOpacity>
                 
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
                     style={{flex: 1, height: 40}}
                 />
@@ -165,30 +165,21 @@ export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHei
 
             </View>
 
-            {/* <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={onNavToPost(navigation, item, templateUploader, image)}
-            >
-
-                <ResizableImage
-                    image={image ? image : item.template}
-                    style={style}
-                    height={item.imageHeight}
-                    width={item.imageWidth}
-                    maxHeight={maxHeight}
-                    maxWidth={maxWidth}
-                />
-
-            </TouchableOpacity> */}
-
             <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => setIsImageFocused(!isImageFocused)}
+                activeOpacity={0.9}
+                onPress={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
             >
                 {
                     item.text &&
                     <PostText numberOfLines={5} text={item.text} forDisplayMeme={true}/>
                 }
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => setIsImageFocused(!isImageFocused)}
+            >
+                
                 <ResizableImage 
                     image={image ? image : item.template}
                     style={style}

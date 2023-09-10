@@ -122,7 +122,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                 text &&
 
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress = {onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
                 >
@@ -138,7 +138,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                 imageHeight &&
 
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{backgroundColor: '#000000', marginTop: 9, marginBottom: 2}}
                     onPress = {
                         // onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)

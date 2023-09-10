@@ -230,7 +230,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                    (emoji.show != false || commentId != emoji.id) &&
 
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{flex: 1, height: 40, }}
                         onPress={onNavToComment()}
                     ></TouchableOpacity>
@@ -242,7 +242,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                     (emoji.show != false  || commentId != emoji.id) &&
 
                     <TouchableOpacity 
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{ paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                         onPress={onReply()}
                     >
@@ -258,7 +258,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                 {
                     emoji.show != "notLiked" && commentId == emoji.id ?
                         <TouchableOpacity
-                            activeOpacity={1}
+                            activeOpacity={0.9}
                             style={{paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
                             onPress={toggleLike()}
                         >
@@ -286,7 +286,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                     
                         // Like Button
                         <TouchableOpacity 
-                            activeOpacity={1}
+                            activeOpacity={0.9}
                             style={{ paddingRight: 10,  paddingLeft: 10, height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center' }}
                             onPress={toggleLike()}
                         >
@@ -354,7 +354,7 @@ export default MainCommentBottom = ({navigation, index, theme, commentId, replyT
                 commentsCount > 0 &&
 
                     <TouchableOpacity 
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{
                             backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
                             // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',

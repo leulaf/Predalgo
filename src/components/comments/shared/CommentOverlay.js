@@ -75,7 +75,7 @@ export default CommentOverlay = ({commentId, profile, replyToCommentId, replyToP
             
             {profile === firebase.auth().currentUser.uid ?
                 <TouchableOpacity 
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flexDirection: 'row'}}
                     onPress={deleteComment()}
                 >
@@ -84,7 +84,7 @@ export default CommentOverlay = ({commentId, profile, replyToCommentId, replyToP
                 </TouchableOpacity>
             :
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flexDirection: 'row'}}
                     onPress={toggleOverlay()}
                 >

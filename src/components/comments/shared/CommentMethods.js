@@ -49,7 +49,7 @@ const onReply =  (navigation, commentId, replyToPostId, replyToCommentId, profil
 
 
 const navToMeme = (navigation, memeName, template, templateUploader, imageHeight, imageWidth) => () => {
-    console.log(memeName)
+    // console.log(memeName)
     navigation.navigate('Meme', {
         uploader: templateUploader,
         memeName: memeName,

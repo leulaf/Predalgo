@@ -185,7 +185,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 (emoji.chose == "lightBulb" || emoji.show === false) &&
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "lightBulb" ? 7 : 0, marginLeft: emoji.chose == "lightBulb" ? -5 : 0}}
                         onPress={() => {
                             // emoji.chose != "lightBulb" && onSelectMood(replyToPostId, commentId, "good")
@@ -229,7 +229,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 (emoji.chose == "confetti" || emoji.show === false) &&
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "confetti" ? 8 : 0, marginLeft: emoji.chose == "confetti" ?-1 : -6}}
                         onPress={() => {
                             setEmoji(
@@ -266,7 +266,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 (emoji.chose == "laughing" || emoji.show === false) &&
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "laughing" ? 5 : 0, marginLeft: emoji.chose == "laughing" ? -7 : -12}}
                         onPress={() => {
                             setEmoji(
@@ -302,7 +302,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 (emoji.chose == "loving" || emoji.show === false) &&
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "loving" ? 13 : 0, marginLeft: emoji.chose == "loving" ? -2 : -8}}
                         onPress={() => {
                             setEmoji(
@@ -339,7 +339,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 (emoji.chose == "wink" || emoji.show === false) &&
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "wink" ? 10 : 0, marginLeft: emoji.chose == "wink" ? -3 : -7}}
                         onPress={() => {
                             setEmoji(
@@ -377,7 +377,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "shocked" ? 13 : 0, marginLeft: emoji.chose == "shocked" ? -2 : -7}}
                         onPress={() => {
                             setEmoji(
@@ -448,7 +448,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 (emoji.chose == "skeptical" || emoji.show === false) &&
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "skeptical" ? 6 : 0, marginLeft: emoji.chose == "skeptical" ? -6 : -11}}
                         onPress={() => {
                             setEmoji(
@@ -485,7 +485,7 @@ export default MoodIndicator = ({commentId, replyToPostId, emoji, setEmoji, wind
                 (emoji.chose == "eyeRoll" || emoji.show === false) &&
                 <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
                     <TouchableOpacity
-                        activeOpacity={1}
+                        activeOpacity={0.9}
                         style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "eyeRoll" ? 10 : 0, marginLeft: emoji.chose == "eyeRoll" ? -2 : -6}}
                         onPress={() => {
                             setEmoji(

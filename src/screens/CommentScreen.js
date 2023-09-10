@@ -114,7 +114,7 @@ const Header = React.memo(({theme, navigation, memeName, contentBottom, image, i
             >
                 {/* profile pic */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                     {profilePic != "" &&
@@ -124,7 +124,7 @@ const Header = React.memo(({theme, navigation, memeName, contentBottom, image, i
                 
                 {/* username */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flex: 1, flexDirection: 'column'}}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
@@ -135,7 +135,7 @@ const Header = React.memo(({theme, navigation, memeName, contentBottom, image, i
                 
                 {/* Follow/Following button */}
                 <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                     style={
                         theme == 'light' ? 
                             styles.lightFollowButton
@@ -162,7 +162,7 @@ const Header = React.memo(({theme, navigation, memeName, contentBottom, image, i
                 <PostText text={text}/>
 
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={() => setIsImageFocused(!isImageFocused)}
                 >
                     <ResizableImage 

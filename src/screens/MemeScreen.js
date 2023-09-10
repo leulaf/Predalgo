@@ -5,7 +5,7 @@ import TextTicker from 'react-native-text-ticker';
 
 import { StackActions } from '@react-navigation/native';
 
-import DisplayMeme from '../shared/functions/DisplayMeme';
+import DisplayMeme from '../shared/post/DisplayMeme';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
@@ -114,7 +114,7 @@ const MemeScreen = ({ navigation, route }) => {
     var templateUri;
 
     useEffect(() => {
-        (useCount > 0 || fromSavedTemplates || !(useCount))&& getFirstTenMemes();
+        (useCount > 0 || fromSavedTemplates || (useCount == undefined || useCount == null))&& getFirstTenMemes();
         
         var xhr = new XMLHttpRequest();
         xhr.open('GET', template, true);
@@ -259,7 +259,7 @@ const MemeScreen = ({ navigation, route }) => {
                                 </Text>
 
                                 {/* use count */}
-                                {useCount &&
+                                {useCount >= 0 &&
                                     <Text style={theme == 'light' ? styles.lightUseCountText : styles.darkUseCountText}>
                                         {useCount} memes
                                     </Text>

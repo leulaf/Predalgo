@@ -82,7 +82,7 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
             >
                 {/* profile pic */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                     {profilePic != "" &&
@@ -92,7 +92,7 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
                 
                 {/* username */}
                 <TouchableOpacity
-                    activeOpacity={1}
+                    activeOpacity={0.9}
                     style={{flex: 1, flexDirection: 'column'}}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
@@ -103,7 +103,7 @@ const Header = React.memo(({theme, navigation, title, memeName, image, imageHeig
 
                 {/* Follow/Following button */}
                 <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                     style={
                         theme == 'light' ? 
                             !following ? styles.lightFollowButton : styles.lightFollowingButton

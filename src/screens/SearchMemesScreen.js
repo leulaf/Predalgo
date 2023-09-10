@@ -93,7 +93,7 @@ const SearchMemesScreen = ({navigation, route}) => {
             entering={FadeIn}
         >
           <TouchableOpacity
-            activeOpacity={1}
+            activeOpacity={0.9}
             onPress={navToMeme(navigation, item, forCommentOnComment, forCommentOnPost)}
             style={
               index % 2 == 1 ?

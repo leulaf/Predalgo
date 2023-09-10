@@ -61,7 +61,7 @@ export default SubCommentTop = ({ commentId, replyToCommentId, replyToPostId, se
                 
             {/* Profile Picture */}
             <TouchableOpacity 
-                activeOpacity={1}
+                activeOpacity={0.9}
                 onPress={goToProfile(navigation, profile, username, profilePic)}
             >
                 <Image 
@@ -74,7 +74,7 @@ export default SubCommentTop = ({ commentId, replyToCommentId, replyToPostId, se
 
             {/* Username */}
             <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                 onPress={goToProfile(navigation, profile, username, profilePic)}
             >
                 <Text style={theme == 'light' ? styles.lightUsername : styles.darkUsername}>
@@ -85,7 +85,7 @@ export default SubCommentTop = ({ commentId, replyToCommentId, replyToPostId, se
 
             {/* Spacer */}
             <TouchableOpacity
-                activeOpacity={1}
+                activeOpacity={0.9}
                 style={{flex: 1, height: 30}}
                 onPress={onNavToComment()}
             ></TouchableOpacity>
@@ -93,7 +93,7 @@ export default SubCommentTop = ({ commentId, replyToCommentId, replyToPostId, se
 
             {/* Three Dots */}
             <TouchableOpacity 
-                activeOpacity={1}
+                activeOpacity={0.9}
                 style={{flexDirection: 'row', marginTop: -5, paddingBottom: 5, paddingLeft: 15, paddingRight: 10}}
                 onPress= {toggleOverlay()}
             >

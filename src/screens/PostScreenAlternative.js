@@ -187,7 +187,7 @@
 //                 >
 //                     {/* profile pic */}
 //                     <TouchableOpacity
-//                         activeOpacity={1}
+//                         activeOpacity={0.9}
 //                         onPress={goToProfile(navigation, profile, username, profilePic)}
 //                     >
 //                         {profilePic != "" ? (
@@ -199,7 +199,7 @@
                     
 //                     {/* username */}
 //                     <TouchableOpacity
-//                         activeOpacity={1}
+//                         activeOpacity={0.9}
 //                         style={{flex: 1, flexDirection: 'column'}}
 //                         onPress={goToProfile(navigation, profile, username, profilePic)}
 //                     >
@@ -793,7 +793,7 @@
 //                 >
 //                     {/* profile pic */}
 //                     <TouchableOpacity
-//                         activeOpacity={1}
+//                         activeOpacity={0.9}
 //                         onPress={goToProfile(navigation, profile, username, profilePic)}
 //                     >
 //                         {profilePic != "" ? (
@@ -805,7 +805,7 @@
                     
 //                     {/* username */}
 //                     <TouchableOpacity
-//                         activeOpacity={1}
+//                         activeOpacity={0.9}
 //                         style={{flex: 1, flexDirection: 'column'}}
 //                         onPress={goToProfile(navigation, profile, username, profilePic)}
 //                     >
