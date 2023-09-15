@@ -1,6 +1,65 @@
 import { firebase, db } from '../../../config/firebase';
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, increment } from "firebase/firestore";
 
+const deleteComment = async(commentId, replyToPostId, replyToCommentId) => {
+    return new Promise(async (resolve, reject) => {
+        const commentRef = doc(db, 'comments', replyToPostId, "comments", commentId);
+        const commentSnapshot = await getDoc(commentRef);
+        data = commentSnapshot.data();
+
+        if (commentSnapshot.exists) {
+            
+                await deleteDoc(commentRef).then(async () => {
+
+
+                    // update comment count for Comment or Post
+                    if(replyToCommentId){
+                        const commentRef = doc(db, 'comments', replyToPostId, "comments", replyToCommentId);
+
+                        await updateDoc(commentRef, {
+                            commentsCount: increment(-1)
+                        })
+                    }else{
+                        const postRef = doc(db, 'allPosts', replyToPostId);
+
+                        await updateDoc(postRef, {
+                            commentsCount: increment(-1)
+                        })
+                    }
+
+
+                    if (data.imageUrl) {
+                        const imageRef = ref(storage, data.imageUrl);
+
+                        // Delete the file
+                        await deleteObject(imageRef).then(() => {
+                            // File deleted successfully
+                            // console.log('Image deleted!');
+                        }).catch((error) => {
+                            // Uh-oh, an error occurred!
+                            // console.log(error);
+                        });
+
+                        // Alert.alert('Comment deleted!');
+                        // setFinished("deleted");
+                    }else{
+                        // Alert.alert('Comment deleted!');
+                        // setFinished("deleted");
+                    }
+
+                })
+                .then(() => {
+                    // console.log("Post deleted!");
+                    resolve(true);
+                })
+                .catch((error) => {
+                    // console.log("Post not deleted!     ", error);
+                    reject(false);
+                })
+            }
+    })
+}
+
 const onNavToComment =  (navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount) => () => () => {
     navigation.push('Comment', {
         commentId: commentId,
@@ -202,4 +261,4 @@ const onUnselectMood = async (replyToPostId, commentId, mood) => {
 
 
 
-export { onNavToComment, onReply, navToMeme, intToString, onDisike, onLike, onSelectMood, onUnselectMood };
+export { onNavToComment, onReply, navToMeme, deleteComment, intToString, onDisike, onLike, onSelectMood, onUnselectMood };

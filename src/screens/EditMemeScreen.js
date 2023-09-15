@@ -14,6 +14,19 @@ import { StackActions } from '@react-navigation/native';
 import {uploadNewTemplate, addNewTemplate} from '../shared/functions/AddNewTemplate';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
+
+import {
+    // The method used to register the plugins
+    setPlugins,
+
+    // The plugins we want to use
+    plugin_sticker,
+    plugin_sticker_locale_en_gb
+} from '@pqina/pintura';
+
+// This registers the plugins with Pintura Image Editor
+setPlugins(plugin_sticker);
+
 import {
     createMarkupEditorToolStyle,
     createMarkupEditorToolStyles,
@@ -59,6 +72,10 @@ const EditMemeScreen = ({ navigation, route }) => {
             targetSize: {
                 height: height < width ? height : 500,
                 width: width < height ? width : 500,
+            },
+
+            locale: {
+                ...plugin_sticker_locale_en_gb,
             },
         },
     };
@@ -401,12 +418,13 @@ const EditMemeScreen = ({ navigation, route }) => {
                         'finetune',
                         'crop',
                         'sticker',
-                        // 'decorate',
+                        // 'decorate',  
                         'frame',
                         'redact',
                         // 'resize',
                     ]}
                     stickers={Emojis}
+                    stickerEnableSelectImagePreset={false}
                     markupEditorToolStyles={createMarkupEditorToolStyles({
                         text: createMarkupEditorToolStyle("text", {
                             fontSize: 70,

@@ -267,7 +267,7 @@ const CommentScreen = ({navigation, route}) => {
 
     const [commentsList, setCommentsList] = useState(comments ? comments :[ {id: "one"}, {id: "two"}]);
 
-    const {imageReply, setImageReply} = useContext(AuthenticatedUserContext);
+    const {imageReply, setImageReply, commentOptions, setCommentOptions} = useContext(AuthenticatedUserContext);
 
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
     const [finished, setFinished] = useState(template  && !(imageUrl)? false : true);
@@ -414,7 +414,12 @@ const CommentScreen = ({navigation, route}) => {
                 }
 
                 ListFooterComponent={
-                    <View style={{height: 200}}/>
+                    <View 
+                        style={[
+                            theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer
+                            , {height: 200, marginTop: 5}
+                        ]}
+                    />
                 }
 
                 getItemType={getItemType}
@@ -422,9 +427,36 @@ const CommentScreen = ({navigation, route}) => {
                 // overrideItemLayout={overrideItemLayout}
 
                 keyExtractor={keyExtractor}
+
+                contentContainerStyle={{backgroundColor: theme == 'light' ? '#F4F4F4' : '#000000'}}
             />
 
             {replyBottomSheet(onReply, navigation, theme, replyToPostId, commentId, profile, username)}
+
+            {
+                commentOptions !== false && 
+
+                <View
+                    style={styles.threeDotsOverlay}
+                >
+                    <TouchableOpacity
+                        onPressIn = {() => setCommentOptions("close")}
+                        style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
+                    >
+
+                    </TouchableOpacity>
+                    <ThreeDotsSheet
+                        profile={commentOptions.profile}
+                        commentId={commentOptions.commentId}
+                        replyToPostId={commentOptions.replyToPostId}
+                        replyToCommentId={commentOptions.replyToCommentId}
+                        image={commentOptions.image}
+                        text={commentOptions.text}
+                        theme={theme}
+                    />
+                </View>
+                
+            }
         </View>
     );
 
@@ -454,6 +486,13 @@ const styles = StyleSheet.create({
     },
     darkContainer: {
         backgroundColor: '#151515',
+    },
+    threeDotsOverlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        width: "100%",
+        height:"100%",
+        position: 'absolute',
+        top: 0
     },
     lightUserContainer: {
         backgroundColor: 'white',

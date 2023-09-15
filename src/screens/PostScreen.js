@@ -331,7 +331,7 @@ const PostScreen = ({navigation, route}) => {
 
           refreshViewRef.current.play();
         } else {
-          setExtraPaddingTop(false);
+          extraPaddingTop && setExtraPaddingTop(false);
         }
     }, [isRefreshing]);
 
@@ -441,24 +441,34 @@ const PostScreen = ({navigation, route}) => {
             
 
             {/* Top */}
-            <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight}]}/>
+            <View 
+                style={[
+                    theme == 'light' ? styles.lightContainer : styles.darkContainer, 
+                    {height: Constants.statusBarHeight + 10}
+                ]}
+            />
 
 
             
             {/* Refresh animation */}
             {
-                offsetY < 0 && <LottieView
-                    ref={refreshViewRef}
-                    autoPlay
-                    style={[styles.lottieView]}
-                    // source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
-                    source={refreshAnimation}
-                    // progress={progress}
-                    colorFilters={[
-                        { keypath: "Path", 
-                            color: theme == 'light' ? "#005fff" : "#FFF" },
-                    ]}
-                />
+                offsetY < 0 && 
+                <>
+                    <LottieView
+                        ref={refreshViewRef}
+                        autoPlay
+                        style={[styles.lottieView]}
+                        // source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
+                        source={refreshAnimation}
+                        // progress={progress}
+                        colorFilters={[
+                            { keypath: "Path", 
+                                color: theme == 'light' ? "#005fff" : "#FFF" },
+                        ]}
+                    />
+
+                    {/* <View style={{marginBottom: 10}}/> */}
+                </>
             }
 
 
@@ -490,7 +500,12 @@ const PostScreen = ({navigation, route}) => {
                 }
 
                 ListFooterComponent={
-                    <View style={{height: 200}}/>
+                    <View 
+                        style={[
+                            theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer
+                            , {height: 200, marginTop: 5}
+                        ]}
+                    />
                 }
 
 
@@ -502,7 +517,7 @@ const PostScreen = ({navigation, route}) => {
                             setIsRefreshing(true);
                             setTimeout(() => {
                                 setIsRefreshing(false);
-                            }, 5000);
+                            }, 2000);
                         }}
                         // progressViewOffset={progress}
                         tintColor={'rgba(255, 255, 255, 0.0)'}
@@ -539,27 +554,34 @@ const PostScreen = ({navigation, route}) => {
                 
                 keyExtractor={keyExtractor}
 
-                contentContainerStyle={{backgroundColor: theme == 'light' ? '#F4F4F4' : '#151515'}}
+                contentContainerStyle={{backgroundColor: theme == 'light' ? '#F4F4F4' : '#000000'}}
             />
 
             {replyBottomSheet(navigation, theme, postId, profile, username)}
 
             {
                 commentOptions !== false && 
+
+                <View
+                    style={styles.threeDotsOverlay}
+                >
+                    <TouchableOpacity
+                        onPressIn = {() => setCommentOptions("close")}
+                        style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
+                    >
+
+                    </TouchableOpacity>
+                    <ThreeDotsSheet
+                        profile={commentOptions.profile}
+                        commentId={commentOptions.commentId}
+                        replyToPostId={commentOptions.replyToPostId}
+                        replyToCommentId={commentOptions.replyToCommentId}
+                        image={commentOptions.image}
+                        text={commentOptions.text}
+                        theme={theme}
+                    />
+                </View>
                 
-                // <CommentOverlay 
-                //     commentId={commentId}
-                //     replyToCommentId={replyToCommentId}
-                //     replyToPostId={replyToPostId}
-                //     setFinished={setFinished}
-                //     profile={profile}
-                //     toggleOverlay={toggleOverlay}
-                //     theme={theme}
-                // />
-                <ThreeDotsSheet
-                    commentId={commentOptions.commentId}
-                    theme={theme}
-                />
             }
         </View>
     );
@@ -591,6 +613,13 @@ const styles = StyleSheet.create({
     },
     darkContainer: {
         backgroundColor: '#151515',
+    },
+    threeDotsOverlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        width: "100%",
+        height:"100%",
+        position: 'absolute',
+        top: 0
     },
     lightUserContainer: {
         backgroundColor: 'white',
@@ -646,6 +675,7 @@ const styles = StyleSheet.create({
         top: 10,
         left: 0,
         right: 9,
+        marginBottom: 15
     },
     lightFollowButton: {
         flexDirection: 'column',

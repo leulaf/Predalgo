@@ -1,19 +1,70 @@
 import React from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Share, Platform, Dimensions } from 'react-native';
 
 import { AuthenticatedUserContext } from '../../../../context-store/context';
 
-import BottomSheet from "@gorhom/bottom-sheet";
+import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 
-export default ThreeDotsSheet = ({commentId, theme}) => {
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
+import Feather from '@expo/vector-icons/Feather';
+
+import Octicons from '@expo/vector-icons/Octicons';
+
+import { deleteComment } from './CommentMethods';
+
+import BottomSheet, {BottomSheetView} from "@gorhom/bottom-sheet";
+
+import { getAuth } from 'firebase/auth';
+
+import DeleteIcon from '../../../../assets/trash_delete.svg';
+import ReportIcon from '../../../../assets/danger.svg';
+
+const auth = getAuth();
+
+const window = Dimensions.get('window');
+
+const getImage = async (image) => {
+    const manipResult = await manipulateAsync(
+      image,
+      [],
+      { base64: true }
+    );
+
+    return manipResult.base64;
+    
+  };
+
+const onShare = async(text, image) => {
+    try {
+        const result = await Share.share({
+            message: text,
+            url: image
+        });
+        if (result.action === Share.sharedAction) {
+            if (result.activityType) {
+            // shared with activity type of result.activityType
+            } else {
+            // shared
+            }
+        }
+        else if (result.action === Share.dismissedAction) {
+            // dismissed
+        }
+    } catch (error) {
+        // alert(error.message);
+    }
+}
+
+export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToCommentId, text, image, theme}) => {
+    const [bookmarked, setBookmarked] = React.useState(false);
+
     // ref
     const bottomSheetRef = React.useRef(null);
 
-    const [currentIndex, setCurrentIndex] = React.useState(0);
-
     // variables
-    const snapPoints = React.useMemo(() => [ "25%", "1%"], []);
+    const snapPoints = React.useMemo(() => [ "1%", "40%"], []);
 
     const {commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
 
@@ -21,34 +72,192 @@ export default ThreeDotsSheet = ({commentId, theme}) => {
         // console.log('handleSheetAnimate', from, to);
         
         if(to == 0){
-            setCurrentIndex(0);
-        }else if(to == 1){
-            setCurrentIndex(1);
             setCommentOptions(false)
         }
         
     }, [snapPoints]);
+
+    // console.log(commentOptions)
+    // setCommentOptions(false)
+    React.useEffect(() => {
+        if(commentOptions == "close"){
+            bottomSheetRef.current.snapToIndex(0);
+        }
+    }, [commentOptions])
+
+    const deleteAndCheck = React.useCallback(() => async() => {
+        // setCommentOptions({
+        //     ...commentOptions,
+        //     deleted: true
+        // })
+        await deleteComment(commentId, replyToPostId, replyToCommentId)
+        .then(() => {
+            setCommentOptions({
+                ...commentOptions,
+                deleted: true
+            })
+        })
+        .catch(() => {
+            setCommentOptions({
+                ...commentOptions,
+                deleted: false
+            })
+        })
+    }, [])
 
 
     return (
         //<View style={styles.container}>
             <BottomSheet
                 ref={bottomSheetRef}
+                index={1}
                 snapPoints={snapPoints}
                 onAnimate={handleSheetAnimate}
+
                 // add bottom inset to elevate the sheet
                 // bottomInset={46}
-        
+
                 // set `detached` to true
                 // detached={true}
+
+
                 style={styles.sheetContainer}
                 backgroundStyle={{
-                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 1)' : 'rgba(32, 32, 32, 1)',
-                    marginBottom: 10,
-                    flexDirection: 'column',
+                    backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 0)' : 'rgba(35, 35, 35, 0)',
+                    // marginBottom: 10,
+                    // flexDirection: 'column',
                 }}
+
+                // handleHeight={0}
+                handleStyle={{backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 1)' : 'rgba(35, 35, 35, 1)', width: "95%", alignSelf: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15}}
+                // handleIndicatorStyle={{height: 0, width: 0}}
+                // handleComponent={null}
+                handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#000' : '#FFF'}}
             >
-                <View style={styles.contentContainer}>
+
+                <BottomSheetView style={theme == 'light' ? styles.lightContentContainer : styles.darkContentContainer}>
+                    
+                    {/* <View style={{flex: 1}}/> */}
+
+
+                    {/* Share comment */}
+                    <TouchableOpacity
+                        activeOpacity={0.5}
+                        style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
+                        onPress={() => {
+                            onShare(text, image)
+                            setCommentOptions(false)
+                        }}
+                    >
+                        <Feather
+                            name={Platform.OS === 'ios' ? "share" : "share-2"}
+                            size={25}
+
+                            color={theme == 'light' ? '#111' : '#F8F8F8'}
+                            marginLeft={15}
+                            marginRight={13}
+                            marginTop={0}
+                        />
+                        <Text
+                            style={theme == 'light' ? styles.lightText : styles.darkText}
+                        >
+                            Share
+                        </Text>
+                    </TouchableOpacity>
+                    
+                    
+                    {/* Save comment */}
+                    <TouchableOpacity
+                        activeOpacity={0.5}
+                        style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
+                        onPress={() => setBookmarked(!bookmarked)}
+                    >
+                        <MaterialIcons
+                            name={bookmarked ? "bookmark" : "bookmark-outline"}
+                            size={29.5}
+
+                            color={theme == 'light' ? '#333' : '#F4F4F4'}
+                            marginLeft={12}
+                            marginRight={13}
+                            marginTop={0}
+                        />
+                        <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Save</Text>
+                    </TouchableOpacity>
+                    
+                    
+                    
+                    {/* Copy text comment, "title: ..., text: ..."" */}
+                    <TouchableOpacity
+                        activeOpacity={0.5}
+                        style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
+                        onPress={() =>{ return null}}
+                    >
+                        <Feather
+                            name="copy"
+                            size={26}
+                            color={theme == 'light' ? '#000' : '#FFF'}
+                            marginLeft={16}
+                            marginRight={14}
+                            marginTop={0}
+                        />
+                        <Text
+                            style={theme == 'light' ? styles.lightText : styles.darkText}
+                        >
+                            Copy text
+                        </Text>
+                    </TouchableOpacity>
+                    
+                    
+                    
+                    {
+                        profile === auth.currentUser.uid ?
+
+                        <TouchableOpacity 
+                            activeOpacity={0.5}
+                            style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
+                            onPress={deleteAndCheck()}
+                        >
+                            <Octicons
+                                name="trash"
+                                size={26}
+                                color={theme == 'light' ? '#393939' : '#F8F8F8'}
+                                marginLeft={19}
+                                marginRight={19}
+                                marginTop={1}
+                            />
+                            <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Delete comment</Text>
+                        </TouchableOpacity>
+                    :
+
+                        <TouchableOpacity
+                            activeOpacity={0.5}
+                            style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
+                            onPress={() =>{ return null}}
+                        >
+                            <Feather
+                                name="flag"
+                                size={25}
+                                color={theme == 'light' ? '#000' : '#FFF'}
+                                marginLeft={18}
+                                marginRight={15}
+                                marginTop={0}
+                            />
+                            <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Report comment</Text>
+                        </TouchableOpacity>
+                    } 
+                </BottomSheetView>
+                
+
+
+
+
+
+
+
+
+
+
+                {/* <View style={styles.contentContainer}> */}
                     {/* 
                         maybe turn three dots to X when clicked to indecate
                         that the user can click it again to close the sheet
@@ -60,54 +269,97 @@ export default ThreeDotsSheet = ({commentId, theme}) => {
                         if not then change the sheet to the new comment
                     
                     */}
-                </View>
+                {/* </View> */}
                 
-        
             </BottomSheet>
         //</View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        // flex: 1,
-        padding: 24,
-        backgroundColor: "grey",
-    },
     sheetContainer: {
         // flex: 1,
         // padding: 24,
         // width: '100%',
+        // height: '100%',
         // backgroundColor: "grey",
         // add horizontal space
         // marginHorizontal: 24,
-        backgroundColor: 'rgba(255, 255, 255, 1)',
-        overflow: 'hidden',
-        borderRadius: 20,
+        // flexDirection: 'column',
+        backgroundColor: 'rgba(255, 255, 255, 0)',
+        // overflow: 'hidden',
+        // borderRadius: 15,
+        
     },
-    contentContainer: {
-        // flex: 1,
-        // width: '100%',
-        // height: '100%',
-        // alignItems: "center",
-        height: 600,
-        width: "95%",
-        borderRadius: 20,
-        flexDirection: 'row',
-        alignSelf: 'center',
-        // alignItems: 'center',
-        // alignContent: 'center',
-        // justifyContent: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 1)',
-        borderWidth: 1,
-        borderColor: '#E2E2E2',
-    },
+    
     lightText: {
-        color: '#FFFFFF',
+        color: '#000000',
         fontSize: 18,
+        fontWeight: '500',
+        alignSelf: 'center',
     },
     darkText: {
         color: '#FFFFFF',
         fontSize: 18,
+    },
+    // container: {
+    //     // flex: 1,
+    //     padding: 24,
+    //     backgroundColor: "grey",
+    // },
+    lightContentContainer: {
+        // flex: 1,
+        width: '95%',
+        height: window.width * .6,
+        alignSelf: 'center',
+        // alignContent: "flex-end",
+        // height: "100%",
+        // width: "100%",
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
+        flexDirection: 'column',
+        // alignItems: 'center',
+        // alignContent: 'center',
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(255, 255, 255, 1)',
+        // borderWidth: 1,
+        // borderColor: '#E2E2E2',
+    },
+    darkContentContainer: {
+        // flex: 1,
+        width: '95%',
+        height: window.width * .6,
+        alignSelf: 'center',
+        // height: "100%",
+        // width: "100%",
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
+        flexDirection: 'column',
+        // alignItems: 'center',
+        // alignContent: 'center',
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(35, 35, 35, 1)',
+        // borderWidth: 1,
+        // borderColor: '#E2E2E2',
+    },
+    lightButtonStyle: {
+        flexDirection: 'row',
+        width: "100%",
+        height: 60,
+        alignSelf: 'flex-start',
+        justifiyContent: 'center',
+        alignItems: 'center',
+        borderTopWidth: 0.3,
+        borderColor: '#888',
+    },
+    darkButtonStyle: {
+        flexDirection: 'row',
+        width: "100%",
+        height: 60,
+        alignSelf: 'flex-start',
+        justifiyContent: 'center',
+        alignItems: 'center',
+        borderTopWidth: 0.3,
+        borderColor: '#888',
     }
 })

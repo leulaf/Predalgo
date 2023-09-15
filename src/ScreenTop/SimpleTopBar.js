@@ -30,7 +30,7 @@ const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, 
 
 
     return (
-            <View style={[theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer, {marginTop: extraPaddingTop  === true && 15}]}>
+            <View style={[theme == 'light' ? styles.lightTopContainer : styles.darkTopContainer, {paddingTop: extraPaddingTop  === true && 0}]}>
 
                 {/* back button */}
                 <TouchableOpacity 

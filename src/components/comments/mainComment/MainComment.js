@@ -8,6 +8,8 @@ import CommentText from '../../../shared/Text/CommentText';
 
 import Animated, {FadeIn} from 'react-native-reanimated';
 
+import { AuthenticatedUserContext } from '../../../../context-store/context';
+
 import ResizableImage from '../../../shared/functions/ResizableImage';
 
 import CreateMeme from '../../../shared/functions/CreateMeme';
@@ -60,6 +62,25 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
     // If finished == "deleted" then the comment is not rendered
     const [finished, setFinished] = React.useState(template ? false : true);
 
+    const {commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
+
+    React.useEffect(() => {
+       if(commentOptions?.commentId === commentId && commentOptions.deleted === true){
+            // console.log(commentOptions)
+            // console.log('comment is deleted');
+            setFinished("deleted")
+            setCommentOptions(false);
+        }
+        if(commentOptions?.commentId === commentId && !(commentOptions?.image) && image){
+            // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
+
+            setCommentOptions({
+                ...commentOptions,
+                image: image,
+            });
+        }
+    }, [commentOptions]);
+
     const navToCommentWithComments = React.useCallback((commentsList) => () => {
 
         setIsVisible(false);
@@ -87,7 +108,6 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
 
     if(finished == "deleted"){
         // set commentsList to null using ref for MainCommentBottom
-        
         return null;
     }
 
@@ -107,13 +127,13 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                 commentId={commentId}
                 replyToCommentId={replyToCommentId}
                 replyToPostId={replyToPostId}
-                setFinished={setFinished}
                 navigation={navigation}
                 onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                 theme={theme}
                 profile={profile}
                 username={username}
                 profilePic={profilePic}
+                text={text}
             />
             
 

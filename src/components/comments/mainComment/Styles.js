@@ -18,7 +18,7 @@ export default styles = StyleSheet.create({
         // borderWidth: 1,
         borderTopWidth: 1,
         borderBottomWidth: 1,
-        marginTop: 8,
+        marginTop: 5,
         borderRadius: 12.5,
     },
     darkCommentContainer: {
@@ -30,7 +30,7 @@ export default styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderLeftWidth: 0.5,
         borderRightWidth: 0.5,
-        marginTop: 8,
+        marginTop: 6,
         borderRadius: 12.5,
     },
     lightUsername: {
