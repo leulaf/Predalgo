@@ -25,7 +25,7 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 
 
 // ******** React memo ********
-export default SubCommentTop = ({ commentId, replyToCommentId, replyToPostId, text, navigation, theme, profile, username, profilePic, onNavToComment}) => {
+export default SubCommentTop = ({ commentId, replyToCommentId, replyToPostId, navigation, theme, profile, username, profilePic, onNavToComment}) => {
 
     let threeDots
 

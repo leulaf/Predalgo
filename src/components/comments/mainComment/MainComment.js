@@ -71,12 +71,13 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
             setFinished("deleted")
             setCommentOptions(false);
         }
-        if(commentOptions?.commentId === commentId && !(commentOptions?.image) && image){
+        if(commentOptions?.commentId === commentId && !(commentOptions?.text || (commentOptions?.image && image)) ){
             // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
 
             setCommentOptions({
                 ...commentOptions,
                 image: image,
+                text: text,
             });
         }
     }, [commentOptions]);
@@ -106,6 +107,17 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
             
     }, [image])
 
+    const onLongPress = React.useCallback(() => () => {
+        setCommentOptions({
+            commentId: commentId,
+            profile: profile,
+            replyToPostId: replyToPostId,
+            replyToCommentId: replyToCommentId,
+            text: text,
+            image: image,
+        })
+    }, []);
+
     if(finished == "deleted"){
         // set commentsList to null using ref for MainCommentBottom
         return null;
@@ -133,7 +145,6 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                 profile={profile}
                 username={username}
                 profilePic={profilePic}
-                text={text}
             />
             
 
@@ -145,6 +156,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                     activeOpacity={0.9}
                     onPress = {onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
+                    onLongPress={onLongPress()}
                 >
                     
                     <CommentText text={text}/>
@@ -164,6 +176,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
                         // onNavToCommentWithComments(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)
                         () => setIsVisible(true)
                     }
+                    onLongPress={onLongPress()}
                 >
                     <ResizableImage 
                         image={image}

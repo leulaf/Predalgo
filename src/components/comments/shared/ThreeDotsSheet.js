@@ -210,7 +210,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                     
                     
                     {
-                        profile === auth.currentUser.uid ?
+                        profile !== auth.currentUser.uid ?
 
                         <TouchableOpacity 
                             activeOpacity={0.5}
@@ -220,7 +220,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                             <Octicons
                                 name="trash"
                                 size={26}
-                                color={theme == 'light' ? '#393939' : '#F8F8F8'}
+                                color={theme == 'light' ? '#FF0000' : '#FF3535'}
                                 marginLeft={19}
                                 marginRight={19}
                                 marginTop={1}
@@ -237,7 +237,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                             <Feather
                                 name="flag"
                                 size={25}
-                                color={theme == 'light' ? '#000' : '#FFF'}
+                                color={theme == 'light' ? '#FF7A00' : '#FF4848'}
                                 marginLeft={18}
                                 marginRight={15}
                                 marginTop={0}

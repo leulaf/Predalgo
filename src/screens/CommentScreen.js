@@ -205,7 +205,7 @@ const imageEquals =(prev, next) => {
 }
 
 
-const ImagePost = React.memo(({item, index, navigation, theme})=>{
+const ImageComment = React.memo(({item, index, navigation, theme})=>{
     // const tempString = Math.random();
     return (
         <MainComment
@@ -238,7 +238,7 @@ const itemEquals = (prev, next) => {
     return prev.item.id === next.item.id
 }
 
-const TextPost = React.memo(({item, index, navigation, theme})=>{
+const TextComment = React.memo(({item, index, navigation, theme})=>{
     return (
         <MainComment
             navigation={navigation}
@@ -360,11 +360,11 @@ const CommentScreen = ({navigation, route}) => {
             );
         }else if(item.imageHeight){
             return (
-                <ImagePost item={item} navigation={navigation} index={index} theme={theme}/>
+                <ImageComment item={item} navigation={navigation} index={index} theme={theme}/>
             );
         }else{
             return (
-                <TextPost item={item} navigation={navigation} index={index} theme={theme}/>
+                <TextComment item={item} navigation={navigation} index={index} theme={theme}/>
             );
         }
     }, [theme, image,]);

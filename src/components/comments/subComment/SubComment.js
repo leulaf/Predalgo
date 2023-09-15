@@ -72,10 +72,11 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
             setFinished("deleted")
             setCommentOptions(false);
         }
-        if(commentOptions?.commentId === commentId && !(commentOptions?.image) && image){
+        if(commentOptions?.commentId === commentId && !(commentOptions?.text || (commentOptions?.image && image))){
             setCommentOptions({
                 ...commentOptions,
                 image: image,
+                text: text,
             });
         }
     }, [commentOptions]);
@@ -107,6 +108,17 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
         })
     })
 
+    const onLongPress = React.useCallback(() => () => {
+        setCommentOptions({
+            commentId: commentId,
+            profile: profile,
+            replyToPostId: replyToPostId,
+            replyToCommentId: replyToCommentId,
+            text: text,
+            image: image,
+        })
+    }, []);
+
 
     if(finished == "deleted"){
         // set commentsList to null using ref for SubCommentBottom
@@ -136,7 +148,6 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                 profile={profile}
                 username={username}
                 profilePic={profilePic}
-                text={text}
             />
 
             {/* Comment Text */}
@@ -147,6 +158,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                     activeOpacity={0.9}
                     onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
+                    onLongPress={onLongPress()}
                 >
                     
                     <CommentText text={text}/>
@@ -165,6 +177,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
                         () => setIsVisible(true)
                         // navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)
                     }
+                    onLongPress={onLongPress()}
                 >
                     <ResizableImage 
                         image={image}

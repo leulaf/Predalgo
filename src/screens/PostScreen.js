@@ -217,7 +217,7 @@ const imageEquals =(prev, next) => {
 }
 
 
-const ImagePost = React.memo(({item, theme, index, navigation})=>{
+const ImageComment = React.memo(({item, theme, index, navigation})=>{
     return (
         <MainComment
             navigation={navigation}
@@ -411,7 +411,7 @@ const PostScreen = ({navigation, route}) => {
             );
         }else if(item.imageHeight){
             return (
-                <ImagePost item={item} navigation={navigation} index={index} theme={theme}/>
+                <ImageComment item={item} navigation={navigation} index={index} theme={theme}/>
             );
         }else{
             return (

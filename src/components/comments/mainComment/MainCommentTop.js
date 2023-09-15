@@ -25,7 +25,7 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 
 
 // ******** React memo ********
-export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, text, navigation, theme, profile, username, profilePic, onNavToComment, }) => {
+export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, navigation, theme, profile, username, profilePic, onNavToComment, }) => {
 
     let threeDots
 
@@ -44,7 +44,6 @@ export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, t
             profile: profile,
             replyToPostId: replyToPostId,
             replyToCommentId: replyToCommentId,
-            text: text,
         })
     }, []);
 
