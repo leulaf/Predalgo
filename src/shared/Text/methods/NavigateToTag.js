@@ -16,7 +16,16 @@ export default NavigateToTag = async(tag, navigation) => {
             const user = userSnap.docs[0].data();
             user.id = userSnap.docs[0].id;
 
-            navigation.push('Profile', { user: user });
+            navigation.push('Profile', 
+                {
+                    profile: user.id,
+                    username: user.username,
+                    profilePic: user.profilePic,
+                    bioData: user.bio,
+                    followersCountData: user.followers,
+                    postsCountData: user.posts,
+                }
+        );
         }
 
     }

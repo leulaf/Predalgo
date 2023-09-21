@@ -32,7 +32,14 @@ const navigateToTag = (navigation, tag) => async () => {
             });
 
             if(user){
-                navigation.push('Profile', { user: user });
+                navigation.push('Profile', {
+                    profile: user.id,
+                    username: user.username,
+                    profilePic: user.profilePic,
+                    bioData: user.bio,
+                    followersCountData: user.followers,
+                    postsCountData: user.posts,
+                });
             }
 
         }
@@ -107,7 +114,12 @@ const ContentBottom = ({ tags, memeName, templateUploader, navToPost, navToMeme 
                         repeatSpacer={50}
                         marqueeDelay={1000}
                     >
-                        {memeName + " - @" + templateUploader}
+                        {
+                            templateUploader ?
+                                memeName + " - @" + templateUploader
+                            :
+                                memeName
+                        }
                     </TextTicker>
                     
                 </TouchableOpacity>

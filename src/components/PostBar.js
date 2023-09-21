@@ -71,9 +71,14 @@ const PostBar = ({}) => {
 
 
            <TouchableOpacity
-               onPress={() => 
-                navigation.navigate("Upload", {
-                    forComment: false,
+            //    onPress={() => 
+            //     navigation.navigate("Upload", {
+            //         forComment: false,
+            //     })
+            onPress={() => 
+                navigation.navigate("Chat", {
+                    // forComment: false,
+                    conversationKey: 1234
                 })
             }
            >

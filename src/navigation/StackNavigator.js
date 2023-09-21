@@ -24,6 +24,7 @@ import SearchMemesScreen from '../screens/SearchMemesScreen';
 import SavedTemplatesScreen from '../screens/SavedTemplatesScreen';
 import PostScreen from '../screens/PostScreen';
 import CommentScreen from '../screens/CommentScreen';
+import ChatScreen from "../screens/ChatScreen";
 
 
 const windowWidth = Dimensions.get('screen').width;
@@ -134,6 +135,12 @@ const MainStackNavigator = ({}) => {
         <Stack.Screen name="Comment" component={CommentScreen}
             options={{
                 headerShown: false,
+                gestureResponseDistance: windowWidth,
+            }}
+        />
+        <Stack.Screen name="Chat" component={ChatScreen}
+            options={{
+                // headerShown: false,
                 gestureResponseDistance: windowWidth,
             }}
         />

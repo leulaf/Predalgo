@@ -1,5 +1,6 @@
 import React, {useContext, useEffect, useState, useLayoutEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Alert} from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { Tabs, MaterialTabBar } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../context-store/context';
@@ -16,7 +17,11 @@ const navigateTo = (navigation, user) => () => {
 export default function ProfileScreen ({route, navigation}) {
     const {theme, setTheme} = useContext(ThemeContext);
     const [following, setFollowing] = useState(false);
-    const user = route.params.user;
+    const {profile, username, profilePic, bioData, followersCountData, postsCountData} = route.params;
+
+    const [postsCount, setPostsCount] = useState(postsCountData ? postsCountData : 0);
+    const [followersCount, setFollowersCount] = useState(followersCountData ? followersCountData : 0);
+    const [bio, setBio] = useState(bioData ? bioData : "User Bio");
 
     const [postList, setPostList] = useState([]);
     const [byNewPosts, setByNewPosts] = useState(true);
@@ -24,16 +29,34 @@ export default function ProfileScreen ({route, navigation}) {
 
     // useEffect(() => {
     //     navigation.setOptions({
-    //         header: () => <SimpleTopBar title={"@" + user.username}/>
+    //         header: () => <SimpleTopBar title={"@" + username}/>
     //     });
     // }, []);
 
     // Check if current user is following the user
     useEffect(() => {
+
+        if (!(bioData || followersCountData || postsCountData)) {
+            const userRef = doc(db, 'users', profile);
+            
+            getDoc(userRef)
+            .then((userSnap) => {
+                if (userSnap.exists()) {
+                    const data = userSnap.data();
+                    console.log(data)
+                    setPostsCount(data.posts);
+                    setFollowersCount(data.followers);
+                    setBio(data.bio);
+                } else {
+                    setFollowing(false);
+                }
+            });
+        }
+
         populateInitialPosts();
 
         // *** catch array of following users and use that instead of making a request
-        const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+        const docRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", profile);
         const docSnap = getDoc(docRef)
         .then((docSnap) => {
             if (docSnap.exists()) {
@@ -47,31 +70,31 @@ export default function ProfileScreen ({route, navigation}) {
     const populateInitialPosts = React.useCallback(async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
-        const posts = await fetchUserPostsByRecent(user.id);
+        const posts = await fetchUserPostsByRecent(profile);
         setPostList(posts);
-    }, [user]);
+    }, []);
 
     const handleNewPostsClick = React.useCallback(() => async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
-        const posts = await fetchUserPostsByRecent(user.id);
+        const posts = await fetchUserPostsByRecent(profile);
         setPostList(posts);
-    }, [user]);
+    }, []);
     
     const handlePopularPostsClick = React.useCallback(() => async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
-        const posts = await fetchUserPostsByPopular(user.id);
+        const posts = await fetchUserPostsByPopular(profile);
         setPostList(posts);
-    }, [user]);
+    }, []);
 
     // Follow current user
     const onFollow = React.useCallback(() => {
         // add user to following collection
-        const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user);
+        const followRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", profile);
         
         setDoc(followRef, {
-            id: user.id,
+            id: profile,
         }).then(() => {
             setFollowing(true);
             Alert.alert('Followed');
@@ -80,7 +103,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // add user to followers collection
-        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
+        const followerRef = doc(db, 'followers', profile, "userFollowers", firebase.auth().currentUser.uid);
 
         setDoc(followerRef, {
             id: firebase.auth().currentUser.uid,
@@ -91,7 +114,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // update followers count for user being followed
-        const userRef = doc(db, 'users', user.id);
+        const userRef = doc(db, 'users', profile);
 
         updateDoc(userRef, {
             followers: increment(1)
@@ -103,12 +126,12 @@ export default function ProfileScreen ({route, navigation}) {
         updateDoc(currentUserRef, {
             following: increment(1)
         });
-    }, [user])
+    }, [])
 
     // Unfollow current user
     const onUnfollow = React.useCallback(() => {
         // remove user from following collection
-        const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", user.id);
+        const unfollowRef = doc(db, 'following', firebase.auth().currentUser.uid, "userFollowing", profile);
 
         deleteDoc(unfollowRef).then(() => {
             setFollowing(false);
@@ -118,7 +141,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // remove user from followers collection
-        const followerRef = doc(db, 'followers', user.id, "userFollowers", firebase.auth().currentUser.uid);
+        const followerRef = doc(db, 'followers', profile, "userFollowers", firebase.auth().currentUser.uid);
 
         deleteDoc(followerRef).then(() => {
             // console.log('Removed from followers collection');
@@ -127,7 +150,7 @@ export default function ProfileScreen ({route, navigation}) {
         });
 
         // update followers count for user being unfollowed
-        const userRef = doc(db, 'users', user.id);
+        const userRef = doc(db, 'users', profile);
 
         updateDoc(userRef, {
             followers: increment(-1)
@@ -139,7 +162,7 @@ export default function ProfileScreen ({route, navigation}) {
         updateDoc(currentUserRef, {
             following: increment(-1)
         });
-    }, [user])
+    }, [])
 
     const toggleFollowing = React.useCallback(() => () => {
         following ? onUnfollow() : onFollow();
@@ -156,8 +179,8 @@ export default function ProfileScreen ({route, navigation}) {
                         style={{flexDirection: 'column'}}
                     >
                         {
-                            user.profilePic != "" &&                          
-                            <Image source={{uri: user.profilePic}} style={styles.profilePicture} placeholder={require('../../assets/profile_default.png')} cachePolicy='disk'/>
+                            profilePic != "" &&                          
+                            <Image source={{uri: profilePic}} style={styles.profilePicture} placeholder={require('../../assets/profile_default.png')} cachePolicy='disk'/>
                         }
                     </View>
 
@@ -182,30 +205,59 @@ export default function ProfileScreen ({route, navigation}) {
                          <View
                              style={styles.countContainer}
                          >
-                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.posts}</Text>
+                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{postsCount}</Text>
                              <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Posts</Text>
                          </View>
  
                          {/* Followers */}
                          <TouchableOpacity
-                                onPress={navigateTo(navigation, user)}
+                                onPress={navigateTo(navigation, profile)}
                                  style={styles.countContainer}
                          >
-                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{user.followers}</Text>
+                             <Text style={theme == 'light' ? styles.lightCountText : styles.darkCountText}>{followersCount}</Text>
                              <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Followers</Text>
                          </TouchableOpacity>
+
+                         {/* Share comment */}
+                        <TouchableOpacity
+                            activeOpacity={0.5}
+                            style={{flexDirection: 'row',  marginTop: 14, alignItems: 'center'}}
+                            onPress={() => {
+                                
+                            }}
+                        >
+                            <Ionicons
+                                name={"chatbubble-ellipses-outline"}
+                                // name={"chatbox-ellipses-outline"}
+                                size={33}
+
+                                color={theme == 'light' ? '#000' : '#F8F8F8'}
+                                // marginLeft={15}
+                                // marginRight={13}
+                                // marginTop={0}
+                            />
+                            <Text
+                                style={theme == 'light' ? styles.lightChatText : styles.darkChatText}
+                            >
+                                Chat
+                            </Text>
+                        </TouchableOpacity>
                      </View>
  
                      {/* Bio */}
                      <Text style={theme == 'light' ? styles.lightText : styles.darkText} marginLeft={15} marginTop={10} width={275} numberOfLines={4}>
-                         {user.bio}
+                         {bio}
                      </Text>
- 
+
+
+                    
                  </View>
+
+                 
  
             </View>
         )
-    }, [user, theme, following])
+    }, [theme, following, postsCount, followersCount, bio])
  
  
     const tabBar = React.useCallback(props => (
@@ -253,9 +305,9 @@ export default function ProfileScreen ({route, navigation}) {
         >
             <Tabs.Tab name="Posts">
                 <AllUserPosts
-                    userId={user.id}
-                    username={user.username}
-                    profilePic={user.profilePic}
+                    userId={profile}
+                    username={username}
+                    profilePic={profilePic}
                     postList={postList}
                     byNewPosts={byNewPosts}
                     byPopularPosts={byPopularPosts}
@@ -267,9 +319,9 @@ export default function ProfileScreen ({route, navigation}) {
             </Tabs.Tab>
             <Tabs.Tab name="Media">
                 <AllUserMediaPosts
-                    userId={user.id}
+                    userId={profile}
                     postList={postList}
-                    profilePic={user.profilePic}
+                    profilePic={profilePic}
                 />
             </Tabs.Tab>
         </Tabs.Container>
@@ -337,39 +389,51 @@ export default function ProfileScreen ({route, navigation}) {
     },
     lightFollowText: {
         fontSize: 18,
-        color: '#222222',
+        color: '#000',
         fontWeight: "600",
         alignSelf: 'center',
         marginTop: 1
     },
     darkFollowText: {
         fontSize: 18,
-        color: '#ffffff',
+        color: '#FFF',
         fontWeight: "600",
         alignSelf: 'center',
         marginTop: 1
     },
     lightCountText: {
         fontSize: 18,
-        color: '#222222',
+        color: '#000',
         fontWeight: "600",
         marginTop: 5,
     },
     darkCountText: {
         fontSize: 18,
-        color: '#ffffff',
+        color: '#FFF',
         fontWeight: "600",
         marginTop: 5,
     },
     lightText: {
         fontSize: 16,
-        color: '#222222',
+        color: '#000',
         fontWeight: "500",
     },
     darkText: {
         fontSize: 16,
-        color: '#f4f4f4',
+        color: '#FFF',
         fontWeight: "500",
+    },
+    lightChatText: {
+        fontSize: 17,
+        color: '#000',
+        fontWeight: "600",
+        marginLeft: 6
+    },
+    darkChatText: {
+        fontSize: 17,
+        color: '#FFF',
+        fontWeight: "600",
+        marginLeft: 6
     },
     box: {
         height: 250,

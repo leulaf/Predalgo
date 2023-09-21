@@ -61,7 +61,7 @@ const navToMeme = (navigation, memeName, template, templateUploader, imageHeight
 
 const goToProfile = (navigation, profile, username, profilePic) => () => {
     navigation.push('Profile', {
-        user: profile,
+        profile: profile,
         username: username,
         profilePic: profilePic,
     })

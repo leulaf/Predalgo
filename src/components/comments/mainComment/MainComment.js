@@ -116,7 +116,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
             text: text,
             image: image,
         })
-    }, []);
+    }, [image]);
 
     if(finished == "deleted"){
         // set commentsList to null using ref for MainCommentBottom

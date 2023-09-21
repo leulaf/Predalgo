@@ -65,7 +65,16 @@ const UsersScreen = ({ route }) => {
         return (
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightListItem : styles.darkListItem}
-                onPress={() => navigation.push('Profile', {user: item})}
+                onPress={() => navigation.push('Profile', 
+                    {
+                        profile: item.id,
+                        username: item.username,
+                        profilePic: item.profilePic,
+                        bioData: item.bio,
+                        followersCountData: item.followers,
+                        postsCountData: item.posts,
+                    }
+                )}
             >
                 <Image source={{uri: item.profilePic}} style={styles.profilePicture}/>
                 

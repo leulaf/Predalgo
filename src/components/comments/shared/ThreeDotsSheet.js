@@ -4,8 +4,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Share, Platform, Dimensions }
 
 import { AuthenticatedUserContext } from '../../../../context-store/context';
 
-import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
-
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import Feather from '@expo/vector-icons/Feather';
@@ -18,23 +16,10 @@ import BottomSheet, {BottomSheetView} from "@gorhom/bottom-sheet";
 
 import { getAuth } from 'firebase/auth';
 
-import DeleteIcon from '../../../../assets/trash_delete.svg';
-import ReportIcon from '../../../../assets/danger.svg';
-
 const auth = getAuth();
 
 const window = Dimensions.get('window');
 
-const getImage = async (image) => {
-    const manipResult = await manipulateAsync(
-      image,
-      [],
-      { base64: true }
-    );
-
-    return manipResult.base64;
-    
-  };
 
 const onShare = async(text, image) => {
     try {
@@ -129,7 +114,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                 }}
 
                 // handleHeight={0}
-                handleStyle={{backgroundColor: theme == 'light' ? 'rgba(255, 255, 255, 1)' : 'rgba(35, 35, 35, 1)', width: "95%", alignSelf: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15}}
+                handleStyle={{backgroundColor: theme == 'light' ? '#F6F6F6' : '1D1D1D', width: "95%", alignSelf: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15}}
                 // handleIndicatorStyle={{height: 0, width: 0}}
                 // handleComponent={null}
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#000' : '#FFF'}}
@@ -321,7 +306,7 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         // alignContent: 'center',
         justifyContent: 'flex-end',
-        backgroundColor: 'rgba(255, 255, 255, 1)',
+        backgroundColor: '#F6F6F6',
         // borderWidth: 1,
         // borderColor: '#E2E2E2',
     },
@@ -338,7 +323,7 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         // alignContent: 'center',
         justifyContent: 'flex-end',
-        backgroundColor: 'rgba(35, 35, 35, 1)',
+        backgroundColor: '#1D1D1D',
         // borderWidth: 1,
         // borderColor: '#E2E2E2',
     },

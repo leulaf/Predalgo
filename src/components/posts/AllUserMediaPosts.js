@@ -4,6 +4,7 @@ import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
 import GlobalStyles from '../../constants/GlobalStyles';
 import ResizableImage from  '../../shared/functions/ResizableImage';
+import DisplayMedia from '../../shared/post/DisplayMedia';
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -13,38 +14,19 @@ const renderItem = ({ item, index }) => {
   // If the item is the last item in the list, add some extra bottom padding
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      style={
-        index % 2 == 1 ?
-          {marginLeft: 2, marginRight: 4, marginBottom: 6} 
-        :
-          {marginLeft: 4, marginRight: 2, marginBottom: 6} 
-      }
-    >
-      <ResizableImage
-        image={item.imageUrl}
-        maxWidth={windowWidth/2 - 8}
-        maxHeight={500}
-        height={item.height}
-        width={item.width}
-        style={{borderRadius: 10}}
-      />
-    </TouchableOpacity>
+    <DisplayMedia 
+      item={item}
+      index={index}
+    />
   );
 };
 
 
-const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+const keyExtractor = (item, index) => item.id;
 
 export default function AllUserMediaPosts({ userId, postList }){
     const {theme,setTheme} = useContext(ThemeContext);
-    const [imagePostList, setImagePostList] = useState([]);
-
-
-    useEffect(() => {
-      setImagePostList(postList.filter(obj => obj.imageUrl !== undefined && obj.imageUrl !== null));
-    }, [postList]);
+    const [imagePostList, setImagePostList] = useState(postList.filter(obj => obj.imageUrl || obj.template));
 
 
     return (
@@ -56,7 +38,7 @@ export default function AllUserMediaPosts({ userId, postList }){
           data={imagePostList}
           numColumns={2}
 
-          optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
+          // optimizeItemArrangement={true} // check if this rearranges previously displayed item onEndReached
 
           // onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
           // onEndReachedThreshold={1} //need to implement infinite scroll
@@ -75,10 +57,10 @@ export default function AllUserMediaPosts({ userId, postList }){
               <View style={{height: 100}}/>
           }
 
-          overrideItemLayout={(layout, item) =>{
-            layout.span = windowWidth/2 - 8;
-            // layout.size = item.imageHeight * (layout.span/item.imageWidth);
-          }}
+          // overrideItemLayout={(layout, item) =>{
+          //   layout.span = windowWidth/2 - 8;
+          //   // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+          // }}
 
           keyExtractor={keyExtractor}
         />

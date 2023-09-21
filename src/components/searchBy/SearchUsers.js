@@ -61,7 +61,16 @@ function SearchUsers(props){
             return (
                 <TouchableOpacity
                     style={theme == 'light' ? styles.lightListItem : styles.darkListItem}
-                    onPress={() => navigation.navigate('Profile', {user: item.id})}
+                    onPress={() => navigation.push('Profile', 
+                        {
+                            profile: item.id,
+                            username: item.username,
+                            profilePic: item.profilePic,
+                            bioData: item.bio,
+                            followersCountData: item.followers,
+                            postsCountData: item.posts,
+                        }
+                    )}
                 >
                     <Image source={{uri: item.profilePic}} style={styles.profilePicture}/>
                     

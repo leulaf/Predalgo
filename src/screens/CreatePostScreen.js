@@ -64,7 +64,7 @@ const CreatePostScreen = ({navigation, route}) => {
     const {imageUrl, memeName, imageUrls, newTemplate, newTemplateImage} = route.params;
     const [linkView, setLinkView] = React.useState(false);
     const [tempTags, setTempTags] = React.useState('');
-    const [uploading, setUploading] = React.useState(true);
+    const [uploading, setUploading] = React.useState(false);
     const titleInputAccessoryViewID = uuid.v4();
     const textInputAccessoryViewID = uuid.v4();
     const tagInputAccessoryViewID = uuid.v4();
@@ -522,18 +522,6 @@ const CreatePostScreen = ({navigation, route}) => {
 
     }, [imagePost, text])
 
-    const getJsonLottie = (url) => {
-        fetch(url, {method: "GET"})
-        .then((response) => response.json())
-        .then((responseData) => {
-            // console.log(responseData);
-            setUploading(responseData);
-        })
-        .catch((error) => {
-            // console.log(error);
-        })
-    }
-
 
     const uploadingScreen = (
         <View style={{
@@ -544,13 +532,11 @@ const CreatePostScreen = ({navigation, route}) => {
             backgroundColor: theme == 'light' ? '#FFF' : '#1C1C1C',
             
         }}>
-            {getJsonLottie("https://firebasestorage.googleapis.com/v0/b/predalgo-backend.appspot.com/o/posts%2Fusers%2F0GqNSWhzt1cs5YcVupZKHIVlzMG2%2Fintro-creativity-women.json?alt=media&token=1c818cb4-b6e9-44c5-bcac-d35ac3a0ee2b")}
             <LottieView
                     // ref={refreshViewRef}
                     autoPlay
                     style={[styles.lottieView]}
-                    // source={theme == 'light' ? uploadingAnimation : uploadingAnimation}
-                    source={uploading}
+                    source={theme == 'light' ? uploadingAnimation : uploadingAnimation}
                     // progress={progress}
                     colorFilters={[
                         { keypath: "Shape Layer 1 Comp 1", 
@@ -563,7 +549,9 @@ const CreatePostScreen = ({navigation, route}) => {
 
     return (
         <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
-                    {uploading && uploadingScreen}
+                
+                {uploading && uploadingScreen}
+
                 <View style={{
                         flexDirection: 'row',
                         justifyContent: 'center',

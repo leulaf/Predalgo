@@ -141,7 +141,8 @@ function MainProfileScreen ({navigation, route, ...props }) {
     
     const addProfilePic = React.useCallback(async (url) => {
         updateProfile(auth.currentUser, {
-            photoURL: url
+            photoURL: url,
+            // displayName: "RandUser"
         }).then(() => {
             setProfilePic(url);
         }).catch((error) => {

@@ -117,7 +117,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
             text: text,
             image: image,
         })
-    }, []);
+    }, [image]);
 
 
     if(finished == "deleted"){
