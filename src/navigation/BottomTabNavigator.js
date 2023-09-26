@@ -60,33 +60,33 @@ function BottomTabNavigator ({navigation}) {
     const Bottom_Tab = createBottomTabNavigator();
 
     if(theme == "light"){
-        home = <Home width={27} height={27} style={{marginTop: 25}}/>;
-        homeInactive = <Home_Inactive width={27} height={27} style={{marginTop: 25}}/>;
-        
-        trend = <Trend width={27} height={28} style={{marginTop: 25}}/>;
-        trendInactive = <Trend_Inactive width={27} height={28} style={{marginTop: 25}}/>;
+        home = <Home width={27} height={27} />;
+        homeInactive = <Home_Inactive width={27} height={27} />;
 
-        post = <Post width={55} height={55} style={{marginTop: 33}}/>;
-        
-        saved = <Saved width={22} height={22} style={{marginTop: 25}}/>;
-        savedInactive =  <Saved_Inactive width={22} height={22} style={{marginTop: 25}}/>;
+        trend = <Trend width={27} height={28}/>;
+        trendInactive = <Trend_Inactive width={27} height={28}/>;
 
-        profile = <Profile width={27} height={27} style={{marginTop: 25}}/>;
-        profileInactive = <Profile_Inactive width={27} height={27} style={{marginTop: 25}}/>;
+        post = <Post width={55} height={55}/>;
+
+        saved = <Saved width={22} height={22}/>;
+        savedInactive =  <Saved_Inactive width={22} height={22}/>;
+
+        profile = <Profile width={27} height={27}/>;
+        profileInactive = <Profile_Inactive width={27} height={27}/>;
     }else{
-        home = <Home_Dark width={27} height={27} style={{marginTop: 25}}/>;
-        homeInactive = <Home_Inactive_Dark width={27} height={27} style={{marginTop: 25}}/>;
-        
-        trend = <Trend_Dark width={27} height={28} style={{marginTop: 25}}/>;
-        trendInactive =  <Trend_Inactive_Dark width={27} height={28} style={{marginTop: 25}}/>;
+        home = <Home_Dark width={27} height={27} />;
+        homeInactive = <Home_Inactive_Dark width={27} height={27} />;
 
-        post = <Post_Dark width={55} height={55} style={{marginTop: 33}}/>;
-       
-        saved = <Saved_Dark width={22} height={22} style={{marginTop: 25}}/>;
-        savedInactive =  <Saved_Inactive_Dark width={22} height={22} style={{marginTop: 25}}/>;
-        
-        profile = <Profile_Dark width={27} height={27} style={{marginTop: 25}}/>;
-        profileInactive = <Profile_Inactive_Dark width={27} height={27} style={{marginTop: 25}}/>;
+        trend = <Trend_Dark width={27} height={28}/>;
+        trendInactive = <Trend_Inactive_Dark width={27} height={28}/>;
+
+        post = <Post_Dark width={55} height={55}/>;
+
+        saved = <Saved_Dark width={22} height={22}/>;
+        savedInactive =  <Saved_Inactive_Dark width={22} height={22}/>;
+
+        profile = <Profile_Dark width={27} height={27}/>;
+        profileInactive = <Profile_Inactive_Dark width={27} height={27}/>;
     }
 
 
@@ -140,7 +140,7 @@ function BottomTabNavigator ({navigation}) {
                     borderTopWidth: 0,
                     height: 85
                 },
-                tabBarLabelStyle: { marginTop: 20, fontSize: 11 , fontWeight: "500"},
+                tabBarLabelStyle: { fontSize: 11 , fontWeight: "500"},
             })}
             >
                 <Bottom_Tab.Screen name={homeName} component={MainScreen}

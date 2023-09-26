@@ -57,7 +57,7 @@ function SearchUsers(props){
 
         // makes sure the current user is not displayed in the search results
         if(firebase.auth().currentUser.uid != item.id){
-            // console.log(item);
+            console.log(item);
             return (
                 <TouchableOpacity
                     style={theme == 'light' ? styles.lightListItem : styles.darkListItem}

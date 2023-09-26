@@ -25,7 +25,7 @@ import AllUserPosts from '../components/posts/AllUserPosts';
 import AllUserMediaPosts from '../components/posts/AllUserMediaPosts';
 
 const navigateTo = (navigation, screen) => () => {
-    navigation.navigate(screen, {profile: firebase.auth().currentUser.uid})
+    navigation.navigate(screen, {profile: auth.currentUser.uid})
 }
 
 const auth = getAuth();
@@ -140,9 +140,9 @@ function MainProfileScreen ({navigation, route, ...props }) {
     
     
     const addProfilePic = React.useCallback(async (url) => {
-        updateProfile(auth.currentUser, {
+        await updateProfile(auth.currentUser, {
             photoURL: url,
-            // displayName: "RandUser"
+            displayName: "Leesn"
         }).then(() => {
             setProfilePic(url);
         }).catch((error) => {
@@ -150,7 +150,7 @@ function MainProfileScreen ({navigation, route, ...props }) {
             // ...
         });
 
-        const profilePicRef = doc(db, "users", firebase.auth().currentUser.uid);
+        const profilePicRef = doc(db, "users", auth.currentUser.uid);
         await updateDoc(profilePicRef, {
             profilePic: url
         }).then(() => {
@@ -158,11 +158,13 @@ function MainProfileScreen ({navigation, route, ...props }) {
             // Alert.alert('Profile picture updated successfully \n Refresh App to see changes');
         })
 
+        // console.log(auth.currentUser.photoURL)
+
     }, []);
     
     
     const setNewBio = React.useCallback(async (description) => {
-        const profileBioRef = doc(db, "users", firebase.auth().currentUser.uid);
+        const profileBioRef = doc(db, "users", auth.currentUser.uid);
         await updateDoc(profileBioRef, {
             bio: description
         }).then(() => {
@@ -171,7 +173,7 @@ function MainProfileScreen ({navigation, route, ...props }) {
     }, []);
 
     // const getMostRecentPost = React.useCallback(async () => {
-    //     const posts = await fetchMostRecentPost(firebase.auth().currentUser.uid);
+    //     const posts = await fetchMostRecentPost(auth.currentUser.uid);
     //     setPostList(postList => [...posts, ...postList]);
     // }, []);
 
@@ -179,14 +181,14 @@ function MainProfileScreen ({navigation, route, ...props }) {
         setByNewPosts(true);
         setByPopularPosts(false);
         // setGetLatestPost(false);
-        const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
+        const posts = await fetchUserPostsByRecent(auth.currentUser.uid);
         setPostList(posts);
     }, []);
 
     const handleNewPostsClick = React.useCallback(() => async () => {
         setByNewPosts(true);
         setByPopularPosts(false);
-        const posts = await fetchUserPostsByRecent(firebase.auth().currentUser.uid);
+        const posts = await fetchUserPostsByRecent(auth.currentUser.uid);
         setPostList(posts);
     }, []);
     
@@ -194,7 +196,7 @@ function MainProfileScreen ({navigation, route, ...props }) {
     const handlePopularPostsClick = React.useCallback(() => async () => {
         setByNewPosts(false);
         setByPopularPosts(true);
-        const posts = await fetchUserPostsByPopular(firebase.auth().currentUser.uid);
+        const posts = await fetchUserPostsByPopular(auth.currentUser.uid);
         setPostList(posts);
     }, []);
 

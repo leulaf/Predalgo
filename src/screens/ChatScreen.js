@@ -1,76 +1,53 @@
-// import React, {useContext} from 'react';
-// import {View, Text, StyleSheet, TextInput, Dimensions} from 'react-native';
-// import {ThemeContext} from '../../context-store/context';
-// import GlobalStyles from '../constants/GlobalStyles';
-
-// const window = Dimensions.get('window');
-// // {
-// //     primary: '#f57c00',
-// //     gray: '#C5C5C7',
-// //     mediumGray: '#F6F7FB',
-// //     lightGray: '#FAFAFA'
-// // }
-
-
-// export default ChatScreen = ({navigation}) => {
-//     const {theme,setTheme} = useContext(ThemeContext);
-
-//     return (
-//         <View style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
-
-//         </View>
-//     );
-// }
-
-// const styles = StyleSheet.create({});
-
-
-
-
-
-
-
-
-
-
-
-
-import * as React from 'react';
-import { View, KeyboardAvoidingView } from 'react-native';
-import {Bubble, GiftedChat, Send} from 'react-native-gifted-chat';
+import React, {} from 'react';
+import { Alert, View, Text, Platform, KeyboardAvoidingView } from 'react-native';
+import {
+    Bubble,
+    GiftedChat,
+    IMessage,
+    Send,
+    SendProps,
+    SystemMessage,
+    Time,
+} from 'react-native-gifted-chat';
+import { Image } from 'expo-image';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';
-import  {getDatabase, Database, push, get, ref, onValue, onChildAdded, off, update} from 'firebase/database';
-import {firebase} from '../config/firebase';
-// import {database} from 'firebase/database';
-
+import  {serverTimestamp, getDatabase, push, get, ref, onValue, onChildAdded, off, update} from 'firebase/database';
+import {ThemeContext} from '../../context-store/context';
+import ChatTopBar from '../ScreenTop/ChatTopBar';
 
 import {getAuth} from 'firebase/auth';
 
 
 const auth = getAuth();
 
-export default function GroupChat({ route }){
-    const [ messages, updateMessages ] = useState([]);
-    const [ user, updateUser ] = useState({
-        email:'',
-        _id:'',
-        name:'',
-        avatar:'',  
+export default function ChatScreen({ navigation, route }){
+    const {theme, setTheme} = React.useContext(ThemeContext);
+    const [ messages, updateMessages ] = React.useState([]);
+    const [ user, updateUser ] = React.useState({
+        _id: auth?.currentUser?.uid,
+        name: auth?.currentUser?.displayName,
+        avatar: auth?.currentUser?.photoURL,
     })
+    const [chatroom, setChatroom] = React.useState(
+        route.params.profile >= auth?.currentUser?.uid ?
+        route.params.profile + '-' + auth?.currentUser?.uid :
+        auth?.currentUser?.uid + '-' + route.params.profile
+    )
+    // console.log(user)
     const db = getDatabase();
 
     useEffect(() => {
-        let newUserObj = {
-            _id: auth?.currentUser?.uid,
-            name: auth?.currentUser?.displayName,
-            avatar: auth?.currentUser?.photoURL,
-        } 
-        updateUser(newUserObj)
+        // let newUserObj = {
+        //     _id: auth?.currentUser?.uid,
+        //     name: auth?.currentUser?.displayName,
+        //     avatar: auth?.currentUser?.photoURL,
+        // } 
+        // updateUser(newUserObj)
 
 
-        onChildAdded(ref(db, 'chatrooms'),snapshot =>
+        onChildAdded(ref(db, chatroom),snapshot =>
             {
                 updateMessages(previous => GiftedChat.append(previous, snapshot.val()))
                 // console.log("1" + user._id)
@@ -79,7 +56,7 @@ export default function GroupChat({ route }){
         )
 
         // Stop listening for updates when no longer required
-        return () => off(ref(db, 'chatrooms'));
+        return () => off(ref(db, chatroom));
     },[]);
 
 
@@ -89,16 +66,16 @@ export default function GroupChat({ route }){
             const message = {
                 _id: item._id,
                 text: item.text,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                timestamp: serverTimestamp(),
                 user: item.user
             }
-            push(ref(db, 'chatrooms'), message)
+            push(ref(db, chatroom), message)
         })
     })
 
     // const getMessages = React.useCallback(async () => {
     //     const snapshot = await get(
-    //         ref(db, 'chatrooms'),
+    //         ref(db, chatroom),
     //     );
     //     for (const key in snapshot.val()) {
     //         updateMessages(previous => GiftedChat.append(previous, {_id: key, ...snapshot.val()[key]}))
@@ -110,46 +87,95 @@ export default function GroupChat({ route }){
     const renderSend = (props) => {
         return (
             <Send {...props}>
-            <View>
-                <MaterialCommunityIcons
-                name="send-circle"
-                style={{marginBottom: 5, marginRight: 5}}
-                size={32}
-                color="#2e64e5"
-                />
-            </View>
+                <View>
+                    <MaterialCommunityIcons
+                    name="send-circle"
+                    style={{marginBottom: 5, marginRight: 5}}
+                    size={32}
+                    color="#2e64e5"
+                    />
+                </View>
             </Send>
         );
     };
+
+    // const renderAvatar = (props) => {
+    //     var sameUserInPrevMessage = false;
+
+    //     if (props.previousMessage.user !== undefined && props.previousMessage.user) {
+    //         props.previousMessage.user._id === props.currentMessage.user._id ?
+    //             sameUserInPrevMessage = true
+    //         :
+    //             sameUserInPrevMessage = false
+    //     }
+    //     if (sameUserInPrevMessage 
+    //         // || props.currentMessage.user._id === auth?.currentUser?.uid
+    //         ) {
+    //         return null;
+    //     }
+
+    //     return (
+    //         <Image
+    //             source={{uri: props.currentMessage.user.avatar}}
+    //             style={{width: 30, height: 30, borderRadius: 15}}
+    //         />
+    //     )
+    // }
     
     const renderBubble = (props) => {
+        const createdAt = new Date(props.currentMessage.timestamp).toLocaleString();
+        // console.log(createdAt)
+
+        var sameUserInPrevMessage = false;
+
+        if (props.previousMessage.user !== undefined && props.previousMessage.user) {
+            props.previousMessage.user._id === props.currentMessage.user._id ?
+                sameUserInPrevMessage = true
+            :
+                sameUserInPrevMessage = false
+        }
+
+        var messageBelongsToCurrentUser = auth?.currentUser?.uid == props.currentMessage.user._id;
+
         return (
-            <Bubble
-                {...props}
-                wrapperStyle={{
-                    left: {
-                        backgroundColor: '#EEE',
-                        borderBottomRightRadius: 15,
-                        borderBottomLeftRadius: 0,
-                        borderTopRightRadius: 15,
-                        borderTopLeftRadius: 15,
-                    },
-                    right: {
-                        backgroundColor: '#2e64e5',
-                        borderBottomRightRadius: 0,
-                        borderBottomLeftRadius: 15,
-                        borderTopRightRadius: 15,
-                        borderTopLeftRadius: 15,
-                    },
-                }}
-                textStyle={{
-                    right: {
-                    color: '#fff',
-                    },
-                }}
-            />
+                    <View
+                    //   style={messageBelongsToCurrentUser ? styles.messageTimeAndNameContainerRight : styles.messageTimeAndNameContainerLeft}
+                    >
+                        <Bubble
+                            {...props}
+                            wrapperStyle={{
+                                left: {
+                                    backgroundColor: '#EEE',
+                                    borderBottomRightRadius: 15,
+                                    borderBottomLeftRadius: 0,
+                                    borderTopRightRadius: 15,
+                                    borderTopLeftRadius: 15,
+                                },
+                                right: {
+                                    backgroundColor: '#2e64e5',
+                                    borderBottomRightRadius: 0,
+                                    borderBottomLeftRadius: 15,
+                                    borderTopRightRadius: 15,
+                                    borderTopLeftRadius: 15,
+                                },
+                            }}
+                            textStyle={{
+                                left: {
+                                    color: '#000',
+                                },
+                                right: {
+                                    color: '#FFF',
+                                },
+                            }}
+                        />
 
-
+                        {
+                            // !messageBelongsToCurrentUser &&
+                            // <Text size={10} style={{marginHorizontal: 10, marginBottom: 5}} bold color={props.position === "left" ? 'gray' : 'white'}>
+                            //     {`${createdAt}`}
+                            // </Text>
+                        }
+                    </View>
         );
     };
     
@@ -159,341 +185,82 @@ export default function GroupChat({ route }){
         );
     }
 
-    return(
-        <KeyboardAvoidingView style={{flex:1}} keyboardVerticalOffset={10} enabled>
-        {/* <GiftedChat 
-            messages={messages} 
-            onSend={send} 
-            user={user}
-            renderUsernameOnMessage={true}
-            placeholder="Type here..."
-            showUserAvatar={true}
-            alwaysShowSend={true}
-            scrollToBottom={true}
-        /> */}
-        <GiftedChat
-            messages={messages}
-            placeholder="Type here..."
-            // renderUsernameOnMessage={true}
-            showAvatarForEveryMessage={false}
-            alwaysShowSend={true}
-            showUserAvatar={false}
-            onSend={send}
-            messagesContainerStyle={{
-                backgroundColor: '#fff'
-            }}
-            textInputStyle={{
-                backgroundColor: '#fff',
-                borderRadius: 20,
-            }}
-            user={user}
+    const onPressAvatar = React.useCallback(() => {
+        Alert.alert('On avatar press')
+    }, [])
 
-            renderBubble={renderBubble}
-            renderSend={renderSend}
-            scrollToBottom
-            scrollToBottomComponent={scrollToBottomComponent}
-        />
-        </KeyboardAvoidingView>
+    
+    const renderSystemMessage = React.useCallback(props => {
+        return (
+          <SystemMessage
+            {...props}
+            containerStyle={{
+              marginBottom: 15,
+            }}
+            textStyle={{
+              fontSize: 14,
+            }}
+          />
+        )
+    }, [])
+    
+
+    return(
+        <View style={{flex:1, backgroundColor: theme == 'light' ? '#FFF' : '#151515',}}>
+            <KeyboardAvoidingView 
+                style={{
+                    flex:1,
+                    // backgroundColor: theme == 'light' ? '#000' : '#151515',
+                    marginBottom: Platform.OS === 'ios' && 20
+                }}
+                keyboardVerticalOffset={10} enabled>
+
+                <ChatTopBar username={route.params.username} profilePic={route.params.avatar} theme={theme} navigation={navigation} />
+
+                <GiftedChat
+                    messages={messages}
+                    placeholder="Type here..."
+                    // renderUsernameOnMessage={true}
+                    showAvatarForEveryMessage={false}
+                    alwaysShowSend={true}
+                    showUserAvatar={false}
+                    onSend={send}
+
+                    textInputStyle={{
+                        backgroundColor: '#fff',
+                        borderRadius: 20,
+                        height: 200
+                    }}
+                    user={user}
+                    onPressAvatar={onPressAvatar}
+                    timeTextStyle={{
+                        left: { color: 'red' },
+                        right: { color: 'yellow' },
+                    }}
+                    // minInputToolbarHeight={50}
+                    // bottomOffset={50}
+                    multiline={false}
+                    renderSystemMessage={renderSystemMessage}
+                    messagesContainerStyle={{
+                        backgroundColor: theme == 'light' ? '#FFF' : '#151515',
+                    }}
+
+                    renderBubble={renderBubble}
+                    // renderAvatar={renderAvatar}
+                    renderAvatar={null}
+                    // renderAvatarOnTop={true}
+                    renderSend={renderSend}
+                    scrollToBottom
+                    scrollToBottomComponent={scrollToBottomComponent}
+                />
+            </KeyboardAvoidingView>
+            
+            {/* {
+                Platform.OS === 'ios' &&
+                <View style={{height: Platform.OS === 'ios' && 20, width: 1000, backgroundColor: 'red'}}/>
+            } */}
+            
+        </View>
+        
     );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, {
-//     useCallback,
-//     useEffect,
-//     useLayoutEffect,
-//     useState
-//   } from 'react';
-//   import {
-//     Image,
-//     StyleSheet,
-//     Text,
-//     TouchableOpacity,
-//     View,
-//     ImageBackground
-//   } from 'react-native';
-//   import { Bubble, GiftedChat, Send } from 'react-native-gifted-chat';
-//   import { MaterialIcons } from '@expo/vector-icons';
-//   import {
-//     collection,
-//     addDoc,
-//     orderBy,
-//     query,
-//     onSnapshot
-//   } from 'firebase/firestore';
-  
-//   import { auth, db } from '../config/firebase';
-//   import { signOut } from 'firebase/auth';
-
-// //   export default {
-// //     brand: '#38630E',
-// //     bg: '#E1FDC6',
-// //     input: '#E1FDC6'
-// //   };
-//   const ChatScreen = ({ navigation }) => {
-//     const [messages, setMessages] = useState([]);
-  
-//     const onSignOut = () => {
-//       signOut(auth).catch((error) => console.log('Error logging out: ', error));
-//     };
-  
-//     useLayoutEffect(() => {
-//       navigation.setOptions({
-//         headerRight: () => (
-//           <TouchableOpacity
-//             style={{
-//               marginRight: 10
-//             }}
-//             onPress={onSignOut}
-//           >
-//             <Text>Logout</Text>
-//           </TouchableOpacity>
-//         )
-//       });
-//     }, [navigation]);
-  
-//     useEffect(() => {
-//       const collectionRef = collection(db, 'chats');
-//       const q = query(collectionRef, orderBy('createdAt', 'desc'));
-  
-//       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//         setMessages(
-//           querySnapshot.docs.map((doc) => ({
-//             _id: doc.data()._id,
-//             createdAt: doc.data().createdAt.toDate(),
-//             text: doc.data().text,
-//             user: doc.data().user
-//           }))
-//         );
-//       });
-  
-//       return () => unsubscribe();
-//     }, []);
-  
-//     const onSend = useCallback((messages = []) => {
-//       setMessages((previousMessages) =>
-//         GiftedChat.append(previousMessages, messages)
-//       );
-//       const { _id, createdAt, text, user } = messages[0];
-//       addDoc(collection(db, 'chats'), {
-//         _id,
-//         createdAt,
-//         text,
-//         user
-//       });
-//     }, []);
-  
-//     const renderAvatar = (props) => {
-//       console.log(props.currentMessage.user.avatar);
-//       return (
-//         <View style={styles.avatarContainer}>
-//           <Image
-//             style={styles.avatar}
-//             source={{ uri: props.currentMessage.user.avatar }}
-//           />
-//         </View>
-//       );
-//     };
-//     const renderSend = (props) => {
-//       return (
-//         <Send {...props} containerStyle={styles.sendContainer}>
-//           <View style={styles.sendButton}>
-//             <MaterialIcons name="send" size={24} color={'#38630E'} />
-//           </View>
-//         </Send>
-//       );
-//     };
-//     return (
-//       <ImageBackground
-//         style={styles.container}
-//         source={require('../../assets/splash.png')}
-//       >
-//         <GiftedChat
-//           messages={messages}
-//           showAvatarForEveryMessage={true}
-//           onSend={(messages) => onSend(messages)}
-//           user={{
-//             _id: auth?.currentUser?.email,
-//             avatar:
-//               'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80'
-//           }}
-//           renderAvatar={renderAvatar}
-//           renderSend={renderSend}
-//           renderBubble={(props) => {
-//             return (
-//               <Bubble
-//                 {...props}
-//                 wrapperStyle={{
-//                   left: {
-//                     backgroundColor: '#FFFFFF',
-//                     color: '#ffffff'
-//                   },
-//                   right: {
-//                     backgroundColor: '#38630E',
-//                     color: '#ffffff'
-//                   }
-//                 }}
-//               />
-//             );
-//           }}
-//         />
-//       </ImageBackground>
-//     );
-//   };
-  
-//   export default ChatScreen;
-  
-//   const styles = StyleSheet.create({
-//     container: {
-//       flex: 1,
-//       backgroundColor: '#E1FDC6'
-//     },
-//     avatarContainer: {
-//       marginRight: 10
-//     },
-//     avatar: {
-//       width: 36,
-//       height: 36,
-//       borderRadius: 18
-//     },
-//     sendContainer: {
-//       justifyContent: 'center',
-//       alignItems: 'center',
-//       marginRight: 10
-//     },
-//     sendButton: {
-//       backgroundColor: "#444",
-//       borderRadius: 15,
-//       padding: 10
-//     }
-//   });

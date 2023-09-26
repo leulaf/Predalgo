@@ -43,7 +43,7 @@ export default function ProfileScreen ({route, navigation}) {
             .then((userSnap) => {
                 if (userSnap.exists()) {
                     const data = userSnap.data();
-                    console.log(data)
+                    // console.log(data)
                     setPostsCount(data.posts);
                     setFollowersCount(data.followers);
                     setBio(data.bio);
@@ -221,23 +221,30 @@ export default function ProfileScreen ({route, navigation}) {
                          {/* Share comment */}
                         <TouchableOpacity
                             activeOpacity={0.5}
-                            style={{flexDirection: 'row',  marginTop: 14, alignItems: 'center'}}
-                            onPress={() => {
-                                
-                            }}
+                            style={{flexDirection: 'row',  marginTop: 14, marginLeft: 1, alignItems: 'center'}}
+                            onPress={() => 
+                                navigation.navigate("Chat", {
+                                    profile: profile,
+                                    username: username,
+                                    avatar: profilePic,
+                                })
+                            }
                         >
                             <Ionicons
                                 name={"chatbubble-ellipses-outline"}
                                 // name={"chatbox-ellipses-outline"}
-                                size={33}
+                                size={32}
 
-                                color={theme == 'light' ? '#000' : '#F8F8F8'}
+                                color={theme == 'light' ? '#222' : '#F8F8F8'}
                                 // marginLeft={15}
                                 // marginRight={13}
                                 // marginTop={0}
                             />
                             <Text
-                                style={theme == 'light' ? styles.lightChatText : styles.darkChatText}
+                                style={
+                                    // theme == 'light' ? styles.lightChatText : styles.darkChatText
+                                    [theme == 'light' ? styles.lightText : styles.darkText, {marginLeft: 6}]
+                                }
                             >
                                 Chat
                             </Text>

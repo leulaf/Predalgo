@@ -140,7 +140,7 @@ const MainStackNavigator = ({}) => {
         />
         <Stack.Screen name="Chat" component={ChatScreen}
             options={{
-                // headerShown: false,
+                headerShown: false,
                 gestureResponseDistance: windowWidth,
             }}
         />

@@ -14,7 +14,9 @@ import CreateMemeLight from '../../assets/meme_create_light.svg';
 import UploadDark from '../../assets/upload_dark.svg';
 import LinkDark from '../../assets/link_dark.svg';
 import CreateMemeDark from '../../assets/meme_create_dark.svg';
+import { getAuth } from 'firebase/auth';
 
+const auth = getAuth();
 
 const PostBar = ({}) => {
    const navigation = useNavigation();
@@ -78,7 +80,8 @@ const PostBar = ({}) => {
             onPress={() => 
                 navigation.navigate("Chat", {
                     // forComment: false,
-                    conversationKey: 1234
+                    username: auth?.currentUser?.displayName,
+                    avatar: auth?.currentUser?.photoURL,
                 })
             }
            >
