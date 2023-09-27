@@ -99,7 +99,7 @@ export default function ProfileScreen ({route, navigation}) {
             setFollowing(true);
             Alert.alert('Followed');
         }).catch((error) => {
-            console.log(error);
+            // console.log(error);
         });
 
         // add user to followers collection
@@ -110,7 +110,7 @@ export default function ProfileScreen ({route, navigation}) {
         }).then(() => {
             // console.log('Added to followers collection');
         }).catch((error) => {
-            console.log(error);
+            // console.log(error);
         });
 
         // update followers count for user being followed
@@ -137,7 +137,7 @@ export default function ProfileScreen ({route, navigation}) {
             setFollowing(false);
             Alert.alert('Unfollowed');
         }).catch((error) => {
-            console.log(error);
+            // console.log(error);
         });
 
         // remove user from followers collection
@@ -146,7 +146,7 @@ export default function ProfileScreen ({route, navigation}) {
         deleteDoc(followerRef).then(() => {
             // console.log('Removed from followers collection');
         }).catch((error) => {
-            console.log(error);
+            // console.log(error);
         });
 
         // update followers count for user being unfollowed

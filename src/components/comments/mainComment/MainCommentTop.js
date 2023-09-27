@@ -36,10 +36,10 @@ export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, n
     }
 
 
-    const {commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     const clickedThreeDots = React.useCallback(() => () => {
-        setCommentOptions({
+        setOptions({
             commentId: commentId,
             profile: profile,
             replyToPostId: replyToPostId,
@@ -96,7 +96,7 @@ export default MainCommentTop = ({ commentId, replyToCommentId, replyToPostId, n
 
             {/* Overlay */}
             {
-                // commentOptions && 
+                // options && 
                 
                 // <CommentOverlay 
                 //     commentId={commentId}

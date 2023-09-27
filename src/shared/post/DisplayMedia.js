@@ -1,5 +1,3 @@
-import PinturaEditor from "@pqina/react-native-expo-pintura";
-
 import React from 'react';
 
 import ImageView from "react-native-image-viewing";
@@ -10,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { TouchableOpacity, View, StyleSheet, Dimensions } from "react-native";
 
-import { manipulateAsync } from 'expo-image-manipulator';
+import CreateMeme from "../functions/CreateMeme";
 
 import ResizableImage from "../functions/ResizableImage";
 
@@ -50,7 +48,7 @@ const onNavToPost = (navigation, item, image, setIsImageFocused) => () => {
 }
 
 // Load Meme with template and template state
-export default DisplayMeme = React.memo(({ theme, index, item, templateUploader, maxHeight, maxWidth, style }) => {
+export default DisplayMeme = React.memo(({ theme, index, item, }) => {
     const navigation = useNavigation();
     const editorRef = React.useRef(null);
     const [image, setImage] = React.useState(item.imageUrl ? item.imageUrl : item.template);
@@ -105,25 +103,7 @@ export default DisplayMeme = React.memo(({ theme, index, item, templateUploader,
             {
                 (item.template && image == item.template) &&
 
-                <PinturaEditor
-                    ref={editorRef}
-                    
-                    src={item.template}
-                    // onClose={() => console.log('closed')}
-                    // onDestroy={() => console.log('destroyed')}
-                    onLoad={() => 
-                        editorRef.current.editor.processImage(item.templateState)
-                    }
-                    // onInit={() => {
-                    //     editorRef.current.editor.processImage(template, templateState)
-                    // }}
-                    onProcess={async({ dest }) => {
-                        manipulateAsync(dest, [], ).then((res) => {
-                            setImage(res.uri);
-                            // console.log(res.uri)
-                        })
-                    }}
-                /> 
+                <CreateMeme image={image} templateState={item.templateState} setFinished={() => null}setImage={setImage} id={item.id}/>
             }
         </TouchableOpacity>
     )

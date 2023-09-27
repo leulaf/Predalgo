@@ -1,19 +1,18 @@
 import { firebase, db, storage } from '../../config/firebase';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, limit, updateDoc, increment } from "firebase/firestore";
 
-const getRepost = async(repostPostId, profile) => {
-    const repostRef = doc(db, 'allPosts', repostPostId);
+const getRepost = async(repostedPostId, profile, username) => {
+    const repostRef = doc(db, 'allPosts', repostedPostId);
     const repostSnapshot = await getDoc(repostRef);
 
     if(repostSnapshot.exists){
         const repostData = repostSnapshot.data();
-        const id = repostSnapshot.id;
-        const repostProfile = profile;
-
+        const id = repostedPostId;
+        const reposterProfile = profile;
+        const reposterUsername = username;
+        const reposterProfilePic = repostData.profilePic;
         // Return the reposted post data along with the original post data
-        return { id, repostProfile, ...repostData }
-    }else{
-        return;
+        return { id, reposterProfile, reposterUsername, reposterProfilePic, ...repostData }
     }
 }
 
@@ -24,13 +23,13 @@ const fetchMostRecentPost = async(userId) => {
         const data = doc.data();
         const id = doc.id;
 
-        if (data.repostPostId) {
-        // Get the reposted post data
-        const repostData = await getRepost(data.repostPostId, data.profile);
-        if (repostData) {
-            // Add the reposted post data to the postList array
-            return { ...repostData };
-        }
+        if (data.repostedPostId) {
+            // Get the reposted post data
+            const repostData = await getRepost(data.repostedPostId, data.profile, data.username);
+            if (repostData) {
+                // Add the reposted post data to the postList array
+                return { ...repostData };
+            }
         }
 
         return { id, ...data };
@@ -48,9 +47,9 @@ const fetchUserPostsByRecent = async(userId) => {
         const data = doc.data();
         const id = doc.id;
 
-        if (data.repostPostId) {
+        if (data.repostedPostId) {
         // Get the reposted post data
-        const repostData = await getRepost(data.repostPostId, data.profile);
+        const repostData = await getRepost(data.repostedPostId, data.profile, data.username);
         if (repostData) {
             // Add the reposted post data to the postList array
             return { ...repostData };

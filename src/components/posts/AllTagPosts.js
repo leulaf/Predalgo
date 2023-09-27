@@ -135,7 +135,7 @@ const AllTagPosts = ({ tag }) => {
     
         if(repostSnapshot.exists){
             const repostData = repostSnapshot.data();
-            const id = repostSnapshot.id;
+            const id = repostData.repostedPostId;
             const repostProfile = profile;
     
             // Return the reposted post data along with the original post data

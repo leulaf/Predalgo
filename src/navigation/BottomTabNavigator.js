@@ -7,9 +7,10 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { BlurView } from 'expo-blur';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {ThemeContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 import TopBar from '../ScreenTop/TopBar';
 
+import ThreeDotsSheet from '../components/postTypes/ThreeDotsSheet';
 
 // Light-Mode Icons
 import Saved from '../../assets/saved.svg';
@@ -50,6 +51,7 @@ const addPostName = ' ';
 
 function BottomTabNavigator ({navigation}) {
     const {theme,setTheme} = useContext(ThemeContext);
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
     // const [showBottomSheet, setShowBottomSheet] = useState(false);
     // const bottomSheetRef = React.useRef(null);
     // const snapPoints = React.useMemo(() => ['1', '100%'], []);
@@ -215,7 +217,37 @@ function BottomTabNavigator ({navigation}) {
 
             </Bottom_Tab.Navigator>
             
+            {
+                options && 
 
+                <View
+                    style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                        width: "100%",
+                        height:"100%",
+                        position: 'absolute',
+                        top: 0
+                    }}
+                >
+                    <TouchableOpacity
+                        onPressIn = {() => setOptions("close")}
+                        style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
+                    >
+
+                    </TouchableOpacity>
+                    <ThreeDotsSheet
+                        profile={options.profile}
+                        commentId={options.commentId}
+                        postId={options.postId}
+                        replyToPostId={options.replyToPostId}
+                        replyToCommentId={options.replyToCommentId}
+                        image={options.image}
+                        text={options.text}
+                        theme={theme}
+                    />
+                </View>
+                
+            }
             {/* <BottomSheet
                 ref={bottomSheetRef}
                 index={0}

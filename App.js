@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemeProvider } from './context-store/context';
 import { AuthenticatedUserProvider } from './context-store/context';
 import { ContentProvider } from './context-store/context';
@@ -20,6 +20,11 @@ import rootReducer from './redux/reducers';
 import thunk from 'redux-thunk';
 import { MainStackNavigator } from './src/navigation/StackNavigator';
 
+// import { useFonts } from 'expo-font';
+// import * as SplashScreen from 'expo-splash-screen';
+
+// SplashScreen.preventAutoHideAsync();
+
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const Stack = createStackNavigator();
@@ -34,6 +39,17 @@ const Stack = createStackNavigator();
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  // const [fontsLoaded] = useFonts({
+  //   'Inter-Black': require('./assets/fonts/IBM_Plex_Sans/IBMPlexSans-Medium.ttf'),
+  // });
+
+  // const onLayoutRootView = React.useCallback(async () => {
+  //   if (fontsLoaded) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [fontsLoaded]);
+
+
   
 
 
@@ -51,7 +67,9 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-
+  // if (!fontsLoaded) {
+  //   return null;
+  // }
 
   if (!loggedIn) {
     return (

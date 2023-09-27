@@ -11,22 +11,21 @@ export default CreateMeme = React.memo(({image, templateState, setFinished, setI
     const editorRef = useRef(null);
 
     return (
-        // <View style={{height: 0, width: 0}}>
-            <PinturaEditor
+        <PinturaEditor
             ref={editorRef}
             style={{
                 width: "0%",
                 height: "0%",
             }}
-            // src={image}
+            src={image}
             // onClose={() => console.log('closed')}
             // onDestroy={() => console.log('destroyed')}
-            // onLoad={() => 
-            //     editorRef.current.editor.processImage(templateState)
-            // }
-            onInit={() => 
-                editorRef.current.editor.processImage(image, templateState)
+            onLoad={() => 
+                editorRef.current.editor.processImage(templateState)
             }
+            // onInit={() => 
+            //     editorRef.current.editor.processImage(image, templateState)
+            // }
             onProcess={async({ dest }) => {
                 manipulateAsync(dest, [], ).then((res) => {
                     setFinished(true);
@@ -34,12 +33,11 @@ export default CreateMeme = React.memo(({image, templateState, setFinished, setI
                     // console.log(res.uri)
                 })
             }}
-        />    
-        // </View>
-        
+        />
     )
 }, itemEquals);
 
 const itemEquals = (prevItem, nextItem) => {
-    return prevItem.id === nextItem.id;
+    // return prevItem.id === nextItem.id;
+    return false
 }

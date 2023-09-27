@@ -1,7 +1,8 @@
 import React, { } from 'react';
 import { View, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-// import { firebase, storage, db } from '../../config/firebase';
-// import { doc, getDoc, deleteDoc, deleteObject, updateDoc, increment } from "firebase/firestore";
+
+import { AuthenticatedUserContext } from '../../../context-store/context';
+
 import PostText from '../../shared/Text/PostText';
 
 import PostContainer from './PostContainer';
@@ -16,7 +17,7 @@ import ImageView from "react-native-image-viewing";
 
 import PostBottom from './PostBottom';
 
-const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, text, image, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount) => {
+const onNavToPost =  (navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, text, image, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount) => {
     navigation.push('Post', {
         postId: postId,
         title: title,
@@ -32,73 +33,45 @@ const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, user
         likesCount: likesCount,
         commentsCount: commentsCount,
         profile: profile,
+        reposterProfile: reposterProfile,
         username: username,
+        reposterUsername: reposterUsername,
         profilePic: profilePic,
+        reposterProfilePic: reposterProfilePic,
     });
 }
 
 
 const windowWidth = Dimensions.get("screen").width;
 
-const ImagePost = ({ title, username, profilePic, text, imageUrl, template, templateUploader, templateState, imageHeight, imageWidth, memeName, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
+const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProfilePic, text, imageUrl, template, templateUploader, templateState, imageHeight, imageWidth, memeName, tags, profile, reposterProfile, postId, likesCount, commentsCount, repostComment }) => {
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
     const navigation = useNavigation();
-    // const [profilePicState, setProfilePicState] = useState(profilePic);
-    // const [usernameState, setUsernameState] = useState(username);
-    // const [repostUsername, setRepostUsername] = useState(null);
-    // const [repostProfilePic, setRepostProfilePic] = useState(null);
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl : template);
 
-    const [finished, setFinished] = React.useState(template  && !(imageUrl) ? false : true);
+    // const [finished, setFinished] = React.useState(template ? false : true);
 
     const [focused, setIsFocused] = React.useState(false);
 
-    React.useEffect(() => {
-        // if(repostProfile != null){
-        //     const userRef = doc(db, 'users', repostProfile);
-        //     const userSnapshot = getDoc(userRef);
 
-        //     userSnapshot.then((snapshot) => {
-        //         if (snapshot.exists) {
-        //             setRepostUsername(snapshot.data().username);
-        //             setRepostProfilePic(snapshot.data().profilePic);
-        //         } else {
-        //             // console.log("No such document!");
-        //         }
-        //     }).catch((error) => {
-        //         // console.log("Error getting document:", error);
-        //     });
-        // }
-        
-        // if(usernameState == ""){
-        //     const userRef = doc(db, 'users', profile);
-        //     const userSnapshot = getDoc(userRef);
-
-        //     userSnapshot.then((snapshot) => {
-        //         if (snapshot.exists) {
-        //             setProfilePicState(snapshot.data().profilePic);
-        //             setUsernameState(snapshot.data().username);
-        //         } else {
-        //             // console.log("No such document!");
-        //         }
-        //     }).catch((error) => {
-        //         // console.log("Error getting document:", error);
-        //     });
-        // }
+    const onLongPress = React.useCallback(() => () => {
+        setOptions({
+            commentId: postId,
+            profile: profile,
+            text: text,
+        })
     }, []);
-
-    // if (usernameState === "") {
-    //     return null;
-    // }
 
     const navToPostFromImage = React.useCallback(() => {
         setIsFocused(false);
-        onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, image, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount);
+        onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, text, image, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount);
     })
     
     return (
         <PostContainer 
             title={title}
+            text={text}
             imageUrl={image}
             template={template}
             templateUploader={templateUploader}
@@ -113,7 +86,9 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
             postId={postId}
             profilePic={profilePic}
             username={username}
-            // repostUsername={repostUsername && repostUsername}
+            reposterProfile={reposterProfile}
+            reposterUsername={reposterUsername}
+            reposterProfilePic={reposterProfilePic}
 
             navigation={navigation}
             
@@ -124,6 +99,7 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                         <TouchableOpacity
                             activeOpacity={0.9}
                             onPress={navToPostFromImage}
+                            onLongPress={onLongPress()}
                             style={{flexDirection: "column", alignSelf: 'center'}}
                         >
                             <PostText numberOfLines={5} text={text} forPost={true}/>
@@ -132,11 +108,12 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                     <TouchableOpacity
                         activeOpacity={0.9}
                         onPress={() => setIsFocused(true)}
+                        onLongPress={onLongPress()}
                         style={{flexDirection: "column", alignSelf: 'center'}}
                     >
                         
                         {/* Load Meme with template and template state */}
-                        {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage} id={postId}/>}
+                        {template && template === image && <CreateMeme image={image} templateState={templateState} setFinished={() => null} setImage={setImage} id={postId}/>}
                         
 
                         <ResizableImage 
@@ -177,7 +154,6 @@ const ImagePost = ({ title, username, profilePic, text, imageUrl, template, temp
                         }
                     </TouchableOpacity>
                 </View>
-                
             }
         />
     );

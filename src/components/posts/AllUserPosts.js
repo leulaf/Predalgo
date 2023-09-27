@@ -1,18 +1,19 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {TouchableOpacity, ScrollView, Image, View, Text, StyleSheet, TextInput, FlashList, Dimensions} from 'react-native';
+import React, { } from 'react';
+import {TouchableOpacity, View, Text, StyleSheet, Dimensions} from 'react-native';
 import GlobalStyles from '../../constants/GlobalStyles';
 import { Tabs } from 'react-native-collapsible-tab-view';
 import {ThemeContext} from '../../../context-store/context';
 import ImagePost from '../postTypes/ImagePost';
-import MultiImagePost from '../postTypes/MultiImagePost';
 import TextPost from '../postTypes/TextPost';
 
 import getItemType from '../../shared/functions/GetItemType';
+
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
 const renderItem = ({ item, index }) => {
+    // console.log(item.imageUrl);
     if(item.imageUrl || item.template){
         return (
             <ImagePost
@@ -34,22 +35,9 @@ const renderItem = ({ item, index }) => {
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
-            />
-        )
-    }else if(item.imageUrls){
-        return (
-            <MultiImagePost
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
-                title={item.title}
-                imageUrls={item.imageUrls}
-                tags={item.tags}
-                profile={item.profile}
-                username={item.username}
-                profilePic={item.profilePic}
-                postId={item.id}
-                likesCount={item.likesCount}
-                commentsCount={item.commentsCount}
+                reposterProfile={item.reposterProfile}
+                reposterUsername={item.reposterUsername}
+                reposterProfilePic={item.reposterProfilePic}
             />
         )
     }else if(item.text){
@@ -66,6 +54,9 @@ const renderItem = ({ item, index }) => {
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
+                reposterProfile={item.reposterProfile}
+                reposterUsername={item.reposterUsername}
+                reposterProfilePic={item.reposterProfilePic}
             />
         )
     }
@@ -95,10 +86,10 @@ const renderItem = ({ item, index }) => {
 //     )
 // })
 
-const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
+const keyExtractor = (item, index) => item.id.toString() + index.toString();
 
 export default function AllUserPosts({ userId, username, profilePic, postList, byNewPosts, byPopularPosts, handleNewPostsClick, handlePopularPostsClick, handleRefreshPostsClick, handleNewPostsRefreshClick, handlePopularPostsRefreshClick }){
-    const {theme,setTheme} = useContext(ThemeContext);
+    const {theme,setTheme} = React.useContext(ThemeContext);
 
     {/* New/Popular/Refresh button */}
     const topButtons = React.useCallback(() =>
@@ -157,7 +148,7 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
             <Tabs.FlashList
                 data={postList.length > 0 ? postList : [{id: "fir"}]}
 
-                extraData={[postList]}
+                // extraData={[]}
 
                 // onEndReached={commentsList[commentsList.length-1].snap && getNextTenComments }
                 // onEndReachedThreshold={1} //need to implement infinite scroll

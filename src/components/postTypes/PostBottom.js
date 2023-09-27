@@ -11,6 +11,8 @@ import MoodIndicator from './MoodIndicator';
 
 import { onLikePost, onDisikePost } from '../../shared/post/LikeDislikePost';
 
+import Repost from '../../shared/post/Repost';
+
 import intToString from '../../shared/functions/intToString';
 
 // light mode icons
@@ -18,7 +20,7 @@ import Likes from '../../../assets/likes.svg';
 import Liked from '../../../assets/liked.svg';
 import Comments from '../../../assets/comments.svg';
 import Share from '../../../assets/share.svg';
-import Repost from '../../../assets/repost.svg';
+import RepostIcon from '../../../assets/repost.svg';
 
 
 // dark mode icons
@@ -26,7 +28,7 @@ import LikesDark from '../../../assets/likes_dark.svg';
 import LikedDark from '../../../assets/liked_dark.svg';
 import CommentsDark from '../../../assets/comments_dark.svg';
 import ShareDark from '../../../assets/share_dark.svg';
-import RepostDark from '../../../assets/repost_dark.svg';
+import RepostIconDark from '../../../assets/repost_dark.svg';
 
 
 const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => {
@@ -43,19 +45,19 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
         likes = <Likes width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
         alreadyLiked = <Liked width={24} height={24} style={{ color: "#222222", marginRight: 8 }}/>;
         share = <Share width={21} height={21} style={{ color: "#222222", marginRight: 8 }}/>;
-        repost = <Repost width={20} height={20} style={{ color: "#333333", marginRight: 9 }}/>;
+        repost = <RepostIcon width={20} height={20} style={{ color: "#333333", marginRight: 9 }}/>;
     }else if(theme == 'imageFocused'){
         comments = <Comments width={24} height={24} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
         likes = <Likes width={24} height={24} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
         alreadyLiked = <Liked width={24} height={24} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
         share = <Share width={21} height={21} style={{ color: "#E4E4E4", marginRight: 8 }}/>;
-        repost = <Repost width={20} height={20} style={{ color: "#E4E4E4", marginRight: 9 }}/>;
+        repost = <RepostIcon width={20} height={20} style={{ color: "#E4E4E4", marginRight: 9 }}/>;
     }else{
         comments = <Comments width={24} height={24} style={{ color: "#D2D2D2", marginRight: 8 }}/>;
         likes = <Likes width={23} height={23} style={{ color: "#D5D5D5", marginRight: 8 }}/>;
         alreadyLiked = <Liked width={23} height={23} style={{ color: "#D5D5D5", marginRight: 8 }}/>;
         share = <Share width={21} height={21} style={{ color: "#DDDDDD", marginRight: 8 }}/>;
-        repost = <Repost width={19} height={19} style={{ color: "#D2D2D2", marginRight: 9 }}/>;
+        repost = <RepostIcon width={19} height={19} style={{ color: "#D2D2D2", marginRight: 9 }}/>;
     }
 
 
@@ -202,7 +204,7 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
                     (emoji.show != false  || postId != emoji.id) &&
                     <TouchableOpacity
                         style={styles.bottomButtonContainer}
-                        // onPress={() => onRepost()}
+                        onPress={Repost(postId)}
                     >
                         {repost}
 

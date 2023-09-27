@@ -36,10 +36,10 @@ export default SubCommentTop = ({ commentId, replyToCommentId, replyToPostId, na
     }
     
 
-    const {commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     const clickedThreeDots = React.useCallback(() => () => {
-        setCommentOptions({
+        setOptions({
             commentId: commentId,
             profile: profile,
             replyToPostId: replyToPostId,

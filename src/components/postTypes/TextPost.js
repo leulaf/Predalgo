@@ -2,6 +2,8 @@ import React, { } from 'react';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { AuthenticatedUserContext } from '../../../context-store/context';
+
 import { useNavigation } from '@react-navigation/native';
 
 import PostContainer from './PostContainer';
@@ -24,49 +26,21 @@ const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, user
     });
 }
 
-const TextPost = ({ title, username, profilePic, text, tags, profile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
+const TextPost = ({ title, username, reposterUsername, profilePic, reposterProfilePic, text, tags, profile, reposterProfile, postId, likesCount, commentsCount, repostProfile, repostComment }) => {
     // const {theme,setTheme} = useContext(ThemeContext);
     // const [profilePicState, setProfilePicState] = useState(profilePic);
     // const [usernameState, setUsernameState] = useState(username);
     // const [repostUsername, setRepostUsername] = useState(null);
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
     const navigation = useNavigation();
 
-    React.useEffect(() => {
-        // if(repostProfile != null){
-        //     const userRef = doc(db, 'users', repostProfile);
-        //     const userSnapshot = getDoc(userRef);
-
-        //     userSnapshot.then((snapshot) => {
-        //         if (snapshot.exists) {
-        //             setRepostUsername(snapshot.data().username);
-        //         } else {
-        //             // console.log("No such document!");
-        //         }
-        //     }).catch((error) => {
-        //         // console.log("Error getting document:", error);
-        //     });
-        // }
-
-        // if(usernameState == ""){
-        //     const userRef = doc(db, 'users', profile);
-        //     const userSnapshot = getDoc(userRef);
-
-        //     userSnapshot.then((snapshot) => {
-        //         if (snapshot.exists) {
-        //             setProfilePicState(snapshot.data().profilePic);
-        //             setUsernameState(snapshot.data().username);
-        //         } else {
-        //             // console.log("No such document!");
-        //         }
-        //     }).catch((error) => {
-        //         // console.log("Error getting document:", error);
-        //     });
-        // }
+    const onLongPress = React.useCallback(() => () => {
+        setOptions({
+            commentId: postId,
+            profile: profile,
+            text: text,
+        })
     }, []);
-
-    // if (usernameState === "") {
-    //     return null;
-    // }
 
     return (
         <PostContainer 
@@ -80,7 +54,9 @@ const TextPost = ({ title, username, profilePic, text, tags, profile, postId, li
             postId={postId}
             profilePic={profilePic}
             username={username}
-            // repostUsername={repostUsername}
+            reposterProfile={reposterProfile}
+            reposterUsername={reposterUsername}
+            reposterProfilePic={reposterProfilePic}
 
             navigation={navigation}
 
@@ -88,6 +64,7 @@ const TextPost = ({ title, username, profilePic, text, tags, profile, postId, li
                 <TouchableOpacity
                     activeOpacity={0.9}
                     onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, likesCount, commentsCount)}
+                    onLongPress={onLongPress()}
                 >
                     <PostText numberOfLines={15} text={text}/>
                 </TouchableOpacity>

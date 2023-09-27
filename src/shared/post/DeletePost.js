@@ -6,7 +6,7 @@ export default deletePost = async(postId)  => {
         const postRef = doc(db, 'allPosts', postId);
         const postSnapshot = await getDoc(postRef);
         data = postSnapshot.data();
-
+        console.log(postId);
         if (postSnapshot.exists) {
             await deleteDoc(postRef).then(async () => {
 

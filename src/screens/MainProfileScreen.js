@@ -6,7 +6,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Overlay } from 'react-native-elements';
 import { doc, setDoc, deleteDoc, getDoc, collection, query, getDocs, orderBy, where, updateDoc, increment } from "firebase/firestore";
 import * as ImagePicker from 'expo-image-picker';
-import {ThemeContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 import {db, Firebase, firebase, storage} from '../config/firebase';
 import { getAuth, updateProfile } from "firebase/auth";
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
@@ -178,8 +178,6 @@ function MainProfileScreen ({navigation, route, ...props }) {
     // }, []);
 
     const populateInitialPosts = React.useCallback(async () => {
-        setByNewPosts(true);
-        setByPopularPosts(false);
         // setGetLatestPost(false);
         const posts = await fetchUserPostsByRecent(auth.currentUser.uid);
         setPostList(posts);

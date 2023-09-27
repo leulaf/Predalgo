@@ -206,7 +206,7 @@ export default function ChatScreen({ navigation, route }){
     
 
     return(
-        <View style={{flex:1, backgroundColor: theme == 'light' ? '#FFF' : '#151515',}}>
+        <View style={{flex:1, backgroundColor: theme == 'light' ? '#FFF' : '#FFF',}}>
             <KeyboardAvoidingView 
                 style={{
                     flex:1,
@@ -242,7 +242,7 @@ export default function ChatScreen({ navigation, route }){
                     multiline={false}
                     renderSystemMessage={renderSystemMessage}
                     messagesContainerStyle={{
-                        backgroundColor: theme == 'light' ? '#FFF' : '#151515',
+                        backgroundColor: theme == 'light' ? '#FFF' : '#FFF',
                     }}
 
                     renderBubble={renderBubble}

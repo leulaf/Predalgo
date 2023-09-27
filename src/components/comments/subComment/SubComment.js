@@ -63,23 +63,23 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
     // CreatMeme would only render is template is not null/undefined
     const [finished, setFinished] = React.useState(template ? false : true);
 
-    const {commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     React.useEffect(() => {
-       if(commentOptions?.commentId === commentId && commentOptions.deleted === true){
-            // console.log(commentOptions)
+       if(options?.commentId === commentId && options.deleted === true){
+            // console.log(options)
             // console.log('comment is deleted');
             setFinished("deleted")
-            setCommentOptions(false);
+            setOptions(false);
         }
-        if(commentOptions?.commentId === commentId && !(commentOptions?.text || (commentOptions?.image && image))){
-            setCommentOptions({
-                ...commentOptions,
+        if(options?.commentId === commentId && !(options?.text || (options?.image && image))){
+            setOptions({
+                ...options,
                 image: image,
                 text: text,
             });
         }
-    }, [commentOptions]);
+    }, [options]);
 
 
     // console.log(template && template)
@@ -109,7 +109,7 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
     })
 
     const onLongPress = React.useCallback(() => () => {
-        setCommentOptions({
+        setOptions({
             commentId: commentId,
             profile: profile,
             replyToPostId: replyToPostId,

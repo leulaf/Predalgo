@@ -62,25 +62,25 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
     // If finished == "deleted" then the comment is not rendered
     const [finished, setFinished] = React.useState(template ? false : true);
 
-    const {commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     React.useEffect(() => {
-       if(commentOptions?.commentId === commentId && commentOptions.deleted === true){
-            // console.log(commentOptions)
+       if(options?.commentId === commentId && options.deleted === true){
+            // console.log(options)
             // console.log('comment is deleted');
             setFinished("deleted")
-            setCommentOptions(false);
+            setOptions(false);
         }
-        if(commentOptions?.commentId === commentId && !(commentOptions?.text || (commentOptions?.image && image)) ){
+        if(options?.commentId === commentId && !(options?.text || (options?.image && image)) ){
             // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
 
-            setCommentOptions({
-                ...commentOptions,
+            setOptions({
+                ...options,
                 image: image,
                 text: text,
             });
         }
-    }, [commentOptions]);
+    }, [options]);
 
     const navToCommentWithComments = React.useCallback((commentsList) => () => {
 
@@ -108,7 +108,7 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
     }, [image])
 
     const onLongPress = React.useCallback(() => () => {
-        setCommentOptions({
+        setOptions({
             commentId: commentId,
             profile: profile,
             replyToPostId: replyToPostId,

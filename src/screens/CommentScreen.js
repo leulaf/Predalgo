@@ -267,7 +267,7 @@ const CommentScreen = ({navigation, route}) => {
 
     const [commentsList, setCommentsList] = useState(comments ? comments :[ {id: "one"}, {id: "two"}]);
 
-    const {imageReply, setImageReply, commentOptions, setCommentOptions} = useContext(AuthenticatedUserContext);
+    const {imageReply, setImageReply, options, setOptions} = useContext(AuthenticatedUserContext);
 
     const [image, setImage] = useState(imageUrl ? imageUrl : template);
     const [finished, setFinished] = useState(template  && !(imageUrl)? false : true);
@@ -434,24 +434,24 @@ const CommentScreen = ({navigation, route}) => {
             {replyBottomSheet(onReply, navigation, theme, replyToPostId, commentId, profile, username)}
 
             {
-                commentOptions !== false && 
+                options && 
 
                 <View
                     style={styles.threeDotsOverlay}
                 >
                     <TouchableOpacity
-                        onPressIn = {() => setCommentOptions("close")}
+                        onPressIn = {() => setOptions("close")}
                         style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
                     >
 
                     </TouchableOpacity>
                     <ThreeDotsSheet
-                        profile={commentOptions.profile}
-                        commentId={commentOptions.commentId}
-                        replyToPostId={commentOptions.replyToPostId}
-                        replyToCommentId={commentOptions.replyToCommentId}
-                        image={commentOptions.image}
-                        text={commentOptions.text}
+                        profile={options.profile}
+                        commentId={options.commentId}
+                        replyToPostId={options.replyToPostId}
+                        replyToCommentId={options.replyToCommentId}
+                        image={options.image}
+                        text={options.text}
                         theme={theme}
                     />
                 </View>

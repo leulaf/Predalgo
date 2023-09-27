@@ -40,6 +40,8 @@ import overrideItemLayout from '../shared/functions/OverrideItemLayout'
 
 import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
+import Repost from '../../assets/repost.svg'
+
 
 const refreshAnimation = require('../../assets/animations/Refreshing.json');
 const refreshingHeight = 100;
@@ -92,14 +94,15 @@ const replyBottomSheet = (navigation, theme, postId, profile, username) => (
 );
 
 const goToProfile = (navigation, profile, username, profilePic) => () => {
+    console.log(profilePic)
     navigation.push('Profile', {
-        user: profile,
+        profile: profile,
         username: username,
         profilePic: profilePic,
     })
 }
 
-const Header = React.memo(({theme, navigation, contentBottom, title, memeName, image, imageHeight, imageWidth, text, tags, profile, username, profilePic, ImageFocused }) => {
+const Header = React.memo(({theme, navigation, contentBottom, title, memeName, image, imageHeight, imageWidth, text, tags, profile, reposterProfile, username, reposterUsername, profilePic, reposterProfilePic, ImageFocused }) => {
     const [following, setFollowing] = React.useState(false);
 
     const [isImageFocused, setIsImageFocused] = React.useState(false);
@@ -115,6 +118,25 @@ const Header = React.memo(({theme, navigation, contentBottom, title, memeName, i
             entering={FadeIn}
             style={theme == 'light' ? styles.lightContainer : styles.darkContainer}
         >
+            {
+                reposterUsername &&
+
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={goToProfile(navigation, reposterProfile, reposterUsername, reposterProfilePic)}
+                    style = {{flexDirection: 'row'}}
+                >
+                    <Repost
+                        width={19}
+                        height={19}
+                        style={theme == 'light' ? styles.lightRepostIcon: styles.darkRepostIcons}
+                    />
+                    <Text style={theme == 'light' ? styles.lightReposterUsername: styles.darkReposterUsername}>
+                        Reposted by @{reposterUsername}
+                    </Text>
+                </TouchableOpacity>
+            }
+
             <View 
                 style={theme == 'light' ? styles.lightUserContainer : styles.darkUserContainer}
             >
@@ -273,9 +295,9 @@ const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 const PostScreen = ({navigation, route}) => {
     const {theme,setTheme} = React.useContext(ThemeContext);
     const [commentsList, setCommentsList] = React.useState([{id: "one"}, {id: "two"}]);
-    const {title, profile, likesCount, commentsCount, imageUrl, template, templateUploader, templateState, imageHeight, imageWidth, text, username, repostUsername, profilePic, postId, memeName, tags, fromMemeScreen} = route.params;
+    const {title, profile, reposterProfile, likesCount, commentsCount, imageUrl, template, templateUploader, templateState, imageHeight, imageWidth, text, username, reposterUsername, profilePic, reposterProfilePic, postId, memeName, tags, fromMemeScreen} = route.params;
 
-    const {imageReply, setImageReply, commentOptions, setCommentOptions} = React.useContext(AuthenticatedUserContext);
+    const {imageReply, setImageReply, options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     const [image, setImage] = React.useState(imageUrl ? imageUrl : template);
     
@@ -391,8 +413,11 @@ const PostScreen = ({navigation, route}) => {
                     text={text}
                     tags={tags}
                     profile={profile}
+                    reposterProfile={reposterProfile}
                     username={username}
+                    reposterUsername={reposterUsername}
                     profilePic={profilePic}
+                    reposterProfilePic={reposterProfilePic}
                     contentBottom={contentBottom}
                     ImageFocused={ImageFocused}
                 />
@@ -560,24 +585,24 @@ const PostScreen = ({navigation, route}) => {
             {replyBottomSheet(navigation, theme, postId, profile, username)}
 
             {
-                commentOptions !== false && 
+                options && 
 
                 <View
                     style={styles.threeDotsOverlay}
                 >
                     <TouchableOpacity
-                        onPressIn = {() => setCommentOptions("close")}
+                        onPressIn = {() => setOptions("close")}
                         style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
                     >
 
                     </TouchableOpacity>
                     <ThreeDotsSheet
-                        profile={commentOptions.profile}
-                        commentId={commentOptions.commentId}
-                        replyToPostId={commentOptions.replyToPostId}
-                        replyToCommentId={commentOptions.replyToCommentId}
-                        image={commentOptions.image}
-                        text={commentOptions.text}
+                        profile={options.profile}
+                        commentId={options.commentId}
+                        replyToPostId={options.replyToPostId}
+                        replyToCommentId={options.replyToCommentId}
+                        image={options.image}
+                        text={options.text}
                         theme={theme}
                     />
                 </View>
@@ -656,18 +681,30 @@ const styles = StyleSheet.create({
         textAlign: "left",
         marginBottom: 1,
     },
-    lightRepostUsername: {
+    lightReposterUsername: {
         fontSize: 16,
         fontWeight: "600",
-        // color: '#777777',
-        color: '#000',
-        textAlign: "left",
+        color: '#555',
+        marginLeft: 8,
+        marginTop: 9,
     },
-    darkRepostUsername: {
+    darkReposterUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#BBBBBB',
+        color: '#CCC',
         textAlign: "left",
+        marginLeft: 8,
+        marginTop: 9,
+    },
+    lightRepostIcon: {
+        color: "#606060",
+        marginLeft: 11,
+        marginTop: 10
+    },
+    darkRepostIcons: {
+        color: "#BBB",
+        marginLeft: 11,
+        marginTop: 10
     },
     lottieView: {
         height: refreshingHeight,

@@ -33,7 +33,7 @@ const ChatTopBar = ({theme, navigation, username, profilePic }) => {
 
 
                     
-                    <View style={{flexDirection: 'row', marginLeft: 20, justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Image
                             source={{uri: profilePic}}
                             style={[styles.profileImage]}
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     lightUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#444444',
+        color: '#000',
         // textAlign: "left",
         marginLeft: 10,
         // marginTop: 10,

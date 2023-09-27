@@ -68,7 +68,9 @@
     "react-redux": "^8.0.5",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
-    "url-regex-safe": "^4.0.0"
+    "url-regex-safe": "^4.0.0",
+    "expo-font": "~11.4.0",
+    "expo-splash-screen": "~0.20.5"
   },
   "devDependencies": {
     "react-native-dotenv": "^3.4.8"

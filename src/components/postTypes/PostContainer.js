@@ -1,7 +1,7 @@
 import React, { } from 'react';
 import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import { Image } from 'expo-image';
-import {ThemeContext} from '../../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,11 +22,16 @@ import ReportIcon from '../../../assets/danger.svg';
 import ThreeDotsLight from '../../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../../assets/three_dots_dark.svg';
 
+// import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'; // repost icon "repeat"
+
+import Repost from '../../../assets/repost.svg';
+
 import { getAuth } from 'firebase/auth';
 
 const auth = getAuth();
 
-const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+const onNavToPost =  (navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
+    console.log(profile)
     navigation.push('Post', {
         postId: postId,
         title: title,
@@ -42,8 +47,11 @@ const onNavToPost =  (navigation, postId, title, tags, profile, profilePic, user
         likesCount: likesCount,
         commentsCount: commentsCount,
         profile: profile,
+        reposterProfile: reposterProfile,
         username: username,
+        reposterUsername: reposterUsername,
         profilePic: profilePic,
+        reposterProfilePic: reposterProfilePic,
     });
 }
 
@@ -68,13 +76,14 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 }
 
 
-const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateUploader, templateState, likesCount, commentsCount, tags, content, profile, postId, profilePic, username, repostUsername }) => {
+const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateUploader, templateState, likesCount, commentsCount, tags, content, profile, reposterProfile, postId, profilePic, reposterProfilePic, username, reposterUsername }) => {
     const navigation = useNavigation();
     const {theme,setTheme} = React.useContext(ThemeContext);
 
     const [deleted, setDeleted] = React.useState(false);
     const [overlayVisible, setOverlayVisible] = React.useState(false);
 
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     let threeDots
     
@@ -83,7 +92,36 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
     }else{
         threeDots = <ThreeDotsDark width={40} height={40} style={styles.darkThreeDots}/>
     }
+    
 
+    React.useEffect(() => {
+        if(options?.postId === postId && options.deleted === true){
+             // console.log(options)
+             // console.log('comment is deleted');
+             setDeleted(true)
+             setOptions(false);
+         }
+         if(options?.postId === postId && !(options?.text || (options?.image && imageUrl)) ){
+             // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
+ 
+             setOptions({
+                 ...options,
+                 image: imageUrl,
+                 text: text,
+             });
+         }
+    }, [options]);
+
+
+    const clickedThreeDots = React.useCallback(() => () => {
+        setOptions({
+            postId: postId,
+            profile: profile,
+            image: imageUrl,
+            text: text,
+        })
+    }, []);
+     
     
     const toggleOverlay = React.useCallback(() => () => {
         setOverlayVisible(!overlayVisible);
@@ -110,7 +148,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             postId={postId}
             likesCount={likesCount}
             commentsCount={commentsCount}
-            navToPost={() => onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            navToPost={() => onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
         />
     )
     
@@ -119,7 +157,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
         <ContentBottom
             memeName={memeName}
             tags={tags}
-            navToPost={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            navToPost={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
             templateUploader={templateUploader}
         />
@@ -136,10 +174,40 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             style={theme == 'light' ? GlobalStyles.lightPostContainer: GlobalStyles.darkPostContainer}
         >
 
+            {
+                reposterUsername &&
+
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={goToProfile(navigation, reposterProfile, reposterUsername, reposterProfilePic)}
+                    style = {{flexDirection: 'row'}}
+                >
+                    <Repost
+                        width={19}
+                        height={19}
+                        style={theme == 'light' ? styles.lightRepostIcon: styles.darkRepostIcons}
+                    />
+                    {/* <MaterialCommunityIcons
+                        name="repeat-variant"
+                        size={28}
+                        color={theme == 'light' ? '#555' : '#FF3535'}
+                        marginLeft={10}
+                        marginTop={5}
+                    /> */}
+                    <Text style={theme == 'light' ? styles.lightReposterUsername: styles.darkReposterUsername}>
+                        Reposted by @{reposterUsername}
+                    </Text>
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                        style={{flex: 1, height: 40}}
+                    />
+                </TouchableOpacity>
+            }
 
             {/* profile pic, username and title*/}
             <View 
-                style={{flexDirection: 'row', marginLeft: 10, marginTop: 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
+                style={{flexDirection: 'row', marginLeft: 10, marginTop: !reposterProfile && 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
             >
                 {/* profile pic */}
                 <TouchableOpacity
@@ -161,15 +229,6 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                     style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
                 >
 
-                    {
-                        repostUsername ?
-                            <Text style={theme == 'light' ? styles.lightRepostUsername: styles.darkRepostUsername}>
-                                @{repostUsername} reposted
-                            </Text>
-                        :
-                            null
-                    }
-
                     {/* username */}
                     <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
                         @{username}
@@ -180,7 +239,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 
                 <TouchableOpacity
                     activeOpacity={0.9}
-                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
                     style={{flex: 1, height: 40}}
                 />
 
@@ -189,8 +248,9 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                 {/* three dots */}
                 <TouchableOpacity 
                     activeOpacity={0.9}
-                    style={{flexDirection: 'row'}}
-                    onPress= {toggleOverlay()}
+                    style={{flexDirection: 'row', }}
+                    // onPress= {toggleOverlay()}
+                    onPress= {clickedThreeDots()}
                 >
                     {threeDots}
                 </TouchableOpacity>
@@ -200,7 +260,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             {/* title */}
             <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             >
 
                 {/* title */}
@@ -212,7 +272,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             {/* Post content. Image, Text etc. */}
             {/* <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
             > */}
 
                 {content}
@@ -266,7 +326,8 @@ const styles = StyleSheet.create({
         color: '#000',
         padding: 10,
         marginTop: -20,
-        marginLeft: 5,
+        paddingLeft: 5,
+        paddingRight: 10,
         marginRight: 10,
         // marginHorizontal: 10,
     },
@@ -307,25 +368,35 @@ const styles = StyleSheet.create({
         textAlign: "left",
         // marginTop: 6,
     },
-    lightRepostUsername: {
+    lightReposterUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#777777',
-        textAlign: "left",
-        marginBottom: 4,
+        color: '#555',
+        marginLeft: 8,
+        marginTop: 9,
     },
-    darkRepostUsername: {
+    darkReposterUsername: {
         fontSize: 16,
         fontWeight: "600",
-        color: '#BBBBBB',
+        color: '#CCC',
         textAlign: "left",
-        marginBottom: 4,
+        marginLeft: 8,
+        marginTop: 9,
+    },
+    lightRepostIcon: {
+        color: "#606060",
+        marginLeft: 11,
+        marginTop: 10
+    },
+    darkRepostIcons: {
+        color: "#BBB",
+        marginLeft: 11,
+        marginTop: 10
     },
     lightPostTitle: {
         fontSize: 22,
         fontWeight: "600",
         color: '#333333',
-        textAlign: "left",
         marginHorizontal: 12,
         marginTop: 3,
         // marginBottom: 1,

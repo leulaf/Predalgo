@@ -2,7 +2,7 @@ import React from 'react';
 
 import { View, Text, StyleSheet, TouchableOpacity, Share, Platform, Dimensions } from 'react-native';
 
-import { AuthenticatedUserContext } from '../../../../context-store/context';
+import { AuthenticatedUserContext } from '../../../context-store/context';
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -10,7 +10,7 @@ import Feather from '@expo/vector-icons/Feather';
 
 import Octicons from '@expo/vector-icons/Octicons';
 
-import { deleteComment } from './CommentMethods';
+import deletePost from '../../shared/post/DeletePost';
 
 import BottomSheet, {BottomSheetView} from "@gorhom/bottom-sheet";
 
@@ -42,7 +42,7 @@ const onShare = async(text, image) => {
     }
 }
 
-export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToCommentId, text, image, theme}) => {
+export default ThreeDotsSheet = ({profile, postId, text, image, theme}) => {
     const [bookmarked, setBookmarked] = React.useState(false);
 
     // ref
@@ -75,7 +75,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
             ...options,
             deleted: true
         })
-        await deleteComment(commentId, replyToPostId, replyToCommentId)
+        await deletePost(postId)
         .then(() => {
             // setOptions({
             //     ...options,
@@ -195,7 +195,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                     
                     
                     {
-                        profile !== auth.currentUser.uid ?
+                        profile === auth.currentUser.uid ?
 
                         <TouchableOpacity 
                             activeOpacity={0.5}
