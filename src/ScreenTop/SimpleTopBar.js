@@ -15,7 +15,7 @@ import ThreeDotsLight from '../../assets/three_dots_light.svg';
 import ThreeDotsDark from '../../assets/three_dots_dark.svg';
 
 
-const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, goToReplyDirectly, extraPaddingTop}) => {
+const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, goToReplyDirectly, extraPaddingTop, clickedThreeDots}) => {
     // ****** use navigateBackOnPress when navigating to comment directly instead of a post/comment ******
 
     let threeDots, back
@@ -75,6 +75,7 @@ const SimpleTopBar = ({theme, title, onGoBack, replyToPostId, replyToCommentId, 
                 {/* Three dots - options button */}
                 <TouchableOpacity
                     // onPress={() => {navigation.goBack()}}
+                    // clickedThreeDots={clickedThreeDots()}
                 >
                     {threeDots}
                 </TouchableOpacity>

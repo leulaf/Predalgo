@@ -144,7 +144,7 @@ export default SplitPost = (text, theme) => {
 
 const styles = StyleSheet.create({
     lightPostText: {
-        fontSize: 18,
+        // fontSize: 18,
         fontWeight: "400",
         // color: '#222222',
         color: '#000',
@@ -160,15 +160,15 @@ const styles = StyleSheet.create({
         letterSpacing: 0.4,
     },
     lightLinkText: {
-        fontSize: 19,
+        // fontSize: 18,
         fontWeight: "400",
         color: '#0029FF',
         letterSpacing: 0.4,
-        // textAlign: 'auto',
+        textAlign: 'auto',
         // marginBottom: 6,
     },
     darkLinkText: {
-        fontSize: 18,
+        // fontSize: 18,
         fontWeight: "400",
         color: '#0094FF',
         textAlign: 'auto',

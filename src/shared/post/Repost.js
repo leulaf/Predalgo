@@ -12,8 +12,7 @@ const auth = getAuth();
 
 
 // Comment Text on a post
-const Repost = (repostedId, username, profilePic) => async () => {
-
+const Repost = async (repostedId, username, profilePic, comment) => {
     return new Promise(async (resolve, reject) => {
         // add text post to database
         await addDoc(collection(db, "allPosts"), {
@@ -22,27 +21,30 @@ const Repost = (repostedId, username, profilePic) => async () => {
             profile: auth.currentUser.uid,
             username: auth.currentUser.displayName,
             profilePic: auth.currentUser.photoURL,
-            // username: username,
-            // profilePic: profilePic,
-            // reposterProfilePic: auth.currentUser.photoURL,
+            repostComment: comment,
         }).then(async (docRef) => {
+            Alert.alert("Reposted!");
             // update posts count for current user
             const currentUserRef = doc(db, 'users', auth.currentUser.uid);
 
             await updateDoc(currentUserRef, {
                 posts: increment(1)
+            }).catch(function (error) {
+                // console.log(error);
             });
 
             // update reposts count for original poster
             const postRef = doc(db, 'allPosts', repostedId);
 
             await updateDoc(postRef, {
-                reposts: increment(1)
+                repostsCount: increment(1)
+            }).catch(function (error) {
+                // console.log(error);
             });
 
             resolve(docRef.id);
 
-            Alert.alert("Reposted!");
+            
         }).catch(function (error) {
             // console.log(error);
         });

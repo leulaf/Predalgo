@@ -1,8 +1,8 @@
 import React, { } from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert} from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
+import { AuthenticatedUserContext } from '../../../context-store/context';
 
-import {  db } from '../../config/firebase';
-import {  doc, getDoc } from "firebase/firestore";
+
 import { getAuth } from 'firebase/auth';
 
 const auth = getAuth();
@@ -31,7 +31,8 @@ import ShareDark from '../../../assets/share_dark.svg';
 import RepostIconDark from '../../../assets/repost_dark.svg';
 
 
-const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => {
+const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsCount, repostsCount, navToPost, onShare}) => {
+    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     const [emoji, setEmoji] = React.useState({
         id: postId,
@@ -61,28 +62,9 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
     }
 
 
-    // const toggleLike = () => async() => {
-    //     if(liked){
-    //         setLiked(false);
-    //         await onDisikePost(postId)
-    //         .then((res) => {
-    //             !res && setLiked(true);
-    //         })
-    //         .catch((e) => {
-    //             setLiked(true);
-    //         })
-    //     }else{
-    //         setLiked(true);
-    //         await onLikePost(postId)
-    //         .then((res) => {
-    //             !res && setLiked(false);
-    //         })
-    //         .catch((e) => {
-    //             setLiked(false);
-    //         })
-    //     }
-    // }
-
+    const onRepost = () => () => {
+        setOptions({postId: postId, username: username, profilePic: profilePic, type: 'repost'});
+    }
 
     const toggleLike = () => async() => {
 
@@ -204,12 +186,12 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
                     (emoji.show != false  || postId != emoji.id) &&
                     <TouchableOpacity
                         style={styles.bottomButtonContainer}
-                        onPress={Repost(postId)}
+                        onPress={onRepost()}
                     >
                         {repost}
 
                         <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
-                            0
+                            {repostsCount || 0}
                         </Text>
                     </TouchableOpacity>
                 }
@@ -222,7 +204,7 @@ const PostBottom = ({ theme, postId, likesCount, commentsCount, navToPost }) => 
                     (emoji.show != false  || postId != emoji.id) &&
                     <TouchableOpacity
                         style={[styles.bottomButtonContainer, {marginRight: 10}]}
-                        // onPress={() => }
+                        onPress={onShare}
                     >
                         {share}
 

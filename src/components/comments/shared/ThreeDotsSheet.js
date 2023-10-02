@@ -65,7 +65,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
     // console.log(options)
     // setOptions(false)
     React.useEffect(() => {
-        if(options == "close"){
+        if(options === "close"){
             bottomSheetRef.current.snapToIndex(0);
         }
     }, [options])

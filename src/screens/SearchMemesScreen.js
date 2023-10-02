@@ -18,6 +18,8 @@ import ResizableImage from '../shared/functions/ResizableImage';
 
 import MemesSearchBar from '../components/MemesSearchBar';
 
+import removeExludedWords from '../constants/ExcludedWords';
+
 const navToMeme = (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
   if(forCommentOnComment || forCommentOnPost){
     navigation.dispatch(
@@ -59,11 +61,12 @@ const SearchMemesScreen = ({navigation, route}) => {
     const {forCommentOnComment, forCommentOnPost} = route?.params;
 
     useEffect(() => {
-        if (term !== '') {
+      const searchTerm = removeExludedWords(term)
+        if (searchTerm !== '') {
             q = query(
                 collection(db, "imageTemplates"),
-                where("name", ">=", term),
-                where('name', '<=', term + '\uf8ff'),
+                where("searchName", ">=", searchTerm),
+                where('searchName', '<=', searchTerm + '\uf8ff'),
                 limit(2)
             );
     
@@ -149,19 +152,19 @@ const SearchMemesScreen = ({navigation, route}) => {
 
           contentContainerStyle={{paddingTop: 5}}
 
-          ListFooterComponent= {
-            term != '' && 
+          // ListFooterComponent= {
+          //   term != '' && 
             
-            <View style={{marginTop: 30}}>
-                  <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                    Didn't find the right template?
-                  </Text>
+          //   <View style={{marginTop: 30}}>
+          //         <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+          //           Didn't find the right template?
+          //         </Text>
 
-                  <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
-                    Try changing the capitalization for some words and check spelling.
-                  </Text>
-              </View>
-          }
+          //         <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+          //           Try changing the capitalization for some words and check spelling.
+          //         </Text>
+          //     </View>
+          // }
 
           keyExtractor={keyExtractor}
         />

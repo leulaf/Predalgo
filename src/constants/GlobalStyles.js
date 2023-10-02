@@ -11,15 +11,16 @@ const GlobalStyles = StyleSheet.create({
         backgroundColor: "#0D0D0D"
     },
     lightContainer: {
-        backgroundColor: "#FAFAFA"
+        backgroundColor: "#FFF"
     },
     lightPostContainer: {
         backgroundColor: '#FFFFFF',
         borderStyle: "solid",
         borderColor: "#EBEBEB",
-        borderWidth: 1,
-        borderRadius: 15,
-        marginBottom: 8,
+        borderTopWidth: 1,
+        // borderBottomWidth: 1,
+        // borderRadius: 15,
+        // marginBottom: 10,
         // width: '100%',
         // height: 300,
         // maxHeight: 350,
@@ -29,9 +30,9 @@ const GlobalStyles = StyleSheet.create({
         backgroundColor: '#151515',
         borderStyle: "solid",
         borderColor: "#262626",
-        borderWidth: 1,
-        borderRadius: 15,
-        marginBottom: 10,
+        borderTopWidth: 1,
+        // borderRadius: 15,
+        // marginBottom: 10,
         // width: '100%',
         // height: 300,
         // maxHeight: 350,

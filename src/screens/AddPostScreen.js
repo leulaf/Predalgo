@@ -41,6 +41,7 @@ const navToUpload = (navigation, forPost, forCommentOnComment, forCommentOnPost)
     forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
     forMemePost: forPost,
     forPost: forPost,
+    newTemplate: true,
   })
 }
 
@@ -61,7 +62,7 @@ const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnP
       })
     )
   }else{
-    console.log(item)
+    // console.log(item)
     navigation.navigate('Meme', {
         uploader: item.uploader,
         memeName: item.name,

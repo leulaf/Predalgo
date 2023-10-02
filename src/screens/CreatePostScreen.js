@@ -605,7 +605,7 @@ const CreatePostScreen = ({navigation, route}) => {
                     autoCapitalize="none"
                     multiline
                     blurOnSubmit
-                    maxLength={80}
+                    maxLength={150}
                     autoCorrect
                     handleFocus={handleFocus}
                     handleBlur={handleBlur}

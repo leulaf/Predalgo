@@ -2,6 +2,8 @@ import React, {useContext, useState, useEffect, useRef} from 'react';
 import {View, StyleSheet,} from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
+import { StackActions } from '@react-navigation/native';
+
 import Emojis from '../constants/EmojiStickers';
 
 import EditImageTopBar from '../ScreenTop/EditImageTopBar';
@@ -12,18 +14,21 @@ import {
     createMarkupEditorToolStyles,
 } from "@pqina/pintura";
 
+import NewTemplateOverlay from '../components/NewTemplateOverlay';
 
 const EditImageScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
-
+    
     const { imageReply, setImageReply, imagePost, setImagePost } = useContext(AuthenticatedUserContext);
 
-    const { imageUrl, forPost, forCommentOnComment, forCommentOnPost, cameraPic, width, height, imageState } = route.params;
+    const { imageUrl, forPost, forCommentOnComment, forCommentOnPost, cameraPic, newTemplate, width, height, imageState } = route.params;
 
     const [image, setImage] = useState(imageUrl);
 
     const [imageResult, setImageResult] = useState(null);
     const [storedImageState, setStoredImageState] = useState(null);
+
+    const [overlayVisible, setOverlayVisible] = useState(false);
 
     const editorRef = useRef(null);
 
@@ -105,6 +110,9 @@ const EditImageScreen = ({ navigation, route }) => {
             setImageResult(null);
             editorRef.current.editor.close();
             navigation.goBack(null);
+        }else if(imageResult != null && newTemplate){
+            setOverlayVisible(true);
+            editorRef.current.editor.close();
         }else if(imageResult != null){
             setImagePost({
                 uri: imageResult,
@@ -197,6 +205,20 @@ const EditImageScreen = ({ navigation, route }) => {
                     
                 // }}
             />
+
+            {/* New template overlay */}
+            {
+                overlayVisible &&
+
+                <NewTemplateOverlay
+                    template={imageResult}
+                    height={height}
+                    width={width}
+                    overlayVisible={overlayVisible}
+                    setOverlayVisible={setOverlayVisible}
+                    navigation={navigation}
+                />
+            }
 
         </View>
   );

@@ -30,7 +30,9 @@ const renderItem = ({ item, index }) => {
         post = <ImagePost
             username={item.username}
             profilePic={item.profilePic}
-            repostProfile={item.repostProfile}
+            reposterUsername={item.reposterUsername}
+            reposterProfilePic={item.reposterProfilePic}
+            reposterProfile={item.reposterProfile}
             repostComment={item.repostComment}
             imageUrl={item.imageUrl}
             template={item.template}
@@ -43,37 +45,47 @@ const renderItem = ({ item, index }) => {
             tags={item.tags}
             memeName={item.memeName}
             profile={item.profile}
+            repostId={item.repostId}
             postId={item.id}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
+            repostsCount={item.repostsCount}
         />
     }else if(item.imageUrls){
         post = <MultiImagePost
             username={item.username}
             profilePic={item.profilePic}
-            repostProfile={item.repostProfile}
+            reposterUsername={item.reposterUsername}
+            reposterProfilePic={item.reposterProfilePic}
+            reposterProfile={item.reposterProfile}
             repostComment={item.repostComment}
             title={item.title}
             imageUrls={item.imageUrls}
             tags={item.tags}
             profile={item.profile}
+            repostId={item.repostId}
             postId={item.id}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
+            repostsCount={item.repostsCount}
         />
     }else if(item.text){
         post = <TextPost
             username={item.username}
             profilePic={item.profilePic}
-            repostProfile={item.repostProfile}
+            reposterUsername={item.reposterUsername}
+            reposterProfilePic={item.reposterProfilePic}
+            reposterProfile={item.reposterProfile}
             repostComment={item.repostComment}
             title={item.title}
             text={item.text}
             tags={item.tags}
             profile={item.profile}
+            repostId={item.repostId}
             postId={item.id}
             likesCount={item.likesCount}
             commentsCount={item.commentsCount}
+            repostsCount={item.repostsCount}
         />
     }
 
@@ -129,19 +141,19 @@ const AllTagPosts = ({ tag }) => {
         setOffsetY(y);
     }
 
-    const getRepost = async(repostPostId, profile) => {
-        const repostRef = doc(db, 'allPosts', repostPostId);
+    const getRepost = async(repostedPostId, reposterProfile, reposterUsername, reposterProfilePic, repostId) => {
+
+        const repostRef = doc(db, 'allPosts', repostedPostId);
         const repostSnapshot = await getDoc(repostRef);
     
-        if(repostSnapshot.exists){
+        if(repostSnapshot.exists()){
             const repostData = repostSnapshot.data();
-            const id = repostData.repostedPostId;
-            const repostProfile = profile;
+            const id = repostedPostId;
     
             // Return the reposted post data along with the original post data
-            return { id, repostProfile, ...repostData }
+            return { id, repostId, reposterProfile, reposterUsername, reposterProfilePic, ...repostData }
         }else{
-            return;
+           deletePost(repostId);
         }
     }
 
@@ -172,7 +184,7 @@ const AllTagPosts = ({ tag }) => {
 
             if(data.repostPostId){
                 // Get the reposted post data
-                const repostData = await getRepost(data.repostPostId, data.profile);
+                const repostData = await getRepost(data.repostedPostId, data.profile, data.username, data.profilePic, id);
                 if(repostData){
                     // Add the reposted post data to the postList array
                     return { ...repostData }
@@ -228,7 +240,7 @@ const AllTagPosts = ({ tag }) => {
 
             if(data.repostPostId){
                 // Get the reposted post data
-                const repostData = await getRepost(data.repostPostId, data.profile);
+                const repostData = await getRepost(data.repostedPostId, data.profile, data.username, data.profilePic, id);
                 if(repostData){
                     // Add the reposted post data to the postList array
                     return { ...repostData }

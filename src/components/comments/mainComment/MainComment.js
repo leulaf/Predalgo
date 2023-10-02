@@ -65,13 +65,13 @@ const MainComment = ({ navigation, index, theme, profile, username, profilePic, 
     const {options, setOptions} = React.useContext(AuthenticatedUserContext);
 
     React.useEffect(() => {
-       if(options?.commentId === commentId && options.deleted === true){
+       if(options && options?.commentId === commentId && options.deleted === true){
             // console.log(options)
             // console.log('comment is deleted');
             setFinished("deleted")
             setOptions(false);
         }
-        if(options?.commentId === commentId && !(options?.text || (options?.image && image)) ){
+        if(options && options?.commentId === commentId && !(options?.text || (options?.image && image)) ){
             // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
 
             setOptions({

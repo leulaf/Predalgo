@@ -1,15 +1,16 @@
 import React, { } from 'react';
-import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import { View, ScrollView, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Image } from 'expo-image';
-import {ThemeContext, AuthenticatedUserContext} from '../../../context-store/context';
+import { ThemeContext, AuthenticatedUserContext } from '../../../context-store/context';
 import { Overlay } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
-
-import deletePost from '../../shared/post/DeletePost';
+import onShare from '../../shared/post/SharePost';
 
 import TitleText from '../../shared/Text/TitleText';
 
-import Animated, {FadeIn} from 'react-native-reanimated';
+import PostText from '../../shared/Text/PostText';
+
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import GlobalStyles from '../../constants/GlobalStyles';
 
@@ -30,8 +31,7 @@ import { getAuth } from 'firebase/auth';
 
 const auth = getAuth();
 
-const onNavToPost =  (navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount) => () => {
-    console.log(profile)
+const onNavToPost = (navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, repostedWithComment, reposterUsername, reposterProfile, reposterProfilePic) => () => {
     navigation.push('Post', {
         postId: postId,
         title: title,
@@ -47,11 +47,12 @@ const onNavToPost =  (navigation, postId, title, tags, profile, reposterProfile,
         likesCount: likesCount,
         commentsCount: commentsCount,
         profile: profile,
-        reposterProfile: reposterProfile,
         username: username,
-        reposterUsername: reposterUsername,
         profilePic: profilePic,
+        reposterUsername: reposterUsername,
+        reposterProfile: reposterProfile,
         reposterProfilePic: reposterProfilePic,
+        repostedWithComment: repostedWithComment,
     });
 }
 
@@ -76,116 +77,136 @@ const goToProfile = (navigation, profile, username, profilePic) => () => {
 }
 
 
-const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateUploader, templateState, likesCount, commentsCount, tags, content, profile, reposterProfile, postId, profilePic, reposterProfilePic, username, reposterUsername }) => {
+const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeName, template, templateUploader, templateState, likesCount, commentsCount, repostsCount, tags, content, profile, postId, profilePic, username, reposterUsername, reposterProfilePic, reposterProfile, repostedWithComment, repostComment }) => {
     const navigation = useNavigation();
-    const {theme,setTheme} = React.useContext(ThemeContext);
+    const { theme, setTheme } = React.useContext(ThemeContext);
 
     const [deleted, setDeleted] = React.useState(false);
-    const [overlayVisible, setOverlayVisible] = React.useState(false);
 
-    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
+    const { options, setOptions } = React.useContext(AuthenticatedUserContext);
 
     let threeDots
-    
-    if(theme == 'light'){
-        threeDots = <ThreeDotsLight width={40} height={40} style={styles.lightThreeDots}/>
-    }else{
-        threeDots = <ThreeDotsDark width={40} height={40} style={styles.darkThreeDots}/>
+
+    if (theme == 'light') {
+        threeDots = <ThreeDotsLight width={40} height={40} style={styles.lightThreeDots} />
+    } else {
+        threeDots = <ThreeDotsDark width={40} height={40} style={styles.darkThreeDots} />
     }
-    
+
 
     React.useEffect(() => {
-        if(options?.postId === postId && options.deleted === true){
-             // console.log(options)
-             // console.log('comment is deleted');
-             setDeleted(true)
-             setOptions(false);
-         }
-         if(options?.postId === postId && !(options?.text || (options?.image && imageUrl)) ){
-             // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
- 
-             setOptions({
-                 ...options,
-                 image: imageUrl,
-                 text: text,
-             });
-         }
+        if (options && options?.postId === postId && options?.deleted === true) {
+            // console.log(options)
+            // console.log('comment is deleted');
+            setDeleted(true)
+            setOptions(false);
+        }
+        if (options && options?.postId === postId && !(options?.text || (options?.image && imageUrl))) {
+            // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
+            console.log(options?.postId, postId)
+            console.log(options?.postId === postId)
+            setOptions({
+                ...options,
+                image: imageUrl,
+                text: text,
+            });
+        }
     }, [options]);
 
 
     const clickedThreeDots = React.useCallback(() => () => {
+
         setOptions({
             postId: postId,
             profile: profile,
             image: imageUrl,
             text: text,
         })
+
     }, []);
-     
-    
-    const toggleOverlay = React.useCallback(() => () => {
-        setOverlayVisible(!overlayVisible);
-    }, [overlayVisible]);
 
-
-    const deleteCurrentPost = React.useCallback(() => async () => {
-        setOverlayVisible(false);
-
-        await deletePost(postId).then(() => {
-            Alert.alert("Post deleted!");
-            setDeleted(true);
-        })
-        .catch((error) => {
-            // console.log(error);
-            setOverlayVisible(true);
-        });
-    });
-
-
+    { options }
     const postBottom = (
         <PostBottom
             theme={theme}
             postId={postId}
+            username={username}
+            profilePic={profilePic}
             likesCount={likesCount}
             commentsCount={commentsCount}
-            navToPost={() => onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            repostsCount={repostsCount}
+            onShare={onShare(text, imageUrl)}
+            navToPost={() => onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, repostedWithComment, reposterUsername, reposterProfile, reposterProfilePic)}
         />
     )
-    
-    
+
+
     const contentBottom = (
         <ContentBottom
             memeName={memeName}
             tags={tags}
-            navToPost={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+            navToPost={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, repostedWithComment, reposterUsername, reposterProfile, reposterProfilePic)}
             navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
             templateUploader={templateUploader}
         />
     )
+
+    const onLongPress = React.useCallback((repostWithComment) => () => {
+        if(repostWithComment){
+            setOptions({
+                // postId: repostId,
+                repostedId: postId,
+                profile: reposterProfile,
+                text: text,
+                repostComment: repostComment,
+            })
+        }else{
+            setOptions({
+                postId: postId,
+                // repostId: repostId,
+                profile: profile,
+                text: text,
+            })
+        }
+        
+    }, []);
+
     // if post is deleted or content is null, don't show post
-    if (deleted || content == null || content == undefined) {  
+    if (deleted || content == null || content == undefined) {
         return null;
     }
 
-
     return (
         <Animated.View
-            entering={FadeIn} 
-            style={theme == 'light' ? GlobalStyles.lightPostContainer: GlobalStyles.darkPostContainer}
+            entering={FadeIn}
+            style={[theme == 'light' ? GlobalStyles.lightPostContainer : GlobalStyles.darkPostContainer, 
+                {
+                    borderRadius: repostedWithComment && 15,
+                    borderWidth: repostedWithComment && 1,
+                    marginTop: repostedWithComment ? 14 : 0,
+                    marginBottom: repostedWithComment ? 3 : 10,
+                }
+            ]}
         >
 
             {
-                reposterUsername &&
+                ((repostComment?.length > 0) || reposterUsername) &&
 
                 <TouchableOpacity
                     activeOpacity={0.9}
-                    onPress={goToProfile(navigation, reposterProfile, reposterUsername, reposterProfilePic)}
-                    style = {{flexDirection: 'row'}}
+                    onPress={
+                        goToProfile(navigation,
+                            repostComment ? profile : reposterProfile,
+                            repostComment ? username : reposterUsername,
+                            repostComment ? profilePic : reposterProfilePic
+                        )
+                    }
+                    style={{ flexDirection: 'row', marginTop: 2 }}
                 >
                     <Repost
                         width={19}
                         height={19}
-                        style={theme == 'light' ? styles.lightRepostIcon: styles.darkRepostIcons}
+                        style={theme == 'light' ? styles.lightRepostIcon : styles.darkRepostIcons}
                     />
                     {/* <MaterialCommunityIcons
                         name="repeat-variant"
@@ -194,20 +215,21 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                         marginLeft={10}
                         marginTop={5}
                     /> */}
-                    <Text style={theme == 'light' ? styles.lightReposterUsername: styles.darkReposterUsername}>
-                        Reposted by @{reposterUsername}
+                    <Text style={theme == 'light' ? styles.lightReposterUsername : styles.darkReposterUsername}>
+                        Reposted by @{repostComment ? username : reposterUsername}
                     </Text>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                        style={{flex: 1, height: 40}}
+                        onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, repostedWithComment, reposterUsername, reposterProfile, reposterProfilePic)}
+                        style={{ flex: 1 }}
                     />
                 </TouchableOpacity>
             }
 
+
             {/* profile pic, username and title*/}
-            <View 
-                style={{flexDirection: 'row', marginLeft: 10, marginTop: !reposterProfile && 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
+            <View
+                style={{ flexDirection: 'row', marginLeft: 10, marginTop: repostedWithComment ? 7 : 10, marginBottom: title ? 8 : 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center' }}
             >
                 {/* profile pic */}
                 <TouchableOpacity
@@ -215,106 +237,85 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                     onPress={goToProfile(navigation, profile, username, profilePic)}
                 >
                     {profilePic != "" ? (
-                        <Image source={{ uri: profilePic }} style={styles.profileImage}/>
+                        <Image source={{ uri: profilePic }} style={[styles.profileImage, {height: repostedWithComment ? 35 : 40, width: repostedWithComment ? 35 : 40}]} cachePolicy='disk' />
                     ) : (
-                        <Image source={require('../../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
+                        <Image source={require('../../../assets/profile_default.png')} style={[styles.profileImage, {height: repostedWithComment ? 35 : 40, width: repostedWithComment ? 35 : 40}]} cachePolicy='disk' />
                     )}
                 </TouchableOpacity>
-                
+
                 {/* username */}
                 <TouchableOpacity
                     activeOpacity={0.9}
                     onPress={goToProfile(navigation, profile, username, profilePic)}
 
-                    style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
+                    style={{ flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center' }}
                 >
 
                     {/* username */}
-                    <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                    <Text style={[theme == 'light' ? styles.lightUsername : styles.darkUsername, {fontSize: repostedWithComment ? 15 : 16}]}>
                         @{username}
                     </Text>
 
 
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
                     activeOpacity={0.9}
-                    onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                    style={{flex: 1, height: 40}}
+                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, repostedWithComment, reposterUsername, reposterProfile, reposterProfilePic)}
+                    style={{ flex: 1, height: 40 }}
                 />
 
 
-                
+
                 {/* three dots */}
-                <TouchableOpacity 
-                    activeOpacity={0.9}
-                    style={{flexDirection: 'row', }}
-                    // onPress= {toggleOverlay()}
-                    onPress= {clickedThreeDots()}
-                >
-                    {threeDots}
-                </TouchableOpacity>
+                {
+                    !repostedWithComment &&
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        style={{ flexDirection: 'row', marginBottom: 10, paddingTop: 10, paddingBottom: 0, paddingLeft: 15, paddingRight: 10 }}
+                        // onPress= {toggleOverlay()}
+                        onPress={clickedThreeDots()}
+                    >
+                        {threeDots}
+                    </TouchableOpacity>
+                }
             </View>
 
 
             {/* title */}
-            <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
-            >
+            {
+                title &&
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onLongPress={onLongPress()}
+                    onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, repostedWithComment, reposterUsername, reposterProfile, reposterProfilePic)}
+                >
 
-                {/* title */}
-                <TitleText title={title}/>
+                    {/* title */}
+                    <TitleText title={title} repostedWithComment={repostedWithComment}/>
 
-            </TouchableOpacity>
+                </TouchableOpacity>
+            }
                 
-            
+
+
             {/* Post content. Image, Text etc. */}
             {/* <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                onPress={onNavToPost(navigation, postId, title, tags, profile, profilePic, username, imageUrl, template, templateUploader, templateState, memeName, imageHeight, imageWidth, text, likesCount, commentsCount, repostedWithComment, reposterUsername, reposterProfile, reposterProfilePic)}
             > */}
 
-                {content}
+            {content}
 
             {/* </TouchableOpacity> */}
 
 
             {/* tags and meme name */}
-            {contentBottom}
+            {/* {contentBottom} */}
 
 
             {/* likes, comments, repost, share */}
-            {postBottom}
-
-
-            {/* 
-                an overlay popup that appears when you click on the three dots.
-                if the post is from the current users, user can delete it.
-                if the post is not from the current users, user can report it.
-            */}
-            <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay()}>
-                
-                {profile === auth.currentUser.uid ?
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={{flexDirection: 'row'}}
-                        onPress={deleteCurrentPost()}
-                    >
-                        <DeleteIcon width={40} height={40} style={{marginLeft: 2}}/>
-                        <Text style={styles.overlayText}>Delete Post</Text>
-                    </TouchableOpacity>
-                :
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={{flexDirection: 'row'}}
-                        onPress={toggleOverlay()}
-                    >
-                        <ReportIcon width={35} height={35} style={{marginLeft: 2}}/>
-                        <Text style={styles.overlayText}>Report Post</Text>
-                    </TouchableOpacity>
-                }
-            </Overlay>
+            {!repostedWithComment && postBottom}
 
         </Animated.View>
     );
@@ -324,20 +325,14 @@ const styles = StyleSheet.create({
     lightThreeDots: {
         // marginLeft: 365,
         color: '#000',
-        padding: 10,
         marginTop: -20,
-        paddingLeft: 5,
-        paddingRight: 10,
-        marginRight: 10,
+
         // marginHorizontal: 10,
     },
     darkThreeDots: {
         // marginLeft: 365,
         color: '#FFF',
-        padding: 10,
         marginTop: -20,
-        marginLeft: 5,
-        marginRight: 10,
         // marginHorizontal: 10,
     },
     profileImage: {
@@ -385,7 +380,7 @@ const styles = StyleSheet.create({
     },
     lightRepostIcon: {
         color: "#606060",
-        marginLeft: 11,
+        marginLeft: 12,
         marginTop: 10
     },
     darkRepostIcons: {

@@ -5,7 +5,7 @@ import { ThemeContext } from '../../../context-store/context';
 
 import SplitTitle from './methods/SplitTitle';
 
-const TitleText = ({title, numberOfLines}) => {
+const TitleText = ({title, numberOfLines, repostedWithComment}) => {
     // if(!(title)) {
     //     return null;
     // }
@@ -32,9 +32,16 @@ const TitleText = ({title, numberOfLines}) => {
         <Text
             numberOfLines={numberOfLines && numberOfLines}
             style={
-                theme == 'light' ? styles.lightPostTitle : styles.darkPostTitle
+                [theme == 'light' ? styles.lightPostTitle : styles.darkPostTitle,
+                    {
+                        fontSize: repostedWithComment ? 20 : 22,
+                        marginTop: repostedWithComment && -5,
+                        marginBottom: 8,
+                    }
+                ]
             }
         >
+            {/* sdfgsdfg ssdf sdfsdf sdfs sdffsdg */}
             {title}
         </Text>
 
@@ -44,13 +51,13 @@ const TitleText = ({title, numberOfLines}) => {
 
 const styles = StyleSheet.create({
     lightPostTitle: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: "500",
         // color: '#333333',
         color: '#000',
         textAlign: 'auto',
-        marginHorizontal: 12.5,
-        marginTop: 4,
+        marginHorizontal: 13,
+        // marginTop: 4,
         letterSpacing: 0.5,
     },
     darkPostTitle: {
@@ -59,8 +66,8 @@ const styles = StyleSheet.create({
         // color: '#DDDDDD',
         color: '#FFF',
         textAlign: 'auto',
-        marginHorizontal: 12.5,
-        marginTop: 4,
+        marginHorizontal: 13,
+        // marginTop: 4,
         letterSpacing: 0.5,
     },
 })

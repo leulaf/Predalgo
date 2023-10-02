@@ -73,17 +73,18 @@ const PostBar = ({}) => {
 
 
            <TouchableOpacity
-            //    onPress={() => 
-            //     navigation.navigate("Upload", {
-            //         forComment: false,
+               onPress={() => 
+                    navigation.navigate("Upload", {
+                        forComment: false,
+                    })
+                }
+            // onPress={() => 
+            //     navigation.navigate("Chat", {
+            //         // forComment: false,
+            //         username: auth?.currentUser?.displayName,
+            //         avatar: auth?.currentUser?.photoURL,
             //     })
-            onPress={() => 
-                navigation.navigate("Chat", {
-                    // forComment: false,
-                    username: auth?.currentUser?.displayName,
-                    avatar: auth?.currentUser?.photoURL,
-                })
-            }
+            // }
            >
                {upload}
            </TouchableOpacity>

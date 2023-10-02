@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { View, Text, StyleSheet, TouchableOpacity, Share, Platform, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, Dimensions } from 'react-native';
 
 import { AuthenticatedUserContext } from '../../../context-store/context';
+
+import onShare from '../../shared/post/SharePost';
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -20,29 +22,7 @@ const auth = getAuth();
 
 const window = Dimensions.get('window');
 
-
-const onShare = async(text, image) => {
-    try {
-        const result = await Share.share({
-            message: text,
-            url: image
-        });
-        if (result.action === Share.sharedAction) {
-            if (result.activityType) {
-            // shared with activity type of result.activityType
-            } else {
-            // shared
-            }
-        }
-        else if (result.action === Share.dismissedAction) {
-            // dismissed
-        }
-    } catch (error) {
-        // alert(error.message);
-    }
-}
-
-export default ThreeDotsSheet = ({profile, postId, text, image, theme}) => {
+export default ThreeDotsSheet = ({profile, postId, repostId, text, image, theme}) => {
     const [bookmarked, setBookmarked] = React.useState(false);
 
     // ref
@@ -62,20 +42,13 @@ export default ThreeDotsSheet = ({profile, postId, text, image, theme}) => {
         
     }, [snapPoints]);
 
-    // console.log(options)
-    // setOptions(false)
-    React.useEffect(() => {
-        if(options == "close"){
-            bottomSheetRef.current.snapToIndex(0);
-        }
-    }, [options])
 
     const deleteAndCheck = React.useCallback(() => async() => {
         setOptions({
             ...options,
             deleted: true
         })
-        await deletePost(postId)
+        await deletePost(repostId ? repostId : postId)
         .then(() => {
             // setOptions({
             //     ...options,
@@ -92,7 +65,21 @@ export default ThreeDotsSheet = ({profile, postId, text, image, theme}) => {
 
 
     return (
-        //<View style={styles.container}>
+        <View
+            style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                width: "100%",
+                height:"100%",
+                position: 'absolute',
+                top: 0
+            }}
+        >
+            <TouchableOpacity
+                onPress = {() => bottomSheetRef.current.snapToIndex(0)}
+                style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
+            />
+
+
             <BottomSheet
                 ref={bottomSheetRef}
                 index={1}
@@ -114,7 +101,7 @@ export default ThreeDotsSheet = ({profile, postId, text, image, theme}) => {
                 }}
 
                 // handleHeight={0}
-                handleStyle={{backgroundColor: theme == 'light' ? '#F6F6F6' : '#1D1D1D', width: "95%", alignSelf: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15}}
+                handleStyle={{backgroundColor: theme == 'light' ? '#FFF' : '#1D1D1D', width: "95%", alignSelf: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15}}
                 // handleIndicatorStyle={{height: 0, width: 0}}
                 // handleComponent={null}
                 handleIndicatorStyle={{backgroundColor: theme == 'light' ? '#000' : '#FFF'}}
@@ -129,10 +116,7 @@ export default ThreeDotsSheet = ({profile, postId, text, image, theme}) => {
                     <TouchableOpacity
                         activeOpacity={0.5}
                         style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
-                        onPress={() => {
-                            onShare(text, image)
-                            setOptions(false)
-                        }}
+                        onPress={onShare(text, image)}
                     >
                         <Feather
                             name={Platform.OS === 'ios' ? "share" : "share-2"}
@@ -227,37 +211,12 @@ export default ThreeDotsSheet = ({profile, postId, text, image, theme}) => {
                                 marginRight={15}
                                 marginTop={0}
                             />
-                            <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Report comment</Text>
+                            <Text style={theme == 'light' ? styles.lightText : styles.darkText}>Report Post</Text>
                         </TouchableOpacity>
                     } 
                 </BottomSheetView>
-                
-
-
-
-
-
-
-
-
-
-
-                {/* <View style={styles.contentContainer}> */}
-                    {/* 
-                        maybe turn three dots to X when clicked to indecate
-                        that the user can click it again to close the sheet
-                    */}
-
-                    {/* 
-                        IMPORTANT:
-                        make the three dots that closes the sheet is from the same comment
-                        if not then change the sheet to the new comment
-                    
-                    */}
-                {/* </View> */}
-                
             </BottomSheet>
-        //</View>
+        </View>
     )
 }
 
@@ -306,7 +265,8 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         // alignContent: 'center',
         justifyContent: 'flex-end',
-        backgroundColor: '#F6F6F6',
+        backgroundColor: '#FFF',
+        // backgroundColor: '#F6F6F6',
         // borderWidth: 1,
         // borderColor: '#E2E2E2',
     },
@@ -323,6 +283,7 @@ const styles = StyleSheet.create({
         // alignItems: 'center',
         // alignContent: 'center',
         justifyContent: 'flex-end',
+        // backgroundColor: '#242424',
         backgroundColor: '#1D1D1D',
         // borderWidth: 1,
         // borderColor: '#E2E2E2',

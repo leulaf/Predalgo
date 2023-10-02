@@ -379,6 +379,26 @@ const PostScreen = ({navigation, route}) => {
         setOffsetY(y);
     }
 
+    const clickedThreeDots = React.useCallback(() => () => {
+        // if(repostComment){
+        //     setOptions({
+        //         postId: repostId,
+        //         profile: reposterProfile,
+        //         image: imageUrl,
+        //         text: text,
+        //     })
+        // }else{
+            setOptions({
+                postId: postId,
+                // repostId: repostId,
+                profile: profile,
+                image: imageUrl,
+                text: text,
+            })
+        // }
+        
+    }, []);
+
     // const togglextraPaddingTop = React.useCallback((action) => {
     //     if(action == "removeAndWait"){
     //         setExtraPaddingTop(false);
@@ -521,6 +541,7 @@ const PostScreen = ({navigation, route}) => {
                         title={"Post"}
                         onGoBack={onGoBack}
                         extraPaddingTop={extraPaddingTop}
+                        // clickedThreeDots={clickedThreeDots()}
                     />
                 }
 

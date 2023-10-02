@@ -4,7 +4,7 @@ import { ThemeContext } from '../../../context-store/context';
 
 import SplitPost from './methods/SplitPost';
 
-const PostText = ({text, numberOfLines, forPost, forDisplayMeme}) => {
+const PostText = ({text, numberOfLines, forPost, forDisplayMeme, repostedWithComment}) => {
     if(text == undefined || text == null || text == '') {
         return null;
     }
@@ -15,11 +15,13 @@ const PostText = ({text, numberOfLines, forPost, forDisplayMeme}) => {
         <Text
             numberOfLines={numberOfLines && numberOfLines}
             style={{
-                marginHorizontal: forDisplayMeme ? 8 : 14,
-                marginTop: 6,
+                marginHorizontal: forDisplayMeme ? 8 : 13,
+                marginBottom: 2,
                 textAlign: 'auto',
-                marginBottom: forPost ? 10 : forDisplayMeme ? 10 : 0,
-                marginTop: forPost ? -8 : forDisplayMeme ? -2 : 0,
+                marginBottom: repostedWithComment && 15,
+                // marginBottom: forDisplayMeme ? 10 : repostedWithComment ? 15 : 0,
+                // marginTop: forDisplayMeme ? -2 : 10,
+                fontSize : 18
             }}
         >
 

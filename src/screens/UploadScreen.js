@@ -30,7 +30,7 @@ export default function UploadScreen({route}) {
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashOn, setFlashOn] = useState(false);
-  const { forPost, forMemePost, forCommentOnComment, forCommentOnPost, forMemeComment} = route.params;
+  const { forPost, forMemePost, forCommentOnComment, forCommentOnPost, forMemeComment, newTemplate} = route.params;
 
   
   // useEffect(() => {
@@ -63,8 +63,23 @@ export default function UploadScreen({route}) {
     });
 
     if (!result.canceled) {
-
-      if(forCommentOnComment || forCommentOnPost){
+        console.log('here')
+        
+        if(forPost){
+        navigation.dispatch(
+          StackActions.replace(forMemePost ? 'EditMeme' : 'EditImage', {
+            imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
+            height: result.assets[0].height,
+            width: result.assets[0].width,
+            forPost: true,
+            forCommentOnComment: false,
+            forCommentOnPost: false,
+            forMemeComment: false,
+            forMemePost: forMemePost ? forMemePost : false,
+            cameraPic: false
+          })
+        );
+      }else if(forCommentOnComment || forCommentOnPost){
         navigation.dispatch(
           StackActions.replace(forMemeComment ? 'EditMeme' : 'EditImage', {
             imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
@@ -77,18 +92,17 @@ export default function UploadScreen({route}) {
           })
         );
 
-      }else if(forPost){
+      }else if(newTemplate){
         navigation.dispatch(
-          StackActions.replace(forMemePost ? 'EditMeme' : 'EditImage', {
+          StackActions.replace('EditImage', {
             imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
             height: result.assets[0].height,
             width: result.assets[0].width,
-            forPost: true,
-            forCommentOnComment: false,
-            forCommentOnPost: false,
-            forMemeComment: false,
-            forMemePost: forMemePost ? forMemePost : false,
-            cameraPic: false
+            // forCommentOnComment: forCommentOnComment,
+            // forCommentOnPost: forCommentOnPost,
+            // forMemeComment: forMemeComment ? forMemeComment : false,
+            cameraPic: true,
+            newTemplate: true
           })
         );
       }
@@ -106,19 +120,7 @@ export default function UploadScreen({route}) {
 
       const picture = await camera.takePictureAsync(options);
 
-      if(forCommentOnComment || forCommentOnPost){
-        navigation.dispatch(
-          StackActions.replace(forMemeComment ? 'EditMeme' : 'EditImage', {
-            imageUrl: `data:image/jpeg;base64,${picture.base64}`,
-            height: picture.height,
-            width: picture.width,
-            forCommentOnComment: forCommentOnComment,
-            forCommentOnPost: forCommentOnPost,
-            forMemeComment: forMemeComment ? forMemeComment : false,
-            cameraPic: true
-          })
-        );
-      }else if(forPost){
+      if(forPost){
         navigation.dispatch(
           StackActions.replace(forMemePost ? 'EditMeme' : 'EditImage', {
             imageUrl: `data:image/jpeg;base64,${picture.base64}`,
@@ -132,10 +134,32 @@ export default function UploadScreen({route}) {
             cameraPic: true
           })
         );
-
+      }else if(forCommentOnComment || forCommentOnPost){
+        navigation.dispatch(
+          StackActions.replace(forMemeComment ? 'EditMeme' : 'EditImage', {
+            imageUrl: `data:image/jpeg;base64,${picture.base64}`,
+            height: picture.height,
+            width: picture.width,
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
+            forMemeComment: forMemeComment ? forMemeComment : false,
+            cameraPic: true
+          })
+        );
+      }else if(newTemplate){
+        navigation.dispatch(
+          StackActions.replace('EditImage', {
+            imageUrl: `data:image/jpeg;base64,${picture.base64}`,
+            height: picture.height,
+            width: picture.width,
+            // forCommentOnComment: forCommentOnComment,
+            // forCommentOnPost: forCommentOnPost,
+            // forMemeComment: forMemeComment ? forMemeComment : false,
+            cameraPic: true,
+            newTemplate: true
+          })
+        );
       }
-      
-
     }
   };
 
@@ -153,7 +177,6 @@ export default function UploadScreen({route}) {
       );
       // navigation.goBack(null);
     }else{
-      console.log('go back');
       navigation.goBack(null);
     }
   }

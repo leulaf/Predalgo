@@ -17,8 +17,6 @@ const renderItem = ({ item, index }) => {
     if(item.imageUrl || item.template){
         return (
             <ImagePost
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
                 imageUrl={item.imageUrl}
                 imageHeight={item.imageHeight}
                 imageWidth={item.imageWidth}
@@ -32,59 +30,40 @@ const renderItem = ({ item, index }) => {
                 profile={item.profile}
                 username={item.username}
                 profilePic={item.profilePic}
+                repostId={item.repostId}
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
+                repostsCount={item.repostsCount}
                 reposterProfile={item.reposterProfile}
                 reposterUsername={item.reposterUsername}
                 reposterProfilePic={item.reposterProfilePic}
+                repostComment={item.repostComment}
             />
         )
     }else if(item.text){
         return (
             <TextPost
-                repostProfile={item.repostProfile}
-                repostComment={item.repostComment}
                 title={item.title}
                 text={item.text}
                 tags={item.tags}
                 profile={item.profile}
                 username={item.username}
                 profilePic={item.profilePic}
+                repostId={item.repostId}
                 postId={item.id}
                 likesCount={item.likesCount}
                 commentsCount={item.commentsCount}
+                repostsCount={item.repostsCount}
                 reposterProfile={item.reposterProfile}
                 reposterUsername={item.reposterUsername}
                 reposterProfilePic={item.reposterProfilePic}
+                repostComment={item.repostComment}
             />
         )
     }
 };
 
-// const MemoImagePost = React.memo(({item, theme, index, navigation})=>{
-//     return (
-//         <ImagePost
-//             key={index}
-//             repostProfile={item.repostProfile}
-//             repostComment={item.repostComment}
-//             imageUrl={item.imageUrl}
-//             imageHeight={item.imageHeight}
-//             imageWidth={item.imageWidth}
-//             template={item.template}
-//             templateState={item.templateState}
-//             title={item.title}
-//             tags={item.tags}
-//             memeName={item.memeName}
-//             profile={item.profile}
-//             username={username}
-//             profilePic={profilePic}
-//             postId={item.id}
-//             likesCount={item.likesCount}
-//             commentsCount={item.commentsCount}
-//         />
-//     )
-// })
 
 const keyExtractor = (item, index) => item.id.toString() + index.toString();
 

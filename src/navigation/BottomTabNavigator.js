@@ -1,9 +1,6 @@
 import React, {useContext, useState} from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import { DrawerActions } from '@react-navigation/native';
-
-import BottomSheet from '@gorhom/bottom-sheet';
-
 import { BlurView } from 'expo-blur';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -11,6 +8,7 @@ import {ThemeContext, AuthenticatedUserContext} from '../../context-store/contex
 import TopBar from '../ScreenTop/TopBar';
 
 import ThreeDotsSheet from '../components/postTypes/ThreeDotsSheet';
+import RepostSheet from '../components/postTypes/RepostSheet';
 
 // Light-Mode Icons
 import Saved from '../../assets/saved.svg';
@@ -216,36 +214,35 @@ function BottomTabNavigator ({navigation}) {
                 />
 
             </Bottom_Tab.Navigator>
-            
+
             {
-                options && 
+                options ? 
 
-                <View
-                    style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                        width: "100%",
-                        height:"100%",
-                        position: 'absolute',
-                        top: 0
-                    }}
-                >
-                    <TouchableOpacity
-                        onPressIn = {() => setOptions("close")}
-                        style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
-                    >
+                    options.type === 'repost' ?
 
-                    </TouchableOpacity>
-                    <ThreeDotsSheet
-                        profile={options.profile}
-                        commentId={options.commentId}
-                        postId={options.postId}
-                        replyToPostId={options.replyToPostId}
-                        replyToCommentId={options.replyToCommentId}
-                        image={options.image}
-                        text={options.text}
-                        theme={theme}
-                    />
-                </View>
+                        <RepostSheet
+                            // profile={options.profile}
+                            repostId={options.repostId}
+                            postId={options.postId}
+                            username={options.username}
+                            profilePic={options.profilePic}
+                            // image={options.image}
+                            // text={options.text}
+                            theme={theme}
+                        />
+
+                    :
+
+                        <ThreeDotsSheet
+                            profile={options.profile}
+                            repostId={options.repostId}
+                            postId={options.postId}
+                            image={options.image}
+                            text={options.text}
+                            theme={theme}
+                        />
+                :
+                    null
                 
             }
             {/* <BottomSheet

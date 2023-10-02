@@ -1,15 +1,20 @@
 import { db, storage } from '../../config/firebase';
-import { collection, doc, setDoc, getDoc, query, where, limit, getDocs } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, query, where, limit, getDocs, updateDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import firebase from 'firebase/compat/app';
 
 import { Alert } from 'react-native';
 
+import removeExcludedWords from '../../constants/ExcludedWords';
 
 import uuid from 'react-native-uuid';
 
 
 const uploadNewTemplate = async (newTemplateImage, memeName, height, width) => {
+    if(memeName.length == 0){
+        Alert.alert("Please enter a name for the meme template.");
+        return;
+    }
     return new Promise(async (resolve, reject) => {
         // check if the meme name is unique
         const q = query(
@@ -81,15 +86,15 @@ const addNewTemplate = async (newUrl, memeName, height, width) => {
 
     await setDoc(doc(db, "imageTemplates", memeName), {
         name: memeName,
+        searchName: removeExcludedWords(memeName),
         uploader: username,
         url: newUrl,
         height: height,
         width: width,
         useCount: 0,
         creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-    }).then(() => {
-
-
+    }).then(async() => {
+        
     });
 }
 
