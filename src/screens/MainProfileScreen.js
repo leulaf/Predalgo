@@ -349,7 +349,7 @@ function MainProfileScreen ({navigation, route, ...props }) {
                     shadowRadius: theme == 'light' ? 6 : 8,
                 }}
                 lazy={true}
-                //    revealHeaderOnScroll
+                   revealHeaderOnScroll
                 pointerEvents="box-none"
                 renderTabBar={tabBar}
                 initialTabName="Posts"

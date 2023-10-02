@@ -372,6 +372,13 @@ const EditMemeScreen = ({ navigation, route }) => {
                         // borderColor: "#fff",
                         marginTop: 5,
                     }}
+                    cropEnableRotateMatchImageAspectRatio={'always'}
+                    // cropSelectPresetOptions={[
+                    //     [undefined, 'Custom'],
+                    //     [1, 'Square'],
+                    //     [4 / 3, 'Landscape'],
+                    //     [3 / 4, 'Portrait'],
+                    // ]}
                     enableButtonRevert={false} // removes the revert button
                     enableButtonExport={false} // removes the finished editing button with check mark
                     styleRules={theme == 'light' ? 

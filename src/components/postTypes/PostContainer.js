@@ -6,9 +6,9 @@ import { Overlay } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import onShare from '../../shared/post/SharePost';
 
-import TitleText from '../../shared/Text/TitleText';
+import Feather from '@expo/vector-icons/Feather';
 
-import PostText from '../../shared/Text/PostText';
+import TitleText from '../../shared/Text/TitleText';
 
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -103,8 +103,6 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
         }
         if (options && options?.postId === postId && !(options?.text || (options?.image && imageUrl))) {
             // const watermarked = getWatermarkedImage(image, '../../../assets/add.svg');
-            console.log(options?.postId, postId)
-            console.log(options?.postId === postId)
             setOptions({
                 ...options,
                 image: imageUrl,
@@ -184,13 +182,13 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                     borderRadius: repostedWithComment && 15,
                     borderWidth: repostedWithComment && 1,
                     marginTop: repostedWithComment ? 14 : 0,
-                    marginBottom: repostedWithComment ? 3 : 10,
+                    marginBottom: repostedWithComment ? 3 : 8,
                 }
             ]}
         >
 
             {
-                ((repostComment?.length > 0) || reposterUsername) &&
+                (reposterUsername) &&
 
                 <TouchableOpacity
                     activeOpacity={0.9}
@@ -201,12 +199,22 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
                             repostComment ? profilePic : reposterProfilePic
                         )
                     }
-                    style={{ flexDirection: 'row', marginTop: 2 }}
+                    style={{ flexDirection: 'row', marginTop: 5 }}
                 >
-                    <Repost
+                    {/* <Repost
                         width={19}
                         height={19}
                         style={theme == 'light' ? styles.lightRepostIcon : styles.darkRepostIcons}
+                    /> */}
+                    <Feather
+                        name={"repeat"}
+                        size={20}
+
+                        color={theme == 'light' ? '#444' : '#F8F8F8'}
+                        marginLeft={10}
+
+
+                        marginTop={9}
                     />
                     {/* <MaterialCommunityIcons
                         name="repeat-variant"
@@ -229,7 +237,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 
             {/* profile pic, username and title*/}
             <View
-                style={{ flexDirection: 'row', marginLeft: 10, marginTop: repostedWithComment ? 7 : 10, marginBottom: title ? 8 : 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center' }}
+                style={{ flexDirection: 'row', marginLeft: 10, marginTop: repostedWithComment ? 7 : 14, marginBottom: title ? 8 : 10, alignItems: 'center', justifyContent: 'center', alignContent: 'center' }}
             >
                 {/* profile pic */}
                 <TouchableOpacity
@@ -269,15 +277,24 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 
                 {/* three dots */}
                 {
-                    !repostedWithComment &&
-                    <TouchableOpacity
-                        activeOpacity={0.9}
-                        style={{ flexDirection: 'row', marginBottom: 10, paddingTop: 10, paddingBottom: 0, paddingLeft: 15, paddingRight: 10 }}
-                        // onPress= {toggleOverlay()}
-                        onPress={clickedThreeDots()}
-                    >
-                        {threeDots}
-                    </TouchableOpacity>
+                    !repostedWithComment ?
+                        <TouchableOpacity
+                            activeOpacity={0.9}
+                            style={{ flexDirection: 'row', marginBottom: 10, paddingTop: 10, paddingBottom: 0, paddingLeft: 15, paddingRight: 10 }}
+                            // onPress= {toggleOverlay()}
+                            onPress={clickedThreeDots()}
+                        >
+                            {threeDots}
+                        </TouchableOpacity>
+                    :
+                        <Feather
+                            name={"repeat"}
+                            size={20}
+
+                            color={theme == 'light' ? '#555' : '#F8F8F8'}
+                            marginRight={15}
+                            marginTop={-9}
+                        />
                 }
             </View>
 
@@ -311,7 +328,7 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
 
 
             {/* tags and meme name */}
-            {/* {contentBottom} */}
+            {contentBottom}
 
 
             {/* likes, comments, repost, share */}

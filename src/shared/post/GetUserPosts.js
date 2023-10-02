@@ -10,7 +10,7 @@ const getRepost = async(repostedPostId, reposterProfile, reposterUsername, repos
     if(repostSnapshot.exists()){
         const repostData = repostSnapshot.data();
         const id = repostedPostId;
-        // console.log(reposterProfile, reposterUsername, reposterProfilePic)
+
         // Return the reposted post data along with the original post data
         return { id, repostId, reposterProfile, reposterUsername, reposterProfilePic, repostComment, ...repostData }
     }else{
@@ -51,7 +51,7 @@ const fetchUserPostsByRecent = async(userId) => {
 
         if (data.repostedPostId) {
         // Get the reposted post data
-        const repostData = await getRepost(data.repostedPostId, data.profile, data.username, data.profilePic, id);
+        const repostData = await getRepost(data.repostedPostId, data.profile, data.username, data.profilePic, data.repostComment, id);
         if (repostData) {
             // Add the reposted post data to the postList array
             return { ...repostData };
@@ -76,7 +76,7 @@ const fetchUserPostsByPopular = async(userId) => {
 
         if (data.repostPostId) {
         // Get the reposted post data
-        const repostData = await getRepost(data.repostedPostId, data.profile, data.username, data.profilePic, id);
+        const repostData = await getRepost(data.repostedPostId, data.profile, data.username, data.profilePic, data.repostComment, id);
         if (repostData) {
             // Add the reposted post data to the postList array
             return { ...repostData };

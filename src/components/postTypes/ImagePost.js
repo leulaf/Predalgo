@@ -80,8 +80,7 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
         setIsFocused(false);
         onNavToPost(navigation, postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, text, image, template, templateUploader, templateState, memeName, imageHeight, imageWidth, likesCount, commentsCount);
     })
-    console.log("sss")
-    console.log(postId, title, tags, profile, reposterProfile, profilePic, reposterProfilePic, username, reposterUsername, text, image, template, templateUploader, memeName, imageHeight, imageWidth, likesCount, commentsCount)
+
 
     if(repostComment?.length > 0){
         return (
@@ -90,7 +89,7 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
                 // commentsCount={repostCommentsCount}
                 likesCount={0}
                 commentsCount={0}
-                repostComment={repostComment}
+                text={repostComment}
                 postId={repostId}
                 profile={reposterProfile}
                 username={reposterUsername}
@@ -105,7 +104,7 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
 
                         <TouchableOpacity
                             activeOpacity={0.9}
-                            onPress={() => onNavToPost(navigation, postId, title, tags, profile, profilePic, username, text, likesCount, commentsCount)}
+                            onPress={() => navToPostFromImage()}
                             // onLongPress={onLongPress(true)}
                         >
                         

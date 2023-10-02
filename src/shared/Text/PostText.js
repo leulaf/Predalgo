@@ -16,12 +16,13 @@ const PostText = ({text, numberOfLines, forPost, forDisplayMeme, repostedWithCom
             numberOfLines={numberOfLines && numberOfLines}
             style={{
                 marginHorizontal: forDisplayMeme ? 8 : 13,
-                marginBottom: 2,
                 textAlign: 'auto',
-                marginBottom: repostedWithComment && 15,
+                fontFamily: "NotoSans_400Regular",
+                marginBottom: repostedWithComment && 15 ,
                 // marginBottom: forDisplayMeme ? 10 : repostedWithComment ? 15 : 0,
                 // marginTop: forDisplayMeme ? -2 : 10,
-                fontSize : 18
+                fontSize : 18,
+                letterSpacing: 0.1,
             }}
         >
 

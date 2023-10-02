@@ -2,6 +2,7 @@ import React, { } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert } from 'react-native';
 import { AuthenticatedUserContext } from '../../../context-store/context';
 
+import Feather from '@expo/vector-icons/Feather';
 
 import { getAuth } from 'firebase/auth';
 
@@ -118,7 +119,7 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
 
     return (
 
-            <View style={{flex: 1, width: '100%', marginRight: 13, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
+            <View style={{flex: 1, width: '100%', marginRight: 13, marginTop: 3, flexDirection: 'row', alignSelf: 'center', justifyContent: 'space-around'}}>     
             
                 {/* Comments button */}
                 {
@@ -188,7 +189,16 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
                         style={styles.bottomButtonContainer}
                         onPress={onRepost()}
                     >
-                        {repost}
+                        <Feather
+                            name={"repeat"}
+                            size={23}
+
+                            color={theme == 'light' ? '#525252' : '#F8F8F8'}
+                            marginRight={8}
+
+                            // marginTop={-7}
+                        />
+                        
 
                         <Text style={theme == 'light' ? styles.lightBottomText: styles.darkBottomText}>
                             {repostsCount || 0}

@@ -34,7 +34,7 @@ const TitleText = ({title, numberOfLines, repostedWithComment}) => {
             style={
                 [theme == 'light' ? styles.lightPostTitle : styles.darkPostTitle,
                     {
-                        fontSize: repostedWithComment ? 20 : 22,
+                        fontSize: repostedWithComment ? 20 : 20,
                         marginTop: repostedWithComment && -5,
                         marginBottom: 8,
                     }
@@ -52,13 +52,14 @@ const TitleText = ({title, numberOfLines, repostedWithComment}) => {
 const styles = StyleSheet.create({
     lightPostTitle: {
         fontSize: 20,
-        fontWeight: "500",
+        // fontWeight: "500",
+        fontFamily: "NotoSans_500Medium",
         // color: '#333333',
         color: '#000',
         textAlign: 'auto',
         marginHorizontal: 13,
         // marginTop: 4,
-        letterSpacing: 0.5,
+        letterSpacing: 0.2,
     },
     darkPostTitle: {
         fontSize: 22,
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
         textAlign: 'auto',
         marginHorizontal: 13,
         // marginTop: 4,
-        letterSpacing: 0.5,
+        letterSpacing: 0.2,
     },
 })
 

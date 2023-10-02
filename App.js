@@ -20,10 +20,8 @@ import rootReducer from './redux/reducers';
 import thunk from 'redux-thunk';
 import { MainStackNavigator } from './src/navigation/StackNavigator';
 
-// import { useFonts } from 'expo-font';
-// import * as SplashScreen from 'expo-splash-screen';
+import { useFonts, NotoSans_300Light, NotoSans_400Regular, NotoSans_500Medium, NotoSans_600SemiBold, NotoSans_700Bold, NotoSans_800ExtraBold} from '@expo-google-fonts/noto-sans';
 
-// SplashScreen.preventAutoHideAsync();
 
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
@@ -39,18 +37,15 @@ const Stack = createStackNavigator();
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  // const [fontsLoaded] = useFonts({
-  //   'Inter-Black': require('./assets/fonts/IBM_Plex_Sans/IBMPlexSans-Medium.ttf'),
-  // });
 
-  // const onLayoutRootView = React.useCallback(async () => {
-  //   if (fontsLoaded) {
-  //     await SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
-
-
-  
+  let [fontsLoaded, fontError] = useFonts({
+    NotoSans_300Light,
+    NotoSans_400Regular,
+    NotoSans_500Medium,
+    NotoSans_600SemiBold,
+    NotoSans_700Bold,
+    NotoSans_800ExtraBold
+  });
 
 
   useEffect(() => {
@@ -67,9 +62,11 @@ const App = () => {
     return () => unsubscribe();
   }, []);
 
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
 
   if (!loggedIn) {
     return (
@@ -81,7 +78,7 @@ const App = () => {
         </NavigationContainer>
       </ThemeProvider>
     );
-  } 
+  }
   else {
     return (
       <Provider store={store}>

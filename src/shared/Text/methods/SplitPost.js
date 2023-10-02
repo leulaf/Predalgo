@@ -145,34 +145,34 @@ export default SplitPost = (text, theme) => {
 const styles = StyleSheet.create({
     lightPostText: {
         // fontSize: 18,
-        fontWeight: "400",
+        // fontWeight: "400",
         // color: '#222222',
         color: '#000',
         textAlign: 'auto',
-        letterSpacing: 0.4,
+        // letterSpacing: 0.2,
     },
     darkPostText: {
         fontSize: 18,
-        fontWeight: "400",
+        // fontWeight: "400",
         // color: '#F4F4F4',
         color: '#FFF',
         textAlign: 'auto',
-        letterSpacing: 0.4,
+        // letterSpacing: 0.2,
     },
     lightLinkText: {
         // fontSize: 18,
-        fontWeight: "400",
+        // fontWeight: "400",
         color: '#0029FF',
-        letterSpacing: 0.4,
+        // letterSpacing: 0.2,
         textAlign: 'auto',
         // marginBottom: 6,
     },
     darkLinkText: {
         // fontSize: 18,
-        fontWeight: "400",
+        // fontWeight: "400",
         color: '#0094FF',
         textAlign: 'auto',
-        letterSpacing: 0.4,
+        // letterSpacing: 0.2,
         // marginBottom: 6,
     }
 })
