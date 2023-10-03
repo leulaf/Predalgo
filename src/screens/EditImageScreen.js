@@ -216,6 +216,8 @@ const EditImageScreen = ({ navigation, route }) => {
                     width={width}
                     overlayVisible={overlayVisible}
                     setOverlayVisible={setOverlayVisible}
+                    forCommentOnComment={forCommentOnComment}
+                    forCommentOnPost={forCommentOnPost}
                     navigation={navigation}
                 />
             }

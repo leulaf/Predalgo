@@ -4,6 +4,8 @@ import uuid from 'react-native-uuid';
 
 import { Shadow } from 'react-native-shadow-2';
 
+import AntDesign from '@expo/vector-icons/AntDesign';
+
 import { BlurView } from 'expo-blur';
 
 import { commentImageOnPost } from '../../../shared/comment/forPost/UploadImage';
@@ -591,11 +593,18 @@ const PostReplyBottomSheet = ({navigation, theme, replyToPostId, replyToProfile,
                             </TouchableOpacity>
 
                             {/* Delete Image */}
-                            <TouchableOpacity style={{ marginRight: 10, marginTop: 10, }} onPress={() => setReplyImageToPost(null)}>
-                                <DeleteImageLight height={30} width={30}/>
-                                <Text marginBottom={0} style={theme == 'light' ? styles.lightBottomText : styles.darkBottomText}>
+                            <TouchableOpacity style={{ flexDirection: 'row', marginRight: 10, marginTop: 0, }} onPress={() => setReplyImageToPost(null)}>
+                                <AntDesign
+                                    name="closecircle"
+                                    size={30}
+                                    color={theme == 'light' ? '#222' : '#EEE'}
+                                    // marginRight={5}
+                                    padding={10}
+                                    
+                                />
+                                {/* <Text marginBottom={0} style={theme == 'light' ? styles.lightRemoveImageText : styles.darkRemoveImageText}>
                                     Delete
-                                </Text>
+                                </Text> */}
                             </TouchableOpacity>
                         </View>
                         
@@ -768,6 +777,24 @@ const styles = StyleSheet.create({
         // marginTop: 10,
     },
     darkBottomText: {
+        color: '#EEEEEE',
+        fontSize: 19,
+        fontWeight: "500",
+        // alignSelf: 'center',
+        marginBottom: 6,
+        // marginRight: 8,
+        // marginTop: 10,
+    },
+    lightRemoveImageText: {
+        color: '#222',
+        fontSize: 19,
+        fontWeight: "500",
+        marginBottom: 6,
+        // alignSelf: 'center',
+        // marginRight: 8,
+        // marginTop: 10,
+    },
+    darkRemoveImageText: {
         color: '#EEEEEE',
         fontSize: 19,
         fontWeight: "500",

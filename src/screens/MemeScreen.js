@@ -13,12 +13,13 @@ import { MasonryFlashList, FlashList } from '@shopify/flash-list';
 
 import ResizableImage from '../shared/functions/ResizableImage';
 
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import {ThemeContext} from '../../context-store/context';
 import { db, storage } from '../config/firebase';
 import { collection, addDoc, query, where, orderBy, limit, getDocs, } from "firebase/firestore";
 import GlobalStyles from '../constants/GlobalStyles';
 import MemeTopBar from '../ScreenTop/MemeTopBar'
+
+import getUserByName from '../shared/functions/GetUser';
 
 import DarkMemeCreate from '../../assets/post_meme_create_dark.svg';
 import LightMemeCreate from '../../assets/post_meme_create_light.svg';
@@ -26,45 +27,8 @@ import LightMemeCreate from '../../assets/post_meme_create_light.svg';
 const lightBackground = require('../../assets/AddPostBackgroundLight.png');
 const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 
-
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
-
-
-// const srenderItem = ({item, index}) => {
-//     // console.log(
-//     //     "-----------------------template---------------",
-//     //     item.template,
-//     //     "*******************state*******************",
-//     //     item.templateState)
-//     return (
-//         <Animated.View
-//             entering={FadeIn}
-//             style={
-//                 [
-//                     index % 2 == 1 ?
-//                         {marginLeft: 2, marginRight: 4, marginBottom: 6, } 
-//                     :
-//                         {marginLeft: 4, marginRight: 2, marginBottom: 6, }
-//                 ]
-//             }
-//         >
-
-//             <DisplayMeme
-//                 // navigation={navigation}
-//                 item={item}
-//                 style={{borderRadius: 10}}
-//                 maxHeight={500}
-//                 maxWidth={windowWidth/2 - 8}
-//                 template={item.template}
-//                 templateState={item.templateState}
-//             />
-
-//         </Animated.View>
-//     );
-// }
-
-
 
 
 const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
@@ -99,6 +63,22 @@ const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => ()
     }
 }
 
+const goToProfile = (navigation, username) => async() => {
+
+    const user = await getUserByName(username);
+    
+    if(user){
+        navigation.push('Profile', {
+            profile: user?.profile,
+            username: username,
+            profilePic: user?.profilePic,
+            bioData: user?.bio,
+            followersCountData: user?.followers,
+            postsCountData: user?.posts,
+        })
+    }
+    
+}
 
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
@@ -254,9 +234,13 @@ const MemeScreen = ({ navigation, route }) => {
                                 </View>
                                 
                                 {/* @Uploader */}
-                                <Text style={theme == 'light' ? styles.lightUploaderText : styles.darkUploaderText}>
-                                    By @{uploader}
-                                </Text>
+                                <TouchableOpacity
+                                    onPress={goToProfile(navigation, uploader)}
+                                >
+                                    <Text style={theme == 'light' ? styles.lightUploaderText : styles.darkUploaderText}>
+                                        By @{uploader}
+                                    </Text>
+                                </TouchableOpacity>
 
                                 {/* use count */}
                                 {useCount >= 0 &&

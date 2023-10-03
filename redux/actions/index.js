@@ -13,7 +13,7 @@ export function fetchUser() {
     const docRef = doc(db, "users", firebase.auth().currentUser.uid);
 
     return ((dispatch) => {
-        getDoc(docRef)
+         getDoc(docRef)
         .then((snapshot) => {
             if (snapshot.exists) {
                 dispatch({ type: USER_STATE_CHANGE, currentUser: snapshot.data() });

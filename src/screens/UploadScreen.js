@@ -75,8 +75,9 @@ export default function UploadScreen({route}) {
             forCommentOnComment: false,
             forCommentOnPost: false,
             forMemeComment: false,
-            forMemePost: forMemePost ? forMemePost : false,
-            cameraPic: false
+            forMemePost: forMemePost,
+            cameraPic: false,
+            newTemplate: newTemplate
           })
         );
       }else if(forCommentOnComment || forCommentOnPost){
@@ -87,8 +88,9 @@ export default function UploadScreen({route}) {
             width: result.assets[0].width,
             forCommentOnComment: forCommentOnComment,
             forCommentOnPost: forCommentOnPost,
-            forMemeComment: forMemeComment ? forMemeComment : false,
-            cameraPic: false
+            forMemeComment: forMemeComment,
+            cameraPic: false,
+            newTemplate: newTemplate
           })
         );
 
@@ -98,11 +100,11 @@ export default function UploadScreen({route}) {
             imageUrl: `data:image/jpeg;base64,${result.assets[0].base64}`,
             height: result.assets[0].height,
             width: result.assets[0].width,
-            // forCommentOnComment: forCommentOnComment,
-            // forCommentOnPost: forCommentOnPost,
-            // forMemeComment: forMemeComment ? forMemeComment : false,
-            cameraPic: true,
-            newTemplate: true
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
+            forMemeComment: forMemeComment,
+            cameraPic: false,
+            newTemplate: newTemplate
           })
         );
       }
@@ -130,8 +132,9 @@ export default function UploadScreen({route}) {
             forCommentOnComment: false,
             forCommentOnPost: false,
             forMemeComment: false,
-            forMemePost: forMemePost ? forMemePost : false,
-            cameraPic: true
+            forMemePost: forMemePost,
+            cameraPic: true,
+            newTemplate: newTemplate
           })
         );
       }else if(forCommentOnComment || forCommentOnPost){
@@ -142,8 +145,9 @@ export default function UploadScreen({route}) {
             width: picture.width,
             forCommentOnComment: forCommentOnComment,
             forCommentOnPost: forCommentOnPost,
-            forMemeComment: forMemeComment ? forMemeComment : false,
-            cameraPic: true
+            forMemeComment: forMemeComment,
+            cameraPic: true,
+            newTemplate: newTemplate
           })
         );
       }else if(newTemplate){
@@ -152,11 +156,11 @@ export default function UploadScreen({route}) {
             imageUrl: `data:image/jpeg;base64,${picture.base64}`,
             height: picture.height,
             width: picture.width,
-            // forCommentOnComment: forCommentOnComment,
-            // forCommentOnPost: forCommentOnPost,
-            // forMemeComment: forMemeComment ? forMemeComment : false,
+            forCommentOnComment: forCommentOnComment,
+            forCommentOnPost: forCommentOnPost,
+            forMemeComment: forMemeComment,
             cameraPic: true,
-            newTemplate: true
+            newTemplate: newTemplate
           })
         );
       }

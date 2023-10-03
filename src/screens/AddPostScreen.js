@@ -35,14 +35,24 @@ const navToUpload = (navigation, forPost, forCommentOnComment, forCommentOnPost)
   //     forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
   //   })
   // )
-  navigation.navigate("Upload", {
-    forCommentOnComment: forCommentOnComment,
-    forCommentOnPost: forCommentOnPost,
-    forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
-    forMemePost: forPost,
-    forPost: forPost,
-    newTemplate: true,
-  })
+  navigation.dispatch(
+    StackActions.replace('Upload', {
+      forCommentOnComment: forCommentOnComment,
+      forCommentOnPost: forCommentOnPost,
+      forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
+      forMemePost: forPost,
+      forPost: forPost,
+      newTemplate: true,
+    })
+  )
+  // navigation.navigate("Upload", {
+  //   forCommentOnComment: forCommentOnComment,
+  //   forCommentOnPost: forCommentOnPost,
+  //   forMemeComment: forCommentOnComment || forCommentOnPost ? true : false,
+  //   forMemePost: forPost,
+  //   forPost: forPost,
+  //   newTemplate: true,
+  // })
 }
 
 const navToMeme = (navigation, item, forPost, forCommentOnComment, forCommentOnPost) => () => {

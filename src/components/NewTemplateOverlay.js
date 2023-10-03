@@ -4,6 +4,8 @@ import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 
 import { Overlay } from 'react-native-elements';
 import { StackActions } from '@react-navigation/native';
 
+import { AuthenticatedUserContext } from '../../context-store/context';
+
 import {uploadNewTemplate, addNewTemplate} from '../shared/functions/AddNewTemplate';
 
 import { getAuth } from 'firebase/auth';
@@ -13,23 +15,35 @@ const auth = getAuth();
 const window = Dimensions.get('window');
 
 
-export default NewTemplateOverlay = ({navigation, template, height, width, overlayVisible, setOverlayVisible}) => {
+export default NewTemplateOverlay = ({navigation, template, height, width, overlayVisible, setOverlayVisible}, forCommentOnComment, forCommentOnPost) => {
     const [newTemplate, setNewTemplate] = React.useState(false);
     const [newMemeName, setNewMemeName] = React.useState("");
+    const { imageReply, setImageReply, imagePost, setImagePost } = React.useContext(AuthenticatedUserContext);
 
     const uploadAndNavigate = async () => {
         uploadNewTemplate(template, newMemeName, height, width)
             .then((newUrl) => {
                 setOverlayVisible(false);
-                navigation.dispatch(
-                    StackActions.replace('Meme', {
-                        uploader: auth.currentUser.displayName,
+
+                if(forCommentOnComment || forCommentOnPost){
+                    
+                    setImageReply({
+                        ...imageReply,
                         memeName: newMemeName,
-                        template: newUrl,
-                        height: height,
-                        width: width,
-                    })
-                );
+                    });
+                    navigation.goBack(null);
+                }else{
+                   navigation.dispatch(
+                        StackActions.replace('Meme', {
+                            uploader: auth.currentUser.displayName,
+                            memeName: newMemeName,
+                            template: newUrl,
+                            height: height,
+                            width: width,
+                        })
+                    ); 
+                }
+                
             });
     }
 

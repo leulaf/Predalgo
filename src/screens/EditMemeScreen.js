@@ -42,10 +42,12 @@ const windowHeight = Dimensions.get('screen').height;
 const lightBackground = require('../../assets/AddPostBackgroundLight.png');
 const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 
+import NewTemplateOverlay from '../components/NewTemplateOverlay';
+
 const EditMemeScreen = ({ navigation, route }) => {
     const { theme, setTheme } = useContext(ThemeContext);
-    const { imageUrl, uploader, memeName, replyMemeName, imageState, height, width, cameraPic, dontCompress, forMemePost, forPost, forMemeComment, forCommentOnPost, forCommentOnComment, templateExists} = route.params;
-    
+    const { imageUrl, uploader, memeName, replyMemeName, imageState, height, width, cameraPic, dontCompress, forMemePost, forPost, forMemeComment, forCommentOnPost, forCommentOnComment, templateExists, newTemplate} = route.params;
+
     const [templateUploader, setTemplateUploader] = useState(uploader);
     
     const [image, setImage] = useState(imageUrl);
@@ -59,8 +61,7 @@ const EditMemeScreen = ({ navigation, route }) => {
     const [compressTemplate, setCompressTemplate] = useState(imageReply || imagePost ? false : true);
 
     const [overlayVisible, setOverlayVisible] = useState(false);
-    const [newTemplate, setNewTemplate] = useState(false);
-    const [newMemeName, setNewMemeName] = useState((replyMemeName && replyMemeName != true) ? replyMemeName : "");
+
 
     const editorRef = useRef(null);
     const templateRef = useRef(null);
@@ -162,91 +163,92 @@ const EditMemeScreen = ({ navigation, route }) => {
 
     // *** if user changes the name of template, 
     // there will be two templates with the same image ***
-    const checkNameAndNav = async (memeName) => {
+    // const checkNameAndNav = async (memeName) => {
 
-        if(memeName == ""){
-            Alert.alert("Please enter a name for the template.");
-            return;
-        }else if(replyMemeName && replyMemeName != true){
-            setTemplateUploader(auth.currentUser.displayName);
+    //     if(memeName == ""){
+    //         Alert.alert("Please enter a name for the template.");
+    //         return;
+    //     }else if(replyMemeName && replyMemeName != true){
+    //         setTemplateUploader(auth.currentUser.displayName);
 
-            addNewTemplate(template, memeName, height, width).then(() => {
-                if(forPost){
-                    setImagePost({
-                        memeName: memeName,
-                        uri: imageResult,
-                        undeditedUri: imagePost.undeditedUri,
-                        template: imageState.template,
-                        templateUploader: templateUploader,
-                        height: height,
-                        width: width,
-                        forCommentOnComment: forCommentOnComment,
-                        forCommentOnPost: forCommentOnPost,
-                        imageState: storedImageState
-                    });
-                }else if(forCommentOnPost || forCommentOnComment){
-                    setImageReply({
-                        memeName: memeName,
-                        uri: imageResult,
-                        undeditedUri: imageReply.undeditedUri,
-                        template: imageState.template,
-                        templateUploader: templateUploader,
-                        height: height,
-                        width: width,
-                        forCommentOnComment: forCommentOnComment,
-                        forCommentOnPost: forCommentOnPost,
-                        imageState: storedImageState
-                    });
-                }
-                editorRef.current.editor.close();
-                navigation.goBack(null);
-                setOverlayVisible(false);
-            })
-        }else{
-            setTemplateUploader(auth.currentUser.displayName);
+    //         addNewTemplate(template, memeName, height, width).then(() => {
+    //             if(forPost){
+    //                 setImagePost({
+    //                     memeName: memeName,
+    //                     uri: imageResult,
+    //                     undeditedUri: imagePost.undeditedUri,
+    //                     template: imageState.template,
+    //                     templateUploader: templateUploader,
+    //                     height: height,
+    //                     width: width,
+    //                     forCommentOnComment: forCommentOnComment,
+    //                     forCommentOnPost: forCommentOnPost,
+    //                     imageState: storedImageState
+    //                 });
+    //             }else if(forCommentOnPost || forCommentOnComment){
+    //                 setImageReply({
+    //                     memeName: memeName,
+    //                     uri: imageResult,
+    //                     undeditedUri: imageReply.undeditedUri,
+    //                     template: imageState.template,
+    //                     templateUploader: templateUploader,
+    //                     height: height,
+    //                     width: width,
+    //                     forCommentOnComment: forCommentOnComment,
+    //                     forCommentOnPost: forCommentOnPost,
+    //                     imageState: storedImageState
+    //                 });
+    //             }
+    //             editorRef.current.editor.close();
+    //             navigation.goBack(null);
+    //             setOverlayVisible(false);
+    //         })
+    //     }else{
+    //         setTemplateUploader(auth.currentUser.displayName);
             
-            uploadNewTemplate(template, memeName, height, width)
-                .then(async(newUrl) => {
-                    if(forPost){
-                        setImagePost({
-                            memeName: memeName,
-                            uri: imageResult,
-                            undeditedUri: imageUrl,
-                            template: newUrl,
-                            templateUploader: templateUploader,
-                            height: height,
-                            width: width,
-                            forCommentOnComment: forCommentOnComment,
-                            forCommentOnPost: forCommentOnPost,
-                            imageState: storedImageState
-                        });
-                    }else if(forCommentOnPost || forCommentOnComment){
-                        setImageReply({
-                            memeName: memeName,
-                            uri: imageResult,
-                            undeditedUri: imageUrl,
-                            template: newUrl,
-                            templateUploader: templateUploader,
-                            height: height,
-                            width: width,
-                            forCommentOnComment: forCommentOnComment,
-                            forCommentOnPost: forCommentOnPost,
-                            imageState: storedImageState
-                        });
-                    } 
+    //         uploadNewTemplate(template, memeName, height, width)
+    //             .then(async(newUrl) => {
+    //                 if(forPost){
+    //                     setImagePost({
+    //                         memeName: memeName,
+    //                         uri: imageResult,
+    //                         undeditedUri: imageUrl,
+    //                         template: newUrl,
+    //                         templateUploader: templateUploader,
+    //                         height: height,
+    //                         width: width,
+    //                         forCommentOnComment: forCommentOnComment,
+    //                         forCommentOnPost: forCommentOnPost,
+    //                         imageState: storedImageState
+    //                     });
+    //                 }else if(forCommentOnPost || forCommentOnComment){
+    //                     setImageReply({
+    //                         memeName: memeName,
+    //                         uri: imageResult,
+    //                         undeditedUri: imageUrl,
+    //                         template: newUrl,
+    //                         templateUploader: templateUploader,
+    //                         height: height,
+    //                         width: width,
+    //                         forCommentOnComment: forCommentOnComment,
+    //                         forCommentOnPost: forCommentOnPost,
+    //                         imageState: storedImageState
+    //                     });
+    //                 } 
 
-                    navigation.goBack(null);
-                    setOverlayVisible(false);
-                    editorRef.current.editor.close();
-                });
-        }
+    //                 navigation.goBack(null);
+    //                 setOverlayVisible(false);
+    //                 editorRef.current.editor.close();
+    //             });
+    //     }
 
 
         
-    }
+    // }
 
     const navToReply = async (memeName, dest, imageState) => {
         // console.log("replyMemeName", replyMemeName, "memeName", memeName);
+        
         if(forPost){
             setImagePost({
                 memeName: memeName,
@@ -434,7 +436,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                     stickerEnableSelectImagePreset={false}
                     markupEditorToolStyles={createMarkupEditorToolStyles({
                         text: createMarkupEditorToolStyle("text", {
-                            fontSize: 70,
+                            fontSize: 100,
                             // color: theme == 'light' ? [0, 0, 0] : [255, 255, 255],
                         }),
                     })}
@@ -470,6 +472,36 @@ const EditMemeScreen = ({ navigation, route }) => {
                             setImageResult(dest);
                             // setStoredImageState(stringifyImageState(imageState));
                             setStoredImageState(imageState);
+
+                            if(forPost){
+                                setImagePost({
+                                    memeName: memeName,
+                                    uri: dest,
+                                    undeditedUri: templateExists ? imageUrl : image,
+                                    template: templateExists ? imageUrl : null,
+                                    templateUploader: templateUploader,
+                                    height: height,
+                                    width: width,
+                                    forCommentOnComment: forCommentOnComment,
+                                    forCommentOnPost: forCommentOnPost,
+                                    imageState: imageState,
+                                    templateExists: true,
+                                });
+                            }else if(forCommentOnComment || forCommentOnPost){
+                                setImageReply({
+                                    memeName: memeName,
+                                    uri: dest,
+                                    undeditedUri: templateExists ? imageUrl : image,
+                                    template: templateExists ? imageUrl : null,
+                                    templateUploader: templateUploader,
+                                    height: height,
+                                    width: width,
+                                    forCommentOnComment: forCommentOnComment,
+                                    forCommentOnPost: forCommentOnPost,
+                                    imageState: imageState,
+                                    templateExists: true,
+                                });
+                            }
                             setOverlayVisible(true);
                         }else if(memeName){
                             // navigation.navigate('CreatePost', {imageUrl: dest, memeName: memeName});
@@ -481,86 +513,21 @@ const EditMemeScreen = ({ navigation, route }) => {
             </ImageBackground>
 
 
-            {/* Ask user to upload template */}
-            {/* Edit profile bio */}
-            <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
+            {/* New template overlay */}
+            {
+                overlayVisible &&
 
-            
-                    { !(replyMemeName && replyMemeName != true) &&
-                        <View>
-                            <Text style={styles.askText}>Can other users use the original image to create memes?</Text>
-                            
-                            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-                                
-                                {/* No */}
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        {
-                                            navToReply(true, imageResult, storedImageState);
-                                            setOverlayVisible(false);
-                                        }
-                                    }
-                                    style={styles.answerButton}
-                                >
-                                    <Text style={styles.answerText}>No</Text>
-                                </TouchableOpacity>
-
-                                {/* Yes */}
-                                <TouchableOpacity
-                                    onPress={() =>
-                                        setNewTemplate(true)
-                                    }
-                                    style={styles.answerButton}
-                                >
-                                    <Text style={styles.answerText}>Yes</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    }
-
-
-                {/* Ask user to enter meme name */}
-                {
-                    (newTemplate || (replyMemeName && replyMemeName != true)) &&
-
-                        <View>
-                            <Text style={styles.askText}>What do you want to name the template?</Text>
-
-                            {/* Meme Template Name */}
-                            <TextInput
-                                blurOnSubmit
-                                maxLength={15}
-                                style={{fontSize: 20, width: 350, height: 50, alignSelf: 'center', marginBottom: 15, borderColor: 'gray', borderWidth: 1.5, marginTop: 10, borderRadius: 15}}
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                placeholder= "  Meme Template Name"
-                                placeholderTextColor= "#888888"
-                                value={newMemeName}
-                                onChangeText={(newValue) => setNewMemeName(newValue)}
-                                // onEndEditing={( ) => console.log('submitted')}
-                            />
-
-                            {/* Done */}
-                            <TouchableOpacity
-                                onPress={() =>
-                                    { 
-                                        (imageReply || imagePost) && JSON.stringify(storedImageState[0]) == JSON.stringify(imageReply ? imageReply.imageState[0] : imagePost.imageState[0]) && replyMemeName == newMemeName ?
-                                            
-                                            onGoBack()
-                                        :
-                                            checkNameAndNav(newMemeName)
-                                    }
-                                }
-                                style={styles.answerButton}
-                            >
-                                <Text style={styles.answerText}>Done</Text>
-                            </TouchableOpacity>
-
-                        </View>
-                        
-                }
-
-            </Overlay>
+                <NewTemplateOverlay
+                    template={template}
+                    height={height}
+                    width={width}
+                    overlayVisible={overlayVisible}
+                    setOverlayVisible={setOverlayVisible}
+                    forCommentOnComment={forCommentOnComment}
+                    forCommentOnPost={forCommentOnPost}
+                    navigation={navigation}
+                />
+            }
 
             {/* Compresses the original template */}
             {
