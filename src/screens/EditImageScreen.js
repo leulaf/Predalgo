@@ -251,4 +251,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditImageScreen;
+export default React.memo(EditImageScreen);

@@ -300,4 +300,4 @@ const styles = StyleSheet.create({
     },
   });
 
-  export default BottomTabNavigator;
+  export default React.memo(BottomTabNavigator);

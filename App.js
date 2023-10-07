@@ -111,5 +111,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
 });
-
-export default App;
+export default React.memo(App);

@@ -2,7 +2,7 @@ import React, {} from 'react';
 import { View, Image, TouchableOpacity, Text, StyleSheet, TextInput, Keyboard, InputAccessoryView, Dimensions, Alert } from 'react-native';
 import uuid from 'react-native-uuid';
 
-import { Shadow } from 'react-native-shadow-2';
+// import { Shadow } from 'react-native-shadow-2';
 
 import { BlurView } from 'expo-blur';
 

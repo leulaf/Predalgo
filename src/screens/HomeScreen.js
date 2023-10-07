@@ -80,18 +80,18 @@ const posts = [
 function HomeScreen(props){
     
     const {theme,setTheme} = useContext(ThemeContext);
-    const [user, setUser] = useState(null);
+    // const [user, setUser] = useState(null);
 
-    useEffect(() => {
-        const { currentUser } = props;
+    // useEffect(() => {
+    //     const { currentUser } = props;
        
-        if(currentUser != null){
-            setUser(currentUser);
-        }else{
-            props.fetchUser();
-        }
+    //     if(currentUser != null){
+    //         setUser(currentUser);
+    //     }else{
+    //         props.fetchUser();
+    //     }
    
-    }, [props.currentUser]);
+    // }, [props.currentUser]);
     
     return (
         <ScrollView style={theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer}>
@@ -105,11 +105,12 @@ const styles = StyleSheet.create({
 
 });
 
-const mapStateToProps = (store) => ({
-    currentUser: store.userState.currentUser,
-})
+// const mapStateToProps = (store) => ({
+//     currentUser: store.userState.currentUser,
+// })
 
-const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
+// const mapDispatchToProps = (dispatch) => bindActionCreators({ fetchUser }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+// export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
+export default React.memo(HomeScreen);
   

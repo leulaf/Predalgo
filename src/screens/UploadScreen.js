@@ -1,5 +1,5 @@
 import { Camera, CameraType } from 'expo-camera';
-import { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +20,7 @@ import FlashOff from '../../assets/flash_off.svg';
 import MakeMeme from '../../assets/make_meme.svg';
 
 
-export default function UploadScreen({route}) {
+const UploadScreen = ({route}) => {
   const navigation = useNavigation();
   const [type, setType] = useState(CameraType.back);
   const [camera, setCamera] = useState(null);
@@ -359,3 +359,5 @@ const styles = StyleSheet.create({
     marginTop: 50
   }
 });
+
+export default React.memo(UploadScreen);

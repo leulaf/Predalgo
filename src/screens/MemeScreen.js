@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MemeScreen;
+export default React.memo(MemeScreen);
 
 // "<MasonryFlashList
 // ref={flashListRef}

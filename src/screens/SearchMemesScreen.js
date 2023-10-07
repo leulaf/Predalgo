@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-import { ScrollView } from 'react-native-virtualized-view';
 import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, orderBy, limit, getDocs } from "firebase/firestore";

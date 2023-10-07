@@ -14,7 +14,7 @@ const navigateTo = (navigation, user) => () => {
     navigation.navigate("Followers", {profile: user})
 }
 
-export default function ProfileScreen ({route, navigation}) {
+const ProfileScreen = ({route, navigation}) => {
     const {theme, setTheme} = useContext(ThemeContext);
     const [following, setFollowing] = useState(false);
     const {profile, username, profilePic, bioData, followersCountData, postsCountData} = route.params;
@@ -453,3 +453,5 @@ export default function ProfileScreen ({route, navigation}) {
         backgroundColor: '#D8D8D8',
     },
 });
+
+export default React.memo(ProfileScreen);

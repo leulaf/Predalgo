@@ -9,7 +9,7 @@ import GlobalStyles from '../constants/GlobalStyles';
 import TagScreenTopBar from '../ScreenTop/TagScreenTopBar';
 import AllTagPosts from '../components/posts/AllTagPosts';
 
-export default function TagScreen({navigation, route}){
+const TagScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const {tag} = route.params;
 
@@ -34,3 +34,5 @@ export default function TagScreen({navigation, route}){
 const styles = StyleSheet.create({
 
 });
+
+export default React.memo(TagScreen);

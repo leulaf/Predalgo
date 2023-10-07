@@ -628,4 +628,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default EditMemeScreen;
+export default React.memo(EditMemeScreen);

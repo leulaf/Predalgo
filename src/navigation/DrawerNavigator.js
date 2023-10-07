@@ -49,4 +49,4 @@ const DrawerNavigator = ({}) => {
 }
 
 const styles = StyleSheet.create({});
-export default DrawerNavigator;
+export default React.memo(DrawerNavigator);

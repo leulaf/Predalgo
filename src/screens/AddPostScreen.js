@@ -500,4 +500,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddPostScreen;
+export default React.memo(AddPostScreen);

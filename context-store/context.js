@@ -74,14 +74,14 @@ const AuthenticatedUserProvider = ({ children }) => {
     const [memeTemplates, setMemeTemplates] = React.useState([{id : "fir"}, {id: "sec"}]);
     // console.log(user);
     React.useEffect(() => {
-        getUser(auth.currentUser.uid).then(async(user) => {
-            setUser({
-              ...user,
-            })
-            // console.log(user);
-          }).catch((e) => {
-            // *** NEED TO MAKE SURE THAT USER DOCUMENT IS CACHED, MAYBE RETRY ONCE OR TWICE ***
-        });
+        // getUser(auth.currentUser.uid).then(async(user) => {
+        //     setUser({
+        //       ...user,
+        //     })
+        //     // console.log(user);
+        //   }).catch((e) => {
+        //     // *** NEED TO MAKE SURE THAT USER DOCUMENT IS CACHED, MAYBE RETRY ONCE OR TWICE ***
+        // });
     }, []);
 
     return (

@@ -13,7 +13,7 @@ import TvMoviesScreen from '../screens/TvMoviesScreen';
 
 const Top_Tab = createMaterialTopTabNavigator();
 
-export default function MainScreen({navigation, openDrawer}){
+const MainScreen = ({navigation, openDrawer}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [term, setTerm] = useState('');
 
@@ -94,3 +94,5 @@ const styles = StyleSheet.create({
         marginLeft: 24,
     }
 });
+
+export default React.memo(MainScreen);
