@@ -131,7 +131,7 @@ const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString(
 const AddPostScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
 
-    const {memeTemplates, setMemeTeplates} = useContext(AuthenticatedUserContext);
+    const {memeTemplates, setMemeTemplates} = useContext(AuthenticatedUserContext);
 
     const { forPost, forCommentOnComment, forCommentOnPost } = route?.params;
 
@@ -163,7 +163,7 @@ const AddPostScreen = ({navigation, route}) => {
                 return { id, ...data }
             })
 
-            setMemeTeplates(templates);
+            setMemeTemplates(templates);
         });
     }, []);
 
@@ -184,7 +184,7 @@ const AddPostScreen = ({navigation, route}) => {
               return { id, ...data }
           })
 
-          setMemeTeplates(templates);
+          setMemeTemplates(templates);
       });
   }, []);
 

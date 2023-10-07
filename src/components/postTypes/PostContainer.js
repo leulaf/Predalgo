@@ -179,8 +179,8 @@ const PostContainer = ({ title, imageUrl, imageHeight, imageWidth, text, memeNam
             entering={FadeIn}
             style={[theme == 'light' ? GlobalStyles.lightPostContainer : GlobalStyles.darkPostContainer, 
                 {
-                    borderRadius: repostedWithComment && 15,
-                    borderWidth: repostedWithComment && 1,
+                    // borderRadius: repostedWithComment && 15,
+                    // borderWidth: repostedWithComment && 1,
                     marginTop: repostedWithComment ? 14 : 0,
                     marginBottom: repostedWithComment ? 3 : 8,
                 }

@@ -211,6 +211,7 @@ const EditImageScreen = ({ navigation, route }) => {
                 overlayVisible &&
 
                 <NewTemplateOverlay
+                    theme={theme}
                     template={imageResult}
                     height={height}
                     width={width}

@@ -33,9 +33,9 @@ import RepostIconDark from '../../../assets/repost_dark.svg';
 
 
 const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsCount, repostsCount, navToPost, onShare}) => {
-    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
+    const {options, setOptions, user, setUser} = React.useContext(AuthenticatedUserContext);
 
-    const [emoji, setEmoji] = React.useState({
+    const [liked, setLiked] = React.useState({
         id: postId,
         show: "notLiked",
         chose: ""
@@ -72,18 +72,18 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
         // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         
 
-        // if(emoji.show == "notLiked"){
+        // if(liked.show == "notLiked"){
         //     const likedRef = doc(db, "likedPosts", auth.currentUser.uid, "posts", postId);
         //     const likedDocSnap = await getDoc(likedRef);
 
         //     if(likedDocSnap.exists()){
-        //         setEmoji({
+        //         setLiked({
         //             id: postId,
         //             show: false,
-        //             chose: likedDocSnap.data().emoji
+        //             chose: likedDocSnap.data().liked
         //         });
             // }else{
-                setEmoji({
+                setLiked({
                     id: postId,
                     show: false,
                     chose: ""
@@ -93,14 +93,14 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
                         
                     !result && 
                     
-                    setEmoji({
+                    setLiked({
                         id: postId,
                         show: "notLiked",
                         chose: ""
                     });
                 })
                 .catch((e) => {
-                    setEmoji({
+                    setLiked({
                         id: postId,
                         show: "notLiked",
                         chose: ""
@@ -108,7 +108,7 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
                 });
             // }
         // }else{
-        //     setEmoji({
+        //     setLiked({
         //         id: postId,
         //         show: false,
         //         chose: ""
@@ -123,7 +123,7 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
             
                 {/* Comments button */}
                 {
-                    (emoji.show != false  || postId != emoji.id) &&
+                    (liked.show != false  || postId != liked.id) &&
                     <TouchableOpacity
                         style={styles.bottomButtonContainer}
                         onPress={() => navToPost()}
@@ -140,9 +140,9 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
                 
                 {/* Mood Indicator OR Like Button */}
                 {
-                    emoji.show != "notLiked" && postId == emoji.id ?
+                    liked.show != "notLiked" && postId == liked.id ?
                         <TouchableOpacity
-                            style={{paddingLeft: 10, width: emoji.show != false ? 100 : 'auto', height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
+                            style={{paddingLeft: 10, width: liked.show != false ? 100 : 'auto', height: 40, flexDirection: 'row', alignItems: 'center', alignContent: 'center'}}
                             onPress={toggleLike()}
                         >
                             {/* {liked ?
@@ -156,12 +156,12 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
                             </Text> */}
                             <MoodIndicator
                                 postId={postId}
-                                emoji={emoji}
-                                setEmoji={setEmoji}
+                                liked={liked}
+                                setLiked={setLiked}
                             />
 
                             {
-                                emoji.show != false &&
+                                liked.show != false &&
                                 <Text style={[theme == 'light' ? styles.lightBottomText: styles.darkBottomText, {marginLeft: -3}]}>
                                     {intToString(likesCount + 1)}
                                 </Text>
@@ -184,7 +184,7 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
                 
                 {/* Repost button */}
                 {
-                    (emoji.show != false  || postId != emoji.id) &&
+                    (liked.show != false  || postId != liked.id) &&
                     <TouchableOpacity
                         style={styles.bottomButtonContainer}
                         onPress={onRepost()}
@@ -211,7 +211,7 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
                 
                 {/* Share button */}
                 {
-                    (emoji.show != false  || postId != emoji.id) &&
+                    (liked.show != false  || postId != liked.id) &&
                     <TouchableOpacity
                         style={[styles.bottomButtonContainer, {marginRight: 10}]}
                         onPress={onShare}
@@ -242,7 +242,7 @@ const PostBottom = ({ theme, postId, username, profilePic, likesCount, commentsC
 
             
         //     {/* Likes button */}
-        //     { emoji.show == "notLiked" &&
+        //     { liked.show == "notLiked" &&
         //         <TouchableOpacity
         //             style={styles.bottomButtonContainer}
         //             onPress={toggleLike()}

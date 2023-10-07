@@ -15,10 +15,10 @@ const auth = getAuth();
 const window = Dimensions.get('window');
 
 
-export default NewTemplateOverlay = ({navigation, template, height, width, overlayVisible, setOverlayVisible}, forCommentOnComment, forCommentOnPost) => {
+export default NewTemplateOverlay = ({navigation, theme, template, height, width, overlayVisible, setOverlayVisible}, forCommentOnComment, forCommentOnPost) => {
     const [newTemplate, setNewTemplate] = React.useState(false);
     const [newMemeName, setNewMemeName] = React.useState("");
-    const { imageReply, setImageReply, imagePost, setImagePost } = React.useContext(AuthenticatedUserContext);
+    const { imageReply, setImageReply } = React.useContext(AuthenticatedUserContext);
 
     const uploadAndNavigate = async () => {
         uploadNewTemplate(template, newMemeName, height, width)
@@ -48,7 +48,7 @@ export default NewTemplateOverlay = ({navigation, template, height, width, overl
     }
 
     return (
-        <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
+        <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
                 
             {/* <Text style={styles.askText}>Can other users use the original image to create memes?</Text> */}
             
@@ -79,51 +79,58 @@ export default NewTemplateOverlay = ({navigation, template, height, width, overl
             </View> */}
 
             {/* Ask user to enter meme name */}
-            {
 
-                    <View>
-                        <Text style={styles.askText}>What do you want to name the template?</Text>
+            <Text style={theme == 'light' ? styles.lightAskText : styles.darkAskText}>What do you want to name the template?</Text>
 
-                        {/* Meme Template Name */}
-                        <TextInput
-                            secureTextEntry={false}
-                            multiline
-                            blurOnSubmit
-                            maxLength={150}
-                            style={{fontSize: 20, width: 350, height: 50, alignSelf: 'center', marginBottom: 15, borderColor: 'gray', borderWidth: 1.5, marginTop: 10, borderRadius: 15}}
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            placeholder="  Meme Template Name"
-                            placeholderTextColor= "#888888"
-                            value={newMemeName}
-                            onChangeText={(newValue) => setNewMemeName(newValue)}
-                            // onEndEditing={( ) => console.log('submitted')}
-                        />
+            {/* Meme Template Name */}
+            <View style={{borderColor: theme == 'light' ? '#000' : '#888', marginHorizontal: 3, borderWidth: 1, borderRadius: 15}}>
+                <TextInput
+                    secureTextEntry={false}
+                    multiline
+                    blurOnSubmit
+                    maxLength={150}
+                    style={{fontSize: 20, minHeight: 50, alignSelf: 'flex-start', marginTop: 10, marginHorizontal: 10, marginBottom: 0, borderRadius: 15}}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    placeholder="Meme Template Name"
+                    placeholderTextColor= {theme == 'light' ? '#666' : '#BBB'}
+                    value={newMemeName}
+                    onChangeText={(newValue) => setNewMemeName(newValue)}
+                    // onEndEditing={( ) => console.log('submitted')}
+                />
+            </View>
 
-                        {/* Done */}
-                        <TouchableOpacity
-                            onPress={() =>
-                                uploadAndNavigate()
-                            }
-                            style={styles.answerButton}
-                        >
-                            <Text style={styles.answerText}>Done</Text>
-                        </TouchableOpacity>
+            {/* Done */}
+            <TouchableOpacity
+                onPress={() =>
+                    uploadAndNavigate()
+                }
+                style={theme == 'light' ? styles.lightAnswerButton : styles.darkAnswerButton}
+            >
+                <Text style={theme == 'light' ? styles.lightAnswerText : styles.darkAnswerText}>Done</Text>
+            </TouchableOpacity>
 
-                    </View>
+
                     
-            }
+
 
         </Overlay>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        // justifyContent: "center",
+    lightContainer: {
+        // flex: 1,
+        // backgroundColor: '#F4F4F4',
+        backgroundColor: '#FFF',
+        borderRadius: 25,
+    },
+    darkContainer: {
+        // flex: 1,
+        // backgroundColor: '#0C0C0C',
+        // backgroundColor: '#000000',
+        backgroundColor: '#151515',
+        borderRadius: 25,
     },
     image: {
         // flex: 1,
@@ -143,31 +150,51 @@ const styles = StyleSheet.create({
         marginTop: 15,
         marginBottom: 10,
     },
-    askText: {
+    lightAskText: {
         fontSize: 20,
         color: '#222222',
         fontWeight: "500",
         alignSelf: 'center',
-        marginTop: 5,
-        marginBottom: 15,
+        margin: 5,
+        marginBottom: 15
     },
-    answerButton: {
-        width: 85,
-        height: 50,
-        borderRadius: 100,
-        borderWidth: 2,
-        borderColor: '#AAAAAA',
-        marginLeft: 10,
-        marginTop: 15,
-        marginRight: 40,
-        marginBottom: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'flex-end',
-   },
-   answerText: {
+    darkAskText: {
         fontSize: 20,
-        color: '#222222',
+        color: '#FFF',
+        fontWeight: "500",
+        alignSelf: 'center',
+        margin: 5,
+        marginBottom: 15
+    },
+   lightAnswerButton: {
+        flexDirection: 'column',
+        backgroundColor: '#222222',
+        borderRadius: 100,
+        height: 50,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+        marginTop: 15,
+    },
+    darkAnswerButton: {
+        flexDirection: 'column',
+        backgroundColor: '#FFF',
+        borderRadius: 100,
+        height: 50,
+        alignItems: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
+        marginTop: 15,
+    },
+    lightAnswerText: {
+        fontSize: 22,
+        color: '#FFF',
+        fontWeight: "500",
+        alignSelf: 'center'
+    },
+    darkAnswerText: {
+        fontSize: 22,
+        color: '#000',
         fontWeight: "500",
         alignSelf: 'center'
     },

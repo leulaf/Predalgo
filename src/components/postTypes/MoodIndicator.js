@@ -44,7 +44,7 @@ const moods = [
     "angry"
 ];
 
-export default MoodIndicator = ({postId, emoji, setEmoji}) => {
+export default MoodIndicator = ({postId, liked, setLiked}) => {
     const jumpOffSet = useSharedValue(0);
 
     // Jumping animation
@@ -54,132 +54,132 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
 
     React.useEffect(() => {
-        if(emoji.show == "laughing"){
+        if(liked.show == "laughing"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "laughing"
                 }
             );
-        }else if(emoji.show == "loving"){
+        }else if(liked.show == "loving"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "loving"
                 }
             );
-        }else if(emoji.show == "shocked"){
+        }else if(liked.show == "shocked"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "shocked"
                 }
             );
-        }else if(emoji.show == "lightBulb"){
+        }else if(liked.show == "lightBulb"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "lightBulb"
                 }
             );
-        }else if(emoji.show == "confetti"){
+        }else if(liked.show == "confetti"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "confetti"
                 }
             );
-        }else if(emoji.show == "wink"){
+        }else if(liked.show == "wink"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "wink"
                 }
             );
-        }else if(emoji.show == "skeptical"){
+        }else if(liked.show == "skeptical"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "skeptical"
                 }
             );
-        }else if(emoji.show == "eyeRoll"){
+        }else if(liked.show == "eyeRoll"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "eyeRoll"
                 }
             );
-        }else if(emoji.show == "crying"){
+        }else if(liked.show == "crying"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "crying"
                 }
             );
-        }else if(emoji.show == "sad"){
+        }else if(liked.show == "sad"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
                     chose: "sad"
                 }
             );
-        }else if(emoji.show == "angry"){
+        }else if(liked.show == "angry"){
             jumpOffSet.value = withSequence(
                 withSpring(-finalOffset, {damping: 10, overshootClamping: true, mass: 2}), 
                 withSpring(0, {damping: 15, mass: 0.5})
             )
-            setEmoji(
+            setLiked(
                 {
                     id: postId,
                     show: "stop",
@@ -188,7 +188,7 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
             );
         }
         
-    }, [emoji]);
+    }, [liked]);
 
     
 
@@ -197,22 +197,22 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
             
             {/* Light Bulb */}
             {
-                (emoji.chose == "lightBulb" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                (liked.chose == "lightBulb" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "lightBulb" ? 7 : 0, marginLeft: emoji.chose == "lightBulb" ? -5 : 0}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "lightBulb" ? 7 : 0, marginLeft: liked.chose == "lightBulb" ? -5 : 0}}
                         onPress={() => {
-                            // emoji.chose != "lightBulb" && onSelectMood(replyToPostId, postId, "good")
-                            // emoji.chose == "lightBulb" && onUnselectMood(replyToPostId, postId, "good")
-                            emoji.chose != "lightBulb" ?
+                            // liked.chose != "lightBulb" && onSelectMood(replyToPostId, postId, "good")
+                            // liked.chose == "lightBulb" && onUnselectMood(replyToPostId, postId, "good")
+                            liked.chose != "lightBulb" ?
                                 onSelectMood(postId, "lightBulb")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "lightBulb")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "lightBulb" ?
+                            setLiked(
+                                liked.chose == "lightBulb" ?
                                     {
                                         id: postId,
                                         show: false
@@ -246,20 +246,20 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Confetti */}
             {
-                (emoji.chose == "confetti" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                (liked.chose == "confetti" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "confetti" ? 8 : 0, marginLeft: emoji.chose == "confetti" ?-1 : -6}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "confetti" ? 8 : 0, marginLeft: liked.chose == "confetti" ?-1 : -6}}
                         onPress={() => {
-                            emoji.chose != "confetti" ?
+                            liked.chose != "confetti" ?
                                 onSelectMood(postId, "confetti")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "confetti")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "confetti" ?
+                            setLiked(
+                                liked.chose == "confetti" ?
                                     {
                                         id: postId,
                                         show: false
@@ -289,20 +289,20 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Laughing */}
             {
-                (emoji.chose == "laughing" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                (liked.chose == "laughing" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "laughing" ? 5 : 0, marginLeft: emoji.chose == "laughing" ? -7 : -12}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "laughing" ? 5 : 0, marginLeft: liked.chose == "laughing" ? -7 : -12}}
                         onPress={() => {
-                            emoji.chose != "laughing" ?
+                            liked.chose != "laughing" ?
                                 onSelectMood(postId, "laughing")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "laughing")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "laughing" ?
+                            setLiked(
+                                liked.chose == "laughing" ?
                                     {
                                         id: postId,
                                         show: false
@@ -331,20 +331,20 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Loving */}
             {
-                (emoji.chose == "loving" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                (liked.chose == "loving" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "loving" ? 13 : 0, marginLeft: emoji.chose == "loving" ? -2 : -8}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "loving" ? 13 : 0, marginLeft: liked.chose == "loving" ? -2 : -8}}
                         onPress={() => {
-                            emoji.chose != "loving" ?
+                            liked.chose != "loving" ?
                                 onSelectMood(postId, "loving")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "loving")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "loving" ?
+                            setLiked(
+                                liked.chose == "loving" ?
                                     {
                                         id: postId,
                                         show: false
@@ -374,20 +374,20 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Wink */}
             {
-                (emoji.chose == "wink" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                (liked.chose == "wink" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "wink" ? 10 : 0, marginLeft: emoji.chose == "wink" ? -3 : -7}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "wink" ? 10 : 0, marginLeft: liked.chose == "wink" ? -3 : -7}}
                         onPress={() => {
-                            emoji.chose != "wink" ?
+                            liked.chose != "wink" ?
                                 onSelectMood(postId, "wink")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "wink")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "wink" ?
+                            setLiked(
+                                liked.chose == "wink" ?
                                     {
                                         id: postId,
                                         show: false
@@ -405,7 +405,7 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
                         <LottieView
                             autoPlay
-                            style={{height: (emoji.chose == "wink" || emoji.show === false) && 39, width: 39}}
+                            style={{height: (liked.chose == "wink" || liked.show === false) && 39, width: 39}}
                             source={wink}
                         />
 
@@ -417,21 +417,21 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Shocked */}
             {
-                (emoji.chose == "shocked" || emoji.show === false) &&
+                (liked.chose == "shocked" || liked.show === false) &&
                 
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "shocked" ? 13 : 0, marginLeft: emoji.chose == "shocked" ? -2 : -7}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "shocked" ? 13 : 0, marginLeft: liked.chose == "shocked" ? -2 : -7}}
                         onPress={() => {
-                            emoji.chose != "shocked" ?
+                            liked.chose != "shocked" ?
                                 onSelectMood(postId, "shocked")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "shocked")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "shocked" ?
+                            setLiked(
+                                liked.chose == "shocked" ?
                                     {
                                         id: postId,
                                         show: false
@@ -461,18 +461,18 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Sad */}
             {
-                (emoji.chose == "sad" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
-                    <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "sad" ? 11 : 0, marginLeft: emoji.chose == "sad" ? -3 : -9}}
+                (liked.chose == "sad" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
+                    <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "sad" ? 11 : 0, marginLeft: liked.chose == "sad" ? -3 : -9}}
                         onPress={() => {
-                            emoji.chose != "sad" ?
+                            liked.chose != "sad" ?
                                 onSelectMood(postId, "sad")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "sad")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "sad" ?
+                            setLiked(
+                                liked.chose == "sad" ?
                                     {
                                         id: postId,
                                         show: false
@@ -501,20 +501,20 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Skeptical */}
             {
-                (emoji.chose == "skeptical" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                (liked.chose == "skeptical" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "skeptical" ? 6 : 0, marginLeft: emoji.chose == "skeptical" ? -6 : -11}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "skeptical" ? 6 : 0, marginLeft: liked.chose == "skeptical" ? -6 : -11}}
                         onPress={() => {
-                            emoji.chose != "skeptical" ?
+                            liked.chose != "skeptical" ?
                                 onSelectMood(postId, "skeptical")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "skeptical")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "skeptical" ?
+                            setLiked(
+                                liked.chose == "skeptical" ?
                                     {
                                         id: postId,
                                         show: false
@@ -544,20 +544,20 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Eye Roll */}
             {
-                (emoji.chose == "eyeRoll" || emoji.show === false) &&
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1}]}>
+                (liked.chose == "eyeRoll" || liked.show === false) &&
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1}]}>
                     <TouchableOpacity
                         activeOpacity={0.9}
-                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "eyeRoll" ? 10 : 0, marginLeft: emoji.chose == "eyeRoll" ? -2 : -6}}
+                        style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "eyeRoll" ? 10 : 0, marginLeft: liked.chose == "eyeRoll" ? -2 : -6}}
                         onPress={() => {
-                            emoji.chose != "eyeRoll" ?
+                            liked.chose != "eyeRoll" ?
                                 onSelectMood(postId, "eyeRoll")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "eyeRoll")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "eyeRoll" ?
+                            setLiked(
+                                liked.chose == "eyeRoll" ?
                                     {
                                         id: postId,
                                         show: false
@@ -587,19 +587,19 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
 
             {/* Angry */}
             {
-                (emoji.chose == "angry" || emoji.show === false) &&
+                (liked.chose == "angry" || liked.show === false) &&
                 
-                <Animated.View style={[jumpStyle, {flex: emoji.show === false && 1, marginRight: emoji.chose == "angry" ? -9 : 1, marginLeft: -2}]}>
-                    <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: emoji.chose == "angry" ? 0 : 5, marginLeft: emoji.chose == "angry" ? -21 : -21}}
+                <Animated.View style={[jumpStyle, {flex: liked.show === false && 1, marginRight: liked.chose == "angry" ? -9 : 1, marginLeft: -2}]}>
+                    <TouchableOpacity style={{paddingTop: 5, paddingBottom: 8, paddingRight: liked.chose == "angry" ? 0 : 5, marginLeft: liked.chose == "angry" ? -21 : -21}}
                         onPress={() => {
-                            emoji.chose != "angry" ?
+                            liked.chose != "angry" ?
                                 onSelectMood(postId, "angry")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                             :
                                 onUnselectMood(postId, "angry")
                                 // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                            setEmoji(
-                                emoji.chose == "angry" ?
+                            setLiked(
+                                liked.chose == "angry" ?
                                     {
                                         id: postId,
                                         show: false
@@ -612,7 +612,7 @@ export default MoodIndicator = ({postId, emoji, setEmoji}) => {
                                     }
                             )
 
-                            emoji.chose == "angry" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            liked.chose == "angry" ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) : Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                         }}
                     >
                     

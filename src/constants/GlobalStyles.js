@@ -11,15 +11,18 @@ const GlobalStyles = StyleSheet.create({
         backgroundColor: "#0D0D0D"
     },
     lightContainer: {
-        backgroundColor: "#FFF"
+        backgroundColor: "#fcfcfc"
     },
     lightPostContainer: {
         backgroundColor: '#FFFFFF',
         borderStyle: "solid",
-        borderColor: "#EBEBEB",
-        borderTopWidth: 1,
-        // borderBottomWidth: 1,
-        // borderRadius: 15,
+        borderColor: "#e6e6e6",
+        borderWidth: 1,
+        // borderBottomWidth: 0,
+        borderRadius: 15,
+        // borderBottomLeftRadius: 0,
+        // borderBottomRightRadius: 0,
+        // borderTopWidth: 1,
         // marginBottom: 10,
         // width: '100%',
         // height: 300,
@@ -30,8 +33,12 @@ const GlobalStyles = StyleSheet.create({
         backgroundColor: '#151515',
         borderStyle: "solid",
         borderColor: "#262626",
-        borderTopWidth: 1,
-        // borderRadius: 15,
+        borderWidth: 1,
+        // borderBottomWidth: 0,
+        borderRadius: 15,
+        // borderBottomLeftRadius: 0,
+        // borderBottomRightRadius: 0,
+        // borderTopWidth: 1,
         // marginBottom: 10,
         // width: '100%',
         // height: 300,

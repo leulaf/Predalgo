@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState, useEffect,} from 'react';
+import React, {  } from 'react';
 import {View, Text, StyleSheet, ImageBackground, TouchableOpacity, Dimensions} from 'react-native';
 
 import TextTicker from 'react-native-text-ticker';
@@ -83,30 +83,30 @@ const goToProfile = (navigation, username) => async() => {
 const keyExtractor = (item, index) => item.id.toString + "-" + index.toString();
 
 const MemeScreen = ({ navigation, route }) => {
-    const { theme, setTheme } = useContext(ThemeContext);
+    const { theme, setTheme } = React.useContext(ThemeContext);
 
-    const [memeTemplates, setMemeTemplates] = useState([{id : "fir"}, {id: "sec"}]);
+    const [memeTemplates, setMemeTemplates] = React.useState([{id : "fir"}, {id: "sec"}]);
 
     const { memeName, template, height, width, uploader, useCount, forCommentOnComment, forCommentOnPost, fromSavedTemplates } = route.params;
 
-    const flashListRef = useRef(null);
+    const flashListRef = React.useRef(null);
 
-    var templateUri;
+    const [templateUri, setTemplateUri] = React.useState(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         (useCount > 0 || fromSavedTemplates || (useCount == undefined || useCount == null))&& getFirstTenMemes();
         
         var xhr = new XMLHttpRequest();
         xhr.open('GET', template, true);
         xhr.onload = function(e) {
             if (this.status == 200) {
-                templateUri = new File([this.response],'fileName');
+                setTemplateUri(new File([this.response],'fileName'));
             }
         };
     }, []);
 
-    // console.log(template)
 
+    // ** put in another file
     const getFirstTenMemes = React.useCallback(async () => {
         const q = query(
             collection(db, "allPosts"),
@@ -127,9 +127,10 @@ const MemeScreen = ({ navigation, route }) => {
 
             setMemeTemplates(templates);
         });
-    }, []);
+    }, [memeTemplates]);
 
-    const renderItem = ({ item, index }) => {
+
+    const renderItem = React.useCallback(({ item, index }) => {
         if(item.id == "fir" || item.id == "sec"){
             return null;
         }
@@ -162,7 +163,7 @@ const MemeScreen = ({ navigation, route }) => {
             </Animated.View>
         );
 
-    };
+    }, [templateUri]);
 
     return (
         <Animated.View
@@ -269,7 +270,7 @@ const MemeScreen = ({ navigation, route }) => {
             </ImageBackground>
 
 
-            <MemeTopBar navigation={navigation} theme={theme} name={memeName} url={template} height={height} width={width} fromSavedTemplates={fromSavedTemplates}/>
+            <MemeTopBar navigation={navigation} theme={theme} name={memeName} uploader={uploader} url={template} height={height} width={width} fromSavedTemplates={fromSavedTemplates}/>
 
 
             {/* create meme button */}

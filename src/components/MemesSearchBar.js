@@ -3,7 +3,6 @@ import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native'
 import {ThemeContext} from '../../context-store/context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import { set } from 'react-native-reanimated';
 
 const MemesSearchBar = ({term, setTerm}) => {
     const navigation = useNavigation();

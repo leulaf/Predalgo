@@ -6,6 +6,7 @@ import { BlurView } from 'expo-blur';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 import TopBar from '../ScreenTop/TopBar';
+import MainProfileTop from '../ScreenTop/MainProfileTop';
 
 import ThreeDotsSheet from '../components/postTypes/ThreeDotsSheet';
 import RepostSheet from '../components/postTypes/RepostSheet';
@@ -176,23 +177,23 @@ function BottomTabNavigator ({navigation}) {
                 /> */}
 
                 <Bottom_Tab.Screen 
-                name={addPostName}
-                component={
-                    DummyScreen
-                } 
-                options={{
-                    tabBarButton: props => (
-                        <TouchableOpacity {...props}
-                            onPress={() => 
-                                navigation.navigate("AddPost", {
-                                    forCommentOnComment: false,
-                                    forCommentOnPost: false,
-                                    forPost: false,
-                                })
-                            } 
-                        />
-                    ),
-                }}
+                    name={addPostName}
+                    component={
+                        DummyScreen
+                    } 
+                    options={{
+                        tabBarButton: props => (
+                            <TouchableOpacity {...props}
+                                onPress={() => 
+                                    navigation.navigate("AddPost", {
+                                        forCommentOnComment: false,
+                                        forCommentOnPost: false,
+                                        forPost: false,
+                                    })
+                                } 
+                            />
+                        ),
+                    }}
                 />
 
                 <Bottom_Tab.Screen name={savedName} component={SavedScreen}
@@ -200,7 +201,6 @@ function BottomTabNavigator ({navigation}) {
                         drawerIcon: ({color}) => (
                             <Ionicons name="home-outline" size={22} color={color} />
                         ),
-                        
                     }} 
                 />
 
@@ -209,7 +209,8 @@ function BottomTabNavigator ({navigation}) {
                         drawerIcon: ({color}) => (
                             <Ionicons name="home-outline" size={22} color={color} />
                         ),
-                        
+                        header: () => <MainProfileTop />,
+                        // headerShown: false
                     }} 
                 />
 

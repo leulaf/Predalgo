@@ -1,9 +1,9 @@
 import React, {useContext, useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import {ThemeContext} from '../../context-store/context';
-import { firebase, db, storage } from '../config/firebase';
-import { doc, setDoc, deleteDoc, getDoc } from "firebase/firestore"; 
+import { AuthenticatedUserContext } from '../../context-store/context';
+
+import { saveImageTemplate, unsaveImageTemplate } from '../shared/functions/ImageTemplateFunctions';
+
 
 import { getAuth } from 'firebase/auth';
 
@@ -21,51 +21,57 @@ const windowWidth = Dimensions.get('window').width;
 
 const auth = getAuth();
 
-const SaveTemplate = async (name, url, height, width) => {
-    return new Promise(async (resolve, reject) => {
-        const templateRef = doc(db, "savedImageTemplates", firebase.auth().currentUser.uid, "templates", name);
+// const SaveTemplate = async (name, url, height, width) => {
+//     return new Promise(async (resolve, reject) => {
+//         const templateRef = doc(db, "savedImageTemplates", firebase.auth().currentUser.uid, "templates", name);
         
-        // add post to likes collection
-        await setDoc(templateRef, {
-            uploader: auth.currentUser.displayName,
-            name: name,
-            url: url,
-            height,
-            width
-        }).then(() => {
-            // Alert.alert('Saved template');
-            resolve(true);
-        }).catch((error) => {
-            // console.log(error);
-            reject(false);
-        });
-    });
-}
+//         // add post to likes collection
+//         await setDoc(templateRef, {
+//             uploader: auth.currentUser.displayName,
+//             name: name,
+//             url: url,
+//             height,
+//             width
+//         }).then(() => {
+//             // Alert.alert('Saved template');
+//             resolve(true);
+//         }).catch((error) => {
+//             // console.log(error);
+//             reject(false);
+//         });
+//     });
+// }
 
-const deleteSaveTemplate = async (name) => {
-    return new Promise(async (resolve, reject) => {
-        const templateRef = doc(db, 'savedImageTemplates', firebase.auth().currentUser.uid, "templates", name);
+// const deleteSaveTemplate = async (name) => {
+//     return new Promise(async (resolve, reject) => {
+//         const templateRef = doc(db, 'savedImageTemplates', firebase.auth().currentUser.uid, "templates", name);
 
-        deleteDoc(templateRef).then(() => {
-            // Alert.alert('Unsaved template');
-            resolve(true);
-        }).catch((error) => {
-            // console.log(error);
-            reject(false);
-        });
-    });
-}
+//         deleteDoc(templateRef).then(() => {
+//             // Alert.alert('Unsaved template');
+//             resolve(true);
+//         }).catch((error) => {
+//             // console.log(error);
+//             reject(false);
+//         });
+//     });
+// }
 
-const MemeTopBar = ({navigation, theme, name, url, height, width, fromSavedTemplates}) => {
-    const [bookmarked, setBookmarked] = useState(fromSavedTemplates ? fromSavedTemplates : false);
+const MemeTopBar = ({navigation, theme, name, uploader, url, height, width, fromSavedTemplates}) => {
+    const {user, setUser} = React.useContext(AuthenticatedUserContext);
+
+    const [bookmarked, setBookmarked] = useState(fromSavedTemplates || user?.savedImageTemplates?.some((template) => template.name === name));
 
     const toggleBookmark =  () => async()  => {
         if(bookmarked){
             setBookmarked(false);
 
-            await deleteSaveTemplate(name)
+            await unsaveImageTemplate(name, url, uploader, height, width)
             .then((result) => {
-                !result && setBookmarked(true);
+                // !result && setBookmarked(true);
+                setUser({
+                    ...user,
+                    savedImageTemplates: user.savedImageTemplates.filter((template) => {return template.name !== name})
+                })
             })
             .catch((error) => {
                 // console.log(error);
@@ -74,9 +80,19 @@ const MemeTopBar = ({navigation, theme, name, url, height, width, fromSavedTempl
         }else{
             setBookmarked(true);
 
-            await SaveTemplate(name, url, height, width)
+            await saveImageTemplate(name, url, uploader, height, width)
             .then((result) => {
-                !result && setBookmarked(false);
+                // !result && setBookmarked(false);
+                setUser({
+                    ...user,
+                    savedImageTemplates: [...user.savedImageTemplates, {
+                        name: name,
+                        url: url,
+                        uploader: uploader,
+                        height: height,
+                        width: width,
+                    }]
+                })
             })
             .catch((error) => {
                 // console.log(error);

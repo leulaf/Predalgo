@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react';
 import {View, Image, Text, StyleSheet, ImageBackground, TouchableOpacity, FlatList, Dimensions} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {ThemeContext} from '../../context-store/context';
+import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 import firebase from 'firebase/compat/app';
 import { db, storage } from '../config/firebase';
 import { collection, query, where, limit, getDocs, getDoc, doc } from "firebase/firestore";
@@ -73,36 +73,37 @@ const darkBackground = require('../../assets/AddPostBackgroundDark.png');
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
-const keyExtractor = (item, index) => item.id.toString() + "-" + index.toString();
+const keyExtractor = (item, index) => item.name + "-" + index.toString();
 
 const SavedTemplatesScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
-    const [memeTemplates, setMemeTemplates] = useState([{id : "fir"}, {id: "sec"}]);
+    const {user, setUser} = useContext(AuthenticatedUserContext);
+    const [memeTemplates, setMemeTemplates] = useState([user?.savedImageTemplates || {id : "fir"}, {id: "sec"}]);
 
     const {forCommentOnComment, forCommentOnPost, forPost} = route?.params;
 
     useEffect(() => {
-        getFirstFourTemplates();
-    }, []);
+        setMemeTemplates(user?.savedImageTemplates);
+    }, [user]);
 
-    const getFirstFourTemplates = React.useCallback(async () => {
-        const q = query(
-            collection(db, "savedImageTemplates", firebase.auth().currentUser.uid, "templates"),
-            limit(8)
-        );
+    // const getFirstFourTemplates = React.useCallback(async () => {
+    //     const q = query(
+    //         collection(db, "savedImageTemplates", firebase.auth().currentUser.uid, "templates"),
+    //         limit(8)
+    //     );
         
-        await getDocs(q)
-        .then((snapshot) => {
+    //     await getDocs(q)
+    //     .then((snapshot) => {
             
-            let templates = snapshot.docs.map(doc => {
+    //         let templates = snapshot.docs.map(doc => {
                 
-                const data = doc.data();
-                const id = doc.id;
-                return { id, ...data }
-            })
-            setMemeTemplates(templates);
-        });
-    }, []);
+    //             const data = doc.data();
+    //             const id = doc.id;
+    //             return { id, ...data }
+    //         })
+    //         setMemeTemplates(templates);
+    //     });
+    // }, []);
 
     const renderItem = React.useCallback(({item, index}) => {
 

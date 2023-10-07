@@ -518,6 +518,7 @@ const EditMemeScreen = ({ navigation, route }) => {
                 overlayVisible &&
 
                 <NewTemplateOverlay
+                    theme={theme}
                     template={template}
                     height={height}
                     width={width}

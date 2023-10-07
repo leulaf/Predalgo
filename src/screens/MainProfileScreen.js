@@ -62,10 +62,6 @@ function MainProfileScreen ({navigation, route, ...props }) {
             setPostCount(currentUser.posts);
             setBio(currentUser.bio);
         }
-
-        navigation.setOptions({
-            header: () => <MainProfileTop />
-        });
     }, []);
 
     // useEffect(() => {
@@ -349,7 +345,7 @@ function MainProfileScreen ({navigation, route, ...props }) {
                     shadowRadius: theme == 'light' ? 6 : 8,
                 }}
                 lazy={true}
-                   revealHeaderOnScroll
+                revealHeaderOnScroll
                 pointerEvents="box-none"
                 renderTabBar={tabBar}
                 initialTabName="Posts"
