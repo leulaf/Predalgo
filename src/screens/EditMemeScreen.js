@@ -1,6 +1,5 @@
 import React, {useContext, useState, useEffect, useRef} from 'react';
-import {View, Text, TextInput, ImageBackground, StyleSheet, TouchableOpacity, Alert, Dimensions} from 'react-native';
-import { Overlay } from 'react-native-elements';
+import {View, ImageBackground, StyleSheet, Dimensions} from 'react-native';
 import {ThemeContext, AuthenticatedUserContext} from '../../context-store/context';
 
 import { BlurView } from 'expo-blur';
@@ -10,8 +9,6 @@ import Emojis from '../constants/EmojiStickers';
 import EditImageTopBar from '../ScreenTop/EditImageTopBar';
 
 import { StackActions } from '@react-navigation/native';
-
-import {uploadNewTemplate, addNewTemplate} from '../shared/functions/AddNewTemplate';
 
 import PinturaEditor from "@pqina/react-native-expo-pintura";
 
@@ -32,9 +29,6 @@ import {
     createMarkupEditorToolStyles,
 } from "@pqina/pintura";
 
-import { getAuth } from "firebase/auth";
-
-const auth = getAuth();
 
 const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
@@ -531,6 +525,10 @@ const EditMemeScreen = ({ navigation, route }) => {
             }
 
             {/* Compresses the original template */}
+            {/*  */}
+            {/*  */}
+            {/*  */}
+            {/* compress only if its a new template, CHANGE CODE */}
             {
                 compressTemplate &&
                 

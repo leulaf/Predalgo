@@ -1013,4 +1013,4 @@ const styles = StyleSheet.create({
 
 
 
-export default CreatePostScreen;
+export default React.memo(CreatePostScreen);

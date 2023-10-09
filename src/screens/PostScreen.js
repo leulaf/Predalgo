@@ -347,15 +347,15 @@ const PostScreen = ({navigation, route}) => {
     }, []);
 
 
-    React.useEffect(() => {
-        if (isRefreshing) {
-          setExtraPaddingTop(true);
+    // React.useEffect(() => {
+    //     if (isRefreshing) {
+    //       setExtraPaddingTop(true);
 
-          refreshViewRef.current.play();
-        } else {
-          extraPaddingTop && setExtraPaddingTop(false);
-        }
-    }, [isRefreshing]);
+    //       refreshViewRef.current.play();
+    //     } else {
+    //       extraPaddingTop && setExtraPaddingTop(false);
+    //     }
+    // }, [isRefreshing]);
 
 
     const getFirstTenPostCommentsByPopular = React.useCallback(async() => {

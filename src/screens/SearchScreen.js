@@ -9,7 +9,7 @@ import SearchBar from '../components/SearchBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
 
-export default function SearchScreen({navigation}){
+const SearchScreen = ({navigation}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [term, setTerm] = useState('');
 
@@ -110,3 +110,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
 });
+
+export default React.memo(SearchScreen);

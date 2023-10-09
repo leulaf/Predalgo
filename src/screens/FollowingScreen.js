@@ -7,7 +7,7 @@ import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
 
-export default function FollowingScreen({navigation, route}){
+const FollowingScreen = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const {profile} = route.params;
 
@@ -57,3 +57,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
 });
+
+export default React.memo(FollowingScreen);

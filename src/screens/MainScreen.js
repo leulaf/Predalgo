@@ -48,11 +48,11 @@ const MainScreen = ({navigation, openDrawer}) => {
                         // hide tab bar
                         tabBarVisible: false,
                         lazy: true, // only renders the screen when the tab is pressed
-                        header: <TopBar 
-                            term={term} 
-                            onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
-                            // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
-                        />,
+                        // header: <TopBar 
+                        //     term={term} 
+                        //     onTermChange={(newTerm) => setTerm(newTerm)} // setTerm alone would also work
+                        //     // onTermSubmit={() => searchApi(term)} // searchApi alone would also work
+                        // />,
                     }
                 }
                 >

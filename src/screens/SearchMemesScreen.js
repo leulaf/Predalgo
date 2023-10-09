@@ -59,27 +59,27 @@ const SearchMemesScreen = ({navigation, route}) => {
 
     const {forCommentOnComment, forCommentOnPost} = route?.params;
 
-    useEffect(() => {
-      const searchTerm = removeExludedWords(term)
-        if (searchTerm !== '') {
-            q = query(
-                collection(db, "imageTemplates"),
-                where("searchName", ">=", searchTerm),
-                where('searchName', '<=', searchTerm + '\uf8ff'),
-                limit(2)
-            );
+    // useEffect(() => {
+    //   const searchTerm = removeExludedWords(term)
+    //     if (searchTerm !== '') {
+    //         q = query(
+    //             collection(db, "imageTemplates"),
+    //             where("searchName", ">=", searchTerm),
+    //             where('searchName', '<=', searchTerm + '\uf8ff'),
+    //             limit(2)
+    //         );
     
-            getDocs(q)
-            .then((snapshot) => {
-                let templates = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    const id = doc.id;
-                    return { id, ...data }
-                })
-                setMemeTeplates(templates);
-            });
-        }
-    }, [term]);
+    //         getDocs(q)
+    //         .then((snapshot) => {
+    //             let templates = snapshot.docs.map(doc => {
+    //                 const data = doc.data();
+    //                 const id = doc.id;
+    //                 return { id, ...data }
+    //             })
+    //             setMemeTeplates(templates);
+    //         });
+    //     }
+    // }, [term]);
     // console.log(memeTemplates)
     // Sets the header to the SimpleTopBar component
     useEffect(() => {
@@ -193,4 +193,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SearchMemesScreen;
+export default React.memo(SearchMemesScreen);

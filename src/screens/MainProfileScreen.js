@@ -46,23 +46,23 @@ function MainProfileScreen ({navigation, route, ...props }) {
     const [byPopularPosts, setByPopularPosts] = useState(false);
     // const [getLatestPost, setGetLatestPost] = useState(route?.params?.newPost || false);
 
-    useEffect(() => {
-        // Fetch user info
-        props.fetchUser();
+    // useEffect(() => {
+    //     // Fetch user info
+    //     props.fetchUser();
 
-        // Fetch posts
-        populateInitialPosts();
+    //     // Fetch posts
+    //     populateInitialPosts();
 
-        const { currentUser } = props;
+    //     const { currentUser } = props;
         
-        if(currentUser != null){
-            // setUser(currentUser);
-            setFollowers(currentUser.followers);
-            setFollowing(currentUser.following);
-            setPostCount(currentUser.posts);
-            setBio(currentUser.bio);
-        }
-    }, []);
+    //     if(currentUser != null){
+    //         // setUser(currentUser);
+    //         setFollowers(currentUser.followers);
+    //         setFollowing(currentUser.following);
+    //         setPostCount(currentUser.posts);
+    //         setBio(currentUser.bio);
+        // }
+    // }, []);
 
     // useEffect(() => {
     //     if(getLatestPost && postList.length > 0){

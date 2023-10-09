@@ -152,7 +152,7 @@ const UploadScreen = ({route}) => {
         );
       }else if(newTemplate){
         navigation.dispatch(
-          StackActions.replace('EditImage', {
+          StackActions.replace('EditMeme', {
             imageUrl: `data:image/jpeg;base64,${picture.base64}`,
             height: picture.height,
             width: picture.width,

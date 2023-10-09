@@ -2,7 +2,6 @@ import React, {useContext} from 'react';
 import {View, ScrollView, Text, StyleSheet, TextInput, Dimensions} from 'react-native';
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
-import Carousel from 'react-native-reanimated-carousel';
 import TextPost from '../components/postTypes/TextPost';
 import PostBar from '../components/PostBar';
 import AllPosts from '../components/posts/AllPosts';

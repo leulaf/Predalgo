@@ -257,4 +257,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SavedTemplatesScreen;
+export default React.memo(SavedTemplatesScreen);

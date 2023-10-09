@@ -11,7 +11,7 @@ import SimpleTopBar from '../ScreenTop/SimpleTopBar';
 
 const Top_Tab = createMaterialTopTabNavigator();
 
-export default function FollowersScreen({navigation, route}){
+const  FollowersScree = ({navigation, route}) => {
     const {theme,setTheme} = useContext(ThemeContext);
     const [users, setUsers] = useState([]);
     const {profile} = route.params;
@@ -161,3 +161,5 @@ const styles = StyleSheet.create({
         borderColor: '#444444',
     },
 });
+
+export default React.memo(FollowersScree);

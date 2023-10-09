@@ -15,43 +15,43 @@ function SearchTagScreen(props){
     const [correctTag, setCorrectTag] = useState('');
     const [foundTag, setFoundTag] = useState(false);
 
-    const searchForTag = async() => {
-        let q = query(
-            collection(db, "allPosts"),
-            where("tags", "array-contains", correctTag),
-            limit(1))
-        ;
+    // const searchForTag = async() => {
+    //     let q = query(
+    //         collection(db, "allPosts"),
+    //         where("tags", "array-contains", correctTag),
+    //         limit(1))
+    //     ;
 
-        await getDocs(q)
-        .then((snapshot) => {
-            if(snapshot.docs.length > 0){
-                setFoundTag(true);
-            }else{
-                setFoundTag(false);
-            }
-        });
-    }
+    //     await getDocs(q)
+    //     .then((snapshot) => {
+    //         if(snapshot.docs.length > 0){
+    //             setFoundTag(true);
+    //         }else{
+    //             setFoundTag(false);
+    //         }
+    //     });
+    // }
 
-    // called only when the screen is focused
-    useFocusEffect(
-        useCallback(() => {
-            let isActive = true;
+    // // called only when the screen is focused
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         let isActive = true;
         
-            const { searchState } = props;
+    //         const { searchState } = props;
        
-            if(searchState.charAt(0) == '#'){
-                setCorrectTag(searchState);
-            }else{
-                setCorrectTag("#"+searchState);
-            }
+    //         if(searchState.charAt(0) == '#'){
+    //             setCorrectTag(searchState);
+    //         }else{
+    //             setCorrectTag("#"+searchState);
+    //         }
 
-            searchForTag();
+    //         searchForTag();
       
-            return () => {
-                isActive = false;
-            };
-        }, [props.searchState, correctTag])
-    );
+    //         return () => {
+    //             isActive = false;
+    //         };
+    //     }, [props.searchState, correctTag])
+    // );
 
     const renderItem = (item) => {
         return (
@@ -100,13 +100,13 @@ function SearchTagScreen(props){
             >
                 
                     <View style={{ flexDirection: 'row', flex: 1, marginTop: 50 }}>
-                        <FlatList
+                        {/* <FlatList
                             numColumns={1}
                             horizontal={false}
                             data={[{ correctTag: correctTag }]} // Pass an array of items
                             keyExtractor={(item) => item.correctTag}
                             renderItem={({ item }) => renderItem(item)}
-                        />
+                        /> */}
                     </View>
             </View>
     );

@@ -588,4 +588,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CommentScreen;
+export default React.memo(CommentScreen);

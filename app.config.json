@@ -21,11 +21,28 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.lusersd.Predalgo"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "758f7ef7-14d1-49ea-8306-e527c93c1f17"
+      }
+    },
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Picalgo needs access to your Camera.",
+  
+
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "Picalgo needs access to your Microphone."
+        }
+      ]
+    ]
   }
 }
-

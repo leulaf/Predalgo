@@ -66,7 +66,7 @@ const onNavToPost = (navigation, item, templateUploader, image, setIsImageFocuse
 }
 
 // Load Meme with template and template state
-export default DisplayMeme = React.memo(({ theme, item, templateUploader, maxHeight, maxWidth, style }) => {
+const DisplayMeme = React.memo(({ theme, item, templateUploader, maxHeight, maxWidth, style }) => {
     const navigation = useNavigation();
     const editorRef = React.useRef(null);
     const [image, setImage] = React.useState(null);
@@ -289,3 +289,5 @@ const styles = StyleSheet.create({
         marginRight: 5
     },
 });
+
+export default  React.memo(DisplayMeme);

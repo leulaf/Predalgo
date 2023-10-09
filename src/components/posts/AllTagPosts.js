@@ -119,19 +119,19 @@ const AllTagPosts = ({ tag }) => {
 
     React.useEffect(() => {
 
-        fetchPostsByRecent();
+        // fetchPostsByRecent();
     }, []);
 
 
-    React.useEffect(() => {
-        if (isRefreshing) {
-        //   setExtraPaddingTop(true);
+    // React.useEffect(() => {
+    //     if (isRefreshing) {
+    //     //   setExtraPaddingTop(true);
 
-          refreshViewRef.current.play();
-        } else {
-        //   setExtraPaddingTop(false);
-        }
-    }, [isRefreshing]);
+    //       refreshViewRef.current.play();
+    //     } else {
+    //     //   setExtraPaddingTop(false);
+    //     }
+    // }, [isRefreshing]);
 
 
     function onScroll(event) {

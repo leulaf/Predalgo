@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
 // import {  Image, } from 'react-native';
+import React from 'react';
 
 // import { Dimensions } from 'react-native';
 // const screenWidth = Dimensions.get('window').width;
@@ -129,4 +130,4 @@ const ResizableImage = ({ image, height, width, maxHeight, maxWidth, style }) =>
     );
 }
 
-export default ResizableImage;
+export default React.memo(ResizableImage);

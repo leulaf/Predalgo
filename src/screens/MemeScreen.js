@@ -31,37 +31,37 @@ const windowWidth = Dimensions.get('screen').width;
 const windowHeight = Dimensions.get('screen').height;
 
 
-const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
-    if(forCommentOnComment || forCommentOnPost){
-      navigation.dispatch(
-          StackActions.replace('EditMeme', {
-                uploader: item.uploader,
-                replyMemeName: item.name,
-                imageUrl: item.template,
-                height: item.height,
-                width: item.width,
-                // useCount: item.useCount,
-                templateExists: true,
-                forCommentOnComment: forCommentOnComment,
-                forCommentOnPost: forCommentOnPost,
-                forMemeComment: forCommentOnComment
-        })
-      )
-    }else{
-        navigation.navigate('EditMeme', {
-            uploader: item.uploader,
-            replyMemeName: item.name,
-            imageUrl: item.template,
-            height: item.height,
-            width: item.width,
-            // useCount: item.useCount,
-            templateExists: true,
-            forCommentOnComment: forCommentOnComment,
-            forCommentOnPost: forCommentOnPost,
-            forMemeComment: forCommentOnComment
-        })
-    }
-}
+// const navToEdit= (navigation, item, forCommentOnComment, forCommentOnPost) => () => {
+//     if(forCommentOnComment || forCommentOnPost){
+//       navigation.dispatch(
+//           StackActions.replace('EditMeme', {
+//                 uploader: item.uploader,
+//                 replyMemeName: item.name,
+//                 imageUrl: item.template,
+//                 height: item.height,
+//                 width: item.width,
+//                 // useCount: item.useCount,
+//                 templateExists: true,
+//                 forCommentOnComment: forCommentOnComment,
+//                 forCommentOnPost: forCommentOnPost,
+//                 forMemeComment: forCommentOnComment
+//         })
+//       )
+//     }else{
+//         navigation.navigate('EditMeme', {
+//             uploader: item.uploader,
+//             replyMemeName: item.name,
+//             imageUrl: item.template,
+//             height: item.height,
+//             width: item.width,
+//             // useCount: item.useCount,
+//             templateExists: true,
+//             forCommentOnComment: forCommentOnComment,
+//             forCommentOnPost: forCommentOnPost,
+//             forMemeComment: forCommentOnComment
+//         })
+//     }
+// }
 
 const goToProfile = (navigation, username) => async() => {
 
@@ -91,19 +91,19 @@ const MemeScreen = ({ navigation, route }) => {
 
     const flashListRef = React.useRef(null);
 
-    const [templateUri, setTemplateUri] = React.useState(null);
+    // const [templateUri, setTemplateUri] = React.useState(null);
 
-    React.useEffect(() => {
-        (useCount > 0 || fromSavedTemplates || (useCount == undefined || useCount == null))&& getFirstTenMemes();
+    // React.useEffect(() => {
+    //     (useCount > 0 || fromSavedTemplates || (useCount == undefined || useCount == null))&& getFirstTenMemes();
         
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', template, true);
-        xhr.onload = function(e) {
-            if (this.status == 200) {
-                setTemplateUri(new File([this.response],'fileName'));
-            }
-        };
-    }, []);
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open('GET', template, true);
+    //     xhr.onload = function(e) {
+    //         if (this.status == 200) {
+    //             setTemplateUri(new File([this.response],'fileName'));
+    //         }
+    //     };
+    // }, []);
 
 
     // ** put in another file
@@ -128,6 +128,38 @@ const MemeScreen = ({ navigation, route }) => {
             setMemeTemplates(templates);
         });
     }, [memeTemplates]);
+
+    const navToEdit= React.useCallback(() => () => {
+        if(forCommentOnComment || forCommentOnPost){
+          navigation.dispatch(
+              StackActions.replace('EditMeme', {
+                    uploader: uploader,
+                    replyMemeName: memeName,
+                    imageUrl: template,
+                    height: height,
+                    width: width,
+                    // useCount: useCount,
+                    templateExists: true,
+                    forCommentOnComment: forCommentOnComment,
+                    forCommentOnPost: forCommentOnPost,
+                    forMemeComment: forCommentOnComment
+            })
+          )
+        }else{
+            navigation.navigate('EditMeme', {
+                uploader: uploader,
+                replyMemeName: memeName,
+                imageUrl: template,
+                height: height,
+                width: width,
+                // useCount: useCount,
+                templateExists: true,
+                forCommentOnComment: forCommentOnComment,
+                forCommentOnPost: forCommentOnPost,
+                forMemeComment: forCommentOnComment
+            })
+        }
+    }, [])
 
 
     const renderItem = React.useCallback(({ item, index }) => {
@@ -155,7 +187,7 @@ const MemeScreen = ({ navigation, route }) => {
                     style={{borderRadius: 10}}
                     maxHeight={500}
                     maxWidth={windowWidth - 4}
-                    template={templateUri}
+                    template={template}
                     templateState={item.templateState}
                     templateUploader={uploader}
                 />
@@ -163,7 +195,7 @@ const MemeScreen = ({ navigation, route }) => {
             </Animated.View>
         );
 
-    }, [templateUri]);
+    }, []);
 
     return (
         <Animated.View
@@ -276,16 +308,16 @@ const MemeScreen = ({ navigation, route }) => {
             {/* create meme button */}
             <TouchableOpacity
                 style={theme == 'light' ? styles.lightUseTemplateButton : styles.darkUseTemplateButton}
-                onPress={
-                    navToEdit(navigation, {
-                        uploader: uploader,
-                        name: memeName,
-                        template: template,
-                        height: height,
-                        width: width,
-                        forCommentOnComment: forCommentOnComment,
-                        forCommentOnPost: forCommentOnPost,
-                    }, forCommentOnComment, forCommentOnPost)
+                onPress={navToEdit()
+                    // navToEdit(navigation, {
+                    //     uploader: uploader,
+                    //     name: memeName,
+                    //     template: template,
+                    //     height: height,
+                    //     width: width,
+                    //     forCommentOnComment: forCommentOnComment,
+                    //     forCommentOnPost: forCommentOnPost,
+                    // }, forCommentOnComment, forCommentOnPost)
                 }
             >
                 {theme == "light" ?
