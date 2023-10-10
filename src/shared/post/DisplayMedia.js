@@ -56,6 +56,7 @@ export default DisplayMeme = React.memo(({ theme, index, item, }) => {
 
 
     return (
+        <>
         <TouchableOpacity
             activeOpacity={0.9}
             style={
@@ -100,12 +101,16 @@ export default DisplayMeme = React.memo(({ theme, index, item, }) => {
             />
 
 
-            {
-                (item.template && image == item.template) &&
-
-                <CreateMeme image={image} templateState={item.templateState} setFinished={() => null}setImage={setImage} id={item.id}/>
-            }
+            
         </TouchableOpacity>
+
+        {
+            (item.template && image == item.template) &&
+
+            <CreateMeme image={image} templateState={item.templateState} setFinished={() => null}setImage={setImage} id={item.id}/>
+        }
+
+        </>
     )
 }, itemEquals);
 

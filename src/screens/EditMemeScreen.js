@@ -309,7 +309,7 @@ const EditMemeScreen = ({ navigation, route }) => {
 
 
     return (
-        <View style={theme == 'light' ? styles.lightBackground : styles.darkBackground}>
+        // <View style={theme == 'light' ? styles.lightBackground : styles.darkBackground}>
 
             <ImageBackground 
                 source={theme == 'light' ? lightBackground : darkBackground} 
@@ -505,57 +505,57 @@ const EditMemeScreen = ({ navigation, route }) => {
                 />
 
             </ImageBackground>
+// {/* 
+//            put the compressor in NewTemplateOverlay, because only new templates need to be compressed
+//             {/* New template overlay */}
+//             {
+//                 overlayVisible &&
 
+//                 <NewTemplateOverlay
+//                     theme={theme}
+//                     template={template}
+//                     height={height}
+//                     width={width}
+//                     overlayVisible={overlayVisible}
+//                     setOverlayVisible={setOverlayVisible}
+//                     forCommentOnComment={forCommentOnComment}
+//                     forCommentOnPost={forCommentOnPost}
+//                     navigation={navigation}
+//                 />
+//             }
 
-            {/* New template overlay */}
-            {
-                overlayVisible &&
-
-                <NewTemplateOverlay
-                    theme={theme}
-                    template={template}
-                    height={height}
-                    width={width}
-                    overlayVisible={overlayVisible}
-                    setOverlayVisible={setOverlayVisible}
-                    forCommentOnComment={forCommentOnComment}
-                    forCommentOnPost={forCommentOnPost}
-                    navigation={navigation}
-                />
-            }
-
-            {/* Compresses the original template */}
-            {/*  */}
-            {/*  */}
-            {/*  */}
-            {/* compress only if its a new template, CHANGE CODE */}
-            {
-                compressTemplate &&
+//             {/* Compresses the original template */}
+//             {/*  */}
+//             {/*  */}
+//             {/*  */}
+//             {/* compress only if its a new template, CHANGE CODE */}
+//             {
+//                 compressTemplate &&
                 
-                <PinturaEditor
-                    ref={templateRef}
+//                 <PinturaEditor
+//                     ref={templateRef}
                     
-                    src={image}
-                    onLoaderror={(err) => {
-                    // console.log("onLoaderror", err);
-                    }}
-                    onLoad={({ size }) => {
-                        templateRef.current.editor.processImage();
-                    }}
+//                     src={image}
+//                     onLoaderror={(err) => {
+//                     // console.log("onLoaderror", err);
+//                     }}
+//                     onLoad={({ size }) => {
+//                         templateRef.current.editor.processImage();
+//                     }}
         
-                    {...editorDefaults}
+//                     {...editorDefaults}
         
-                    onProcess={({ dest, imageState }) => {
-                        // dest is output file in dataURI format
-                        setTemplate(dest);
-                        setCompressTemplate(false);
-                        // templateRef.current.editor.close();
-                    }}
-                />
+//                     onProcess={({ dest, imageState }) => {
+//                         // dest is output file in dataURI format
+//                         setTemplate(dest);
+//                         setCompressTemplate(false);
+//                         // templateRef.current.editor.close();
+//                     }}
+//                 />
 
-            }
+//             }
 
-        </View>
+//         </View> */}
   );
 };
 

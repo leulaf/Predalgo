@@ -128,171 +128,174 @@ const SubComment = ({ navigation, theme, profile, username, profilePic, commentI
 
 
     return (
-        <Animated.View 
-            entering={FadeIn}
-            // onLayout={(event) => setViewWidth(event.nativeEvent.layout.width)} 
-            style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}
-        >
+        <>
+            <Animated.View 
+                entering={FadeIn}
+                // onLayout={(event) => setViewWidth(event.nativeEvent.layout.width)} 
+                style={theme == 'light' ? styles.lightCommentContainer : styles.darkCommentContainer}
+            >
+
+                
+                {/* Comment Top */}
+                <SubCommentTop 
+                    commentId={commentId}
+                    replyToCommentId={replyToCommentId}
+                    replyToPostId={replyToPostId}
+                    navigation={navigation}
+                    onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    theme={theme}
+                    profile={profile}
+                    username={username}
+                    profilePic={profilePic}
+                />
+
+                {/* Comment Text */}
+                {
+                    text &&
+
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                        // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
+                        onLongPress={onLongPress()}
+                    >
+                        
+                        <CommentText text={text}/>
+
+                    </TouchableOpacity>
+                }
+                
+                {/* Comment Image */}
+                {    
+                    imageHeight &&
+                
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        style={{flexDirection: 'row', backgroundColor: 'black', marginTop: 11, borderRadius: 0, alignItems: 'center', justifyContent: 'center'}}
+                        onPress = {
+                            () => setIsVisible(true)
+                            // navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)
+                        }
+                        onLongPress={onLongPress()}
+                    >
+                        <ResizableImage 
+                            image={image}
+                            height={imageHeight}
+                            width={imageWidth}
+                            maxHeight={550}
+                            maxWidth={windowWidth - 10}
+                            style={{borderRadius: 0}}
+                        />
+
+                        <ImageView
+                            images={[{uri: image}]}
+                            imageIndex={0}
+                            visible={visible}
+                            onRequestClose={() => setIsVisible(false)}
+                            animationType="fade"
+                            doubleTapToZoomEnabled={true}
+                            FooterComponent={({ imageIndex }) => (
+                                <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+                                    <CommentBottom
+                                        commentID={commentId}
+                                        replyToCommentId={replyToCommentId}
+                                        replyToPostId={replyToPostId}
+                                        likesCount={likesCount}
+                                        commentsCount={commentsCount}
+                                        theme='dark'
+                                        navToComment={navToCommentFromImage()}
+                                    />
+                                </View>
+                                
+                            )}
+                        />
+                    </TouchableOpacity>
+                }
+
+
+                {/* Comment Footer */}
+                <SubCommentBottom
+                    navigation={navigation}
+                    theme={theme}
+                    commentId={commentId}
+                    replyToCommentId={replyToCommentId}
+                    replyToPostId={replyToPostId}
+                    profile={profile}
+                    memeName={memeName}
+                    likesCount={likesCount}
+                    commentsCount={commentsCount}
+                    templateUploader={templateUploader}
+                    navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
+                    onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                    onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                />
+
+                {/* Comment Footer */}
+                {
+                    (commentsCount > 0 && memeName) &&
+
+                        <View>
+                            <View style={{height: 5, backgroundColor: theme == 'light' ? '#F2F2F2' : '#000000'}}/>
+                            
+                            <TouchableOpacity 
+                                activeOpacity={0.9}
+                                style={{
+                                    backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
+                                    // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
+                                    borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
+                                }}
+                                onPress = {onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
+                            >
+                                
+                                {/* might need too edit input to intToString */}
+                                <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
+                                    margin: 10,
+                                }]}>
+                                    View {commentsCount} replies
+                                </Text>
+
+                                {
+                                    theme == 'light' ?
+                                        <Down width={25} height={25} marginRight={5} />
+                                    :
+                                        <DownDark width={25} height={25} marginRight={5} />
+                                }
+                                
+                            </TouchableOpacity>
+                        </View>
+                            // <TouchableOpacity 
+                            //     activeOpacity={0.9}
+                            //     style={{
+                            //         backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
+                            //         // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
+                            //         borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
+                            //     }}
+                            //     onPress = {onNavToComment()}
+                            // >
+                                
+                            //     {/* might need too edit input to intToString */}
+                            //     <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
+                            //         margin: 5,
+                            //     }]}>
+                            //         View {commentsCount} replies
+                            //     </Text>
+
+                            //     {
+                            //         theme == 'light' ?
+                            //             <Down width={25} height={25} marginRight={5} />
+                            //         :
+                            //             <DownDark width={25} height={25} marginRight={5} />
+                            //     }
+                                
+                            // </TouchableOpacity>
+                }
+                
+                
+            </Animated.View>
 
             {/* Load Meme with template and template state */}
             {!finished && <CreateMeme image={image} templateState={templateState} setFinished={setFinished} setImage={setImage} id={commentId}/>}
-            
-            {/* Comment Top */}
-            <SubCommentTop 
-                commentId={commentId}
-                replyToCommentId={replyToCommentId}
-                replyToPostId={replyToPostId}
-                navigation={navigation}
-                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                theme={theme}
-                profile={profile}
-                username={username}
-                profilePic={profilePic}
-            />
-
-            {/* Comment Text */}
-            {
-                text &&
-
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress = {navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                    // style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}
-                    onLongPress={onLongPress()}
-                >
-                    
-                    <CommentText text={text}/>
-
-                </TouchableOpacity>
-            }
-            
-            {/* Comment Image */}
-            {    
-                imageHeight &&
-            
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    style={{flexDirection: 'row', backgroundColor: 'black', marginTop: 11, borderRadius: 0, alignItems: 'center', justifyContent: 'center'}}
-                    onPress = {
-                        () => setIsVisible(true)
-                        // navToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)
-                    }
-                    onLongPress={onLongPress()}
-                >
-                    <ResizableImage 
-                        image={image}
-                        height={imageHeight}
-                        width={imageWidth}
-                        maxHeight={550}
-                        maxWidth={windowWidth - 10}
-                        style={{borderRadius: 0}}
-                    />
-
-                    <ImageView
-                        images={[{uri: image}]}
-                        imageIndex={0}
-                        visible={visible}
-                        onRequestClose={() => setIsVisible(false)}
-                        animationType="fade"
-                        doubleTapToZoomEnabled={true}
-                        FooterComponent={({ imageIndex }) => (
-                            <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
-                                <CommentBottom
-                                    commentID={commentId}
-                                    replyToCommentId={replyToCommentId}
-                                    replyToPostId={replyToPostId}
-                                    likesCount={likesCount}
-                                    commentsCount={commentsCount}
-                                    theme='dark'
-                                    navToComment={navToCommentFromImage()}
-                                />
-                            </View>
-                            
-                        )}
-                    />
-                </TouchableOpacity>
-            }
-
-
-            {/* Comment Footer */}
-            <SubCommentBottom
-                navigation={navigation}
-                theme={theme}
-                commentId={commentId}
-                replyToCommentId={replyToCommentId}
-                replyToPostId={replyToPostId}
-                profile={profile}
-                memeName={memeName}
-                likesCount={likesCount}
-                commentsCount={commentsCount}
-                templateUploader={templateUploader}
-                navToMeme={navToMeme(navigation, memeName, template, templateUploader, imageHeight, imageWidth)}
-                onNavToComment={onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                onReply={onReply(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
-            />
-
-            {/* Comment Footer */}
-            {
-                (commentsCount > 0 && memeName) &&
-
-                    <View>
-                        <View style={{height: 5, backgroundColor: theme == 'light' ? '#F2F2F2' : '#000000'}}/>
-                        
-                        <TouchableOpacity 
-                            activeOpacity={0.9}
-                            style={{
-                                backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
-                                // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
-                                borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
-                            }}
-                            onPress = {onNavToComment(navigation, commentId, replyToPostId, replyToCommentId, profile, profilePic, username, image, memeName, template, templateUploader, imageHeight, imageWidth, text, likesCount, commentsCount)}
-                        >
-                            
-                            {/* might need too edit input to intToString */}
-                            <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
-                                margin: 10,
-                            }]}>
-                                View {commentsCount} replies
-                            </Text>
-
-                            {
-                                theme == 'light' ?
-                                    <Down width={25} height={25} marginRight={5} />
-                                :
-                                    <DownDark width={25} height={25} marginRight={5} />
-                            }
-                            
-                        </TouchableOpacity>
-                    </View>
-                        // <TouchableOpacity 
-                        //     activeOpacity={0.9}
-                        //     style={{
-                        //         backgroundColor: theme == 'light' ? '#FFFFFF' : '#151515',
-                        //         // backgroundColor: theme == 'light' ? '#EEEEEE' : '#171717',
-                        //         borderBottomLeftRadius: 12.5, borderBottomRightRadius: 12.5, flexDirection: 'row', alignItems: 'center', alignContent: 'center', justifyContent: 'center' 
-                        //     }}
-                        //     onPress = {onNavToComment()}
-                        // >
-                            
-                        //     {/* might need too edit input to intToString */}
-                        //     <Text style={[theme == 'light' ? styles.lightViewText : styles.darkViewText,{
-                        //         margin: 5,
-                        //     }]}>
-                        //         View {commentsCount} replies
-                        //     </Text>
-
-                        //     {
-                        //         theme == 'light' ?
-                        //             <Down width={25} height={25} marginRight={5} />
-                        //         :
-                        //             <DownDark width={25} height={25} marginRight={5} />
-                        //     }
-                            
-                        // </TouchableOpacity>
-            }
-            
-            
-        </Animated.View>
+        </>
     );
 }
 

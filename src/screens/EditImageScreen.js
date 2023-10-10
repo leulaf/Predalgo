@@ -137,7 +137,7 @@ const EditImageScreen = ({ navigation, route }) => {
 
 
     return (
-        <View style={styles.container}>
+        // <View style={styles.container}>
 
             <PinturaEditor
                 ref={editorRef}
@@ -206,24 +206,24 @@ const EditImageScreen = ({ navigation, route }) => {
                 // }}
             />
 
-            {/* New template overlay */}
-            {
-                overlayVisible &&
+        //     {/* New template overlay
+        //     {
+        //         overlayVisible &&
 
-                <NewTemplateOverlay
-                    theme={theme}
-                    template={imageResult}
-                    height={height}
-                    width={width}
-                    overlayVisible={overlayVisible}
-                    setOverlayVisible={setOverlayVisible}
-                    forCommentOnComment={forCommentOnComment}
-                    forCommentOnPost={forCommentOnPost}
-                    navigation={navigation}
-                />
-            }
+        //         <NewTemplateOverlay
+        //             theme={theme}
+        //             template={imageResult}
+        //             height={height}
+        //             width={width}
+        //             overlayVisible={overlayVisible}
+        //             setOverlayVisible={setOverlayVisible}
+        //             forCommentOnComment={forCommentOnComment}
+        //             forCommentOnPost={forCommentOnPost}
+        //             navigation={navigation}
+        //         />
+        //     }
 
-        </View>
+        // </View> */}
   );
 };
 

@@ -4,7 +4,7 @@ import {ScrollView, Image, View, Text, StyleSheet, TextInput} from 'react-native
 import {ThemeContext} from '../../context-store/context';
 import GlobalStyles from '../constants/GlobalStyles';
 import { BlurView } from 'expo-blur';
-import TopBar from '../ScreenTop/TopBar';
+import FloatingButton from '../components/FloatingButton';
 
 import GamesScreen from '../screens/GamesScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -61,6 +61,14 @@ const MainScreen = ({navigation, openDrawer}) => {
                     <Top_Tab.Screen name="Tv/Movies" component={TvMoviesScreen} />
                 </Top_Tab.Navigator>
                 {/* <SideBar/> */}
+
+                <FloatingButton 
+                    onPressFacebook= { () => alert('facebook icon pressed')}
+                    onPressTwitter= { () => alert('Twitter icon pressed')}
+                    onPressInstagram= { () => alert('instagram icon pressed')}
+                    position= {{bottom: 165, right: 50}}
+                    theme={theme}
+                />
             </>
             
     );

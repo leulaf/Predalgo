@@ -327,11 +327,10 @@ const CommentScreen = ({navigation, route}) => {
 
     //NEED***NEED to make sure multiple instance of PinturaLoadImage are not created***
     return (
+        <>
         <View
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
-            {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image} templateState={comment.templateState} setFinished={setFinished} setImage={setImage} id={commentId}/>}
 
             {/* Top */}
             <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight,}]}/>
@@ -378,6 +377,10 @@ const CommentScreen = ({navigation, route}) => {
 
             {replyBottomSheet(comment.onReply, navigation, comment.replyToPostId, commentId, comment.profile, comment.username)}
         </View>
+
+        {/* Load Meme with template and template state */}
+        {!finished && <CreateMeme image={image} templateState={comment.templateState} setFinished={setFinished} setImage={setImage} id={commentId}/>}
+        </>
     );
 
 };

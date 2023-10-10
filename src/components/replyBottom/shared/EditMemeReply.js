@@ -71,7 +71,7 @@ const EditMemeReply = ({ navigation, route }) => {
 
 
     return (
-        <View style={styles.container}>
+        // <View style={styles.container}>
 
             <PinturaEditor
                 ref={editorRef}
@@ -140,76 +140,76 @@ const EditMemeReply = ({ navigation, route }) => {
                 }}
             />
 
-            {/* Ask user to upload template */}
-            {/* Edit profile bio */}
-            <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
+            // {/* Ask user to upload template */}
+            // {/* Edit profile bio */}
+            // <Overlay isVisible={overlayVisible} onBackdropPress={() => setOverlayVisible(false)} overlayStyle={{borderRadius: 20}}>
                 
-                <Text style={styles.askText}>Can other users use the original image to create memes?</Text>
+            //     <Text style={styles.askText}>Can other users use the original image to create memes?</Text>
                 
-                <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+            //     <View style={{flexDirection: 'row', alignSelf: 'center'}}>
                     
-                    {/* No */}
-                    <TouchableOpacity
-                        onPress={() =>
-                            {
-                                setOverlayVisible(false);
-                                navigation.navigate('CreatePost', {imageUrl: imageResult});
-                            }
-                        }
-                        style={styles.answerButton}
-                    >
-                        <Text style={styles.answerText}>No</Text>
-                    </TouchableOpacity>
+            //         {/* No */}
+            //         <TouchableOpacity
+            //             onPress={() =>
+            //                 {
+            //                     setOverlayVisible(false);
+            //                     navigation.navigate('CreatePost', {imageUrl: imageResult});
+            //                 }
+            //             }
+            //             style={styles.answerButton}
+            //         >
+            //             <Text style={styles.answerText}>No</Text>
+            //         </TouchableOpacity>
 
-                    {/* Yes */}
-                    <TouchableOpacity
-                        onPress={() =>
-                           setNewTemplate(true)
-                        }
-                        style={styles.answerButton}
-                    >
-                        <Text style={styles.answerText}>Yes</Text>
-                    </TouchableOpacity>
-                </View>
+            //         {/* Yes */}
+            //         <TouchableOpacity
+            //             onPress={() =>
+            //                setNewTemplate(true)
+            //             }
+            //             style={styles.answerButton}
+            //         >
+            //             <Text style={styles.answerText}>Yes</Text>
+            //         </TouchableOpacity>
+            //     </View>
 
-                {/* Ask user to enter meme name */}
-                {
-                    newTemplate &&
-                        <View>
-                            <Text style={styles.askText}>What do you want to name the template?</Text>
+            //     {/* Ask user to enter meme name */}
+            //     {
+            //         newTemplate &&
+            //             <View>
+            //                 <Text style={styles.askText}>What do you want to name the template?</Text>
 
-                            {/* Meme Template Name */}
-                            <TextInput
-                                secureTextEntry={false}
-                                multiline
-                                blurOnSubmit
-                                maxLength={15}
-                                style={{fontSize: 20, width: 350, height: 50, alignSelf: 'center', marginBottom: 15, borderColor: 'gray', borderWidth: 1.5, marginTop: 10, borderRadius: 15}}
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                placeholder="  Meme Template Name"
-                                placeholderTextColor= "#888888"
-                                value={newMemeName}
-                                onChangeText={(newValue) => setNewMemeName(newValue)}
-                                // onEndEditing={( ) => console.log('submitted')}
-                            />
+            //                 {/* Meme Template Name */}
+            //                 <TextInput
+            //                     secureTextEntry={false}
+            //                     multiline
+            //                     blurOnSubmit
+            //                     maxLength={15}
+            //                     style={{fontSize: 20, width: 350, height: 50, alignSelf: 'center', marginBottom: 15, borderColor: 'gray', borderWidth: 1.5, marginTop: 10, borderRadius: 15}}
+            //                     autoCapitalize="none"
+            //                     autoCorrect={false}
+            //                     placeholder="  Meme Template Name"
+            //                     placeholderTextColor= "#888888"
+            //                     value={newMemeName}
+            //                     onChangeText={(newValue) => setNewMemeName(newValue)}
+            //                     // onEndEditing={( ) => console.log('submitted')}
+            //                 />
 
-                            {/* Done */}
-                            <TouchableOpacity
-                                onPress={() =>
-                                    setMeme(newMemeName)
-                                }
-                                style={styles.answerButton}
-                            >
-                                <Text style={styles.answerText}>Done</Text>
-                            </TouchableOpacity>
+            //                 {/* Done */}
+            //                 <TouchableOpacity
+            //                     onPress={() =>
+            //                         setMeme(newMemeName)
+            //                     }
+            //                     style={styles.answerButton}
+            //                 >
+            //                     <Text style={styles.answerText}>Done</Text>
+            //                 </TouchableOpacity>
 
-                        </View>
+            //             </View>
                         
-                }
+            //     }
 
-            </Overlay>
-        </View>
+            // </Overlay>
+        // </View>
   );
 };
 

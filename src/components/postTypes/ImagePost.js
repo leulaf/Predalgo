@@ -143,9 +143,10 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
                                 navigation={navigation}
                                 
                                 content={
-                                    <View>
+                                    <>
                                         {
                                             text &&
+
                                             <TouchableOpacity
                                                 activeOpacity={0.9}
                                                 // onPress={navToPostFromImage}
@@ -155,15 +156,14 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
                                                 <PostText numberOfLines={5} text={text} forPost={true}/>
                                             </TouchableOpacity>
                                         }
+
+
                                         <TouchableOpacity
                                             activeOpacity={0.9}
                                             onPress={() => setIsFocused(true)}
                                             onLongPress={onLongPress()}
                                             style={{flexDirection: "column", alignSelf: 'center'}}
                                         >
-                                            
-                                            {/* Load Meme with template and template state */}
-                                            {template && template === image && <CreateMeme image={image} templateState={templateState} setFinished={() => null} setImage={setImage} id={postId}/>}
                                             
 
                                             <ResizableImage 
@@ -203,7 +203,10 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
                                                 />
                                             }
                                         </TouchableOpacity>
-                                    </View>
+                                    
+                                        {/* Load Meme with template and template state */}
+                                        {template && template === image && <CreateMeme image={image} templateState={templateState} setFinished={() => null} setImage={setImage} id={postId}/>}
+                                    </>
                                 }
                             />
 
@@ -244,7 +247,8 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
             navigation={navigation}
             
             content={
-                <View>
+                <>
+
                     {
                         text &&
                         <TouchableOpacity
@@ -262,9 +266,6 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
                         onLongPress={onLongPress()}
                         style={{flexDirection: "column", alignSelf: 'center'}}
                     >
-                        
-                        {/* Load Meme with template and template state */}
-                        {template && template === image && <CreateMeme image={image} templateState={templateState} setFinished={() => null} setImage={setImage} id={postId}/>}
                         
 
                         <ResizableImage 
@@ -304,7 +305,11 @@ const ImagePost = ({ title, username, reposterUsername, profilePic, reposterProf
                             />
                         }
                     </TouchableOpacity>
-                </View>
+
+                
+                    {/* Load Meme with template and template state */}
+                    {template && template === image && <CreateMeme image={image} templateState={templateState} setFinished={() => null} setImage={setImage} id={postId}/>}
+                </>
             }
         />
     );

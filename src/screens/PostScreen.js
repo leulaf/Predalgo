@@ -467,169 +467,169 @@ const PostScreen = ({navigation, route}) => {
     
 
     return (
-        <View
-            style={
-                theme == 'light' ?
-                    styles.lightMainContainer
-                    // [styles.lightMainContainer, {backgroundColor: offsetY > 0 ? '#F4F4F4' : '#FFFFFF'}]
-                :
-                    styles.darkMainContainer
-                    // [styles.darkMainContainer, {backgroundColor: offsetY > 0 ? '#000000' : '#151515'}]
-            }
-        >
-            
-            
+        <>
+            <View
+                style={
+                    theme == 'light' ?
+                        styles.lightMainContainer
+                        // [styles.lightMainContainer, {backgroundColor: offsetY > 0 ? '#F4F4F4' : '#FFFFFF'}]
+                    :
+                        styles.darkMainContainer
+                        // [styles.darkMainContainer, {backgroundColor: offsetY > 0 ? '#000000' : '#151515'}]
+                }
+            >
+
+                
+                
+                {/* Top */}
+                <View 
+                    style={[
+                        theme == 'light' ? styles.lightContainer : styles.darkContainer, 
+                        {height: Constants.statusBarHeight + 10}
+                    ]}
+                />
+
+
+                
+                {/* Refresh animation */}
+                {
+                    offsetY < 0 && 
+                    <>
+                        <LottieView
+                            ref={refreshViewRef}
+                            autoPlay
+                            style={[styles.lottieView]}
+                            // source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
+                            source={refreshAnimation}
+                            // progress={progress}
+                            colorFilters={[
+                                { keypath: "Path", 
+                                    color: theme == 'light' ? "#005fff" : "#FFF" },
+                            ]}
+                        />
+
+                        {/* <View style={{marginBottom: 10}}/> */}
+                    </>
+                }
+
+
+                {/* List */}
+                <FlashList
+                    data={commentsList}
+                    
+                    onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
+                    onEndReachedThreshold={1} //need to implement infinite scroll
+
+                    // extraData={[]}
+                    stickyHeaderIndices={[1]}
+                    renderItem={renderItem}
+
+                    showsVerticalScrollIndicator={false}
+
+                    removeClippedSubviews={true}
+
+                    estimatedItemSize={200}
+                    estimatedListSize={{height: windowHeight ,  width: windowWidth}}
+
+                    ListHeaderComponent={
+                        <SimpleTopBar
+                            theme={theme}
+                            title={"Post"}
+                            onGoBack={onGoBack}
+                            extraPaddingTop={extraPaddingTop}
+                            // clickedThreeDots={clickedThreeDots()}
+                        />
+                    }
+
+                    ListFooterComponent={
+                        <View 
+                            style={[
+                                theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer
+                                , {height: 200, marginTop: 5}
+                            ]}
+                        />
+                    }
+
+
+                    refreshControl={
+                        <RefreshControl 
+                            refreshing={isRefreshing}
+                            onRefresh={() => {
+                                setExtraPaddingTop(true);
+                                setIsRefreshing(true);
+                                setTimeout(() => {
+                                    setIsRefreshing(false);
+                                }, 2000);
+                            }}
+                            // progressViewOffset={progress}
+                            tintColor={'rgba(255, 255, 255, 0.0)'}
+                            // progressViewOffset={0}
+                        />
+                    }
+
+                    // refreshing={isRefreshing}
+
+                    // onRefresh={() => {
+                    //     setExtraPaddingTop(true);
+                    //     setIsRefreshing(true);
+                    //     setTimeout(() => {
+                    //         setIsRefreshing(false);
+                    //     }, 3000);
+                    // }}
+
+                    // refreshControl={
+                    //     <View/>
+                    // }
+
+                    // progressViewOffset={progress}
+
+                    // onResponderRelease={console.log("sadfadsfdfasdfsa")}
+
+                    onScroll={onScroll}
+                    // onScroll={(e) => {
+                    //     scrollY.setValue(e.nativeEvent.contentOffset.y) && console.log("e.nativeEvent.contentOffset.y");
+                    // }}
+
+                    getItemType={getItemType}
+
+                    // overrideItemLayout={overrideItemLayout}
+                    
+                    keyExtractor={keyExtractor}
+
+                    contentContainerStyle={{backgroundColor: theme == 'light' ? '#F4F4F4' : '#000000'}}
+                />
+
+                {replyBottomSheet(navigation, theme, postId, profile, username)}
+
+                {
+                    options && 
+
+                    <View
+                        style={styles.threeDotsOverlay}
+                    >
+                        <TouchableOpacity
+                            onPressIn = {() => setOptions("close")}
+                            style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
+                        >
+
+                        </TouchableOpacity>
+                        <ThreeDotsSheet
+                            profile={options.profile}
+                            commentId={options.commentId}
+                            replyToPostId={options.replyToPostId}
+                            replyToCommentId={options.replyToCommentId}
+                            image={options.image}
+                            text={options.text}
+                            theme={theme}
+                        />
+                    </View>
+                    
+                }
+            </View>
+
             {/* Load Meme with template and template state */}
             {!finished && <CreateMeme image={template} templateState={templateState} setFinished={setFinished} setImage={setImage} id={postId}/>}
-
-            
-            
-
-            {/* Top */}
-            <View 
-                style={[
-                    theme == 'light' ? styles.lightContainer : styles.darkContainer, 
-                    {height: Constants.statusBarHeight + 10}
-                ]}
-            />
-
-
-            
-            {/* Refresh animation */}
-            {
-                offsetY < 0 && 
-                <>
-                    <LottieView
-                        ref={refreshViewRef}
-                        autoPlay
-                        style={[styles.lottieView]}
-                        // source={theme == 'light' ? refreshAnimationLight : refreshAnimationDark}
-                        source={refreshAnimation}
-                        // progress={progress}
-                        colorFilters={[
-                            { keypath: "Path", 
-                                color: theme == 'light' ? "#005fff" : "#FFF" },
-                        ]}
-                    />
-
-                    {/* <View style={{marginBottom: 10}}/> */}
-                </>
-            }
-
-
-            {/* List */}
-            <FlashList
-                data={commentsList}
-                
-                onEndReached={commentsList[commentsList.length-1].snap && getNextTenPopularComments }
-                onEndReachedThreshold={1} //need to implement infinite scroll
-
-                // extraData={[]}
-                stickyHeaderIndices={[1]}
-                renderItem={renderItem}
-
-                showsVerticalScrollIndicator={false}
-
-                removeClippedSubviews={true}
-
-                estimatedItemSize={200}
-                estimatedListSize={{height: windowHeight ,  width: windowWidth}}
-
-                ListHeaderComponent={
-                    <SimpleTopBar
-                        theme={theme}
-                        title={"Post"}
-                        onGoBack={onGoBack}
-                        extraPaddingTop={extraPaddingTop}
-                        // clickedThreeDots={clickedThreeDots()}
-                    />
-                }
-
-                ListFooterComponent={
-                    <View 
-                        style={[
-                            theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer
-                            , {height: 200, marginTop: 5}
-                        ]}
-                    />
-                }
-
-
-                refreshControl={
-                    <RefreshControl 
-                        refreshing={isRefreshing}
-                        onRefresh={() => {
-                            setExtraPaddingTop(true);
-                            setIsRefreshing(true);
-                            setTimeout(() => {
-                                setIsRefreshing(false);
-                            }, 2000);
-                        }}
-                        // progressViewOffset={progress}
-                        tintColor={'rgba(255, 255, 255, 0.0)'}
-                        // progressViewOffset={0}
-                    />
-                }
-
-                // refreshing={isRefreshing}
-
-                // onRefresh={() => {
-                //     setExtraPaddingTop(true);
-                //     setIsRefreshing(true);
-                //     setTimeout(() => {
-                //         setIsRefreshing(false);
-                //     }, 3000);
-                // }}
-
-                // refreshControl={
-                //     <View/>
-                // }
-
-                // progressViewOffset={progress}
-
-                // onResponderRelease={console.log("sadfadsfdfasdfsa")}
-
-                onScroll={onScroll}
-                // onScroll={(e) => {
-                //     scrollY.setValue(e.nativeEvent.contentOffset.y) && console.log("e.nativeEvent.contentOffset.y");
-                // }}
-
-                getItemType={getItemType}
-
-                // overrideItemLayout={overrideItemLayout}
-                
-                keyExtractor={keyExtractor}
-
-                contentContainerStyle={{backgroundColor: theme == 'light' ? '#F4F4F4' : '#000000'}}
-            />
-
-            {replyBottomSheet(navigation, theme, postId, profile, username)}
-
-            {
-                options && 
-
-                <View
-                    style={styles.threeDotsOverlay}
-                >
-                    <TouchableOpacity
-                        onPressIn = {() => setOptions("close")}
-                        style={{backgroundColor: 'rgba(0,0,0,0)', height: "100%", width: "100%"}}
-                    >
-
-                    </TouchableOpacity>
-                    <ThreeDotsSheet
-                        profile={options.profile}
-                        commentId={options.commentId}
-                        replyToPostId={options.replyToPostId}
-                        replyToCommentId={options.replyToCommentId}
-                        image={options.image}
-                        text={options.text}
-                        theme={theme}
-                    />
-                </View>
-                
-            }
-        </View>
+        </>
     );
 };
 

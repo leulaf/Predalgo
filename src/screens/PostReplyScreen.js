@@ -324,11 +324,11 @@ const PostScreen = ({navigation, route}) => {
 
 
     return (
+        <>
         <View
             style={theme == 'light' ? styles.lightMainContainer : styles.darkMainContainer}
         >
-            {/* Load Meme with template and template state */}
-            {!finished && <CreateMeme image={image} templateState={post.templateState} setFinished={setFinished} setImage={setImage} id={postId}/>}
+
 
             {/* Top */}
             <View style={[theme == 'light' ? styles.lightContainer : styles.darkContainer, {height: Constants.statusBarHeight,}]}/>
@@ -372,6 +372,10 @@ const PostScreen = ({navigation, route}) => {
 
             {replyBottomSheet(navigation, postId, post.profile, post.username)}
         </View>
+
+        {/* Load Meme with template and template state */}
+        {!finished && <CreateMeme image={image} templateState={post.templateState} setFinished={setFinished} setImage={setImage} id={postId}/>}
+        </>
     );
 };
 

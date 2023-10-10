@@ -107,110 +107,114 @@ const DisplayMeme = React.memo(({ theme, item, templateUploader, maxHeight, maxW
     }
 
     return (
-        <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
+        <>
+            <View style={theme == 'light' ? styles.lightContainer : styles.darkContainer}>
 
-            <View 
-                style={{flexDirection: 'row', width: "100%", marginVertical: 8, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
-            >
-                {/* profile pic */}
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    style={{marginLeft: 5}}
-                    onPress={goToProfile(navigation, item.profile, item.username, item.profilePic)}
+                <View 
+                    style={{flexDirection: 'row', width: "100%", marginVertical: 8, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
                 >
-                    {item.profilePic != "" ? (
-                        <Image source={{ uri: item.profilePic }} style={styles.profileImage}/>
-                    ) : (
-                        <Image source={require('../../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
-                    )}
-                </TouchableOpacity>
-                
-                {/* username */}
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={goToProfile(navigation, item.profile, item.username, item.profilePic)}
-
-                    style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
-                >
-
+                    {/* profile pic */}
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        style={{marginLeft: 5}}
+                        onPress={goToProfile(navigation, item.profile, item.username, item.profilePic)}
+                    >
+                        {item.profilePic != "" ? (
+                            <Image source={{ uri: item.profilePic }} style={styles.profileImage}/>
+                        ) : (
+                            <Image source={require('../../../assets/profile_default.png')} style={styles.profileImage} cachePolicy='disk'/>
+                        )}
+                    </TouchableOpacity>
+                    
                     {/* username */}
-                    <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
-                        @{item.username}
-                    </Text>
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        onPress={goToProfile(navigation, item.profile, item.username, item.profilePic)}
+
+                        style={{flexDirection: 'column', marginLeft: 5, alignItems: 'center', justifyContent: 'center', alignContent: 'center'}}
+                    >
+
+                        {/* username */}
+                        <Text style={theme == 'light' ? styles.lightUsername: styles.darkUsername}>
+                            @{item.username}
+                        </Text>
 
 
-                </TouchableOpacity>
-                
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity
+                        activeOpacity={0.9}
+                        onPress={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
+                        style={{flex: 1, height: 40}}
+                    />
+
+                    {/* Like button */}
+                    <TouchableOpacity
+                        style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', alignContent: 'center', marginRight: 10}}
+                        onPress={toggleLike()}
+                    >
+                        {liked ?
+                            alreadyLiked
+                        :
+                            likes
+                        }
+
+                        <Text style={theme == 'light' ? styles.lightLikeCountText : styles.darkLikeCountText}>
+                            {liked ? intToString(item.likesCount + 1) : intToString(item.likesCount)}
+                        </Text>
+                    </TouchableOpacity>
+
+                </View>
+
                 <TouchableOpacity
                     activeOpacity={0.9}
                     onPress={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
-                    style={{flex: 1, height: 40}}
-                />
-
-                {/* Like button */}
-                <TouchableOpacity
-                    style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center', alignContent: 'center', marginRight: 10}}
-                    onPress={toggleLike()}
                 >
-                    {liked ?
-                        alreadyLiked
-                    :
-                        likes
+                    {
+                        item.text &&
+                        <PostText numberOfLines={5} text={item.text} forDisplayMeme={true}/>
                     }
-
-                    <Text style={theme == 'light' ? styles.lightLikeCountText : styles.darkLikeCountText}>
-                        {liked ? intToString(item.likesCount + 1) : intToString(item.likesCount)}
-                    </Text>
                 </TouchableOpacity>
 
+                <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={() => setIsImageFocused(!isImageFocused)}
+                >
+                    
+                    <ResizableImage 
+                        image={image ? image : item.template}
+                        style={style}
+                        height={item.imageHeight}
+                        width={item.imageWidth}
+                        maxHeight={maxHeight}
+                        maxWidth={maxWidth}
+                    />
+
+                    <ImageView
+                        images={[{uri: image ? image : item.template}]}
+                        imageIndex={0}
+                        visible={isImageFocused}
+                        onRequestClose={() => setIsImageFocused(false)}
+                        animationType="fade"
+                        presentationStyle="overFullScreen"
+                        doubleTapToZoomEnabled={true}
+                        FooterComponent={({ imageIndex }) => 
+                            <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
+                                <PostBottom
+                                    postId={item.id}
+                                    likesCount={item.likesCount}
+                                    commentsCount={item.commentsCount}
+                                    templateUploader={templateUploader}
+                                    navToPost={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
+                                    theme='imageFocused'
+                                />
+                            </View>
+                        }
+                    />
+                </TouchableOpacity>
+                
             </View>
 
-            <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
-            >
-                {
-                    item.text &&
-                    <PostText numberOfLines={5} text={item.text} forDisplayMeme={true}/>
-                }
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() => setIsImageFocused(!isImageFocused)}
-            >
-                
-                <ResizableImage 
-                    image={image ? image : item.template}
-                    style={style}
-                    height={item.imageHeight}
-                    width={item.imageWidth}
-                    maxHeight={maxHeight}
-                    maxWidth={maxWidth}
-                />
-
-                <ImageView
-                    images={[{uri: image ? image : item.template}]}
-                    imageIndex={0}
-                    visible={isImageFocused}
-                    onRequestClose={() => setIsImageFocused(false)}
-                    animationType="fade"
-                    presentationStyle="overFullScreen"
-                    doubleTapToZoomEnabled={true}
-                    FooterComponent={({ imageIndex }) => 
-                        <View style={{backgroundColor: 'rgba(0,0,0,0.5)', height: 90}}>
-                            <PostBottom
-                                postId={item.id}
-                                likesCount={item.likesCount}
-                                commentsCount={item.commentsCount}
-                                templateUploader={templateUploader}
-                                navToPost={onNavToPost(navigation, item, templateUploader, image, setIsImageFocused)}
-                                theme='imageFocused'
-                            />
-                        </View>
-                    }
-                />
-            </TouchableOpacity>
             {
                 !(image) &&
 
@@ -234,7 +238,7 @@ const DisplayMeme = React.memo(({ theme, item, templateUploader, maxHeight, maxW
                     }}
                 /> 
             }
-        </View>
+        </>
     )
 }, itemEquals);
 
