@@ -75,7 +75,6 @@ const ContentBottom = ({ tags, memeName, templateUploader, navToPost, navToMeme 
     if(tags){
         bottomTags = tags.map((d, index) => 
             <TouchableOpacity
-                key={index}
                 onPress={navigateToTag(navigation, tags[index])}
             >
                 <Text style={theme == 'light' ? GlobalStyles.lightPostBottomText: GlobalStyles.darkPostBottomText}>

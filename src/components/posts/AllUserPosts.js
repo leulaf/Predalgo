@@ -9,8 +9,8 @@ import TextPost from '../postTypes/TextPost';
 import getItemType from '../../shared/functions/GetItemType';
 
 
-const windowWidth = Dimensions.get('screen').width;
-const windowHeight = Dimensions.get('screen').height;
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 const renderItem = ({ item, index }) => {
     // console.log(item.imageUrl);
@@ -148,6 +148,12 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
                 showsVerticalScrollIndicator={false}
 
                 getItemType={getItemType}
+
+                // overrideItemLayout={(layout, item) =>{
+                //   layout.span = windowWidth;
+                //   layout.size = item.imageHeight * (layout.span/item.imageWidth);
+                //   // layout.size = item.imageHeight * (layout.span/item.imageWidth);
+                // }}
             />
         </View>
     );

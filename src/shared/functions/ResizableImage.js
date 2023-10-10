@@ -130,4 +130,4 @@ const ResizableImage = ({ image, height, width, maxHeight, maxWidth, style }) =>
     );
 }
 
-export default React.memo(ResizableImage);
+export default ResizableImage;

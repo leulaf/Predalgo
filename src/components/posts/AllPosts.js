@@ -19,7 +19,7 @@ export default function AllPosts({navigation, posts}){
         let post
         if(item.imageUrl){
             post = <ImagePost 
-                key={index} 
+                
                 imageUrl={item.imageUrl} 
                 title={item.title + " " + index}
                 tags={item.tags}
@@ -28,7 +28,7 @@ export default function AllPosts({navigation, posts}){
             />
         }else if(item.imageUrls){
             post = <MultiImagePost 
-                key={index} 
+                
                 // url={item.url} 
                 title={item.title + index}
                 imageUrls={item.imageUrls}

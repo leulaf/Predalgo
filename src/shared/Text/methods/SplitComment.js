@@ -36,15 +36,10 @@ export default SplitPost = (text, theme) => {
 
         
         if((parts[i].charAt(0) === '#' || parts[i].charAt(0) === '@' || urlStart) && parts[i].length > 1 && i == 0){
-            // finalText.push( 
-            //     <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
-            //         {parts.slice(currIndex, i).join(" ")}
-            //     </Text>
-            // );
 
             finalText.push(
                 urlStart?
-                    <Text key={uuid.v4()}>
+                    <Text>
                         <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                             {" " + parts[i].substring(0, urlStart - 1)}
                         </Text>
@@ -62,7 +57,6 @@ export default SplitPost = (text, theme) => {
                     
                 :
                     <Text
-                        key={uuid.v4()}
                         suppressHighlighting={true}
                         onPress={() => NavigateToTag(parts[i], navigation)}
                         style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
@@ -77,13 +71,13 @@ export default SplitPost = (text, theme) => {
 
             if(currIndex == 0){
                 finalText.push( 
-                    <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                    <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                         {parts.slice(currIndex, i).join(" ")}
                     </Text>
                 );
             }else{
                 finalText.push( 
-                    <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                    <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                         {" " + parts.slice(currIndex, i).join(" ")}
                     </Text>
                 );
@@ -92,7 +86,7 @@ export default SplitPost = (text, theme) => {
 
             finalText.push(
                 urlStart?
-                    <Text key={uuid.v4()}>
+                    <Text>
                         <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                             {" " + parts[i].substring(0, urlStart - 1)}
                         </Text>
@@ -110,7 +104,6 @@ export default SplitPost = (text, theme) => {
                         
                 :
                     <Text
-                        key={uuid.v4()}
                         suppressHighlighting={true}
                         onPress={() => NavigateToTag(parts[i], navigation)}
                         style={theme == 'light' ? styles.lightLinkText : styles.darkLinkText}
@@ -123,13 +116,13 @@ export default SplitPost = (text, theme) => {
 
         }else if(i == parts.length - 1 && currIndex != 0){
             finalText.push( 
-                <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                     {" " + parts.slice(currIndex, i + 1).join(" ")}
                 </Text>
             );
         }else if(i == parts.length - 1){
             finalText.push( 
-                <Text key={uuid.v4()} style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
+                <Text style={theme == 'light' ? styles.lightCommentText : styles.darkCommentText}>
                     {parts.slice(currIndex, i + 1).join(" ")}
                     {/* {console.log(parts.slice(currIndex, i + 1))} */}
                 </Text>

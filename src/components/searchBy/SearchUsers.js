@@ -14,43 +14,45 @@ function SearchUsers(props){
     const {theme,setTheme} = useContext(ThemeContext);
     const [users, setUsers] = useState([]);
 
-    // const fetchUsers = (search) => {
-    //     let q;
-    //     if(search != ""){
-    //         if(search.charAt(0) == '@'){
-    //             q = query(
-    //                 collection(db, "users"),
-    //                 where("username", ">=", search.substring(1)),
-    //                 where('username', '<=', search.substring(1) + '\uf8ff'),
-    //                 limit(4)
-    //             );
-    //         }else{
-    //             q = query(collection(db, "users"),
-    //                 where("username", ">=", search),
-    //                 where('username', '<=', search + '\uf8ff'),
-    //                 limit(4)
-    //             );
-    //         }
+    const fetchUsers = (search) => {
+        let q;
+        if(search != ""){
+            if(search.charAt(0) == '@'){
+                q = query(
+                    collection(db, "users"),
+                    where("username", ">=", search.substring(1)),
+                    where('username', '<=', search.substring(1) + '\uf8ff'),
+                    limit(4)
+                );
+            }else{
+                q = query(collection(db, "users"),
+                    where("username", ">=", search),
+                    where('username', '<=', search + '\uf8ff'),
+                    limit(4)
+                );
+            }
 
-    //         getDocs(q)
-    //         .then((snapshot) => {
-    //             let users = snapshot.docs.map(doc => {
-    //                 const data = doc.data();
-    //                 const id = doc.id;
-    //                 return { id, ...data }
-    //             })
-    //             setUsers(users);
-    //         });
-    //     }
+            getDocs(q)
+            .then((snapshot) => {
+                let users = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    return { id, ...data }
+                })
+                console.log(q);
+                console.log(users);
+                setUsers(users);
+            });
+        }
             
-    // }
+    }
 
-    // useEffect(() => {
-    //     const { searchState } = props;
+    useEffect(() => {
+        const { searchState } = props;
        
-    //     fetchUsers(searchState);
+        fetchUsers(searchState);
    
-    // }, [props.searchState]);
+    }, [props.searchState]);
 
 
     const renderItem = (item) => {
@@ -113,14 +115,14 @@ function SearchUsers(props){
             <View
                 style={{flex: 1, marginTop: 50}}
             >
-                {/* <FlatList
+                <FlatList
                     numColumns={1}
                     horizontal={false}
                     data={users}
                     renderItem={({ item }) => (
                         renderItem(item)
                     )}
-                /> */}
+                />
             </View>
                 
         </View>
