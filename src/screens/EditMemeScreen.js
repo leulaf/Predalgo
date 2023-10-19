@@ -430,9 +430,10 @@ const EditMemeScreen = ({ navigation, route }) => {
                     stickerEnableSelectImagePreset={false}
                     markupEditorToolStyles={createMarkupEditorToolStyles({
                         text: createMarkupEditorToolStyle("text", {
-                            fontSize: 100,
-                            // color: theme == 'light' ? [0, 0, 0] : [255, 255, 255],
+                            fontSize: "24%",
+                            // color: theme == 'light' ? '#FF' : [255, 255, 250],
                         }),
+                        
                     })}
                     enableCanvasAlpha={true}
                     markupEditorToolbar={[

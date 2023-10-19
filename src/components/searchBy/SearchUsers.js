@@ -100,9 +100,9 @@ function SearchUsers(props){
             <View
                 style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1, alignItems: 'center', justifyContent: 'center' }]}
             >
-                <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
+                {/* <Text style={theme == 'light' ? styles.lightText : styles.darkText}>
                     No users found
-                </Text>
+                </Text> */}
             </View>
         );
     }

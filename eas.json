@@ -12,13 +12,21 @@
       },
 
       "env": {
-        "FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
-        "FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
-        "FIREBASE_PROJECT_ID" :" predalgo-backend",
-        "FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
-        "FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
-        "FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
-        "FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N"
+        "1FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
+        "1FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
+        "1FIREBASE_PROJECT_ID" :" predalgo-backend",
+        "1FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
+        "1FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
+        "1FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
+        "1FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N",
+
+        "FIREBASE_API_KEY": "AIzaSyADFABZ6mRKGrQSbKgXrgPrFwVq_ayzcqo",
+        "FIREBASE_AUTH_DOMAIN": "picalgo-473f7.firebaseapp.com",
+        "FIREBASE_PROJECT_ID": "picalgo-473f7",
+        "FIREBASE_STORAGE_BUCKET": "picalgo-473f7.appspot.com",
+        "FIREBASE_MESSAGING_SENDER_ID": "133815778698",
+        "FIREBASE_APP_ID": "1:133815778698:web:b562add445ffc391025c73",
+        "FIREBASE_MEASUREMENT_ID": "G-TCBX80SRGX"
       }
     },
     "development-simulator": {
@@ -27,13 +35,21 @@
         "simulator": true
       },
       "env": {
-        "FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
-        "FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
-        "FIREBASE_PROJECT_ID" :" predalgo-backend",
-        "FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
-        "FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
-        "FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
-        "FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N"
+        "1FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
+        "1FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
+        "1FIREBASE_PROJECT_ID" :" predalgo-backend",
+        "1FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
+        "1FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
+        "1FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
+        "1FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N",
+
+        "FIREBASE_API_KEY": "AIzaSyADFABZ6mRKGrQSbKgXrgPrFwVq_ayzcqo",
+        "FIREBASE_AUTH_DOMAIN": "picalgo-473f7.firebaseapp.com",
+        "FIREBASE_PROJECT_ID": "picalgo-473f7",
+        "FIREBASE_STORAGE_BUCKET": "picalgo-473f7.appspot.com",
+        "FIREBASE_MESSAGING_SENDER_ID": "133815778698",
+        "FIREBASE_APP_ID": "1:133815778698:web:b562add445ffc391025c73",
+        "FIREBASE_MEASUREMENT_ID": "G-TCBX80SRGX"
       }
     },
     "preview": {
@@ -42,13 +58,21 @@
         "resourceClass": "m-medium"
       },
       "env": {
-        "FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
-        "FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
-        "FIREBASE_PROJECT_ID" :" predalgo-backend",
-        "FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
-        "FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
-        "FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
-        "FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N"
+        "1FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
+        "1FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
+        "1FIREBASE_PROJECT_ID" :" predalgo-backend",
+        "1FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
+        "1FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
+        "1FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
+        "1FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N",
+
+        "FIREBASE_API_KEY": "AIzaSyADFABZ6mRKGrQSbKgXrgPrFwVq_ayzcqo",
+        "FIREBASE_AUTH_DOMAIN": "picalgo-473f7.firebaseapp.com",
+        "FIREBASE_PROJECT_ID": "picalgo-473f7",
+        "FIREBASE_STORAGE_BUCKET": "picalgo-473f7.appspot.com",
+        "FIREBASE_MESSAGING_SENDER_ID": "133815778698",
+        "FIREBASE_APP_ID": "1:133815778698:web:b562add445ffc391025c73",
+        "FIREBASE_MEASUREMENT_ID": "G-TCBX80SRGX"
       }
     },
     "production": {
@@ -56,24 +80,40 @@
         "resourceClass": "m-medium"
       },
       "env": {
-        "FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
-        "FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
-        "FIREBASE_PROJECT_ID" :" predalgo-backend",
-        "FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
-        "FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
-        "FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
-        "FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N"
+        "1FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
+        "1FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
+        "1FIREBASE_PROJECT_ID" :" predalgo-backend",
+        "1FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
+        "1FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
+        "1FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
+        "1FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N",
+
+        "FIREBASE_API_KEY": "AIzaSyADFABZ6mRKGrQSbKgXrgPrFwVq_ayzcqo",
+        "FIREBASE_AUTH_DOMAIN": "picalgo-473f7.firebaseapp.com",
+        "FIREBASE_PROJECT_ID": "picalgo-473f7",
+        "FIREBASE_STORAGE_BUCKET": "picalgo-473f7.appspot.com",
+        "FIREBASE_MESSAGING_SENDER_ID": "133815778698",
+        "FIREBASE_APP_ID": "1:133815778698:web:b562add445ffc391025c73",
+        "FIREBASE_MEASUREMENT_ID": "G-TCBX80SRGX"
       }
     },
     "test": {
       "env": {
-        "FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
-        "FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
-        "FIREBASE_PROJECT_ID" :" predalgo-backend",
-        "FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
-        "FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
-        "FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
-        "FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N"
+        "1FIREBASE_API_KEY" : "AIzaSyBGjwxmDBrH1lhoqHY4M8dslmYsmB6OLR4",
+        "1FIREBASE_AUTH_DOMAIN" : "predalgo-backend.firebaseapp.com",
+        "1FIREBASE_PROJECT_ID" :" predalgo-backend",
+        "1FIREBASE_STORAGE_BUCKET" : "predalgo-backend.appspot.com",
+        "1FIREBASE_MESSAGING_SENDER_ID" : "574070719482",
+        "1FIREBASE_APP_ID" : "1:574070719482:web:0528969ca1d7a810abda43",
+        "1FIREBASE_MEASUREMENT_ID" : "G-LF7EW70E6N",
+
+        "FIREBASE_API_KEY": "AIzaSyADFABZ6mRKGrQSbKgXrgPrFwVq_ayzcqo",
+        "FIREBASE_AUTH_DOMAIN": "picalgo-473f7.firebaseapp.com",
+        "FIREBASE_PROJECT_ID": "picalgo-473f7",
+        "FIREBASE_STORAGE_BUCKET": "picalgo-473f7.appspot.com",
+        "FIREBASE_MESSAGING_SENDER_ID": "133815778698",
+        "FIREBASE_APP_ID": "1:133815778698:web:b562add445ffc391025c73",
+        "FIREBASE_MEASUREMENT_ID": "G-TCBX80SRGX"
       }
     }
   },

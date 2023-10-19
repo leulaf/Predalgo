@@ -41,7 +41,25 @@
           "microphonePermissionText": "Picalgo needs access to your Microphone."
         }
       ],
-      "react-native-compressor"
+      "react-native-compressor",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "flipper": true
+          }
+        }
+      ],
+      [
+        "react-native-admob-native-ads",
+        {
+          "androidAppId1":  "ca-app-pub-3940256099942544/1044960115",
+          "iosAppId1":  "ca-app-pub-3940256099942544/2521693316",
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "facebookMediation": false
+        }
+      ]
     ]
   }
 }

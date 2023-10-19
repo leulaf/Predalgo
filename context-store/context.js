@@ -68,20 +68,28 @@ const AuthenticatedUserContext = React.createContext({});
 
 const AuthenticatedUserProvider = ({ children }) => {
     const [user, setUser] = React.useState(null);
+    
+
     const [imageReply, setImageReply] = React.useState(null);
     const [imagePost, setImagePost] = React.useState(null);
     const [options, setOptions] = React.useState(null);
     const [memeTemplates, setMemeTemplates] = React.useState([{id : "fir"}, {id: "sec"}]);
+    
+    
+    
+    
+    
+    
     // console.log(user);
     React.useEffect(() => {
-        // getUser(auth.currentUser.uid).then(async(user) => {
-        //     setUser({
-        //       ...user,
-        //     })
-        //     // console.log(user);
-        //   }).catch((e) => {
-        //     // *** NEED TO MAKE SURE THAT USER DOCUMENT IS CACHED, MAYBE RETRY ONCE OR TWICE ***
-        // });
+        getUser(auth.currentUser.uid).then(async(user) => {
+            setUser({
+              ...user,
+            })
+            // console.log(user);
+          }).catch((e) => {
+            // *** NEED TO MAKE SURE THAT USER DOCUMENT IS CACHED, MAYBE RETRY ONCE OR TWICE ***
+        });
     }, []);
 
     return (
