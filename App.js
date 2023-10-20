@@ -23,7 +23,11 @@ import { MainStackNavigator } from './src/navigation/StackNavigator';
 
 import { useFonts, NotoSans_300Light, NotoSans_400Regular, NotoSans_500Medium, NotoSans_600SemiBold, NotoSans_700Bold, NotoSans_800ExtraBold} from '@expo-google-fonts/noto-sans';
 
+import {AdManager} from "react-native-admob-native-ads";
 
+// AdManager.setRequestConfiguration({
+//         testDeviceIds:["00000000-0000-0000-0000-000000000000"]
+// });
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 // "extra": {

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Predalgo",
-    "slug": "Predalgo",
+    "name": "picalgo",
+    "slug": "picalgo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -46,17 +46,17 @@
         "expo-build-properties",
         {
           "ios": {
-            "flipper": true
+            "useFrameworks": "static"
           }
         }
       ],
       [
         "react-native-admob-native-ads",
         {
-          "androidAppId1":  "ca-app-pub-3940256099942544/1044960115",
-          "iosAppId1":  "ca-app-pub-3940256099942544/2521693316",
-          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
-          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "androidAppId":  "ca-app-pub-3940256099942544/1044960115",
+          "iosAppId":  "ca-app-pub-3940256099942544/2521693316",
+          "androidAppId1": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId1": "ca-app-pub-3940256099942544~1458002511",
           "facebookMediation": false
         }
       ]

@@ -7,6 +7,10 @@ import ImagePost from '../postTypes/ImagePost';
 import TextPost from '../postTypes/TextPost';
 
 import getItemType from '../../shared/functions/GetItemType';
+import NativeAdView from "react-native-admob-native-ads";
+import { AdView } from '../AdView';
+
+import { getTrackingStatus } from 'react-native-tracking-transparency';
 
 
 const windowWidth = Dimensions.get('window').width;
@@ -69,7 +73,19 @@ const keyExtractor = (item, index) => item.id.toString() + index.toString();
 
 export default function AllUserPosts({ userId, username, profilePic, postList, byNewPosts, byPopularPosts, handleNewPostsClick, handlePopularPostsClick, handleRefreshPostsClick, handleNewPostsRefreshClick, handlePopularPostsRefreshClick }){
     const {theme,setTheme} = React.useContext(ThemeContext);
+    const nativeAdViewRef = React.useRef();
+    // console.log(nativeAdViewRef)
 
+    React.useEffect(() => {
+      nativeAdViewRef.current?.loadAd();
+      setup()
+    }, []);
+    const setup = async() => {
+        const trackingStatus = await getTrackingStatus();
+if (trackingStatus === 'authorized' || trackingStatus === 'unavailable') {
+  // enable tracking features
+}
+    }
     {/* New/Popular/Refresh button */}
     const topButtons = React.useCallback(() =>
         <View style={{flexDirection: 'row', marginBottom: 7, marginTop: 15}}>
@@ -124,6 +140,30 @@ export default function AllUserPosts({ userId, username, profilePic, postList, b
         <View 
             style={[theme == 'light' ? GlobalStyles.lightContainer : GlobalStyles.darkContainer, { flex: 1 }]}
         >
+    {/* //         <NativeAdView
+
+    //   ref={nativeAdViewRef}
+    // //   adUnitID="ca-app-pub-3940256099942544~1458002511"
+    // //   mediationOptions={{
+    // //     nativeBanner: true,
+    // //   }}
+    //   repository={'imageAd'}
+    //   style={{
+    //     width: 5000,
+    //     height: 5000,
+    //     alignSelf: 'center',
+    //     backgroundColor: 'yellow',
+    //   }}
+    // >
+    //   <View style={{
+    //       width: 50,
+    //       height: 50,
+    //       justifyContent: 'center',
+    //       alignItems: 'center',
+    //     }}></View>
+    // </NativeAdView>
+    // <AdView type="videoAd" media={true} /> */}
+
             <Tabs.FlashList
                 data={postList.length > 0 ? postList : [{id: "fir"}]}
 

@@ -6,6 +6,10 @@ import { AuthenticatedUserContext } from '../../../../context-store/context';
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+import {onSaveComment, onUnsaveComment} from './SaveUnsaveComment';
+
+import {onFlagComment, onUnflagComment} from './FlagUnflagComment';
+
 import Feather from '@expo/vector-icons/Feather';
 
 import Octicons from '@expo/vector-icons/Octicons';
@@ -43,7 +47,7 @@ const onShare = async(text, image) => {
 }
 
 export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToCommentId, text, image, theme}) => {
-    const [bookmarked, setBookmarked] = React.useState(false);
+   
 
     // ref
     const bottomSheetRef = React.useRef(null);
@@ -51,7 +55,10 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
     // variables
     const snapPoints = React.useMemo(() => [ "1%", "40%"], []);
 
-    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
+    const {options, setOptions, savedComments, flaggedComments} = React.useContext(AuthenticatedUserContext);
+    
+    const [saved, setSaved] = React.useState(savedComments.some(e => e === commentId));
+    const [flagged, setFlagged] = React.useState(flaggedComments.some(e => e === commentId));
 
     const handleSheetAnimate = React.useCallback((from, to) => {
         // console.log('handleSheetAnimate', from, to);
@@ -69,6 +76,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
             bottomSheetRef.current.snapToIndex(0);
         }
     }, [options])
+
 
     const deleteAndCheck = React.useCallback(() => async() => {
         setOptions({
@@ -88,7 +96,57 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                 deleted: false
             })
         })
-    }, [])
+    }, []);
+
+
+    const toggleSave = () => async() => {
+        if(saved){
+            setSaved(false);
+        
+            await onUnsaveComment(commentId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setSaved(true);
+            });
+        }else{
+            setSaved(true);
+        
+            await onSaveComment(commentId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setSaved(false);
+            });
+        }
+    }
+
+
+    const toggleFlag = () => async() => {
+        if(flagged){
+            setFlagged(false);
+        
+            await onUnflagComment(commentId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setFlagged(true);
+            });
+        }else{
+            setFlagged(true);
+        
+            await onFlagComment(commentId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setFlagged(false);
+            });
+        }
+    }
 
 
     return (
@@ -155,10 +213,10 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                     <TouchableOpacity
                         activeOpacity={0.5}
                         style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
-                        onPress={() => setBookmarked(!bookmarked)}
+                        onPress={toggleSave()}
                     >
                         <MaterialIcons
-                            name={bookmarked ? "bookmark" : "bookmark-outline"}
+                            name={saved ? "bookmark" : "bookmark-outline"}
                             size={29.5}
 
                             color={theme == 'light' ? '#333' : '#F4F4F4'}
@@ -217,7 +275,7 @@ export default ThreeDotsSheet = ({profile, commentId, replyToPostId, replyToComm
                         <TouchableOpacity
                             activeOpacity={0.5}
                             style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
-                            onPress={() =>{ return null}}
+                            onPress={toggleFlag()}
                         >
                             <Feather
                                 name="flag"

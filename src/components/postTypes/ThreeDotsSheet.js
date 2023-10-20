@@ -2,6 +2,8 @@ import React from 'react';
 
 import { View, Text, StyleSheet, TouchableOpacity, Platform, Dimensions } from 'react-native';
 
+import { onSavePost, onUnSavePost } from '../../shared/post/SaveUnsavePost';
+
 import { AuthenticatedUserContext } from '../../../context-store/context';
 
 import onShare from '../../shared/post/SharePost';
@@ -23,7 +25,6 @@ const auth = getAuth();
 const window = Dimensions.get('window');
 
 export default ThreeDotsSheet = ({profile, postId, repostId, text, image, theme}) => {
-    const [bookmarked, setBookmarked] = React.useState(false);
 
     // ref
     const bottomSheetRef = React.useRef(null);
@@ -31,7 +32,11 @@ export default ThreeDotsSheet = ({profile, postId, repostId, text, image, theme}
     // variables
     const snapPoints = React.useMemo(() => [ "1%", "40%"], []);
 
-    const {options, setOptions} = React.useContext(AuthenticatedUserContext);
+    const {options, setOptions, savedPosts, flaggedPosts} = React.useContext(AuthenticatedUserContext);
+
+    const [saved, setSaved] = React.useState(savedPosts.some(e => e === postId));
+    const [flagged, setFlagged] = React.useState(flaggedPosts.some(e => e === postId));
+
 
     const handleSheetAnimate = React.useCallback((from, to) => {
         // console.log('handleSheetAnimate', from, to);
@@ -62,6 +67,54 @@ export default ThreeDotsSheet = ({profile, postId, repostId, text, image, theme}
             })
         })
     }, [])
+
+    const toggleSave = () => async() => {
+        if(saved){
+            setSaved(false);
+        
+            await onUnSavePost(postId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setSaved(true);
+            });
+        }else{
+            setSaved(true);
+        
+            await onSavePost(postId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setSaved(false);
+            });
+        }
+    }
+
+    const toggleFlag = () => async() => {
+        if(flagged){
+            setFlagged(false);
+        
+            await onUnflagComment(postId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setFlagged(true);
+            });
+        }else{
+            setFlagged(true);
+        
+            await onFlagComment(postId)
+            .then((result) => {
+
+            })
+            .catch((e) => {
+                setFlagged(false);
+            });
+        }
+    }
 
 
     return (
@@ -135,14 +188,14 @@ export default ThreeDotsSheet = ({profile, postId, repostId, text, image, theme}
                     </TouchableOpacity>
                     
                     
-                    {/* Save comment */}
+                    {/* Save Post */}
                     <TouchableOpacity
                         activeOpacity={0.5}
                         style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
-                        onPress={() => setBookmarked(!bookmarked)}
+                        onPress={toggleSave()}
                     >
                         <MaterialIcons
-                            name={bookmarked ? "bookmark" : "bookmark-outline"}
+                            name={saved ? "bookmark" : "bookmark-outline"}
                             size={29.5}
 
                             color={theme == 'light' ? '#333' : '#F4F4F4'}
@@ -201,7 +254,7 @@ export default ThreeDotsSheet = ({profile, postId, repostId, text, image, theme}
                         <TouchableOpacity
                             activeOpacity={0.5}
                             style={theme == 'light' ? styles.lightButtonStyle : styles.darkButtonStyle}
-                            onPress={() =>{ return null}}
+                            onPress={toggleFlag()}
                         >
                             <Feather
                                 name="flag"
